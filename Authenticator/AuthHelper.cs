@@ -20,48 +20,19 @@ using Org.BouncyCastle.Crypto.Parameters;
 using Org.BouncyCastle.Math;
 
 namespace Authenticator {
-  /// <summary>
-  /// Class proving helper functions to save data for application
-  /// </summary>
   class AuthHelper {
-    /// <summary>
-    /// Registry key for application
-    /// </summary>
-    public const string AUTHREGKEY = @"Software\Authenticator";
-
-    /// <summary>
-    /// Registry key for application
-    /// </summary>
     private const string AUTH2_REGKEY = @"Software\Authenticator";
 
-    /// <summary>
-    /// Registry data name for last loaded file
-    /// </summary>
     private const string AUTHREGKEY_LASTFILE = @"File{0}";
 
-    /// <summary>
-    /// Registry data name for last good
-    /// </summary>
     private const string AUTHREGKEY_BACKUP = @"Software\Authenticator\Backup";
 
-    /// <summary>
-    /// Encrpyted config backup
-    /// </summary>
     private const string AUTHREGKEY_CONFIGBACKUP = @"Software\Authenticator\Backup\Config";
-    
-    /// <summary>
-    /// Registry key for starting with windows
-    /// </summary>
+
     private const string RUNKEY = @"Software\Microsoft\Windows\CurrentVersion\Run";
 
-    /// <summary>
-    /// Name of default authenticator file
-    /// </summary>
-    public const string DEFAULT_AUTHENTICATOR_FILE_NAME = "Authenticator.xml";
+    public const string DEFAULT_AUTHENTICATOR_FILE_NAME = "Authenticator.config";
 
-    /// <summary>
-    /// The Authenticator PGP public key
-    /// </summary>
     public const string AUTH_PGP_PUBLICKEY =
       @"-----BEGIN PGP PUBLIC KEY BLOCK-----
 			Version: BCPG C# v1.7.4114.6375
@@ -83,7 +54,7 @@ namespace Authenticator {
 			-----END PGP PUBLIC KEY BLOCK-----";
 
 
-    public static AuthConfig LoadConfig(Form form, string configFile, string password = null) {
+    public static AuthConfig LoadConfig(string configFile, string password = null) {
       var config = new AuthConfig();
       if (string.IsNullOrEmpty(password) == false) {
         config.Password = password;
@@ -182,10 +153,6 @@ namespace Authenticator {
       return config;
     }
 
-    /// <summary>
-    /// Return any 2.x authenticator entry in the registry
-    /// </summary>
-    /// <returns></returns>
     public static string GetLastV2Config() {
       // check for a v2 last file entry
       try {
@@ -206,11 +173,6 @@ namespace Authenticator {
       return null;
     }
 
-    /// <summary>
-    /// Save the authenticator
-    /// </summary>
-    /// <param name="configFile">filename to save to</param>
-    /// <param name="config">current settings to save</param>
     public static void SaveConfig(AuthConfig config) {
       // create the xml
       var settings = new XmlWriterSettings();
@@ -275,13 +237,6 @@ namespace Authenticator {
       }
     }
 
-    /// <summary>
-    /// Save a PGP encrypted version of the config into the registry for recovery
-    /// 
-    /// Issue#133: this just compounds each time we load, and is really pointless so we are removing it
-    /// but in the meantime we have to clear it out
-    /// </summary>
-    /// <param name="config"></param>
     private static void SaveToRegistry(AuthConfig config) {
       config.WriteSetting(AUTHREGKEY_CONFIGBACKUP, null);
     }
@@ -313,9 +268,6 @@ namespace Authenticator {
       }
     }
 
-    /// <summary>
-    /// Read the encrpyted backup registry entries to be sent within the diagnostics report
-    /// </summary>
     public static string ReadBackupFromRegistry(AuthConfig config) {
       var buffer = new StringBuilder();
       foreach (var name in config.ReadSettingKeys(AUTHREGKEY_BACKUP)) {
@@ -328,10 +280,6 @@ namespace Authenticator {
       return buffer.ToString();
     }
 
-    /// <summary>
-    /// Set up Authenticator so it will start with Windows by adding entry into registry
-    /// </summary>
-    /// <param name="enabled">enable or disable start with windows</param>
     public static void SetStartWithWindows(bool enabled) {
       if (enabled) {
         // get path of exe and minimize flag
@@ -342,12 +290,6 @@ namespace Authenticator {
       }
     }
 
-    /// <summary>
-    /// Import a file containing authenticators in the KeyUriFormat. The file might be plain text, encrypted zip or encrypted pgp.
-    /// </summary>
-    /// <param name="parent">parent Form</param>
-    /// <param name="file">file name to import</param>
-    /// <returns>list of imported authenticators</returns>
     public static List<AuthAuthenticator> ImportAuthenticators(Form parent, string file) {
       var authenticators = new List<AuthAuthenticator>();
 
@@ -699,12 +641,6 @@ namespace Authenticator {
 
     #region HttpUtility
 
-    /// <summary>
-    /// Our own version of HtmlEncode replacing HttpUtility.HtmlEncode so we can remove the System.Web reference
-    /// which isn't available in the .Net client profile
-    /// </summary>
-    /// <param name="text">text to be encoded</param>
-    /// <returns>encoded string</returns>
     public static string HtmlEncode(string text) {
       if (string.IsNullOrEmpty(text)) {
         return text;
@@ -745,12 +681,6 @@ namespace Authenticator {
       return sb.ToString();
     }
 
-    /// <summary>
-    /// Our own version of HttpUtility.ParseQueryString so we can remove the reference to System.Web
-    /// which is not available in client profile.
-    /// </summary>
-    /// <param name="qs">string query string</param>
-    /// <returns>collection of name value pairs</returns>
     public static NameValueCollection ParseQueryString(string qs) {
       var pairs = new NameValueCollection();
 
@@ -828,11 +758,6 @@ namespace Authenticator {
       }
     }
 
-    /// <summary>
-    /// Get the names of all the child value keys for a given parent.
-    /// </summary>
-    /// <param name="keyname">name of parent key</param>
-    /// <returns>string array of all child value names or empty array</returns>
     public static string[] ReadRegistryKeys(string keyname) {
       RegistryKey basekey;
       var keyparts = keyname.Split('\\').ToList();
@@ -891,11 +816,6 @@ namespace Authenticator {
       }
     }
 
-    /// <summary>
-    /// Write a value into a registry key value.
-    /// </summary>
-    /// <param name="keyname">full name of key</param>
-    /// <param name="value">value to write</param>
     public static void WriteRegistryValue(string keyname, object value) {
       RegistryKey basekey;
       var keyparts = keyname.Split('\\').ToList();
@@ -938,11 +858,6 @@ namespace Authenticator {
       }
     }
 
-    /// <summary>
-    /// Delete a registry entry value or key. If it is deleted and there are no more sibling values or subkeys,
-    /// the parent is also removed.
-    /// </summary>
-    /// <param name="keyname"></param>
     public static void DeleteRegistryKey(string keyname) {
       RegistryKey basekey;
       var keyparts = keyname.Split('\\').ToList();
@@ -1002,14 +917,6 @@ namespace Authenticator {
 
     #region PGP functions
 
-    /// <summary>
-    /// Build a PGP key pair
-    /// </summary>
-    /// <param name="bits">number of bits in key, e.g. 2048</param>
-    /// <param name="identifier">key identifier, e.g. "Your Name <your@emailaddress.com>" </param>
-    /// <param name="password">key password or null</param>
-    /// <param name="privateKey">returned ascii private key</param>
-    /// <param name="publicKey">returned ascii public key</param>
     public static void PgpGenerateKey(int bits, string identifier, string password, out string privateKey,
       out string publicKey) {
       // generate a new RSA keypair 
@@ -1061,12 +968,6 @@ namespace Authenticator {
       }
     }
 
-    /// <summary>
-    /// Encrypt string using a PGP public key
-    /// </summary>
-    /// <param name="plain">plain text to encrypt</param>
-    /// <param name="armoredPublicKey">public key in ASCII "-----BEGIN PGP PUBLIC KEY BLOCK----- .. -----END PGP PUBLIC KEY BLOCK-----" format</param>
-    /// <returns>PGP message string</returns>
     public static string PgpEncrypt(string plain, string armoredPublicKey) {
       // encode data
       var data = Encoding.UTF8.GetBytes(plain);
@@ -1109,14 +1010,6 @@ namespace Authenticator {
       }
     }
 
-    /// <summary>
-    /// Decrypt a PGP message (i.e. "-----BEGIN PGP MESSAGE----- ... -----END PGP MESSAGE-----")
-    /// using the supplied private key.
-    /// </summary>
-    /// <param name="armoredCipher">PGP message to decrypt</param>
-    /// <param name="armoredPrivateKey">PGP private key</param>
-    /// <param name="keyPassword">PGP private key password or null if none</param>
-    /// <returns>decrypted plain text</returns>
     public static string PgpDecrypt(string armoredCipher, string armoredPrivateKey, string keyPassword) {
       // decode the private key
       var privateKeys = new Dictionary<long, PgpPrivateKey>();
@@ -1166,9 +1059,6 @@ namespace Authenticator {
     #endregion
   }
 
-  /// <summary>
-  /// Helper class to make a StreamWriter use an Encoding else it will default to UTF-16
-  /// </summary>
   class EncodedStringWriter : StringWriter {
     private readonly Encoding encoding;
 
@@ -1176,8 +1066,6 @@ namespace Authenticator {
       this.encoding = encoding;
     }
 
-    public override Encoding Encoding {
-      get { return encoding; }
-    }
+    public override Encoding Encoding => encoding;
   }
 }

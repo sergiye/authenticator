@@ -1,35 +1,19 @@
 ﻿using System.Windows.Forms;
 
-namespace Authenticator
-{
-	partial class ChangePasswordForm
-	{
-		/// <summary>
-		/// Required designer variable.
-		/// </summary>
-		private System.ComponentModel.IContainer components = null;
+namespace Authenticator {
+  partial class ChangePasswordForm {
+    private System.ComponentModel.IContainer components = null;
 
-		/// <summary>
-		/// Clean up any resources being used.
-		/// </summary>
-		/// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
-		protected override void Dispose(bool disposing)
-		{
-			if (disposing && (components != null))
-			{
-				components.Dispose();
-			}
-			base.Dispose(disposing);
-		}
+    protected override void Dispose(bool disposing) {
+      if (disposing && (components != null)) {
+        components.Dispose();
+      }
+      base.Dispose(disposing);
+    }
 
-		#region Windows Form Designer generated code
+    #region Windows Form Designer generated code
 
-		/// <summary>
-		/// Required method for Designer support - do not modify
-		/// the contents of this method with the code editor.
-		/// </summary>
-		private void InitializeComponent()
-		{
+    private void InitializeComponent() {
       System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(ChangePasswordForm));
       this.introLabel = new System.Windows.Forms.Label();
       this.machineCheckbox = new System.Windows.Forms.CheckBox();
@@ -103,7 +87,7 @@ namespace Authenticator
       // 
       // pictureBox1
       // 
-      this.pictureBox1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+      this.pictureBox1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
             | System.Windows.Forms.AnchorStyles.Right)));
       this.pictureBox1.Image = global::Authenticator.Properties.Resources.BluePixel;
       this.pictureBox1.ImeMode = System.Windows.Forms.ImeMode.NoControl;
@@ -116,7 +100,7 @@ namespace Authenticator
       // 
       // pictureBox2
       // 
-      this.pictureBox2.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+      this.pictureBox2.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
             | System.Windows.Forms.AnchorStyles.Right)));
       this.pictureBox2.Image = global::Authenticator.Properties.Resources.BluePixel;
       this.pictureBox2.ImeMode = System.Windows.Forms.ImeMode.NoControl;
@@ -262,28 +246,28 @@ namespace Authenticator
       this.ResumeLayout(false);
       this.PerformLayout();
 
-		}
+    }
 
-		#endregion
+    #endregion
 
-		private Label introLabel;
-		private CheckBox machineCheckbox;
-		private CheckBox userCheckbox;
-		private CheckBox passwordCheckbox;
-		private Label passwordLabel;
-		private System.Windows.Forms.PictureBox pictureBox1;
-		private System.Windows.Forms.PictureBox pictureBox2;
-		private Button cancelButton;
-		private Button okButton;
-		private TextBox passwordField;
-		private TextBox verifyField;
-		private Label verifyFieldLabel;
-		private Label passwordFieldLabel;
-		private Label machineLabel;
-		private Label metroLabel1;
-		private Label metroLabel4;
-		private Label metroLabel3;
-		private Label metroLabel5;
+    private Label introLabel;
+    private CheckBox machineCheckbox;
+    private CheckBox userCheckbox;
+    private CheckBox passwordCheckbox;
+    private Label passwordLabel;
+    private System.Windows.Forms.PictureBox pictureBox1;
+    private System.Windows.Forms.PictureBox pictureBox2;
+    private Button cancelButton;
+    private Button okButton;
+    private TextBox passwordField;
+    private TextBox verifyField;
+    private Label verifyFieldLabel;
+    private Label passwordFieldLabel;
+    private Label machineLabel;
+    private Label metroLabel1;
+    private Label metroLabel4;
+    private Label metroLabel3;
+    private Label metroLabel5;
 
-	}
+  }
 }

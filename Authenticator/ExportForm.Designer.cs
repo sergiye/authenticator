@@ -1,35 +1,19 @@
 ﻿using System.Windows.Forms;
 
-namespace Authenticator
-{
-	partial class ExportForm
-	{
-		/// <summary>
-		/// Required designer variable.
-		/// </summary>
-		private System.ComponentModel.IContainer components = null;
+namespace Authenticator {
+  partial class ExportForm {
+    private System.ComponentModel.IContainer components = null;
 
-		/// <summary>
-		/// Clean up any resources being used.
-		/// </summary>
-		/// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
-		protected override void Dispose(bool disposing)
-		{
-			if (disposing && (components != null))
-			{
-				components.Dispose();
-			}
-			base.Dispose(disposing);
-		}
+    protected override void Dispose(bool disposing) {
+      if (disposing && (components != null)) {
+        components.Dispose();
+      }
+      base.Dispose(disposing);
+    }
 
-		#region Windows Form Designer generated code
+    #region Windows Form Designer generated code
 
-		/// <summary>
-		/// Required method for Designer support - do not modify
-		/// the contents of this method with the code editor.
-		/// </summary>
-		private void InitializeComponent()
-		{
+    private void InitializeComponent() {
       this.introLabel = new System.Windows.Forms.Label();
       this.passwordCheckbox = new System.Windows.Forms.CheckBox();
       this.pictureBox2 = new System.Windows.Forms.PictureBox();
@@ -52,11 +36,11 @@ namespace Authenticator
       // 
       // introLabel
       // 
-      this.introLabel.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+      this.introLabel.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
             | System.Windows.Forms.AnchorStyles.Right)));
-      this.introLabel.Location = new System.Drawing.Point(23, 60);
+      this.introLabel.Location = new System.Drawing.Point(12, 9);
       this.introLabel.Name = "introLabel";
-      this.introLabel.Size = new System.Drawing.Size(484, 50);
+      this.introLabel.Size = new System.Drawing.Size(394, 50);
       this.introLabel.TabIndex = 1;
       this.introLabel.Text = "This will export a text file with an authenticator per line in Google\'s KeyUriFor" +
     "mat that can be imported into Authenticator or some other authenticator applicat" +
@@ -65,7 +49,7 @@ namespace Authenticator
       // passwordCheckbox
       // 
       this.passwordCheckbox.AutoSize = true;
-      this.passwordCheckbox.Location = new System.Drawing.Point(25, 112);
+      this.passwordCheckbox.Location = new System.Drawing.Point(14, 61);
       this.passwordCheckbox.Name = "passwordCheckbox";
       this.passwordCheckbox.Size = new System.Drawing.Size(199, 17);
       this.passwordCheckbox.TabIndex = 0;
@@ -74,13 +58,13 @@ namespace Authenticator
       // 
       // pictureBox2
       // 
-      this.pictureBox2.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
+      this.pictureBox2.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
             | System.Windows.Forms.AnchorStyles.Right)));
       this.pictureBox2.Image = global::Authenticator.Properties.Resources.BluePixel;
       this.pictureBox2.ImeMode = System.Windows.Forms.ImeMode.NoControl;
-      this.pictureBox2.Location = new System.Drawing.Point(24, 563);
+      this.pictureBox2.Location = new System.Drawing.Point(13, 510);
       this.pictureBox2.Name = "pictureBox2";
-      this.pictureBox2.Size = new System.Drawing.Size(484, 1);
+      this.pictureBox2.Size = new System.Drawing.Size(389, 1);
       this.pictureBox2.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
       this.pictureBox2.TabIndex = 3;
       this.pictureBox2.TabStop = false;
@@ -89,7 +73,7 @@ namespace Authenticator
       // 
       this.cancelButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
       this.cancelButton.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-      this.cancelButton.Location = new System.Drawing.Point(432, 580);
+      this.cancelButton.Location = new System.Drawing.Point(331, 528);
       this.cancelButton.Name = "cancelButton";
       this.cancelButton.Size = new System.Drawing.Size(75, 23);
       this.cancelButton.TabIndex = 6;
@@ -99,7 +83,7 @@ namespace Authenticator
       // 
       this.okButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
       this.okButton.DialogResult = System.Windows.Forms.DialogResult.OK;
-      this.okButton.Location = new System.Drawing.Point(351, 580);
+      this.okButton.Location = new System.Drawing.Point(250, 528);
       this.okButton.Name = "okButton";
       this.okButton.Size = new System.Drawing.Size(75, 23);
       this.okButton.TabIndex = 5;
@@ -109,7 +93,7 @@ namespace Authenticator
       // passwordField
       // 
       this.passwordField.Enabled = false;
-      this.passwordField.Location = new System.Drawing.Point(128, 143);
+      this.passwordField.Location = new System.Drawing.Point(117, 92);
       this.passwordField.Name = "passwordField";
       this.passwordField.PasswordChar = '●';
       this.passwordField.Size = new System.Drawing.Size(262, 20);
@@ -119,7 +103,7 @@ namespace Authenticator
       // verifyField
       // 
       this.verifyField.Enabled = false;
-      this.verifyField.Location = new System.Drawing.Point(128, 172);
+      this.verifyField.Location = new System.Drawing.Point(117, 121);
       this.verifyField.Name = "verifyField";
       this.verifyField.PasswordChar = '●';
       this.verifyField.Size = new System.Drawing.Size(262, 20);
@@ -129,7 +113,7 @@ namespace Authenticator
       // verifyFieldLabel
       // 
       this.verifyFieldLabel.AutoSize = true;
-      this.verifyFieldLabel.Location = new System.Drawing.Point(45, 173);
+      this.verifyFieldLabel.Location = new System.Drawing.Point(34, 122);
       this.verifyFieldLabel.Name = "verifyFieldLabel";
       this.verifyFieldLabel.Size = new System.Drawing.Size(33, 13);
       this.verifyFieldLabel.TabIndex = 5;
@@ -138,7 +122,7 @@ namespace Authenticator
       // passwordFieldLabel
       // 
       this.passwordFieldLabel.AutoSize = true;
-      this.passwordFieldLabel.Location = new System.Drawing.Point(45, 144);
+      this.passwordFieldLabel.Location = new System.Drawing.Point(34, 93);
       this.passwordFieldLabel.Name = "passwordFieldLabel";
       this.passwordFieldLabel.Size = new System.Drawing.Size(53, 13);
       this.passwordFieldLabel.TabIndex = 5;
@@ -147,7 +131,7 @@ namespace Authenticator
       // pgpCheckbox
       // 
       this.pgpCheckbox.AutoSize = true;
-      this.pgpCheckbox.Location = new System.Drawing.Point(23, 212);
+      this.pgpCheckbox.Location = new System.Drawing.Point(12, 161);
       this.pgpCheckbox.Name = "pgpCheckbox";
       this.pgpCheckbox.Size = new System.Drawing.Size(168, 17);
       this.pgpCheckbox.TabIndex = 0;
@@ -157,7 +141,7 @@ namespace Authenticator
       // pgpBrowse
       // 
       this.pgpBrowse.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-      this.pgpBrowse.Location = new System.Drawing.Point(73, 363);
+      this.pgpBrowse.Location = new System.Drawing.Point(221, 307);
       this.pgpBrowse.Name = "pgpBrowse";
       this.pgpBrowse.Size = new System.Drawing.Size(186, 23);
       this.pgpBrowse.TabIndex = 8;
@@ -166,20 +150,21 @@ namespace Authenticator
       // 
       // pgpField
       // 
-      this.pgpField.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+      this.pgpField.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
             | System.Windows.Forms.AnchorStyles.Right)));
       this.pgpField.Enabled = false;
-      this.pgpField.Location = new System.Drawing.Point(45, 237);
+      this.pgpField.Location = new System.Drawing.Point(12, 184);
       this.pgpField.Multiline = true;
       this.pgpField.Name = "pgpField";
       this.pgpField.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-      this.pgpField.Size = new System.Drawing.Size(462, 113);
+      this.pgpField.Size = new System.Drawing.Size(394, 113);
       this.pgpField.TabIndex = 7;
       // 
       // orLabel
       // 
+      this.orLabel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
       this.orLabel.AutoSize = true;
-      this.orLabel.Location = new System.Drawing.Point(45, 363);
+      this.orLabel.Location = new System.Drawing.Point(199, 312);
       this.orLabel.Name = "orLabel";
       this.orLabel.Size = new System.Drawing.Size(16, 13);
       this.orLabel.TabIndex = 5;
@@ -187,18 +172,20 @@ namespace Authenticator
       // 
       // fileField
       // 
-      this.fileField.Location = new System.Drawing.Point(25, 467);
+      this.fileField.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+            | System.Windows.Forms.AnchorStyles.Right)));
+      this.fileField.Location = new System.Drawing.Point(13, 413);
       this.fileField.Name = "fileField";
-      this.fileField.Size = new System.Drawing.Size(401, 20);
+      this.fileField.Size = new System.Drawing.Size(313, 20);
       this.fileField.TabIndex = 9;
       // 
       // metroLabel1
       // 
-      this.metroLabel1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+      this.metroLabel1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
             | System.Windows.Forms.AnchorStyles.Right)));
-      this.metroLabel1.Location = new System.Drawing.Point(23, 414);
+      this.metroLabel1.Location = new System.Drawing.Point(12, 363);
       this.metroLabel1.Name = "metroLabel1";
-      this.metroLabel1.Size = new System.Drawing.Size(484, 50);
+      this.metroLabel1.Size = new System.Drawing.Size(394, 36);
       this.metroLabel1.TabIndex = 1;
       this.metroLabel1.Text = "Select the file to be saved. This will be a \".zip\" file if you have used a passwo" +
     "rd, a .pgp file if you have used a PGP key, otherwise a plain .txt file";
@@ -206,7 +193,7 @@ namespace Authenticator
       // browseButton
       // 
       this.browseButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-      this.browseButton.Location = new System.Drawing.Point(432, 467);
+      this.browseButton.Location = new System.Drawing.Point(332, 410);
       this.browseButton.Name = "browseButton";
       this.browseButton.Size = new System.Drawing.Size(75, 23);
       this.browseButton.TabIndex = 8;
@@ -215,11 +202,11 @@ namespace Authenticator
       // 
       // metroLabel2
       // 
-      this.metroLabel2.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+      this.metroLabel2.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
             | System.Windows.Forms.AnchorStyles.Right)));
-      this.metroLabel2.Location = new System.Drawing.Point(23, 505);
+      this.metroLabel2.Location = new System.Drawing.Point(12, 454);
       this.metroLabel2.Name = "metroLabel2";
-      this.metroLabel2.Size = new System.Drawing.Size(484, 50);
+      this.metroLabel2.Size = new System.Drawing.Size(394, 39);
       this.metroLabel2.TabIndex = 1;
       this.metroLabel2.Text = "WARNING: If your authenticators have their own password, you will be asked for ea" +
     "ch in turn. Cancelling any password will exclude it from the export.\r\n";
@@ -230,7 +217,7 @@ namespace Authenticator
       this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
       this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
       this.CancelButton = this.cancelButton;
-      this.ClientSize = new System.Drawing.Size(538, 626);
+      this.ClientSize = new System.Drawing.Size(418, 563);
       this.Controls.Add(this.fileField);
       this.Controls.Add(this.browseButton);
       this.Controls.Add(this.pgpBrowse);
@@ -252,32 +239,35 @@ namespace Authenticator
       this.MaximizeBox = false;
       this.MinimizeBox = false;
       this.Name = "ExportForm";
+      this.ShowIcon = false;
+      this.ShowInTaskbar = false;
+      this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
       this.Text = "Export";
       ((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).EndInit();
       this.ResumeLayout(false);
       this.PerformLayout();
 
-		}
+    }
 
-		#endregion
+    #endregion
 
-		private Label introLabel;
-		private CheckBox passwordCheckbox;
-		private System.Windows.Forms.PictureBox pictureBox2;
-		private Button cancelButton;
-		private Button okButton;
-		private TextBox passwordField;
-		private TextBox verifyField;
-		private Label verifyFieldLabel;
-		private Label passwordFieldLabel;
-		private CheckBox pgpCheckbox;
-		private Button pgpBrowse;
-		private TextBox pgpField;
-		private Label orLabel;
-		private TextBox fileField;
-		private Label metroLabel1;
-		private Button browseButton;
-		private Label metroLabel2;
+    private Label introLabel;
+    private CheckBox passwordCheckbox;
+    private System.Windows.Forms.PictureBox pictureBox2;
+    private Button cancelButton;
+    private Button okButton;
+    private TextBox passwordField;
+    private TextBox verifyField;
+    private Label verifyFieldLabel;
+    private Label passwordFieldLabel;
+    private CheckBox pgpCheckbox;
+    private Button pgpBrowse;
+    private TextBox pgpField;
+    private Label orLabel;
+    private TextBox fileField;
+    private Label metroLabel1;
+    private Button browseButton;
+    private Label metroLabel2;
 
-	}
+  }
 }

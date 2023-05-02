@@ -44,7 +44,6 @@ namespace Authenticator {
     #endregion
 
     private void MainForm_Load(object sender, EventArgs e) {
-
       //Text = $"Authenticator {(Environment.Is64BitProcess ? "x64" : "x32")} - {Updater.CurrentVersion}";
       Icon = Icon.ExtractAssociatedIcon(Updater.CurrentFileLocation);
       notifyIcon.Icon = Icon;
@@ -107,10 +106,6 @@ namespace Authenticator {
 
     #region Private Methods
 
-    /// <summary>
-    /// Load the current config
-    /// </summary>
-    /// <param name="password">optional password to decrypt config</param>
     private void LoadConfig(string password) {
       var configFile = startupConfigFile;
 
@@ -120,7 +115,7 @@ namespace Authenticator {
       Task.Factory.StartNew(() => {
         try {
           // use previous config if we have one
-          var config = AuthHelper.LoadConfig(this, configFile, password);
+          var config = AuthHelper.LoadConfig(configFile, password);
           return new Tuple<AuthConfig, Exception>(config, null);
         }
         catch (Exception ex) {
@@ -128,39 +123,38 @@ namespace Authenticator {
         }
       }).ContinueWith((configTask) => {
         var ex = configTask.Result.Item2;
-        if (ex is AuthInvalidNewerConfigException) {
-          MessageBox.Show(this, ex.Message, AuthMain.APPLICATION_TITLE, MessageBoxButtons.OK, MessageBoxIcon.Error);
-          System.Diagnostics.Process.GetCurrentProcess().Kill();
-          return;
-        }
-        else if (ex is EncryptedSecretDataException) {
-          loadingPanel.Visible = false;
-          passwordPanel.Visible = true;
+        switch (ex) {
+          case AuthInvalidNewerConfigException _:
+            MessageBox.Show(this, ex.Message, AuthMain.APPLICATION_TITLE, MessageBoxButtons.OK, MessageBoxIcon.Error);
+            System.Diagnostics.Process.GetCurrentProcess().Kill();
+            return;
+          case EncryptedSecretDataException _:
+            loadingPanel.Visible = false;
+            passwordPanel.Visible = true;
 
-          passwordButton.Focus();
-          passwordField.Focus();
-
-          return;
-        }
-        else if (ex is BadYubiKeyException) {
-          loadingPanel.Visible = false;
-          passwordPanel.Visible = false;
-          return;
-        }
-        else if (ex is BadPasswordException) {
-          loadingPanel.Visible = false;
-          passwordPanel.Visible = true;
-          passwordErrorLabel.Text = strings.InvalidPassword;
-          passwordErrorLabel.Tag = DateTime.Now.AddSeconds(3);
-          // oddity with MetroFrame controls in have to set focus away and back to field to make it stick
-          Invoke((MethodInvoker) delegate {
             passwordButton.Focus();
             passwordField.Focus();
-          });
-          passwordTimer.Enabled = true;
-          return;
+
+            return;
+          case BadYubiKeyException _:
+            loadingPanel.Visible = false;
+            passwordPanel.Visible = false;
+            return;
+          case BadPasswordException _:
+            loadingPanel.Visible = false;
+            passwordPanel.Visible = true;
+            passwordErrorLabel.Text = strings.InvalidPassword;
+            passwordErrorLabel.Tag = DateTime.Now.AddSeconds(3);
+            // oddity with MetroFrame controls in have to set focus away and back to field to make it stick
+            Invoke((MethodInvoker) delegate {
+              passwordButton.Focus();
+              passwordField.Focus();
+            });
+            passwordTimer.Enabled = true;
+            return;
         }
-        else if (ex != null) {
+
+        if (ex != null) {
           if (ErrorDialog(this, strings.UnknownError + ": " + ex.Message, ex, MessageBoxButtons.RetryCancel) ==
               DialogResult.Cancel) {
             Close();
@@ -275,10 +269,6 @@ namespace Authenticator {
       introLabel.Visible = (Config.Count == 0);
     }
 
-    /// <summary>
-    /// Import a v2 authenticator from an existing file name
-    /// </summary>
-    /// <param name="authenticatorFile">name of v2 xml file</param>
     private void ImportAuthenticatorFromV2(string authenticatorFile) {
       var retry = false;
       string password = null;
@@ -286,7 +276,7 @@ namespace Authenticator {
       do {
         bool needPassword;
         try {
-          var config = AuthHelper.LoadConfig(this, authenticatorFile, password);
+          var config = AuthHelper.LoadConfig(authenticatorFile, password);
           if (config.Count == 0) {
             return;
           }
@@ -395,9 +385,6 @@ namespace Authenticator {
       }
     }
 
-    /// <summary>
-    /// Initialise the current form and UI
-    /// </summary>
     private void InitializeForm() {
       // set up list
       LoadAuthenticatorList();
@@ -482,10 +469,6 @@ namespace Authenticator {
       }
     }
 
-    /// <summary>
-    /// Load the authenticators into the display list
-    /// </summary>
-    /// <param name="added">authenticator we just added</param>
     private void LoadAuthenticatorList(AuthAuthenticator added = null) {
       // set up list
       authenticatorList.Items.Clear();
@@ -506,9 +489,6 @@ namespace Authenticator {
       authenticatorList.Visible = (authenticatorList.Items.Count != 0);
     }
 
-    /// <summary>
-    /// Save the current config immediately or delay it for a few seconds so we can make more changes
-    /// </summary>
     private void SaveConfig(bool immediate = false) {
       if (immediate || (saveConfigTime != null && saveConfigTime <= DateTime.Now)) {
         saveConfigTime = null;
@@ -522,14 +502,6 @@ namespace Authenticator {
       }
     }
 
-    /// <summary>
-    /// Show an error message dialog
-    /// </summary>
-    /// <param name="form">owning form</param>
-    /// <param name="message">optional message to display</param>
-    /// <param name="ex">optional exception details</param>
-    /// <param name="buttons">button choice other than OK</param>
-    /// <returns>DialogResult</returns>
     public static DialogResult ErrorDialog(Form form, string message = null, Exception ex = null,
       MessageBoxButtons buttons = MessageBoxButtons.OK) {
       if (message == null) {
@@ -557,24 +529,12 @@ namespace Authenticator {
       return MessageBox.Show(form, message, AuthMain.APPLICATION_TITLE, buttons, MessageBoxIcon.Exclamation);
     }
 
-    /// <summary>
-    /// Show a confirmation Yes/No dialog
-    /// </summary>
-    /// <param name="form">owning form</param>
-    /// <param name="message">message to display</param>
-    /// <param name="buttons">button if other than YesNo</param>
-    /// <param name="icon"></param>
-    /// <param name="defaultButton"></param>
-    /// <returns>DialogResult</returns>
     public static DialogResult ConfirmDialog(Form form, string message,
       MessageBoxButtons buttons = MessageBoxButtons.YesNo, MessageBoxIcon icon = MessageBoxIcon.Question,
       MessageBoxDefaultButton defaultButton = MessageBoxDefaultButton.Button1) {
       return MessageBox.Show(form, message, AuthMain.APPLICATION_TITLE, buttons, icon, defaultButton);
     }
 
-    /// <summary>
-    /// Preload the context menu with the possible set of authenticator types
-    /// </summary>
     private void LoadAddAuthenticatorTypes() {
       addAuthenticatorMenu.Items.Clear();
 
@@ -591,7 +551,8 @@ namespace Authenticator {
         subitem.Name = "addAuthenticatorMenuItem_" + index++;
         subitem.Tag = auth;
         if (string.IsNullOrEmpty(auth.Icon) == false) {
-          subitem.Image = new Bitmap(Assembly.GetExecutingAssembly().GetManifestResourceStream("Authenticator.Resources." + auth.Icon));
+          subitem.Image = new Bitmap(Assembly.GetExecutingAssembly()
+            .GetManifestResourceStream("Authenticator.Resources." + auth.Icon));
           subitem.ImageAlign = ContentAlignment.MiddleLeft;
           subitem.ImageScaling = ToolStripItemImageScaling.SizeToFit;
         }
@@ -606,7 +567,8 @@ namespace Authenticator {
       subitem = new ToolStripMenuItem();
       subitem.Text = strings.MenuImportText;
       subitem.Name = "importTextMenuItem";
-      subitem.Image = new Bitmap(Assembly.GetExecutingAssembly().GetManifestResourceStream("Authenticator.Resources.TextIcon.png"));
+      subitem.Image = new Bitmap(Assembly.GetExecutingAssembly()
+        .GetManifestResourceStream("Authenticator.Resources.TextIcon.png"));
       subitem.ImageAlign = ContentAlignment.MiddleLeft;
       subitem.ImageScaling = ToolStripItemImageScaling.SizeToFit;
       subitem.Click += importTextMenu_Click;
@@ -615,9 +577,6 @@ namespace Authenticator {
 
     #region Steam Notifications
 
-    /// <summary>
-    /// Unhook the Steam notifications
-    /// </summary>
     public void UnhookSteam() {
       if (Config == null) {
         return;
@@ -633,9 +592,6 @@ namespace Authenticator {
       }
     }
 
-    /// <summary>
-    /// Hook the Steam authenticators for notifications
-    /// </summary>
     public void HookSteam() {
       UnhookSteam();
       if (Config == null) {
@@ -654,52 +610,23 @@ namespace Authenticator {
       }).Start();
     }
 
-    /// <summary>
-    /// Display error message from Steam polling
-    /// </summary>
-    /// <param name="sender"></param>
-    /// <param name="message"></param>
-    /// <param name="ex"></param>
     private void SteamClient_ConfirmationErrorEvent(object sender, string message, SteamClient.PollerAction action,
       Exception ex) {
       var steam = sender as SteamClient;
-      var auth = Config.Cast<AuthAuthenticator>().Where(a =>
-        a.AuthenticatorData is SteamAuthenticator &&
-        ((SteamAuthenticator) a.AuthenticatorData).Serial == steam.Authenticator.Serial).FirstOrDefault();
+      var auth = Config.FirstOrDefault(a => a.AuthenticatorData is SteamAuthenticator authenticator &&
+                                            authenticator.Serial == steam.Authenticator.Serial);
 
       AuthMain.LogException(ex, true);
 
       if (action != SteamClient.PollerAction.SilentAutoConfirm) {
         // show the Notification window in the correct context
-        Invoke(new ShowNotificationCallback(ShowNotification), new object[] {
-          auth,
-          auth.Name,
-          message,
-          false,
-          0
-        });
+        Invoke(new ShowNotificationCallback(ShowNotification), auth, auth.Name, message, false, 0);
       }
     }
 
-    /// <summary>
-    /// Delegate for Steam notification
-    /// </summary>
-    /// <param name="auth">current Authenticator</param>
-    /// <param name="title">title of notification</param>
-    /// <param name="message">notification body</param>
-    /// <param name="openOnClick">if can open on click</param>
-    /// <param name="extraHeight">extra height (for errors)</param>
     public delegate void ShowNotificationCallback(AuthAuthenticator auth, string title, string message,
       bool openOnClick, int extraHeight);
 
-    /// <summary>
-    /// Display a new Notification for a Trading confirmation
-    /// </summary>
-    /// <param name="auth"></param>
-    /// <param name="title"></param>
-    /// <param name="message"></param>
-    /// <param name="openOnClick"></param>
-    /// <param name="extraHeight"></param>
     public void ShowNotification(AuthAuthenticator auth, string title, string message, bool openOnClick,
       int extraHeight) {
       var notify = new Notification(title, message, 10000);
@@ -715,11 +642,6 @@ namespace Authenticator {
       notify.Show();
     }
 
-    /// <summary>
-    /// The Notification window is clicked
-    /// </summary>
-    /// <param name="sender"></param>
-    /// <param name="e"></param>
     private void Notify_Click(object sender, EventArgs e) {
       var auth = ((Notification) sender).Tag as AuthAuthenticator;
 
@@ -733,22 +655,20 @@ namespace Authenticator {
       Cursor.Current = Cursors.WaitCursor;
 
       // open the confirmations
-      var item = authenticatorList.ContextMenuStrip.Items.Cast<ToolStripItem>().FirstOrDefault(i => i.Name == "showSteamTradesMenuItem");
-      authenticatorList.CurrentItem = authenticatorList.Items.Cast<AuthenticatorListitem>().FirstOrDefault(i => i.Authenticator == auth);
+      var item = authenticatorList.ContextMenuStrip.Items.Cast<ToolStripItem>()
+        .FirstOrDefault(i => i.Name == "showSteamTradesMenuItem");
+      authenticatorList.CurrentItem = authenticatorList.Items.Cast<AuthenticatorListitem>()
+        .FirstOrDefault(i => i.Authenticator == auth);
       item?.PerformClick();
     }
 
-    /// <summary>
-    /// Receive a new confirmation event from the SteamClient
-    /// </summary>
-    /// <param name="sender"></param>
-    /// <param name="confirmation"></param>
-    /// <param name="action"></param>
     private void SteamClient_ConfirmationEvent(object sender, SteamClient.Confirmation confirmation,
       SteamClient.PollerAction action) {
       var steam = sender as SteamClient;
 
-      var auth = Config.FirstOrDefault(a => a.AuthenticatorData is SteamAuthenticator && ((SteamAuthenticator) a.AuthenticatorData).Serial == steam.Authenticator.Serial);
+      var auth = Config.FirstOrDefault(a =>
+        a.AuthenticatorData is SteamAuthenticator authenticator &&
+        authenticator.Serial == steam.Authenticator.Serial);
 
       string title = null;
       string message = null;
@@ -795,10 +715,6 @@ namespace Authenticator {
 
     #endregion
 
-    /// <summary>
-    /// General Windows Message handler
-    /// </summary>
-    /// <param name="m"></param>
     protected override void WndProc(ref Message m) {
       base.WndProc(ref m);
 
@@ -812,11 +728,6 @@ namespace Authenticator {
       }
     }
 
-    /// <summary>
-    /// Timer tick for hotkey
-    /// </summary>
-    /// <param name="sender"></param>
-    /// <param name="e"></param>
     void hotkeyTimer_Tick(object sender, EventArgs e) {
       var data = hotkeyTimer.Tag as HotKeyLauncher;
 
@@ -840,10 +751,6 @@ namespace Authenticator {
       data.Form.Invoke((MethodInvoker) delegate { HandleHotkey(data.Authenticator); });
     }
 
-    /// <summary>
-    /// Process the pressed hotkey by performing the appropriate operation
-    /// </summary>
-    /// <param name="auth">Authenticator</param>
     private void HandleHotkey(AuthAuthenticator auth) {
       // get the code
       string code;
@@ -863,8 +770,7 @@ namespace Authenticator {
           BringToFront();
         }
 
-        var item = authenticatorList.Items.Cast<AuthenticatorListitem>().Where(i => i.Authenticator == auth)
-          .FirstOrDefault();
+        var item = authenticatorList.Items.Cast<AuthenticatorListitem>().FirstOrDefault(i => i.Authenticator == auth);
         code = authenticatorList.GetItemCode(item, screen);
 
         // restore active window
@@ -907,11 +813,6 @@ namespace Authenticator {
       }
     }
 
-    /// <summary>
-    /// Run an action on the authenticator
-    /// </summary>
-    /// <param name="auth">Authenticator to use</param>
-    /// <param name="action">Action to perform</param>
     private void RunAction(AuthAuthenticator auth, AuthConfig.NotifyActions action) {
       // get the code
       string code;
@@ -923,24 +824,23 @@ namespace Authenticator {
         // with a bit of window jiggling to make sure we get focus and then put it back
 
         // save the current window
-        var fgwindow = WinApi.GetForegroundWindow();
-        var screen = Screen.FromHandle(fgwindow);
-        var activewindow = IntPtr.Zero;
+        var foregroundWindow = WinApi.GetForegroundWindow();
+        var screen = Screen.FromHandle(foregroundWindow);
+        var activeWindow = IntPtr.Zero;
         if (Visible) {
-          activewindow = WinApi.SetActiveWindow(Handle);
+          activeWindow = WinApi.SetActiveWindow(Handle);
           BringToFront();
         }
 
-        var item = authenticatorList.Items.Cast<AuthenticatorListitem>().Where(i => i.Authenticator == auth)
-          .FirstOrDefault();
+        var item = authenticatorList.Items.Cast<AuthenticatorListitem>().FirstOrDefault(i => i.Authenticator == auth);
         code = authenticatorList.GetItemCode(item, screen);
 
         // restore active window
-        if (activewindow != IntPtr.Zero) {
-          WinApi.SetActiveWindow(activewindow);
+        if (activeWindow != IntPtr.Zero) {
+          WinApi.SetActiveWindow(activeWindow);
         }
 
-        WinApi.SetForegroundWindow(fgwindow);
+        WinApi.SetForegroundWindow(foregroundWindow);
       }
 
       if (code != null) {
@@ -952,15 +852,12 @@ namespace Authenticator {
           if (code.Length > 5) {
             code = code.Insert(code.Length / 2, " ");
           }
+
           notifyIcon.ShowBalloonTip(10000, auth.Name, code, ToolTipIcon.Info);
         }
       }
     }
 
-    /// <summary>
-    /// Put data into the clipboard
-    /// </summary>
-    /// <param name="data"></param>
     public void SetClipboardData(object data) {
       var clipRetry = false;
       do {
@@ -977,11 +874,6 @@ namespace Authenticator {
       } while (clipRetry);
     }
 
-    /// <summary>
-    /// Get data from the clipboard
-    /// </summary>
-    /// <param name="format"></param>
-    /// <returns></returns>
     public object GetClipboardData(Type format) {
       bool clipRetry;
       do {
@@ -1000,9 +892,6 @@ namespace Authenticator {
       return null;
     }
 
-    /// <summary>
-    /// Set the size of the form based on config AutoSize property
-    /// </summary>
     private void SetAutoSize() {
       if (Config.AutoSize) {
         if (Config.Count != 0) {
@@ -1034,9 +923,6 @@ namespace Authenticator {
       }
     }
 
-    /// <summary>
-    /// Can the renaming of an authenticator
-    /// </summary>
     private void EndRenaming() {
       // set focus to form, so that the edit field will disappear if it is visble
       if (authenticatorList.IsRenaming) {
@@ -1044,11 +930,6 @@ namespace Authenticator {
       }
     }
 
-    /// <summary>
-    /// Set up the notify icon when the main form is shown
-    /// </summary>
-    /// <param name="sender"></param>
-    /// <param name="e"></param>
     private void MainForm_Shown(object sender, EventArgs e) {
       // if we use tray icon make sure it is set
       if (Config != null && Config.UseTrayIcon) {
@@ -1080,11 +961,6 @@ namespace Authenticator {
       }
     }
 
-    /// <summary>
-    /// Minimize to icon when closing or unbind and close
-    /// </summary>
-    /// <param name="sender"></param>
-    /// <param name="e"></param>
     private void MainForm_FormClosing(object sender, FormClosingEventArgs e) {
       // keep in the tray when closing Form 
       if (Config != null && Config.UseTrayIcon && Visible && mExplictClose == false) {
@@ -1122,11 +998,6 @@ namespace Authenticator {
       }
     }
 
-    /// <summary>
-    /// Click on a choice of new authenticator
-    /// </summary>
-    /// <param name="sender"></param>
-    /// <param name="e"></param>
     void addAuthenticatorMenu_Click(object sender, EventArgs e) {
       var menuitem = (ToolStripItem) sender;
       var registeredauth = menuitem.Tag as RegisteredAuthenticator;
@@ -1141,8 +1012,7 @@ namespace Authenticator {
           do {
             name = "Battle.net" + (existing != 0 ? " (" + existing + ")" : string.Empty);
             existing++;
-          } while (authenticatorList.Items.Cast<AuthenticatorListitem>().Where(a => a.Authenticator.Name == name)
-                     .Count() != 0);
+          } while (authenticatorList.Items.Cast<AuthenticatorListitem>().Count(a => a.Authenticator.Name == name) != 0);
 
           authenticator.Name = name;
           authenticator.AutoRefresh = false;
@@ -1159,8 +1029,7 @@ namespace Authenticator {
           do {
             name = "Trion" + (existing != 0 ? " (" + existing + ")" : string.Empty);
             existing++;
-          } while (authenticatorList.Items.Cast<AuthenticatorListitem>().Where(a => a.Authenticator.Name == name)
-                     .Count() != 0);
+          } while (authenticatorList.Items.Cast<AuthenticatorListitem>().Count(a => a.Authenticator.Name == name) != 0);
 
           authenticator.Name = name;
           authenticator.AutoRefresh = false;
@@ -1176,8 +1045,7 @@ namespace Authenticator {
           do {
             name = "Steam" + (existing != 0 ? " (" + existing + ")" : string.Empty);
             existing++;
-          } while (authenticatorList.Items.Cast<AuthenticatorListitem>().Where(a => a.Authenticator.Name == name)
-                     .Count() != 0);
+          } while (authenticatorList.Items.Cast<AuthenticatorListitem>().Count(a => a.Authenticator.Name == name) != 0);
 
           authenticator.Name = name;
           authenticator.AutoRefresh = false;
@@ -1194,8 +1062,7 @@ namespace Authenticator {
           do {
             name = "Google" + (existing != 0 ? " (" + existing + ")" : string.Empty);
             existing++;
-          } while (authenticatorList.Items.Cast<AuthenticatorListitem>().Where(a => a.Authenticator.Name == name)
-                     .Count() != 0);
+          } while (authenticatorList.Items.Cast<AuthenticatorListitem>().Count(a => a.Authenticator.Name == name) != 0);
 
           authenticator.Name = name;
           authenticator.AutoRefresh = false;
@@ -1211,8 +1078,7 @@ namespace Authenticator {
           do {
             name = "GuildWars" + (existing != 0 ? " (" + existing + ")" : string.Empty);
             existing++;
-          } while (authenticatorList.Items.Cast<AuthenticatorListitem>().Where(a => a.Authenticator.Name == name)
-                     .Count() != 0);
+          } while (authenticatorList.Items.Cast<AuthenticatorListitem>().Count(a => a.Authenticator.Name == name) != 0);
 
           authenticator.Name = name;
           authenticator.AutoRefresh = false;
@@ -1228,8 +1094,7 @@ namespace Authenticator {
           do {
             name = "Microsoft" + (existing != 0 ? " (" + existing + ")" : string.Empty);
             existing++;
-          } while (authenticatorList.Items.Cast<AuthenticatorListitem>().Where(a => a.Authenticator.Name == name)
-                     .Count() != 0);
+          } while (authenticatorList.Items.Cast<AuthenticatorListitem>().Count(a => a.Authenticator.Name == name) != 0);
 
           authenticator.Name = name;
           authenticator.AutoRefresh = false;
@@ -1246,8 +1111,7 @@ namespace Authenticator {
           do {
             name = "Authenticator" + (existing != 0 ? " (" + existing + ")" : string.Empty);
             existing++;
-          } while (authenticatorList.Items.Cast<AuthenticatorListitem>().Where(a => a.Authenticator.Name == name)
-                     .Count() != 0);
+          } while (authenticatorList.Items.Cast<AuthenticatorListitem>().Count(a => a.Authenticator.Name == name) != 0);
 
           authenticator.Name = name;
           authenticator.AutoRefresh = false;
@@ -1264,8 +1128,7 @@ namespace Authenticator {
           do {
             name = "Okta" + (existing != 0 ? " (" + existing + ")" : string.Empty);
             existing++;
-          } while (authenticatorList.Items.Cast<AuthenticatorListitem>().Where(a => a.Authenticator.Name == name)
-                     .Count() != 0);
+          } while (authenticatorList.Items.Cast<AuthenticatorListitem>().Count(a => a.Authenticator.Name == name) != 0);
 
           authenticator.Name = name;
           authenticator.AutoRefresh = false;
@@ -1308,11 +1171,6 @@ namespace Authenticator {
       }
     }
 
-    /// <summary>
-    /// Click to import an text file of authenticators
-    /// </summary>
-    /// <param name="sender"></param>
-    /// <param name="e"></param>
     void importTextMenu_Click(object sender, EventArgs e) {
       var ofd = new OpenFileDialog();
       ofd.AddExtension = true;
@@ -1325,8 +1183,7 @@ namespace Authenticator {
         ofd.FileName = Path.GetFileName(lastv2File);
       }
 
-      //
-      ofd.Filter = "Authenticator Files (*.xml)|*.xml|Text Files (*.txt)|*.txt|Zip Files (*.zip)|*.zip|PGP Files (*.pgp)|*.pgp|All Files (*.*)|*.*";
+      ofd.Filter = "Authenticator Files (*.config)|*.config|WinAuth Files (*.xml)|*.xml|Text Files (*.txt)|*.txt|Zip Files (*.zip)|*.zip|PGP Files (*.pgp)|*.pgp|All Files (*.*)|*.*";
       ofd.RestoreDirectory = true;
       ofd.Title = AuthMain.APPLICATION_TITLE;
       if (ofd.ShowDialog(this) == DialogResult.OK) {
@@ -1334,11 +1191,6 @@ namespace Authenticator {
       }
     }
 
-    /// <summary>
-    /// Timer tick event
-    /// </summary>
-    /// <param name="sender"></param>
-    /// <param name="e"></param>
     private void mainTimer_Tick(object sender, EventArgs e) {
       authenticatorList.Tick(sender, e);
 
@@ -1348,29 +1200,14 @@ namespace Authenticator {
       }
     }
 
-    /// <summary>
-    /// Click the Add button to add an authenticator
-    /// </summary>
-    /// <param name="sender"></param>
-    /// <param name="e"></param>
     private void addAuthenticatorButton_Click(object sender, EventArgs e) {
       addAuthenticatorMenu.Show(addAuthenticatorButton, addAuthenticatorButton.Width, 0);
     }
 
-    /// <summary>
-    /// Click the Options button to show menu
-    /// </summary>
-    /// <param name="sender"></param>
-    /// <param name="e"></param>
     private void optionsButton_Click(object sender, EventArgs e) {
       optionsMenu.Show(optionsButton, optionsButton.Width - optionsMenu.Width, optionsButton.Height - 1);
     }
 
-    /// <summary>
-    /// Double click notify to re-open
-    /// </summary>
-    /// <param name="sender"></param>
-    /// <param name="e"></param>
     private void notifyIcon_DoubleClick(object sender, EventArgs e) {
       BringToFront();
       Show();
@@ -1378,11 +1215,6 @@ namespace Authenticator {
       Activate();
     }
 
-    /// <summary>
-    /// Event fired when an authenticator is removed (i.e. deleted) from the list
-    /// </summary>
-    /// <param name="source"></param>
-    /// <param name="args"></param>
     private void authenticatorList_ItemRemoved(object source, AuthenticatorListItemRemovedEventArgs args) {
       foreach (var auth in Config) {
         if (auth == args.Item.Authenticator) {
@@ -1406,11 +1238,6 @@ namespace Authenticator {
       SaveConfig();
     }
 
-    /// <summary>
-    /// Event fired when an authenticator is dragged and dropped in the listbox
-    /// </summary>
-    /// <param name="source"></param>
-    /// <param name="args"></param>
     private void authenticatorList_Reordered(object source, AuthenticatorListReorderedEventArgs args) {
       // set the new order of items in Config from that of the list
       var count = authenticatorList.Items.Count;
@@ -1431,38 +1258,18 @@ namespace Authenticator {
       SaveConfig();
     }
 
-    /// <summary>
-    /// Double click an item in the list
-    /// </summary>
-    /// <param name="source"></param>
-    /// <param name="args"></param>
     private void authenticatorList_DoubleClick(object source, AuthenticatorListDoubleClickEventArgs args) {
       RunAction(args.Authenticator, AuthConfig.NotifyActions.CopyToClipboard);
     }
 
-    /// <summary>
-    /// Click in the main form
-    /// </summary>
-    /// <param name="sender"></param>
-    /// <param name="e"></param>
     private void MainForm_MouseDown(object sender, MouseEventArgs e) {
       EndRenaming();
     }
 
-    /// <summary>
-    /// Click in the command panel
-    /// </summary>
-    /// <param name="sender"></param>
-    /// <param name="e"></param>
     private void commandPanel_MouseDown(object sender, MouseEventArgs e) {
       EndRenaming();
     }
 
-    /// <summary>
-    /// Resizing the form, we have to manually adjust the width and height of list else starting as minimized borks
-    /// </summary>
-    /// <param name="sender"></param>
-    /// <param name="e"></param>
     private void MainForm_Resize(object sender, EventArgs e) {
       SuspendLayout();
       if (listoffset.Bottom != 0) {
@@ -1473,11 +1280,6 @@ namespace Authenticator {
       ResumeLayout(true);
     }
 
-    /// <summary>
-    /// Set the config once resizing has completed
-    /// </summary>
-    /// <param name="sender"></param>
-    /// <param name="e"></param>
     private void MainForm_ResizeEnd(object sender, EventArgs e) {
       if (Config != null && Config.AutoSize == false) {
         Config.Width = Width;
@@ -1485,11 +1287,6 @@ namespace Authenticator {
       }
     }
 
-    /// <summary>
-    /// Click the button to enter a password
-    /// </summary>
-    /// <param name="sender"></param>
-    /// <param name="e"></param>
     private void passwordButton_Click(object sender, EventArgs e) {
       if (passwordField.Text.Trim().Length == 0) {
         passwordErrorLabel.Text = strings.EnterPassword;
@@ -1502,11 +1299,6 @@ namespace Authenticator {
       passwordField.Text = string.Empty;
     }
 
-    /// <summary>
-    /// Remove the password error message after a few seconds
-    /// </summary>
-    /// <param name="sender"></param>
-    /// <param name="e"></param>
     private void passwordTimer_Tick(object sender, EventArgs e) {
       if (passwordErrorLabel.Tag != null && (DateTime) passwordErrorLabel.Tag <= DateTime.Now) {
         passwordTimer.Enabled = false;
@@ -1515,11 +1307,6 @@ namespace Authenticator {
       }
     }
 
-    /// <summary>
-    /// Catch pressing Enter in the password field
-    /// </summary>
-    /// <param name="sender"></param>
-    /// <param name="e"></param>
     private void passwordField_KeyPress(object sender, KeyPressEventArgs e) {
       if (e.KeyChar == (char) Keys.Return) {
         e.Handled = true;
@@ -1527,11 +1314,6 @@ namespace Authenticator {
       }
     }
 
-    /// <summary>
-    /// System time change event. We need to resync any unprotected authenticators
-    /// </summary>
-    /// <param name="sender"></param>
-    /// <param name="e"></param>
     void SystemEvents_TimeChanged(object sender, EventArgs e) {
       var cursor = Cursor.Current;
       Cursor.Current = Cursors.WaitCursor;
@@ -1553,9 +1335,6 @@ namespace Authenticator {
 
     #region Options menu
 
-    /// <summary>
-    /// Load the menu items for the options menu
-    /// </summary>
     private void LoadOptionsMenu(ContextMenuStrip menu) {
       ToolStripMenuItem menuitem;
 
@@ -1619,9 +1398,6 @@ namespace Authenticator {
       menu.Items.Add(menuitem);
     }
 
-    /// <summary>
-    /// Load the menu items for the notify menu
-    /// </summary>
     private void LoadNotifyMenu(ContextMenuStrip menu) {
       ToolStripMenuItem menuitem;
       ToolStripMenuItem subitem;
@@ -1693,131 +1469,94 @@ namespace Authenticator {
       menu.Items.Add(menuitem);
     }
 
-    /// <summary>
-    /// Set the state of the items when opening the Options menu
-    /// </summary>
-    /// <param name="sender"></param>
-    /// <param name="e"></param>
     private void optionsMenu_Opening(object sender, CancelEventArgs e) {
       OpeningOptionsMenu(optionsMenu, e);
     }
 
-    /// <summary>
-    /// Set the state of the items when opening the notify menu
-    /// </summary>
-    /// <param name="sender"></param>
-    /// <param name="e"></param>
     private void notifyMenu_Opening(object sender, CancelEventArgs e) {
       OpeningNotifyMenu(notifyMenu, e);
     }
 
-    /// <summary>
-    /// Set state of menuitems when opening the Options menu
-    /// </summary>
-    /// <param name="menu"></param>
-    /// <param name="e"></param>
     private void OpeningOptionsMenu(ContextMenuStrip menu, CancelEventArgs e) {
-      ToolStripItem item;
-      ToolStripMenuItem menuitem;
-
       if (Config == null) {
         return;
       }
 
-      menuitem =
-        menu.Items.Cast<ToolStripItem>().Where(t => t.Name == "changePasswordOptionsMenuItem").FirstOrDefault() as
-          ToolStripMenuItem;
-      if (menuitem != null) {
-        menuitem.Enabled = (Config != null && Config.Count != 0);
+      if (menu.Items.Cast<ToolStripItem>().FirstOrDefault(t => t.Name == "changePasswordOptionsMenuItem") is ToolStripMenuItem menuItem) {
+        menuItem.Enabled = (Config != null && Config.Count != 0);
       }
 
-      menuitem =
-        menu.Items.Cast<ToolStripItem>().Where(t => t.Name == "openOptionsMenuItem").FirstOrDefault() as
+      menuItem = menu.Items.Cast<ToolStripItem>().FirstOrDefault(t => t.Name == "openOptionsMenuItem") as
           ToolStripMenuItem;
-      if (menuitem != null) {
-        menuitem.Visible = (Config.UseTrayIcon && Visible == false);
+      if (menuItem != null) {
+        menuItem.Visible = (Config.UseTrayIcon && Visible == false);
       }
 
-      item = menu.Items.Cast<ToolStripItem>().Where(t => t.Name == "openOptionsSeparatorItem").FirstOrDefault();
+      var item = menu.Items.Cast<ToolStripItem>().FirstOrDefault(t => t.Name == "openOptionsSeparatorItem");
       if (item != null) {
         item.Visible = (Config.UseTrayIcon && Visible == false);
       }
 
-      menuitem = menu.Items.Cast<ToolStripItem>().Where(t => t.Name == "startWithWindowsOptionsMenuItem")
-        .FirstOrDefault() as ToolStripMenuItem;
-      if (menuitem != null) {
-        menuitem.Checked = Config.StartWithWindows;
+      menuItem = menu.Items.Cast<ToolStripItem>().FirstOrDefault(t => t.Name == "startWithWindowsOptionsMenuItem") as ToolStripMenuItem;
+      if (menuItem != null) {
+        menuItem.Checked = Config.StartWithWindows;
       }
 
-      menuitem =
-        menu.Items.Cast<ToolStripItem>().Where(t => t.Name == "alwaysOnTopOptionsMenuItem").FirstOrDefault() as
+      menuItem = menu.Items.Cast<ToolStripItem>().FirstOrDefault(t => t.Name == "alwaysOnTopOptionsMenuItem") as
           ToolStripMenuItem;
-      if (menuitem != null) {
-        menuitem.Checked = Config.AlwaysOnTop;
+      if (menuItem != null) {
+        menuItem.Checked = Config.AlwaysOnTop;
       }
 
-      menuitem = menu.Items.Cast<ToolStripItem>().Where(t => t.Name == "useSystemTrayIconOptionsMenuItem")
-        .FirstOrDefault() as ToolStripMenuItem;
-      if (menuitem != null) {
-        menuitem.Checked = Config.UseTrayIcon;
+      menuItem = menu.Items.Cast<ToolStripItem>()
+        .FirstOrDefault(t => t.Name == "useSystemTrayIconOptionsMenuItem") as ToolStripMenuItem;
+      if (menuItem != null) {
+        menuItem.Checked = Config.UseTrayIcon;
       }
 
-      menuitem =
-        menu.Items.Cast<ToolStripItem>().Where(t => t.Name == "autoSizeOptionsMenuItem").FirstOrDefault() as
+      menuItem = menu.Items.Cast<ToolStripItem>().FirstOrDefault(t => t.Name == "autoSizeOptionsMenuItem") as
           ToolStripMenuItem;
-      if (menuitem != null) {
-        menuitem.Checked = Config.AutoSize;
+      if (menuItem != null) {
+        menuItem.Checked = Config.AutoSize;
       }
 
-      menuitem =
-        menu.Items.Cast<ToolStripItem>().Where(t => t.Name == "autoSizeOptionsMenuItem").FirstOrDefault() as
+      menuItem = menu.Items.Cast<ToolStripItem>().FirstOrDefault(t => t.Name == "autoSizeOptionsMenuItem") as
           ToolStripMenuItem;
-      if (menuitem != null) {
-        menuitem.Checked = Config.AutoSize;
+      if (menuItem != null) {
+        menuItem.Checked = Config.AutoSize;
       }
     }
 
-    /// <summary>
-    /// Set state of menuitemns when opening the notify menu
-    /// </summary>
-    /// <param name="menu"></param>
-    /// <param name="e"></param>
     private void OpeningNotifyMenu(ContextMenuStrip menu, CancelEventArgs e) {
-      ToolStripItem item;
-      ToolStripMenuItem menuitem;
-
       if (Config == null) {
         return;
       }
 
-      menuitem =
-        menu.Items.Cast<ToolStripItem>().Where(t => t.Name == "changePasswordOptionsMenuItem").FirstOrDefault() as
-          ToolStripMenuItem;
-      if (menuitem != null) {
-        menuitem.Enabled = (Config != null && Config.Count != 0);
+      if (menu.Items.Cast<ToolStripItem>().FirstOrDefault(t => t.Name == "changePasswordOptionsMenuItem") is ToolStripMenuItem menuItem) {
+        menuItem.Enabled = (Config != null && Config.Count != 0);
       }
 
-      menuitem =
-        menu.Items.Cast<ToolStripItem>().Where(t => t.Name == "openOptionsMenuItem").FirstOrDefault() as
+      menuItem = menu.Items.Cast<ToolStripItem>().FirstOrDefault(t => t.Name == "openOptionsMenuItem") as
           ToolStripMenuItem;
-      if (menuitem != null) {
-        menuitem.Visible = (Config.UseTrayIcon && Visible == false);
+      if (menuItem != null) {
+        menuItem.Visible = (Config.UseTrayIcon && Visible == false);
       }
 
-      item = menu.Items.Cast<ToolStripItem>().Where(t => t.Name == "openOptionsSeparatorItem").FirstOrDefault();
+      var item = menu.Items.Cast<ToolStripItem>().FirstOrDefault(t => t.Name == "openOptionsSeparatorItem");
       if (item != null) {
         item.Visible = (Config.UseTrayIcon && Visible == false);
       }
 
-      menuitem =
-        menu.Items.Cast<ToolStripItem>().Where(t => t.Name == "defaultActionOptionsMenuItem").FirstOrDefault() as
+      menuItem = menu.Items.Cast<ToolStripItem>().FirstOrDefault(t => t.Name == "defaultActionOptionsMenuItem") as
           ToolStripMenuItem;
-      if (menuitem != null) {
-        var subitem = menuitem.DropDownItems.Cast<ToolStripItem>().FirstOrDefault(t => t.Name == "defaultActionNotificationOptionsMenuItem") as ToolStripMenuItem;
-        subitem.Checked = (Config.NotifyAction == AuthConfig.NotifyActions.Notification);
+      if (menuItem != null) {
+        var subItem = menuItem.DropDownItems.Cast<ToolStripItem>()
+            .FirstOrDefault(t => t.Name == "defaultActionNotificationOptionsMenuItem") as ToolStripMenuItem;
+        subItem.Checked = (Config.NotifyAction == AuthConfig.NotifyActions.Notification);
 
-        subitem = menuitem.DropDownItems.Cast<ToolStripItem>().FirstOrDefault(t => t.Name == "defaultActionCopyToClipboardOptionsMenuItem") as ToolStripMenuItem;
-        subitem.Checked = (Config.NotifyAction == AuthConfig.NotifyActions.CopyToClipboard);
+        subItem = menuItem.DropDownItems.Cast<ToolStripItem>()
+          .FirstOrDefault(t => t.Name == "defaultActionCopyToClipboardOptionsMenuItem") as ToolStripMenuItem;
+        subItem.Checked = (Config.NotifyAction == AuthConfig.NotifyActions.CopyToClipboard);
       }
 
       //menuitem = menu.Items.Cast<ToolStripItem>().Where(t => t.Name == "useSystemTrayIconOptionsMenuItem").FirstOrDefault() as ToolStripMenuItem;
@@ -1832,14 +1571,14 @@ namespace Authenticator {
       if ((Config.PasswordType & Authenticator.PasswordTypes.Explicit) != 0) {
         var invalidPassword = false;
         while (true) {
-          var checkform = new GetPasswordForm();
-          checkform.InvalidPassword = invalidPassword;
-          var result = checkform.ShowDialog(this);
+          var passwordForm = new GetPasswordForm();
+          passwordForm.InvalidPassword = invalidPassword;
+          var result = passwordForm.ShowDialog(this);
           if (result == DialogResult.Cancel) {
             return;
           }
 
-          if (Config.IsPassword(checkform.Password)) {
+          if (Config.IsPassword(passwordForm.Password)) {
             break;
           }
 
@@ -1889,8 +1628,7 @@ namespace Authenticator {
     private void authenticatorOptionsMenuItem_Click(object sender, EventArgs e) {
       var menuitem = (ToolStripMenuItem) sender;
       var auth = menuitem.Tag as AuthAuthenticator;
-      var item = authenticatorList.Items.Cast<AuthenticatorListitem>().Where(i => i.Authenticator == auth)
-        .FirstOrDefault();
+      var item = authenticatorList.Items.Cast<AuthenticatorListitem>().FirstOrDefault(i => i.Authenticator == auth);
       if (item != null) {
         RunAction(auth, Config.NotifyAction);
 
@@ -1966,7 +1704,7 @@ namespace Authenticator {
       form.Config = Config;
       form.ShowDialog(this);
     }
-    
+
     private void exitOptionMenuItem_Click(object sender, EventArgs e) {
       mExplictClose = true;
       Close();
@@ -2009,11 +1747,11 @@ namespace Authenticator {
     #endregion
 
     class HotKeyLauncher {
-      public MainForm Form { get; set; }
+      public MainForm Form { get; }
 
-      public AuthAuthenticator Authenticator { get; set; }
+      public AuthAuthenticator Authenticator { get; }
 
-      public DateTime Started { get; set; }
+      public DateTime Started { get; }
 
       public HotKeyLauncher(MainForm form, AuthAuthenticator auth) {
         Started = DateTime.Now;

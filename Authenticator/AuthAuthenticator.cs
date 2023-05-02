@@ -11,7 +11,6 @@ using System.Xml;
 using Authenticator.Resources;
 
 namespace Authenticator {
-
   public class AuthAuthenticator : ICloneable {
     public event AuthAuthenticatorChangedHandler OnAuthAuthenticatorChanged;
 

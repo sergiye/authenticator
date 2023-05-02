@@ -12,9 +12,9 @@ namespace Authenticator {
     private void showCheckbox_CheckedChanged(object sender, EventArgs e) {
       if (showCheckbox.Checked) {
         passwordField.UseSystemPasswordChar = false;
-        passwordField.PasswordChar = (char)0;
+        passwordField.PasswordChar = (char) 0;
         verifyField.UseSystemPasswordChar = false;
-        verifyField.PasswordChar = (char)0;
+        verifyField.PasswordChar = (char) 0;
       }
       else {
         passwordField.UseSystemPasswordChar = true;

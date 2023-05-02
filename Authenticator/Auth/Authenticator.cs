@@ -20,6 +20,7 @@ namespace Authenticator {
     public const int DEFAULT_CODE_DIGITS = 6;
     public const int DEFAULT_PERIOD = 30;
 
+    [Flags]
     public enum PasswordTypes {
       None = 0,
       Explicit = 1,
@@ -27,6 +28,7 @@ namespace Authenticator {
       Machine = 4,
     }
 
+    [Flags]
     public enum HmacTypes {
       SHA1 = 0,
       SHA256 = 1,
@@ -89,6 +91,7 @@ namespace Authenticator {
         if (SecretKey == null && EncryptedData != null) {
           throw new EncryptedSecretDataException();
         }
+
         return CalculateCode(false);
       }
     }

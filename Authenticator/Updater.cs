@@ -8,7 +8,6 @@ using System.Web.Script.Serialization;
 using System.Windows.Forms;
 
 namespace Authenticator {
-
   public class GitHubRelease {
     public Uri assets_url { get; set; }
     public Uri html_url { get; set; }
@@ -34,7 +33,6 @@ namespace Authenticator {
   }
 
   internal static class Updater {
-
     private const string GITHUB_LANDING_PAGE = "sergiye/authenticator";
     private static readonly string selfFileName;
 
@@ -49,10 +47,11 @@ namespace Authenticator {
     }
 
     private static string GetJsonData(string uri, int timeout = 10, string method = "GET") {
-      var request = (HttpWebRequest)WebRequest.Create(uri);
+      var request = (HttpWebRequest) WebRequest.Create(uri);
       request.Method = method;
       request.Timeout = timeout * 1000;
-      request.UserAgent = "Mozilla/5.0 (Windows NT 11.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/100.0.500.27 Safari/537.36";
+      request.UserAgent =
+        "Mozilla/5.0 (Windows NT 11.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/100.0.500.27 Safari/537.36";
       //request.Accept = "text/xml,text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8";
       request.ContentType = "application/json; charset=utf-8";
       using (var webResp = request.GetResponse()) {
@@ -85,17 +84,24 @@ namespace Authenticator {
 
         if (string.Compare(CurrentVersion, newVersion, StringComparison.Ordinal) >= 0) {
           if (!silent)
-            MessageBox.Show($"Your version is: {CurrentVersion}\nLatest released version is: {newVersion}\nNo need to update.", "Update", MessageBoxButtons.OK,
+            MessageBox.Show(
+              $"Your version is: {CurrentVersion}\nLatest released version is: {newVersion}\nNo need to update.",
+              "Update", MessageBoxButtons.OK,
               MessageBoxIcon.Information);
           return;
         }
-        update = MessageBox.Show($"Your version is: {CurrentVersion}\nLatest released version is: {newVersion}\nDownload this update?",
+
+        update = MessageBox.Show(
+          $"Your version is: {CurrentVersion}\nLatest released version is: {newVersion}\nDownload this update?",
           "Update", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes;
-      } catch (Exception ex) {
+      }
+      catch (Exception ex) {
         if (!silent)
-          MessageBox.Show($"Error checking for a new version.\n{ex.Message}", "Update", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+          MessageBox.Show($"Error checking for a new version.\n{ex.Message}", "Update", MessageBoxButtons.OK,
+            MessageBoxIcon.Warning);
         update = false;
       }
+
       if (!update) return;
 
       try {
@@ -113,6 +119,7 @@ namespace Authenticator {
           batFile.WriteLine("MOVE \"{0}\" \"{1}\"", updateFilePath, CurrentFileLocation);
           batFile.WriteLine("DEL \"%~f0\" & START \"\" /B \"{0}\"", CurrentFileLocation);
         }
+
         var startInfo = new ProcessStartInfo(cmdFilePath) {
           CreateNoWindow = true,
           UseShellExecute = false,
@@ -120,9 +127,11 @@ namespace Authenticator {
         };
         Process.Start(startInfo);
         Application.Exit(); // Environment.Exit(0);
-      } catch (Exception ex) {
+      }
+      catch (Exception ex) {
         if (!silent)
-          MessageBox.Show($"Error downloading new version\n{ex.Message}", "Update", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+          MessageBox.Show($"Error downloading new version\n{ex.Message}", "Update", MessageBoxButtons.OK,
+            MessageBoxIcon.Warning);
       }
     }
   }

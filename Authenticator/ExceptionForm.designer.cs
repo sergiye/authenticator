@@ -28,115 +28,81 @@ namespace Authenticator
 		/// </summary>
 		private void InitializeComponent()
 		{
-      System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(ExceptionForm));
       this.dataText = new System.Windows.Forms.TextBox();
       this.errorLabel = new System.Windows.Forms.Label();
-      this.quitButton = new System.Windows.Forms.Button();
-      this.errorIcon = new System.Windows.Forms.PictureBox();
-      this.continueButton = new System.Windows.Forms.Button();
-      this.detailsButton = new System.Windows.Forms.Button();
-      ((System.ComponentModel.ISupportInitialize)(this.errorIcon)).BeginInit();
+      this.closeButton = new System.Windows.Forms.Button();
+      this.panControls = new System.Windows.Forms.Panel();
+      this.panControls.SuspendLayout();
       this.SuspendLayout();
       // 
       // dataText
       // 
-      this.dataText.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-      this.dataText.Location = new System.Drawing.Point(98, 380);
+      this.dataText.Dock = System.Windows.Forms.DockStyle.Fill;
+      this.dataText.Location = new System.Drawing.Point(0, 131);
       this.dataText.Margin = new System.Windows.Forms.Padding(4);
       this.dataText.Multiline = true;
       this.dataText.Name = "dataText";
       this.dataText.ReadOnly = true;
       this.dataText.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-      this.dataText.Size = new System.Drawing.Size(571, 130);
+      this.dataText.Size = new System.Drawing.Size(624, 260);
       this.dataText.TabIndex = 5;
-      this.dataText.Visible = false;
       // 
       // errorLabel
       // 
-      this.errorLabel.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
+      this.errorLabel.Dock = System.Windows.Forms.DockStyle.Top;
       this.errorLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-      this.errorLabel.Location = new System.Drawing.Point(95, 63);
+      this.errorLabel.Location = new System.Drawing.Point(0, 0);
       this.errorLabel.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
       this.errorLabel.Name = "errorLabel";
-      this.errorLabel.Size = new System.Drawing.Size(574, 257);
+      this.errorLabel.Size = new System.Drawing.Size(624, 131);
       this.errorLabel.TabIndex = 4;
-      this.errorLabel.Text = resources.GetString("errorLabel.Text");
+      this.errorLabel.Text = "An error has occured.\r\n\r\n{0}\r\n\r\nSome diagnostic information  that might help trac" +
+    "k down issues can be found below:";
       // 
-      // quitButton
+      // closeButton
       // 
-      this.quitButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-      this.quitButton.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-      this.quitButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-      this.quitButton.Location = new System.Drawing.Point(569, 324);
-      this.quitButton.Margin = new System.Windows.Forms.Padding(4);
-      this.quitButton.Name = "quitButton";
-      this.quitButton.Size = new System.Drawing.Size(100, 28);
-      this.quitButton.TabIndex = 0;
-      this.quitButton.Text = "Quit";
-      this.quitButton.UseVisualStyleBackColor = true;
-      this.quitButton.Click += new System.EventHandler(this.quitButton_Click);
+      this.closeButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+      this.closeButton.DialogResult = System.Windows.Forms.DialogResult.Cancel;
+      this.closeButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+      this.closeButton.Location = new System.Drawing.Point(511, 9);
+      this.closeButton.Margin = new System.Windows.Forms.Padding(4);
+      this.closeButton.Name = "closeButton";
+      this.closeButton.Size = new System.Drawing.Size(100, 28);
+      this.closeButton.TabIndex = 0;
+      this.closeButton.Text = "Close";
+      this.closeButton.UseVisualStyleBackColor = true;
+      this.closeButton.Click += new System.EventHandler(this.quitButton_Click);
       // 
-      // errorIcon
+      // panControls
       // 
-      this.errorIcon.Location = new System.Drawing.Point(23, 63);
-      this.errorIcon.Name = "errorIcon";
-      this.errorIcon.Size = new System.Drawing.Size(48, 48);
-      this.errorIcon.TabIndex = 6;
-      this.errorIcon.TabStop = false;
-      // 
-      // continueButton
-      // 
-      this.continueButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-      this.continueButton.DialogResult = System.Windows.Forms.DialogResult.OK;
-      this.continueButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-      this.continueButton.Location = new System.Drawing.Point(461, 324);
-      this.continueButton.Margin = new System.Windows.Forms.Padding(4);
-      this.continueButton.Name = "continueButton";
-      this.continueButton.Size = new System.Drawing.Size(100, 28);
-      this.continueButton.TabIndex = 0;
-      this.continueButton.Text = "Continue";
-      this.continueButton.UseVisualStyleBackColor = true;
-      this.continueButton.Click += new System.EventHandler(this.continueButton_Click);
-      // 
-      // detailsButton
-      // 
-      this.detailsButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-      this.detailsButton.Location = new System.Drawing.Point(98, 324);
-      this.detailsButton.Margin = new System.Windows.Forms.Padding(4);
-      this.detailsButton.Name = "detailsButton";
-      this.detailsButton.Size = new System.Drawing.Size(117, 28);
-      this.detailsButton.TabIndex = 0;
-      this.detailsButton.Text = "Show Details";
-      this.detailsButton.UseVisualStyleBackColor = true;
-      this.detailsButton.Click += new System.EventHandler(this.detailsButton_Click);
+      this.panControls.Controls.Add(this.closeButton);
+      this.panControls.Dock = System.Windows.Forms.DockStyle.Bottom;
+      this.panControls.Location = new System.Drawing.Point(0, 391);
+      this.panControls.Name = "panControls";
+      this.panControls.Size = new System.Drawing.Size(624, 50);
+      this.panControls.TabIndex = 8;
       // 
       // ExceptionForm
       // 
-      this.AcceptButton = this.continueButton;
-      this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
-      this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-      this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
-      this.ClientSize = new System.Drawing.Size(685, 523);
-      this.ControlBox = false;
-      this.Controls.Add(this.errorLabel);
-      this.Controls.Add(this.errorIcon);
-      this.Controls.Add(this.detailsButton);
-      this.Controls.Add(this.continueButton);
-      this.Controls.Add(this.quitButton);
+      this.AcceptButton = this.closeButton;
+      this.AutoScaleDimensions = new System.Drawing.SizeF(96F, 96F);
+      this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
+      this.CancelButton = this.closeButton;
+      this.ClientSize = new System.Drawing.Size(624, 441);
       this.Controls.Add(this.dataText);
+      this.Controls.Add(this.errorLabel);
+      this.Controls.Add(this.panControls);
       this.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
       this.Margin = new System.Windows.Forms.Padding(4);
       this.MaximizeBox = false;
       this.MinimizeBox = false;
+      this.MinimumSize = new System.Drawing.Size(640, 480);
       this.Name = "ExceptionForm";
-      this.ShowIcon = false;
-      this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
-      this.Text = AuthMain.APPLICATION_TITLE + " Error";
+      this.ShowInTaskbar = false;
+      this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
+      this.Text = "Authenticator Error";
       this.Load += new System.EventHandler(this.ExceptionForm_Load);
-      ((System.ComponentModel.ISupportInitialize)(this.errorIcon)).EndInit();
+      this.panControls.ResumeLayout(false);
       this.ResumeLayout(false);
       this.PerformLayout();
 
@@ -144,11 +110,9 @@ namespace Authenticator
 
 		#endregion
 
-		private System.Windows.Forms.Button quitButton;
+		private System.Windows.Forms.Button closeButton;
 		private System.Windows.Forms.Label errorLabel;
 		private System.Windows.Forms.TextBox dataText;
-		private System.Windows.Forms.PictureBox errorIcon;
-		private System.Windows.Forms.Button continueButton;
-		private System.Windows.Forms.Button detailsButton;
-	}
+    private System.Windows.Forms.Panel panControls;
+  }
 }

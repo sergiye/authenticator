@@ -18,36 +18,35 @@ namespace Authenticator {
     }
 
     private void ExceptionForm_Load(object sender, EventArgs e) {
-      errorIcon.Image = SystemIcons.Error.ToBitmap();
-      Height = detailsButton.Top + detailsButton.Height + 45;
+      this.Icon = SystemIcons.Error;
 
-      errorLabel.Text = string.Format(errorLabel.Text, (ErrorException != null ? ErrorException.Message : strings.UnknownError));
+      errorLabel.Text = string.Format(errorLabel.Text,
+        (ErrorException != null ? ErrorException.Message : strings.UnknownError));
 
       // build data
-#if DEBUG
-      dataText.Text = string.Format("{0}\n\n{1}", ErrorException.Message, new StackTrace(ErrorException));
-#else
 			try
 			{
-				dataText.Text = AuthHelper.PGPEncrypt(BuildDiagnostics(), AuthHelper.AUTH_PGP_PUBLICKEY);
+        dataText.Text = string.Format("{0}\n\n{1}", ErrorException.Message, new StackTrace(ErrorException));
+        //dataText.Text = BuildDiagnostics();
 			}
 			catch (Exception ex)
 			{
-				dataText.Text = string.Format("{0}\n\n{1}", ex.Message, new System.Diagnostics.StackTrace(ex).ToString());
+				dataText.Text = string.Format("{0}\n\n{1}", ex.Message, new StackTrace(ex).ToString());
 			}
-#endif
     }
 
     private string BuildDiagnostics() {
       var diag = new StringBuilder();
 
-      if (Version.TryParse(FileVersionInfo.GetVersionInfo(Assembly.GetExecutingAssembly().Location).FileVersion, out var version)) {
+      if (Version.TryParse(FileVersionInfo.GetVersionInfo(Assembly.GetExecutingAssembly().Location).FileVersion,
+            out var version)) {
         diag.Append("Version:" + version.ToString(4));
       }
 
       // add log
       try {
-        var dir = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), AuthMain.APPLICATION_NAME);
+        var dir = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
+          AuthMain.APPLICATION_NAME);
         if (Directory.Exists(dir)) {
           var log = Path.Combine(dir, "Authenticator.log");
           if (File.Exists(log)) {
@@ -62,7 +61,8 @@ namespace Authenticator {
           }
         }
       }
-      catch (Exception) { }
+      catch (Exception) {
+      }
 
       // add the current config
       if (Config != null) {
@@ -86,19 +86,25 @@ namespace Authenticator {
 
         var ex = ErrorException;
         while (ex != null) {
-          diag.Append("Stack: ").Append(ex.Message).Append(Environment.NewLine).Append(new StackTrace(ex)).Append(Environment.NewLine);
+          diag.Append("Stack: ").Append(ex.Message).Append(Environment.NewLine).Append(new StackTrace(ex))
+            .Append(Environment.NewLine);
           ex = ex.InnerException;
         }
+
         if (ErrorException is InvalidEncryptionException) {
-          diag.Append("Plain: " + ((InvalidEncryptionException)ErrorException).Plain).Append(Environment.NewLine);
-          diag.Append("Password: " + ((InvalidEncryptionException)ErrorException).Password).Append(Environment.NewLine);
-          diag.Append("Encrypted: " + ((InvalidEncryptionException)ErrorException).Encrypted).Append(Environment.NewLine);
-          diag.Append("Decrypted: " + ((InvalidEncryptionException)ErrorException).Decrypted).Append(Environment.NewLine);
+          diag.Append("Plain: " + ((InvalidEncryptionException) ErrorException).Plain).Append(Environment.NewLine);
+          diag.Append("Password: " + ((InvalidEncryptionException) ErrorException).Password)
+            .Append(Environment.NewLine);
+          diag.Append("Encrypted: " + ((InvalidEncryptionException) ErrorException).Encrypted)
+            .Append(Environment.NewLine);
+          diag.Append("Decrypted: " + ((InvalidEncryptionException) ErrorException).Decrypted)
+            .Append(Environment.NewLine);
         }
         else if (ErrorException is InvalidSecretDataException) {
-          diag.Append("EncType: " + ((InvalidSecretDataException)ErrorException).EncType).Append(Environment.NewLine);
-          diag.Append("Password: " + ((InvalidSecretDataException)ErrorException).Password).Append(Environment.NewLine);
-          foreach (var data in ((InvalidSecretDataException)ErrorException).Decrypted) {
+          diag.Append("EncType: " + ((InvalidSecretDataException) ErrorException).EncType).Append(Environment.NewLine);
+          diag.Append("Password: " + ((InvalidSecretDataException) ErrorException).Password)
+            .Append(Environment.NewLine);
+          foreach (var data in ((InvalidSecretDataException) ErrorException).Decrypted) {
             diag.Append("Data: " + data).Append(Environment.NewLine);
           }
         }
@@ -110,22 +116,5 @@ namespace Authenticator {
     private void quitButton_Click(object sender, EventArgs e) {
       Close();
     }
-
-    private void continueButton_Click(object sender, EventArgs e) {
-      Close();
-    }
-
-    private void detailsButton_Click(object sender, EventArgs e) {
-      dataText.Visible = !dataText.Visible;
-      if (dataText.Visible) {
-        detailsButton.Text = strings.HideDetails;
-        Height += 160;
-      }
-      else {
-        detailsButton.Text = strings._ExceptionForm_detailsButton_;
-        Height -= 160;
-      }
-    }
-
   }
 }

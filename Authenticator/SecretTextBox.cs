@@ -18,9 +18,7 @@ namespace Authenticator {
     }
 
     public bool SecretMode {
-      get {
-        return mSecretMode;
-      }
+      get { return mSecretMode; }
       set {
         mSecretMode = value;
         Enabled = !value; // we disable so cannot select/copy 
@@ -32,30 +30,27 @@ namespace Authenticator {
           mFontFamily = Font.FontFamily.Name;
           mFontSize = Font.Size;
         }
+
         if (value == false) {
           Font = new Font(mFontFamily, mFontSize);
         }
+
         //
         Invalidate(); // force it to redraw
       }
     }
 
     public int SpaceOut {
-      get {
-        return mSpaceOut;
-      }
-      set {
-        mSpaceOut = value;
-      }
+      get { return mSpaceOut; }
+      set { mSpaceOut = value; }
     }
 
     public override string Text {
-      get {
-        return (SecretMode ? mText : base.Text);
-      }
+      get { return (SecretMode ? mText : base.Text); }
       set {
         mText = value;
-        base.Text = (SecretMode ? (string.IsNullOrEmpty(value) == false ? new string('*', value.Length) : value) : value);
+        base.Text =
+          (SecretMode ? (string.IsNullOrEmpty(value) == false ? new string('*', value.Length) : value) : value);
         Invalidate();
       }
     }
@@ -77,6 +72,7 @@ namespace Authenticator {
             if (i >= mText.Length) {
               break;
             }
+
             if (i + mSpaceOut >= mText.Length) {
               sb.Append(mText.Substring(i));
             }
@@ -84,6 +80,7 @@ namespace Authenticator {
               sb.Append(mText.Substring(i, mSpaceOut)).Append(" ");
             }
           }
+
           text = sb.ToString().Trim();
         }
 
@@ -91,6 +88,5 @@ namespace Authenticator {
         g.DrawString((text != null ? text : string.Empty), base.Font, brush, new RectangleF(0, 0, Width, Height), sf);
       }
     }
-
   }
 }

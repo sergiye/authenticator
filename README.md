@@ -1,5 +1,9 @@
 # Authenticator
 
+![GitHub release (latest by date)](https://img.shields.io/github/v/release/sergiye/authenticator?style=plastic)
+![GitHub all releases](https://img.shields.io/github/downloads/sergiye/authenticator/total?style=plastic)
+![GitHub last commit](https://img.shields.io/github/last-commit/sergiye/authenticator?style=plastic)
+
 *Authenticator is a portable, open-source Authenticator for Windows that provides counter or time-based RFC 6238 authenticators and common implementations, such as the Google Authenticator.*
 
 ----
@@ -8,8 +12,7 @@
 
 Authenticator provides an alternative solution to combine various two-factor authenticator services in one convenient place.
 
-This is the latest stable version and can be downloaded from the [releases](https://github.com/sergiye/authenticator/releases) page, or directly from:
-
+This is the latest stable version and can be downloaded from the [releases](https://github.com/sergiye/authenticator/releases) page, or get the newer one directly from:
 [Latest Version](https://github.com/sergiye/authenticator/releases/latest)
 
 Features include:
@@ -22,6 +25,13 @@ Features include:
   * Selection of standard or custom icons
   * Portable mode preventing changes to other files or registry settings
   * Import and export in UriKeyFormat and from Authenticator Plus for Android 
+
+# Build
+
+**The recommended way to get the program is BUILD from source**
+- Install git, Visual Studio 2019 (or higher)
+- `git clone https://github.com/sergiye/authenticator.git`
+- build
 
 
 ### How To Use
@@ -36,7 +46,7 @@ To use:
 
 To compile and build from source:
   * Download source code file or clone project
-  * Requires Microsoft Visual Studio 2023
+  * Requires Microsoft Visual Studio 2019 (or higher)
   * any other dependencies are included in the source tree in the 3rd Party folder
 
 ----
@@ -73,9 +83,9 @@ Unlike some other authenticator applications, Authenticator does not store/send 
 
 ----
 
-## Author
+## Thanks
 
-Authenticator is based on WinAuth (written by Colin Mackie).
+Authenticator is based on open source WinAuth application written by Colin Mackie.
 
 ----
 
@@ -86,3 +96,14 @@ This program is free software: you can redistribute it and/or modify it under th
 This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License  along with this program.  If not, see http://www.gnu.org/licenses/.
+
+
+## Donate
+
+<a href=https://www.buymeacoffee.com/sergiye>
+<img src="https://www.buymeacoffee.com/assets/img/custom_images/yellow_img.png" alt="Buy Me A Coffee" style="height: auto !important;width: auto !important;" />
+</a>
+
+**If you like the program, you can support the author and transfer money to**
+- PrivatBank card number: 5169 3600 1644 3834
+- IBAN number: UA113052990000026208909644481

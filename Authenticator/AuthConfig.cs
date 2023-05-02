@@ -74,8 +74,7 @@ namespace Authenticator {
 
     [XmlRoot(ElementName = "settings")]
     public class Setting {
-      [XmlAttribute(AttributeName = "key")] 
-      public string Key;
+      [XmlAttribute(AttributeName = "key")] public string Key;
 
       [XmlAttribute(AttributeName = "value")]
       public string Value;

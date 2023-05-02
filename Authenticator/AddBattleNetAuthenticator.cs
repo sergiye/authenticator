@@ -3,350 +3,240 @@ using System.Drawing;
 using System.Text.RegularExpressions;
 using System.Windows.Forms;
 
-namespace Authenticator
-{
-	/// <summary>
-	/// Form class for create a new Battle.net authenticator
-	/// </summary>
-	public partial class AddBattleNetAuthenticator : ResourceForm
-	{
-		/// <summary>
-		/// Form instantiation
-		/// </summary>
-		public AddBattleNetAuthenticator()
-		{
-			InitializeComponent();
-		}
+namespace Authenticator {
+  public partial class AddBattleNetAuthenticator : ResourceForm {
+    public AddBattleNetAuthenticator() {
+      InitializeComponent();
+    }
 
-		/// <summary>
-		/// Current authenticator
-		/// </summary>
-		public AuthAuthenticator Authenticator { get; set; }
+    public AuthAuthenticator Authenticator { get; set; }
 
-#region Form Events
+    #region Form Events
 
-		/// <summary>
-		/// Load the form
-		/// </summary>
-		/// <param name="sender"></param>
-		/// <param name="e"></param>
-		private void AddBattleNetAuthenticator_Load(object sender, EventArgs e)
-		{
-			nameField.Text = Authenticator.Name;
+    private void AddBattleNetAuthenticator_Load(object sender, EventArgs e) {
+      nameField.Text = Authenticator.Name;
 
-			newSerialNumberField.SecretMode = true;
-			newLoginCodeField.SecretMode = true;
-			newRestoreCodeField.SecretMode = true;
-		}
+      newSerialNumberField.SecretMode = true;
+      newLoginCodeField.SecretMode = true;
+      newRestoreCodeField.SecretMode = true;
+    }
 
-		/// <summary>
-		/// Allow copy of authenticator codes
-		/// </summary>
-		/// <param name="sender"></param>
-		/// <param name="e"></param>
-		private void allowCopyNewButton_CheckedChanged(object sender, EventArgs e)
-		{
-			newSerialNumberField.SecretMode = !allowCopyNewButton.Checked;
+    private void allowCopyNewButton_CheckedChanged(object sender, EventArgs e) {
+      newSerialNumberField.SecretMode = !allowCopyNewButton.Checked;
 
-			if (Authenticator != null && Authenticator.AuthenticatorData != null)
-			{
-				// Issue#122: remove dashes if copyable so can be pasted into Battle.net form
-				if (allowCopyNewButton.Checked)
-				{
-					newSerialNumberField.Text = ((BattleNetAuthenticator)Authenticator.AuthenticatorData).Serial.Replace("-", "");
-				}
-				else
-				{
-					newSerialNumberField.Text = ((BattleNetAuthenticator)Authenticator.AuthenticatorData).Serial;
-				}
-			}
-			newLoginCodeField.SecretMode = !allowCopyNewButton.Checked;
-			newRestoreCodeField.SecretMode = !allowCopyNewButton.Checked;
-		}
+      if (Authenticator != null && Authenticator.AuthenticatorData != null) {
+        // Issue#122: remove dashes if copyable so can be pasted into Battle.net form
+        if (allowCopyNewButton.Checked) {
+          newSerialNumberField.Text =
+            ((BattleNetAuthenticator) Authenticator.AuthenticatorData).Serial.Replace("-", "");
+        }
+        else {
+          newSerialNumberField.Text = ((BattleNetAuthenticator) Authenticator.AuthenticatorData).Serial;
+        }
+      }
 
-		/// <summary>
-		/// Ticker event
-		/// </summary>
-		/// <param name="sender"></param>
-		/// <param name="e"></param>
-		private void newAuthenticatorTimer_Tick(object sender, EventArgs e)
-		{
-			if (Authenticator.AuthenticatorData != null && newAuthenticatorProgress.Visible)
-			{
-				var time = (int)(Authenticator.AuthenticatorData.ServerTime / 1000L) % 30;
-				newAuthenticatorProgress.Value = time + 1;
-				if (time == 0)
-				{
-					newLoginCodeField.Text = Authenticator.AuthenticatorData.CurrentCode;
-				}
-			}
-		}
+      newLoginCodeField.SecretMode = !allowCopyNewButton.Checked;
+      newRestoreCodeField.SecretMode = !allowCopyNewButton.Checked;
+    }
 
-		/// <summary>
-		/// Press the form's cancel button
-		/// </summary>
-		/// <param name="sender"></param>
-		/// <param name="e"></param>
-		private void cancelButton_Click(object sender, EventArgs e)
-		{
-			if (Authenticator.AuthenticatorData != null)
-			{
-				var result = MainForm.ConfirmDialog(Owner,
-					"You have created a new authenticator. "
-					+ "If you have attached this authenticator to your account, you might not be able to login in the future." + Environment.NewLine + Environment.NewLine
-					+ "Do you want to save this authenticator?", MessageBoxButtons.YesNoCancel);
-				if (result == DialogResult.Yes)
-				{
-					DialogResult = DialogResult.OK;
-					return;
-				}
-				else if (result == DialogResult.Cancel)
-				{
-					DialogResult = DialogResult.None;
-					return;
-				}
-			}
-		}
+    private void newAuthenticatorTimer_Tick(object sender, EventArgs e) {
+      if (Authenticator.AuthenticatorData != null && newAuthenticatorProgress.Visible) {
+        var time = (int) (Authenticator.AuthenticatorData.ServerTime / 1000L) % 30;
+        newAuthenticatorProgress.Value = time + 1;
+        if (time == 0) {
+          newLoginCodeField.Text = Authenticator.AuthenticatorData.CurrentCode;
+        }
+      }
+    }
 
-		/// <summary>
-		/// Click the OK button to verify and add the authenticator
-		/// </summary>
-		/// <param name="sender"></param>
-		/// <param name="e"></param>
-		private void okButton_Click(object sender, EventArgs e)
-		{
-			if (VerifyAuthenticator() == false)
-			{
-				DialogResult = DialogResult.None;
-				return;
-			}
-		}
+    private void cancelButton_Click(object sender, EventArgs e) {
+      if (Authenticator.AuthenticatorData != null) {
+        var result = MainForm.ConfirmDialog(Owner,
+          "You have created a new authenticator. "
+          + "If you have attached this authenticator to your account, you might not be able to login in the future." +
+          Environment.NewLine + Environment.NewLine
+          + "Do you want to save this authenticator?", MessageBoxButtons.YesNoCancel);
+        if (result == DialogResult.Yes) {
+          DialogResult = DialogResult.OK;
+          return;
+        }
+        else if (result == DialogResult.Cancel) {
+          DialogResult = DialogResult.None;
+          return;
+        }
+      }
+    }
 
-		/// <summary>
-		/// Draw the tabs of the tabcontrol so they aren't white
-		/// </summary>
-		/// <param name="sender"></param>
-		/// <param name="e"></param>
-		private void tabControl1_DrawItem(object sender, DrawItemEventArgs e)
-		{
-			var page = tabControl1.TabPages[e.Index];
-			e.Graphics.FillRectangle(new SolidBrush(page.BackColor), e.Bounds);
+    private void okButton_Click(object sender, EventArgs e) {
+      if (VerifyAuthenticator() == false) {
+        DialogResult = DialogResult.None;
+        return;
+      }
+    }
 
-			var paddedBounds = e.Bounds;
-			var yOffset = (e.State == DrawItemState.Selected) ? -2 : 1;
-			paddedBounds.Offset(1, yOffset);
-			TextRenderer.DrawText(e.Graphics, page.Text, Font, paddedBounds, page.ForeColor);
-		}
+    private void tabControl1_DrawItem(object sender, DrawItemEventArgs e) {
+      var page = tabControl1.TabPages[e.Index];
+      e.Graphics.FillRectangle(new SolidBrush(page.BackColor), e.Bounds);
 
-		/// <summary>
-		/// Click one of the icons
-		/// </summary>
-		/// <param name="sender"></param>
-		/// <param name="e"></param>
-		private void icon1_Click(object sender, EventArgs e)
-		{
-			icon1RadioButton.Checked = true;
-		}
+      var paddedBounds = e.Bounds;
+      var yOffset = (e.State == DrawItemState.Selected) ? -2 : 1;
+      paddedBounds.Offset(1, yOffset);
+      TextRenderer.DrawText(e.Graphics, page.Text, Font, paddedBounds, page.ForeColor);
+    }
 
-		/// <summary>
-		/// Click one of the icons
-		/// </summary>
-		/// <param name="sender"></param>
-		/// <param name="e"></param>
-		private void icon2_Click(object sender, EventArgs e)
-		{
-			icon2RadioButton.Checked = true;
-		}
+    private void icon1_Click(object sender, EventArgs e) {
+      icon1RadioButton.Checked = true;
+    }
 
-		/// <summary>
-		/// Click one of the icons
-		/// </summary>
-		/// <param name="sender"></param>
-		/// <param name="e"></param>
-		private void icon3_Click(object sender, EventArgs e)
-		{
-			icon3RadioButton.Checked = true;
-		}
+    private void icon2_Click(object sender, EventArgs e) {
+      icon2RadioButton.Checked = true;
+    }
 
-		/// <summary>
-		/// Select one of the icons
-		/// </summary>
-		/// <param name="sender"></param>
-		/// <param name="e"></param>
-		private void iconRadioButton_CheckedChanged(object sender, EventArgs e)
-		{
-			if (((RadioButton)sender).Checked)
-			{
-				Authenticator.Skin = (string)((RadioButton)sender).Tag;
-			}
-		}
+    private void icon3_Click(object sender, EventArgs e) {
+      icon3RadioButton.Checked = true;
+    }
 
-#endregion
+    private void iconRadioButton_CheckedChanged(object sender, EventArgs e) {
+      if (((RadioButton) sender).Checked) {
+        Authenticator.Skin = (string) ((RadioButton) sender).Tag;
+      }
+    }
 
-#region Private methods
+    #endregion
 
-		/// <summary>
-		/// Verify and create the authenticator if needed
-		/// </summary>
-		/// <returns>true is successful</returns>
-		private bool VerifyAuthenticator()
-		{
-			Authenticator.Name = nameField.Text;
+    #region Private methods
 
-			if (tabControl1.SelectedIndex == 0)
-			{
-				if (Authenticator.AuthenticatorData == null)
-				{
-					MainForm.ErrorDialog(Owner, "You need to create an authenticator and attach it to your account");
-					return false;
-				}
-			}
-			else if (tabControl1.SelectedIndex == 1)
-			{
-				var serial = restoreSerialNumberField.Text.Trim();
-				var restore = restoreRestoreCodeField.Text.Trim();
-				if (serial.Length == 0 || restore.Length == 0)
-				{
-					MainForm.ErrorDialog(Owner, "Please enter the Serial number and Restore code");
-					return false;
-				}
+    private bool VerifyAuthenticator() {
+      Authenticator.Name = nameField.Text;
 
-				try
-				{
-					var authenticator = new BattleNetAuthenticator();
-					authenticator.Restore(serial, restore);
-					Authenticator.AuthenticatorData = authenticator;
-				}
-				catch (InvalidRestoreResponseException irre)
-				{
-					MainForm.ErrorDialog(Owner, "Unable to restore the authenticator: " + irre.Message, irre);
-					return false;
-				}
-			}
-			else if (tabControl1.SelectedIndex == 2)
-			{
-				var privatekey = importPrivateKeyField.Text.Trim();
-				if (privatekey.Length == 0)
-				{
-					MainForm.ErrorDialog(Owner, "Please enter the Private key");
-					return false;
-				}
-				// just get the hex chars
-				privatekey = Regex.Replace(privatekey, @"0x", "", RegexOptions.IgnoreCase);
-				privatekey = Regex.Replace(privatekey, @"[^0-9abcdef]", "", RegexOptions.IgnoreCase);
-				if (privatekey.Length == 0 || privatekey.Length < 40)
-				{
-					MainForm.ErrorDialog(Owner, "The private key must be a sequence of at least 40 hexadecimal characters, e.g. 7B0BFA82... or 0x7B, 0x0B, 0xFA, 0x82, ...");
-					return false;
-				}
-				try
-				{
-					var authenticator = new BattleNetAuthenticator();
-					if (privatekey.Length == 40) // 20 bytes which is key only
-					{
-						authenticator.SecretKey = global::Authenticator.Authenticator.StringToByteArray(privatekey);
-						authenticator.Serial = "US-Imported";
-					}
-					else
-					{
-						authenticator.SecretData = privatekey;
-						if (string.IsNullOrEmpty(authenticator.Serial))
-						{
-							authenticator.Serial = "US-Imported";
-						}
-					}
-					authenticator.Sync();
-					Authenticator.AuthenticatorData = authenticator;
-				}
-				catch (Exception irre)
-				{
-					MainForm.ErrorDialog(Owner, "Unable to import the authenticator. The private key is probably invalid.", irre);
-					return false;
-				}
-			}
+      if (tabControl1.SelectedIndex == 0) {
+        if (Authenticator.AuthenticatorData == null) {
+          MainForm.ErrorDialog(Owner, "You need to create an authenticator and attach it to your account");
+          return false;
+        }
+      }
+      else if (tabControl1.SelectedIndex == 1) {
+        var serial = restoreSerialNumberField.Text.Trim();
+        var restore = restoreRestoreCodeField.Text.Trim();
+        if (serial.Length == 0 || restore.Length == 0) {
+          MainForm.ErrorDialog(Owner, "Please enter the Serial number and Restore code");
+          return false;
+        }
 
-			return true;
-		}
+        try {
+          var authenticator = new BattleNetAuthenticator();
+          authenticator.Restore(serial, restore);
+          Authenticator.AuthenticatorData = authenticator;
+        }
+        catch (InvalidRestoreResponseException irre) {
+          MainForm.ErrorDialog(Owner, "Unable to restore the authenticator: " + irre.Message, irre);
+          return false;
+        }
+      }
+      else if (tabControl1.SelectedIndex == 2) {
+        var privatekey = importPrivateKeyField.Text.Trim();
+        if (privatekey.Length == 0) {
+          MainForm.ErrorDialog(Owner, "Please enter the Private key");
+          return false;
+        }
 
-		/// <summary>
-		/// Clear the authenticator and any associated fields
-		/// </summary>
-		/// <param name="showWarning"></param>
-		private void ClearAuthenticator(bool showWarning = true)
-		{
-			if (Authenticator.AuthenticatorData != null && showWarning)
-			{
-				var result = MainForm.ConfirmDialog(Owner,
-					"This will clear the authenticator you have just created. "
-					+ "If you have attached this authenticator to your account, you might not be able to login in the future." + Environment.NewLine + Environment.NewLine
-					+ "Are you sure you want to continue?");
-				if (result != DialogResult.Yes)
-				{
-					return;
-				}
+        // just get the hex chars
+        privatekey = Regex.Replace(privatekey, @"0x", "", RegexOptions.IgnoreCase);
+        privatekey = Regex.Replace(privatekey, @"[^0-9abcdef]", "", RegexOptions.IgnoreCase);
+        if (privatekey.Length == 0 || privatekey.Length < 40) {
+          MainForm.ErrorDialog(Owner,
+            "The private key must be a sequence of at least 40 hexadecimal characters, e.g. 7B0BFA82... or 0x7B, 0x0B, 0xFA, 0x82, ...");
+          return false;
+        }
 
-				Authenticator.AuthenticatorData = null;
-			}
+        try {
+          var authenticator = new BattleNetAuthenticator();
+          if (privatekey.Length == 40) // 20 bytes which is key only
+          {
+            authenticator.SecretKey = global::Authenticator.Authenticator.StringToByteArray(privatekey);
+            authenticator.Serial = "US-Imported";
+          }
+          else {
+            authenticator.SecretData = privatekey;
+            if (string.IsNullOrEmpty(authenticator.Serial)) {
+              authenticator.Serial = "US-Imported";
+            }
+          }
 
-			newAuthenticatorProgress.Visible = false;
-			newAuthenticatorTimer.Enabled = false;
-			newSerialNumberField.Text = string.Empty;
-			newSerialNumberField.SecretMode = true;
-			newLoginCodeField.Text = string.Empty;
-			newLoginCodeField.SecretMode = true;
-			newRestoreCodeField.Text = string.Empty;
-			newRestoreCodeField.SecretMode = true;
-			allowCopyNewButton.Checked = false;
+          authenticator.Sync();
+          Authenticator.AuthenticatorData = authenticator;
+        }
+        catch (Exception irre) {
+          MainForm.ErrorDialog(Owner, "Unable to import the authenticator. The private key is probably invalid.", irre);
+          return false;
+        }
+      }
 
-			restoreSerialNumberField.Text = string.Empty;
-			restoreRestoreCodeField.Text = string.Empty;
+      return true;
+    }
 
-			importPrivateKeyField.Text = string.Empty;
-		}
+    private void ClearAuthenticator(bool showWarning = true) {
+      if (Authenticator.AuthenticatorData != null && showWarning) {
+        var result = MainForm.ConfirmDialog(Owner,
+          "This will clear the authenticator you have just created. "
+          + "If you have attached this authenticator to your account, you might not be able to login in the future." +
+          Environment.NewLine + Environment.NewLine
+          + "Are you sure you want to continue?");
+        if (result != DialogResult.Yes) {
+          return;
+        }
 
-		/// <summary>
-		/// Click to create a enroll a new authenticator
-		/// </summary>
-		/// <param name="sender"></param>
-		/// <param name="e"></param>
-		private void enrollAuthenticatorButton_Click(object sender, EventArgs e)
-		{
-			do
-			{
-				try
-				{
-					newSerialNumberField.Text = "creating...";
+        Authenticator.AuthenticatorData = null;
+      }
 
-					var authenticator = new BattleNetAuthenticator();
+      newAuthenticatorProgress.Visible = false;
+      newAuthenticatorTimer.Enabled = false;
+      newSerialNumberField.Text = string.Empty;
+      newSerialNumberField.SecretMode = true;
+      newLoginCodeField.Text = string.Empty;
+      newLoginCodeField.SecretMode = true;
+      newRestoreCodeField.Text = string.Empty;
+      newRestoreCodeField.SecretMode = true;
+      allowCopyNewButton.Checked = false;
+
+      restoreSerialNumberField.Text = string.Empty;
+      restoreRestoreCodeField.Text = string.Empty;
+
+      importPrivateKeyField.Text = string.Empty;
+    }
+
+    private void enrollAuthenticatorButton_Click(object sender, EventArgs e) {
+      do {
+        try {
+          newSerialNumberField.Text = "creating...";
+
+          var authenticator = new BattleNetAuthenticator();
 #if DEBUG
-					authenticator.Enroll(System.Diagnostics.Debugger.IsAttached);
+          authenticator.Enroll(System.Diagnostics.Debugger.IsAttached);
 #else
 					authenticator.Enroll();
 #endif
-					Authenticator.AuthenticatorData = authenticator;
-					newSerialNumberField.Text = authenticator.Serial;
-					newLoginCodeField.Text = authenticator.CurrentCode;
-					newRestoreCodeField.Text = authenticator.RestoreCode;
+          Authenticator.AuthenticatorData = authenticator;
+          newSerialNumberField.Text = authenticator.Serial;
+          newLoginCodeField.Text = authenticator.CurrentCode;
+          newRestoreCodeField.Text = authenticator.RestoreCode;
 
-					newAuthenticatorProgress.Visible = true;
-					newAuthenticatorTimer.Enabled = true;
+          newAuthenticatorProgress.Visible = true;
+          newAuthenticatorTimer.Enabled = true;
 
-					return;
-				}
-				catch (InvalidEnrollResponseException iere)
-				{
-					if (MainForm.ErrorDialog(Owner, "An error occured while registering a new authenticator", iere, MessageBoxButtons.RetryCancel) != DialogResult.Retry)
-					{
-						break;
-					}
-				}
-			} while (true);
+          return;
+        }
+        catch (InvalidEnrollResponseException iere) {
+          if (MainForm.ErrorDialog(Owner, "An error occured while registering a new authenticator", iere,
+                MessageBoxButtons.RetryCancel) != DialogResult.Retry) {
+            break;
+          }
+        }
+      } while (true);
 
-			ClearAuthenticator(false);
-		}
+      ClearAuthenticator(false);
+    }
 
-#endregion
-
-
-	}
+    #endregion
+  }
 }

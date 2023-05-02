@@ -27,7 +27,7 @@ namespace Authenticator {
 
     private void timer_Tick(object sender, EventArgs e) {
       if (Authenticator.AuthenticatorData != null && codeProgress.Visible) {
-        var time = (int)(Authenticator.AuthenticatorData.ServerTime / 1000L) % 30;
+        var time = (int) (Authenticator.AuthenticatorData.ServerTime / 1000L) % 30;
         codeProgress.Value = time + 1;
         if (time == 0) {
           codeField.Text = Authenticator.AuthenticatorData.CurrentCode;
@@ -39,7 +39,8 @@ namespace Authenticator {
       if (Authenticator.AuthenticatorData != null) {
         var result = MainForm.ConfirmDialog(Owner,
           "WARNING: Your authenticator has not been saved." + Environment.NewLine + Environment.NewLine
-          + "If you have added this authenticator to your online account, you will not be able to login in the future, and you need to click YES to save it." + Environment.NewLine + Environment.NewLine
+          + "If you have added this authenticator to your online account, you will not be able to login in the future, and you need to click YES to save it." +
+          Environment.NewLine + Environment.NewLine
           + "Do you want to save this authenticator?", MessageBoxButtons.YesNoCancel);
         if (result == DialogResult.Yes) {
           DialogResult = DialogResult.OK;
@@ -59,11 +60,13 @@ namespace Authenticator {
         DialogResult = DialogResult.None;
         return;
       }
+
       var first = !codeProgress.Visible;
       if (VerifyAuthenticator(privatekey) == false) {
         DialogResult = DialogResult.None;
         return;
       }
+
       if (first) {
         DialogResult = DialogResult.None;
         return;
@@ -76,12 +79,13 @@ namespace Authenticator {
         MainForm.ErrorDialog(Owner, "Please enter the Secret Code");
         return;
       }
+
       VerifyAuthenticator(privatekey);
     }
 
     private void iconRadioButton_CheckedChanged(object sender, EventArgs e) {
-      if (((RadioButton)sender).Checked) {
-        Authenticator.Skin = (string)((RadioButton)sender).Tag;
+      if (((RadioButton) sender).Checked) {
+        Authenticator.Skin = (string) ((RadioButton) sender).Tag;
       }
     }
 
@@ -107,7 +111,8 @@ namespace Authenticator {
         new FileInfo(filename);
         return File.Exists(filename);
       }
-      catch (Exception) { }
+      catch (Exception) {
+      }
 
       return false;
     }
@@ -125,13 +130,14 @@ namespace Authenticator {
       Match match;
       if (Regex.IsMatch(privatekey, "https?://.*") && Uri.TryCreate(privatekey, UriKind.Absolute, out var uri)) {
         try {
-          var request = (HttpWebRequest)WebRequest.Create(uri);
+          var request = (HttpWebRequest) WebRequest.Create(uri);
           request.AllowAutoRedirect = true;
           request.Timeout = 20000;
           request.UserAgent = "Mozilla/4.0 (compatible; MSIE 8.0; Windows NT 6.1; Trident/4.0)";
-          using (var response = (HttpWebResponse)request.GetResponse()) {
-            if (response.StatusCode == HttpStatusCode.OK && response.ContentType.StartsWith("image/", StringComparison.OrdinalIgnoreCase)) {
-              using (var bitmap = (Bitmap)Image.FromStream(response.GetResponseStream())) {
+          using (var response = (HttpWebResponse) request.GetResponse()) {
+            if (response.StatusCode == HttpStatusCode.OK &&
+                response.ContentType.StartsWith("image/", StringComparison.OrdinalIgnoreCase)) {
+              using (var bitmap = (Bitmap) Image.FromStream(response.GetResponseStream())) {
                 IBarcodeReader reader = new BarcodeReader();
                 var result = reader.Decode(bitmap);
                 if (result != null) {
@@ -149,7 +155,7 @@ namespace Authenticator {
       else if ((match = Regex.Match(privatekey, @"data:image/([^;]+);base64,(.*)", RegexOptions.IgnoreCase)).Success) {
         var imagedata = Convert.FromBase64String(match.Groups[2].Value);
         using (var ms = new MemoryStream(imagedata)) {
-          using (var bitmap = (Bitmap)Image.FromStream(ms)) {
+          using (var bitmap = (Bitmap) Image.FromStream(ms)) {
             IBarcodeReader reader = new BarcodeReader();
             var result = reader.Decode(bitmap);
             if (result != null) {
@@ -160,7 +166,7 @@ namespace Authenticator {
       }
       else if (IsValidFile(privatekey)) {
         // assume this is the image file
-        using (var bitmap = (Bitmap)Image.FromFile(privatekey)) {
+        using (var bitmap = (Bitmap) Image.FromFile(privatekey)) {
           IBarcodeReader reader = new BarcodeReader();
           var result = reader.Decode(bitmap);
           if (result != null) {
@@ -174,7 +180,8 @@ namespace Authenticator {
       if (match.Success) {
         authtype = match.Groups[1].Value; // @todo we only handle totp (not hotp)
         if (string.Compare(authtype, "totp", true) != 0) {
-          MainForm.ErrorDialog(Owner, "Only time-based (TOTP) authenticators are supported when adding a Google Authenticator. Use the general \"Add Authenticator\" for counter-based (HOTP) authenticators.");
+          MainForm.ErrorDialog(Owner,
+            "Only time-based (TOTP) authenticators are supported when adding a Google Authenticator. Use the general \"Add Authenticator\" for counter-based (HOTP) authenticators.");
           return false;
         }
 
@@ -207,7 +214,8 @@ namespace Authenticator {
 
         if (auth.ServerTimeDiff == 0L && syncErrorWarned == false) {
           syncErrorWarned = true;
-          MessageBox.Show(this, string.Format(strings.AuthenticatorSyncError, "Google"), AuthMain.APPLICATION_TITLE, MessageBoxButtons.OK, MessageBoxIcon.Warning);
+          MessageBox.Show(this, string.Format(strings.AuthenticatorSyncError, "Google"), AuthMain.APPLICATION_TITLE,
+            MessageBoxButtons.OK, MessageBoxIcon.Warning);
         }
       }
       catch (Exception irre) {
@@ -219,6 +227,5 @@ namespace Authenticator {
     }
 
     #endregion
-
   }
 }

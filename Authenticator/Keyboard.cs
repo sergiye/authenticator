@@ -5,7 +5,6 @@ using System.Text.RegularExpressions;
 using System.Windows.Forms;
 
 namespace Authenticator {
-  
   /// <summary>
   /// Class to manage sending of keys to other applications.
   /// </summary>

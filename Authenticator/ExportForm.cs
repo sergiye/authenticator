@@ -65,6 +65,7 @@ namespace Authenticator {
         sfd.Filter = "Text File (*.txt)|*.txt|Zip File (*.zip)|*.zip|All Files (*.*)|*.*";
         sfd.FileName = "authenticator-" + DateTime.Today.ToString("yyyy-MM-dd") + ".txt";
       }
+
       sfd.OverwritePrompt = true;
       if (sfd.ShowDialog(Parent) != DialogResult.OK) {
         return;
@@ -80,6 +81,7 @@ namespace Authenticator {
         DialogResult = DialogResult.None;
         return;
       }
+
       if (passwordCheckbox.Checked && string.Compare(passwordField.Text, verifyField.Text) != 0) {
         MainForm.ErrorDialog(this, strings.PasswordsDontMatch);
         DialogResult = DialogResult.None;
@@ -103,11 +105,10 @@ namespace Authenticator {
       if (passwordCheckbox.Checked && passwordField.Text.Length != 0) {
         Password = passwordField.Text;
       }
+
       if (pgpCheckbox.Checked && pgpField.Text.Length != 0) {
         PgpKey = pgpField.Text;
       }
     }
-
   }
-
 }

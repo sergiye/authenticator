@@ -2,82 +2,46 @@
 using System.IO;
 using System.Windows.Forms;
 
-namespace Authenticator
-{
-	/// <summary>
-	/// Class for form that prompts for password and unprotects authenticator
-	/// </summary>
-	public partial class GetPgpKeyForm : ResourceForm
-	{
-		/// <summary>
-		/// Create new form
-		/// </summary>
-		public GetPgpKeyForm()
-			: base()
-		{
-			InitializeComponent();
-		}
+namespace Authenticator {
+  public partial class GetPgpKeyForm : ResourceForm {
 
-		/// <summary>
-		/// PGPKey
-		/// </summary>
-		public string PgpKey { get; private set; }
+    public GetPgpKeyForm() {
+      InitializeComponent();
+    }
 
-		/// <summary>
-		/// Password
-		/// </summary>
-		public string Password { get; private set; }
+    public string PgpKey { get; private set; }
 
-		/// <summary>
-		/// Load the form and make it topmost
-		/// </summary>
-		/// <param name="sender"></param>
-		/// <param name="e"></param>
-		private void GetPGPKeyForm_Load(object sender, EventArgs e)
-		{
-			// force this window to the front and topmost
-			// see: http://stackoverflow.com/questions/278237/keep-window-on-top-and-steal-focus-in-winforms
-			var oldtopmost = TopMost;
-			TopMost = true;
-			TopMost = oldtopmost;
-			Activate();
-		}
+    public string Password { get; private set; }
 
-		/// <summary>
-		/// Browse the PGP key
-		/// </summary>
-		/// <param name="sender"></param>
-		/// <param name="e"></param>
-		private void browseButton_Click(object sender, EventArgs e)
-		{
-			var ofd = new OpenFileDialog();
-			ofd.CheckFileExists = true;
-			ofd.Filter = "All Files (*.*)|*.*";
-			ofd.Title = "Choose PGP Key File";
+    private void GetPGPKeyForm_Load(object sender, EventArgs e) {
+      // force this window to the front and topmost
+      // see: http://stackoverflow.com/questions/278237/keep-window-on-top-and-steal-focus-in-winforms
+      var oldtopmost = TopMost;
+      TopMost = true;
+      TopMost = oldtopmost;
+      Activate();
+    }
 
-			if (ofd.ShowDialog(Parent) == DialogResult.OK)
-			{
-				pgpField.Text = File.ReadAllText(ofd.FileName);
-			}
-		}
+    private void browseButton_Click(object sender, EventArgs e) {
+      var ofd = new OpenFileDialog();
+      ofd.CheckFileExists = true;
+      ofd.Filter = "All Files (*.*)|*.*";
+      ofd.Title = "Choose PGP Key File";
 
-		/// <summary>
-		/// Click the OK button
-		/// </summary>
-		/// <param name="sender"></param>
-		/// <param name="e"></param>
-		private void okButton_Click(object sender, EventArgs e)
-		{
-			// it isn't empty
-			if (pgpField.Text.Length == 0)
-			{
-				DialogResult = DialogResult.None;
-				return;
-			}
+      if (ofd.ShowDialog(Parent) == DialogResult.OK) {
+        pgpField.Text = File.ReadAllText(ofd.FileName);
+      }
+    }
 
-			PgpKey = pgpField.Text;
-			Password = passwordField.Text;
-		}
+    private void okButton_Click(object sender, EventArgs e) {
+      // it isn't empty
+      if (pgpField.Text.Length == 0) {
+        DialogResult = DialogResult.None;
+        return;
+      }
 
-	}
+      PgpKey = pgpField.Text;
+      Password = passwordField.Text;
+    }
+  }
 }
