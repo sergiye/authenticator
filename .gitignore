@@ -1,0 +1,9 @@
+*.suo
+*.csproj.user
+*.vcxproj.user
+FodyWeavers.xsd
+*/bin/
+*/obj/
+/.idea/
+*.DotSettings.user
+*.DotSettings

@@ -1,0 +1,88 @@
+# Authenticator
+
+*Authenticator is a portable, open-source Authenticator for Windows that provides counter or time-based RFC 6238 authenticators and common implementations, such as the Google Authenticator.*
+
+----
+
+## Download Latest Version
+
+Authenticator provides an alternative solution to combine various two-factor authenticator services in one convenient place.
+
+This is the latest stable version and can be downloaded from the [releases](https://github.com/sergiye/authenticator/releases) page, or directly from:
+
+[Latest Version](https://github.com/sergiye/authenticator/releases/latest)
+
+Features include:
+
+  * Support for time-based RFC 6238 authenticators (e.g. Google Authenticator) and HOTP counter-based authenticators
+  * Displays multiple authenticators simultaneously
+  * Codes displayed and refreshed automatically or on demand
+  * Data is protected with your password, locked to Windows machine or account
+  * Additional password protection per authenticator
+  * Selection of standard or custom icons
+  * Portable mode preventing changes to other files or registry settings
+  * Import and export in UriKeyFormat and from Authenticator Plus for Android 
+
+
+### How To Use
+
+To use:
+  * Download the latest version from releases
+  * There is no installation required, just start executable file from anywhere on your computer
+  * Click the Add button to add or import an authenticator
+  * Right-click any authenticator to bring up context menu
+  * Click the icon on the right to show the current code, if auto-refresh is not enabled
+  * Click cog/options icon for program options
+
+To compile and build from source:
+  * Download source code file or clone project
+  * Requires Microsoft Visual Studio 2023
+  * any other dependencies are included in the source tree in the 3rd Party folder
+
+----
+
+## COMMON QUESTIONS
+
+#### Is it secure? Is it safe?
+
+All authenticators just provide another layer of security. None are 100% effective.
+
+A physical/keychain device is by far the best protection. Although still subject to any man-in-the-middle attack, there is no way to get at the secret key stored within it. If you are at all concerned, get one of these.
+
+An iPhone app or app on a non-rooted Android device is also secure. There is no way to get at the secret key stored on the device, however, some apps provides way to export the key that could compromise your authenticator if you do not physically protect your phone. Also if those apps backup their data elsewhere, that data could be vulnerable.
+
+A rooted-Android phone can have your secret key read off it by an app with access. Some apps also do not encrypt the keys and so this should be considered risky.
+
+Authenticator stores you secret key in an encrypted file on your computer. Whilst it cannot therefore provide the same security as a separate physical device, as much as possible has been done to protect the key on your machine. As above, physical access to your machine would be the only way to compromise any authenticator.
+
+#### I'm concerned this might be a virus / malware / keylogger
+
+Authenticator is an open-source allowing everyone to inspect and review the code. A binary is provided, but the source code is always released simultaneously so that you can review the code and build it yourself.
+
+No personal information is sent out to any other 3rd party servers. It never even sees your account information, only your authenticator details.
+
+There are no other executables installed on your machine. There is no installer doing things you are unable to monitor. Authenticator is portable so you can just run it from anywhere.
+
+#### I found Authenticator on another website, is it the same thing?
+
+Authenticator source code is uploaded to GitHub at http://github.com/sergiey/authenticator and pre-built binaries are in [releases](https://github.com/sergiye/authenticator/releases). It is not published anywhere else, so please do not download any other programs claiming to be Authenticator.
+
+#### Where does Authenticator save my authenticator information?
+
+Unlike some other authenticator applications, Authenticator does not store/send your information to any 3rd party servers. Your authenticator information is saved by default in your account roaming profile, i.e. c:\Users\<username>\AppData\Roaming\Authenticator. However, this file can be moved anywhere and passed into Authenticator when run.
+
+----
+
+## Author
+
+Authenticator is based on WinAuth (written by Colin Mackie).
+
+----
+
+## License
+
+This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License  along with this program.  If not, see http://www.gnu.org/licenses/.
