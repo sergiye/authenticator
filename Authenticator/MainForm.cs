@@ -266,8 +266,7 @@ namespace Authenticator {
 
       // reset UI
       SetAutoSize();
-      introLabel.Visible = (Config.Count == 0);
-    }
+   }
 
     private void ImportAuthenticatorFromV2(string authenticatorFile) {
       var retry = false;
@@ -329,7 +328,6 @@ namespace Authenticator {
 
           // reset UI
           SetAutoSize();
-          introLabel.Visible = (Config.Count == 0);
 
           needPassword = false;
           retry = false;
@@ -358,8 +356,9 @@ namespace Authenticator {
         }
 
         if (needPassword) {
-          var form = new GetPasswordForm();
-          form.InvalidPassword = invalidPassword;
+          var form = new GetPasswordForm {
+            InvalidPassword = invalidPassword
+          };
           var result = form.ShowDialog(this);
           if (result == DialogResult.Cancel) {
             return;
@@ -402,7 +401,6 @@ namespace Authenticator {
       loadingPanel.Visible = false;
       passwordPanel.Visible = false;
       commandPanel.Visible = true;
-      introLabel.Visible = (Config.Count == 0);
       authenticatorList.Visible = (Config.Count != 0);
       addAuthenticatorButton.Visible = !Config.IsReadOnly;
 
@@ -475,7 +473,7 @@ namespace Authenticator {
 
       var index = 0;
       foreach (var auth in Config) {
-        var ali = new AuthenticatorListitem(auth, index);
+        var ali = new AuthenticatorListItem(auth, index);
         if (added != null && added == auth && auth.AutoRefresh == false &&
             !(auth.AuthenticatorData is HotpAuthenticator)) {
           ali.LastUpdate = DateTime.Now;
@@ -546,10 +544,11 @@ namespace Authenticator {
           continue;
         }
 
-        subitem = new ToolStripMenuItem();
-        subitem.Text = auth.Name;
-        subitem.Name = "addAuthenticatorMenuItem_" + index++;
-        subitem.Tag = auth;
+        subitem = new ToolStripMenuItem {
+          Text = auth.Name,
+          Name = "addAuthenticatorMenuItem_" + index++,
+          Tag = auth
+        };
         if (string.IsNullOrEmpty(auth.Icon) == false) {
           subitem.Image = new Bitmap(Assembly.GetExecutingAssembly()
             .GetManifestResourceStream("Authenticator.Resources." + auth.Icon));
@@ -564,13 +563,14 @@ namespace Authenticator {
       //
       addAuthenticatorMenu.Items.Add(new ToolStripSeparator());
       //
-      subitem = new ToolStripMenuItem();
-      subitem.Text = strings.MenuImportText;
-      subitem.Name = "importTextMenuItem";
-      subitem.Image = new Bitmap(Assembly.GetExecutingAssembly()
-        .GetManifestResourceStream("Authenticator.Resources.TextIcon.png"));
-      subitem.ImageAlign = ContentAlignment.MiddleLeft;
-      subitem.ImageScaling = ToolStripItemImageScaling.SizeToFit;
+      subitem = new ToolStripMenuItem {
+        Text = "Import...",
+        Name = "importTextMenuItem",
+        Image = new Bitmap(Assembly.GetExecutingAssembly()
+        .GetManifestResourceStream("Authenticator.Resources.TextIcon.png")),
+        ImageAlign = ContentAlignment.MiddleLeft,
+        ImageScaling = ToolStripItemImageScaling.SizeToFit
+      };
       subitem.Click += importTextMenu_Click;
       addAuthenticatorMenu.Items.Add(subitem);
     }
@@ -657,7 +657,7 @@ namespace Authenticator {
       // open the confirmations
       var item = authenticatorList.ContextMenuStrip.Items.Cast<ToolStripItem>()
         .FirstOrDefault(i => i.Name == "showSteamTradesMenuItem");
-      authenticatorList.CurrentItem = authenticatorList.Items.Cast<AuthenticatorListitem>()
+      authenticatorList.CurrentItem = authenticatorList.Items.Cast<AuthenticatorListItem>()
         .FirstOrDefault(i => i.Authenticator == auth);
       item?.PerformClick();
     }
@@ -770,7 +770,7 @@ namespace Authenticator {
           BringToFront();
         }
 
-        var item = authenticatorList.Items.Cast<AuthenticatorListitem>().FirstOrDefault(i => i.Authenticator == auth);
+        var item = authenticatorList.Items.Cast<AuthenticatorListItem>().FirstOrDefault(i => i.Authenticator == auth);
         code = authenticatorList.GetItemCode(item, screen);
 
         // restore active window
@@ -832,7 +832,7 @@ namespace Authenticator {
           BringToFront();
         }
 
-        var item = authenticatorList.Items.Cast<AuthenticatorListitem>().FirstOrDefault(i => i.Authenticator == auth);
+        var item = authenticatorList.Items.Cast<AuthenticatorListItem>().FirstOrDefault(i => i.Authenticator == auth);
         code = authenticatorList.GetItemCode(item, screen);
 
         // restore active window
@@ -903,10 +903,8 @@ namespace Authenticator {
           Width = 420;
         }
 
-        // Issue#175; take the smallest of full height or 62% screen height
-        var height = Height - authenticatorList.Height;
-        height += (Config.Count * authenticatorList.ItemHeight);
-        height += commandPanel.Height;
+        // take the smallest of full height or 62% screen height
+        var height = commandPanel.Height + this.Height - this.ClientRectangle.Height + Config.Count * authenticatorList.ItemHeight;
         Height = Math.Min(Screen.GetWorkingArea(this).Height * 62 / 100, height);
 
         FormBorderStyle = FormBorderStyle.FixedDialog;
@@ -921,6 +919,7 @@ namespace Authenticator {
           Height = Config.Height;
         }
       }
+      introLabel.Visible = (Config.Count == 0);
     }
 
     private void EndRenaming() {
@@ -1012,14 +1011,15 @@ namespace Authenticator {
           do {
             name = "Battle.net" + (existing != 0 ? " (" + existing + ")" : string.Empty);
             existing++;
-          } while (authenticatorList.Items.Cast<AuthenticatorListitem>().Count(a => a.Authenticator.Name == name) != 0);
+          } while (authenticatorList.Items.Cast<AuthenticatorListItem>().Count(a => a.Authenticator.Name == name) != 0);
 
           authenticator.Name = name;
           authenticator.AutoRefresh = false;
 
           // create the Battle.net authenticator
-          var form = new AddBattleNetAuthenticator();
-          form.Authenticator = authenticator;
+          var form = new AddBattleNetAuthenticator {
+            Authenticator = authenticator
+          };
           added = (form.ShowDialog(this) == DialogResult.OK);
         }
         else if (registeredauth.AuthenticatorType == RegisteredAuthenticator.AuthenticatorTypes.Trion) {
@@ -1029,13 +1029,14 @@ namespace Authenticator {
           do {
             name = "Trion" + (existing != 0 ? " (" + existing + ")" : string.Empty);
             existing++;
-          } while (authenticatorList.Items.Cast<AuthenticatorListitem>().Count(a => a.Authenticator.Name == name) != 0);
+          } while (authenticatorList.Items.Cast<AuthenticatorListItem>().Count(a => a.Authenticator.Name == name) != 0);
 
           authenticator.Name = name;
           authenticator.AutoRefresh = false;
 
-          var form = new AddTrionAuthenticator();
-          form.Authenticator = authenticator;
+          var form = new AddTrionAuthenticator {
+            Authenticator = authenticator
+          };
           added = (form.ShowDialog(this) == DialogResult.OK);
         }
         else if (registeredauth.AuthenticatorType == RegisteredAuthenticator.AuthenticatorTypes.Steam) {
@@ -1045,13 +1046,14 @@ namespace Authenticator {
           do {
             name = "Steam" + (existing != 0 ? " (" + existing + ")" : string.Empty);
             existing++;
-          } while (authenticatorList.Items.Cast<AuthenticatorListitem>().Count(a => a.Authenticator.Name == name) != 0);
+          } while (authenticatorList.Items.Cast<AuthenticatorListItem>().Count(a => a.Authenticator.Name == name) != 0);
 
           authenticator.Name = name;
           authenticator.AutoRefresh = false;
 
-          var form = new AddSteamAuthenticator();
-          form.Authenticator = authenticator;
+          var form = new AddSteamAuthenticator {
+            Authenticator = authenticator
+          };
           added = (form.ShowDialog(this) == DialogResult.OK);
         }
         else if (registeredauth.AuthenticatorType == RegisteredAuthenticator.AuthenticatorTypes.Google) {
@@ -1062,13 +1064,14 @@ namespace Authenticator {
           do {
             name = "Google" + (existing != 0 ? " (" + existing + ")" : string.Empty);
             existing++;
-          } while (authenticatorList.Items.Cast<AuthenticatorListitem>().Count(a => a.Authenticator.Name == name) != 0);
+          } while (authenticatorList.Items.Cast<AuthenticatorListItem>().Count(a => a.Authenticator.Name == name) != 0);
 
           authenticator.Name = name;
           authenticator.AutoRefresh = false;
 
-          var form = new AddGoogleAuthenticator();
-          form.Authenticator = authenticator;
+          var form = new AddGoogleAuthenticator {
+            Authenticator = authenticator
+          };
           added = (form.ShowDialog(this) == DialogResult.OK);
         }
         else if (registeredauth.AuthenticatorType == RegisteredAuthenticator.AuthenticatorTypes.GuildWars) {
@@ -1078,13 +1081,14 @@ namespace Authenticator {
           do {
             name = "GuildWars" + (existing != 0 ? " (" + existing + ")" : string.Empty);
             existing++;
-          } while (authenticatorList.Items.Cast<AuthenticatorListitem>().Count(a => a.Authenticator.Name == name) != 0);
+          } while (authenticatorList.Items.Cast<AuthenticatorListItem>().Count(a => a.Authenticator.Name == name) != 0);
 
           authenticator.Name = name;
           authenticator.AutoRefresh = false;
 
-          var form = new AddGuildWarsAuthenticator();
-          form.Authenticator = authenticator;
+          var form = new AddGuildWarsAuthenticator {
+            Authenticator = authenticator
+          };
           added = (form.ShowDialog(this) == DialogResult.OK);
         }
         else if (registeredauth.AuthenticatorType == RegisteredAuthenticator.AuthenticatorTypes.Microsoft) {
@@ -1094,13 +1098,14 @@ namespace Authenticator {
           do {
             name = "Microsoft" + (existing != 0 ? " (" + existing + ")" : string.Empty);
             existing++;
-          } while (authenticatorList.Items.Cast<AuthenticatorListitem>().Count(a => a.Authenticator.Name == name) != 0);
+          } while (authenticatorList.Items.Cast<AuthenticatorListItem>().Count(a => a.Authenticator.Name == name) != 0);
 
           authenticator.Name = name;
           authenticator.AutoRefresh = false;
 
-          var form = new AddMicrosoftAuthenticator();
-          form.Authenticator = authenticator;
+          var form = new AddMicrosoftAuthenticator {
+            Authenticator = authenticator
+          };
           added = (form.ShowDialog(this) == DialogResult.OK);
         }
         else if (registeredauth.AuthenticatorType == RegisteredAuthenticator.AuthenticatorTypes.RFC6238_TIME) {
@@ -1111,14 +1116,15 @@ namespace Authenticator {
           do {
             name = "Authenticator" + (existing != 0 ? " (" + existing + ")" : string.Empty);
             existing++;
-          } while (authenticatorList.Items.Cast<AuthenticatorListitem>().Count(a => a.Authenticator.Name == name) != 0);
+          } while (authenticatorList.Items.Cast<AuthenticatorListItem>().Count(a => a.Authenticator.Name == name) != 0);
 
           authenticator.Name = name;
           authenticator.AutoRefresh = false;
           authenticator.Skin = "AppIcon.png";
 
-          var form = new AddAuthenticator();
-          form.Authenticator = authenticator;
+          var form = new AddAuthenticator {
+            Authenticator = authenticator
+          };
           added = (form.ShowDialog(this) == DialogResult.OK);
         }
         else if (registeredauth.AuthenticatorType == RegisteredAuthenticator.AuthenticatorTypes.OktaVerify) {
@@ -1128,13 +1134,14 @@ namespace Authenticator {
           do {
             name = "Okta" + (existing != 0 ? " (" + existing + ")" : string.Empty);
             existing++;
-          } while (authenticatorList.Items.Cast<AuthenticatorListitem>().Count(a => a.Authenticator.Name == name) != 0);
+          } while (authenticatorList.Items.Cast<AuthenticatorListItem>().Count(a => a.Authenticator.Name == name) != 0);
 
           authenticator.Name = name;
           authenticator.AutoRefresh = false;
 
-          var form = new AddOktaVerifyAuthenticator();
-          form.Authenticator = authenticator;
+          var form = new AddOktaVerifyAuthenticator {
+            Authenticator = authenticator
+          };
           added = (form.ShowDialog(this) == DialogResult.OK);
         }
         else {
@@ -1166,16 +1173,16 @@ namespace Authenticator {
 
           // reset UI
           SetAutoSize();
-          introLabel.Visible = (Config.Count == 0);
         }
       }
     }
 
     void importTextMenu_Click(object sender, EventArgs e) {
-      var ofd = new OpenFileDialog();
-      ofd.AddExtension = true;
-      ofd.CheckFileExists = true;
-      ofd.CheckPathExists = true;
+      var ofd = new OpenFileDialog {
+        AddExtension = true,
+        CheckFileExists = true,
+        CheckPathExists = true
+      };
       //
       var lastv2File = AuthHelper.GetLastV2Config();
       if (string.IsNullOrEmpty(lastv2File) == false) {
@@ -1228,7 +1235,6 @@ namespace Authenticator {
 
       // if no authenticators, show intro text and remove any encryption
       if (Config.Count == 0) {
-        introLabel.Visible = true;
         authenticatorList.Visible = false;
         Config.PasswordType = Authenticator.PasswordTypes.None;
         Config.Password = null;
@@ -1242,7 +1248,7 @@ namespace Authenticator {
       // set the new order of items in Config from that of the list
       var count = authenticatorList.Items.Count;
       for (var i = 0; i < count; i++) {
-        var item = (AuthenticatorListitem) authenticatorList.Items[i];
+        var item = (AuthenticatorListItem) authenticatorList.Items[i];
         Config.Where(a => a == item.Authenticator).FirstOrDefault().Index = i;
       }
 
@@ -1341,59 +1347,68 @@ namespace Authenticator {
       menu.Items.Clear();
 
       if (Config == null || Config.IsReadOnly == false) {
-        menuitem = new ToolStripMenuItem(strings.MenuChangeProtection + "...");
-        menuitem.Name = "changePasswordOptionsMenuItem";
+        menuitem = new ToolStripMenuItem("Change Protection...") {
+          Name = "changePasswordOptionsMenuItem"
+        };
         menuitem.Click += changePasswordOptionsMenuItem_Click;
         menu.Items.Add(menuitem);
         menu.Items.Add(new ToolStripSeparator() {Name = "changePasswordOptionsSeparatorItem"});
       }
 
       if (Config != null && Config.IsPortable == false) {
-        menuitem = new ToolStripMenuItem(strings.MenuStartWithWindows);
-        menuitem.Name = "startWithWindowsOptionsMenuItem";
+        menuitem = new ToolStripMenuItem("Start With Windows") {
+          Name = "startWithWindowsOptionsMenuItem"
+        };
         menuitem.Click += startWithWindowsOptionsMenuItem_Click;
         menu.Items.Add(menuitem);
       }
 
-      menuitem = new ToolStripMenuItem(strings.MenuAlwaysOnTop);
-      menuitem.Name = "alwaysOnTopOptionsMenuItem";
+      menuitem = new ToolStripMenuItem("Always on Top") {
+        Name = "alwaysOnTopOptionsMenuItem"
+      };
       menuitem.Click += alwaysOnTopOptionsMenuItem_Click;
       menu.Items.Add(menuitem);
 
-      menuitem = new ToolStripMenuItem(strings.MenuUseSystemTrayIcon);
-      menuitem.Name = "useSystemTrayIconOptionsMenuItem";
+      menuitem = new ToolStripMenuItem("Use System Tray Icon") {
+        Name = "useSystemTrayIconOptionsMenuItem"
+      };
       menuitem.Click += useSystemTrayIconOptionsMenuItem_Click;
       menu.Items.Add(menuitem);
 
-      menuitem = new ToolStripMenuItem(strings.MenuAutoSize);
-      menuitem.Name = "autoSizeOptionsMenuItem";
+      menuitem = new ToolStripMenuItem("Auto Size") {
+        Name = "autoSizeOptionsMenuItem"
+      };
       menuitem.Click += autoSizeOptionsMenuItem_Click;
       menu.Items.Add(menuitem);
 
       menu.Items.Add(new ToolStripSeparator());
 
-      menuitem = new ToolStripMenuItem(strings.MenuExport);
-      menuitem.Name = "exportOptionsMenuItem";
+      menuitem = new ToolStripMenuItem("Export...") {
+        Name = "exportOptionsMenuItem"
+      };
       menuitem.Click += exportOptionsMenuItem_Click;
       menu.Items.Add(menuitem);
 
       menu.Items.Add(new ToolStripSeparator());
 
-      menuitem = new ToolStripMenuItem(strings.MenuAbout + "...");
-      menuitem.Name = "aboutOptionsMenuItem";
+      menuitem = new ToolStripMenuItem("About...") {
+        Name = "aboutOptionsMenuItem"
+      };
       menuitem.Click += aboutOptionMenuItem_Click;
       menu.Items.Add(menuitem);
 
-      menuitem = new ToolStripMenuItem("Check for updates");
-      menuitem.Name = "checkUpdatesMenuItem";
+      menuitem = new ToolStripMenuItem("Check for updates") {
+        Name = "checkUpdatesMenuItem"
+      };
       menuitem.Click += (s, e) => Updater.CheckForUpdates(false);
       menu.Items.Add(menuitem);
 
       menu.Items.Add(new ToolStripSeparator());
 
-      menuitem = new ToolStripMenuItem(strings.MenuExit);
-      menuitem.Name = "exitOptionsMenuItem";
-      menuitem.ShortcutKeys = Keys.F4 | Keys.Alt;
+      menuitem = new ToolStripMenuItem("Exit") {
+        Name = "exitOptionsMenuItem",
+        ShortcutKeys = Keys.F4 | Keys.Alt
+      };
       menuitem.Click += exitOptionMenuItem_Click;
       menu.Items.Add(menuitem);
     }
@@ -1404,8 +1419,9 @@ namespace Authenticator {
 
       menu.Items.Clear();
 
-      menuitem = new ToolStripMenuItem(strings.MenuOpen);
-      menuitem.Name = "openOptionsMenuItem";
+      menuitem = new ToolStripMenuItem("Open") {
+        Name = "openOptionsMenuItem"
+      };
       menuitem.Click += openOptionsMenuItem_Click;
       menu.Items.Add(menuitem);
       menu.Items.Add(new ToolStripSeparator() {Name = "openOptionsSeparatorItem"});
@@ -1415,33 +1431,39 @@ namespace Authenticator {
         // @todo change to MRU
         var index = 1;
         foreach (var auth in Config.Take(30)) {
-          menuitem = new ToolStripMenuItem(index + ". " + auth.Name);
-          menuitem.Name = "authenticatorOptionsMenuItem_" + index;
-          menuitem.Tag = auth;
+          menuitem = new ToolStripMenuItem(index + ". " + auth.Name) {
+            Name = "authenticatorOptionsMenuItem_" + index,
+            Tag = auth
+          };
           menuitem.Click += authenticatorOptionsMenuItem_Click;
           menu.Items.Add(menuitem);
           index++;
         }
 
-        var separator = new ToolStripSeparator();
-        separator.Name = "authenticatorOptionsSeparatorItem";
+        var separator = new ToolStripSeparator {
+          Name = "authenticatorOptionsSeparatorItem"
+        };
         menu.Items.Add(separator);
 
-        menuitem = new ToolStripMenuItem(strings.DefaultAction);
-        menuitem.Name = "defaultActionOptionsMenuItem";
+        menuitem = new ToolStripMenuItem(strings.DefaultAction) {
+          Name = "defaultActionOptionsMenuItem"
+        };
         menu.Items.Add(menuitem);
-        subitem = new ToolStripMenuItem(strings.DefaultActionNotification);
-        subitem.Name = "defaultActionNotificationOptionsMenuItem";
+        subitem = new ToolStripMenuItem(strings.DefaultActionNotification) {
+          Name = "defaultActionNotificationOptionsMenuItem"
+        };
         subitem.Click += defaultActionNotificationOptionsMenuItem_Click;
         menuitem.DropDownItems.Add(subitem);
-        subitem = new ToolStripMenuItem(strings.DefaultActionCopyToClipboard);
-        subitem.Name = "defaultActionCopyToClipboardOptionsMenuItem";
+        subitem = new ToolStripMenuItem(strings.DefaultActionCopyToClipboard) {
+          Name = "defaultActionCopyToClipboardOptionsMenuItem"
+        };
         subitem.Click += defaultActionCopyToClipboardOptionsMenuItem_Click;
         menuitem.DropDownItems.Add(subitem);
         menu.Items.Add(menuitem);
 
-        separator = new ToolStripSeparator();
-        separator.Name = "authenticatorActionOptionsSeparatorItem";
+        separator = new ToolStripSeparator {
+          Name = "authenticatorActionOptionsSeparatorItem"
+        };
         menu.Items.Add(separator);
       }
 
@@ -1455,16 +1477,24 @@ namespace Authenticator {
       //	menu.Items.Add(new ToolStripSeparator());
       //}
 
-      menuitem = new ToolStripMenuItem(strings.MenuAbout + "...");
-      menuitem.Name = "aboutOptionsMenuItem";
+      menuitem = new ToolStripMenuItem("Check for updates") {
+        Name = "checkUpdatesMenuItem"
+      };
+      menuitem.Click += (s, e) => Updater.CheckForUpdates(false);
+      menu.Items.Add(menuitem);
+
+      menuitem = new ToolStripMenuItem("About...") {
+        Name = "aboutOptionsMenuItem"
+      };
       menuitem.Click += aboutOptionMenuItem_Click;
       menu.Items.Add(menuitem);
 
       menu.Items.Add(new ToolStripSeparator());
 
-      menuitem = new ToolStripMenuItem(strings.MenuExit);
-      menuitem.Name = "exitOptionsMenuItem";
-      menuitem.ShortcutKeys = Keys.F4 | Keys.Alt;
+      menuitem = new ToolStripMenuItem("Exit") {
+        Name = "exitOptionsMenuItem",
+        ShortcutKeys = Keys.F4 | Keys.Alt
+      };
       menuitem.Click += exitOptionMenuItem_Click;
       menu.Items.Add(menuitem);
     }
@@ -1571,8 +1601,9 @@ namespace Authenticator {
       if ((Config.PasswordType & Authenticator.PasswordTypes.Explicit) != 0) {
         var invalidPassword = false;
         while (true) {
-          var passwordForm = new GetPasswordForm();
-          passwordForm.InvalidPassword = invalidPassword;
+          var passwordForm = new GetPasswordForm {
+            InvalidPassword = invalidPassword
+          };
           var result = passwordForm.ShowDialog(this);
           if (result == DialogResult.Cancel) {
             return;
@@ -1586,9 +1617,10 @@ namespace Authenticator {
         }
       }
 
-      var form = new ChangePasswordForm();
-      form.PasswordType = Config.PasswordType;
-      form.HasPassword = ((Config.PasswordType & Authenticator.PasswordTypes.Explicit) != 0);
+      var form = new ChangePasswordForm {
+        PasswordType = Config.PasswordType,
+        HasPassword = ((Config.PasswordType & Authenticator.PasswordTypes.Explicit) != 0)
+      };
       if (form.ShowDialog(this) == DialogResult.OK) {
         bool retry;
         var retrypasswordtype = Config.PasswordType;
@@ -1628,7 +1660,7 @@ namespace Authenticator {
     private void authenticatorOptionsMenuItem_Click(object sender, EventArgs e) {
       var menuitem = (ToolStripMenuItem) sender;
       var auth = menuitem.Tag as AuthAuthenticator;
-      var item = authenticatorList.Items.Cast<AuthenticatorListitem>().FirstOrDefault(i => i.Authenticator == auth);
+      var item = authenticatorList.Items.Cast<AuthenticatorListItem>().FirstOrDefault(i => i.Authenticator == auth);
       if (item != null) {
         RunAction(auth, Config.NotifyAction);
 
@@ -1677,8 +1709,9 @@ namespace Authenticator {
       if ((Config.PasswordType & Authenticator.PasswordTypes.Explicit) != 0) {
         var invalidPassword = false;
         while (true) {
-          var checkform = new GetPasswordForm();
-          checkform.InvalidPassword = invalidPassword;
+          var checkform = new GetPasswordForm {
+            InvalidPassword = invalidPassword
+          };
           var result = checkform.ShowDialog(this);
           if (result == DialogResult.Cancel) {
             return;
@@ -1700,8 +1733,9 @@ namespace Authenticator {
     }
 
     private void aboutOptionMenuItem_Click(object sender, EventArgs e) {
-      var form = new AboutForm();
-      form.Config = Config;
+      var form = new AboutForm {
+        Config = Config
+      };
       form.ShowDialog(this);
     }
 

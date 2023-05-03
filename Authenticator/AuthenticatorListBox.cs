@@ -10,132 +10,49 @@ using System.Windows.Forms;
 using Authenticator.Resources;
 
 namespace Authenticator {
-  /// <summary>
-  /// An item within the OwnerDraw list that represents an authenticator
-  /// </summary>
-  public class AuthenticatorListitem {
-    /// <summary>
-    /// Create a new AuthenticatorListitem
-    /// </summary>
-    /// <param name="auth">authenticator</param>
-    /// <param name="index">index of item</param>
-    public AuthenticatorListitem(AuthAuthenticator auth, int index) {
+  public class AuthenticatorListItem {
+    public AuthenticatorListItem(AuthAuthenticator auth, int index) {
       Authenticator = auth;
       LastUpdate = DateTime.MinValue;
       Index = index;
       DisplayUntil = DateTime.MinValue;
     }
 
-    /// <summary>
-    /// Index of item in list
-    /// </summary>
     public int Index { get; set; }
-
-    /// <summary>
-    /// Authenticator wrapper
-    /// </summary>
     public AuthAuthenticator Authenticator { get; set; }
-
-    /// <summary>
-    /// When the item was last updated
-    /// </summary>
     public DateTime LastUpdate { get; set; }
-
-    /// <summary>
-    /// When the code should be displayed to if not AutoRefresh
-    /// </summary>
     public DateTime DisplayUntil { get; set; }
-
-    /// <summary>
-    /// The last code to be displayed
-    /// </summary>
     public string LastCode { get; set; }
-
-    /// <summary>
-    /// If this item is being dragged
-    /// </summary>
     public bool Dragging { get; set; }
-
-    /// <summary>
-    /// A count for password protected to allow multipel unprotect operations
-    /// </summary>
     public int UnprotectCount { get; set; }
-
-    /// <summary>
-    /// Width of item for autosizing
-    /// </summary>
     public int AutoWidth { get; set; }
   }
 
-  /// <summary>
-  /// Delegate for event when item is removed
-  /// </summary>
-  /// <param name="source"></param>
-  /// <param name="args"></param>
   public delegate void AuthenticatorListItemRemovedHandler(object source, AuthenticatorListItemRemovedEventArgs args);
 
-  /// <summary>
-  /// Delegate for Redordered event
-  /// </summary>
-  /// <param name="source"></param>
-  /// <param name="args"></param>
   public delegate void AuthenticatorListReorderedHandler(object source, AuthenticatorListReorderedEventArgs args);
 
-  /// <summary>
-  /// Event arguments for removing an item
-  /// </summary>
   public class AuthenticatorListItemRemovedEventArgs : EventArgs {
-    /// <summary>
-    /// The item that was removed
-    /// </summary>
-    public AuthenticatorListitem Item { get; private set; }
+    public AuthenticatorListItem Item { get; }
 
-    /// <summary>
-    /// Default constructor
-    /// </summary>
-    public AuthenticatorListItemRemovedEventArgs(AuthenticatorListitem item)
-      : base() {
+    public AuthenticatorListItemRemovedEventArgs(AuthenticatorListItem item) {
       Item = item;
     }
   }
 
-  /// <summary>
-  /// Event arguments for reordering the list
-  /// </summary>
   public class AuthenticatorListReorderedEventArgs : EventArgs {
-    /// <summary>
-    /// Default constructor
-    /// </summary>
-    public AuthenticatorListReorderedEventArgs()
-      : base() {
-    }
   }
 
-  /// <summary>
-  /// Delegate for event when double click
-  /// </summary>
-  /// <param name="source"></param>
-  /// <param name="args"></param>
   public delegate void AuthenticatorListDoubleClickHandler(object source, AuthenticatorListDoubleClickEventArgs args);
 
-  /// <summary>
-  /// Event arguments for double click
-  /// </summary>
   public class AuthenticatorListDoubleClickEventArgs : EventArgs {
     public AuthAuthenticator Authenticator;
 
-    /// <summary>
-    /// Default constructor
-    /// </summary>
-    public AuthenticatorListDoubleClickEventArgs(AuthAuthenticator auth)
-      : base() {
+    public AuthenticatorListDoubleClickEventArgs(AuthAuthenticator auth) {
       Authenticator = auth;
     }
   }
 
-  /// <summary>
-  /// An owner draw listbox that displays wrapped authenticators
-  /// </summary>
   public class AuthenticatorListBox : ListBox {
     private const int MARGIN_LEFT = 4;
     private const int MARGIN_TOP = 8;
@@ -146,8 +63,6 @@ namespace Authenticator {
 
     private const int LABEL_MARGIN_BOTTOM = 2;
 
-    private const int LABEL_WIDTH = 250;
-
     private const int FONT_SIZE = 12;
 
     private const int PIE_WIDTH = 46;
@@ -156,80 +71,26 @@ namespace Authenticator {
     private const int PIE_STARTANGLE = 270;
     private const int PIE_SWEEPANGLE = 360;
 
-    /// <summary>
-    /// Event handler for ItemRemoved
-    /// </summary>
     public event AuthenticatorListItemRemovedHandler ItemRemoved;
 
-    /// <summary>
-    /// Event handler for Reordered
-    /// </summary>
     public event AuthenticatorListReorderedHandler Reordered;
 
-    /// <summary>
-    /// Scrolled event handler
-    /// </summary>
     [Category("Action")]
-    public event ScrollEventHandler Scrolled = null;
+    public event ScrollEventHandler Scrolled;
 
-    /// <summary>
-    /// Event handler for double click
-    /// </summary>
     public new event AuthenticatorListDoubleClickHandler DoubleClick;
 
-    /// <summary>
-    /// Rename textbox
-    /// </summary>
     private TextBox renameTextbox;
-
-    /// <summary>
-    /// Current item
-    /// </summary>
-    private AuthenticatorListitem currentItem;
-
-    /// <summary>
-    /// Saved point of mouse down
-    /// </summary>
+    private AuthenticatorListItem currentItem;
     private Point mouseDownLocation = Point.Empty;
-
-    /// <summary>
-    /// Saved pont of mouse move
-    /// </summary>
-    private Point mouseMoveLocation = Point.Empty;
-
-    /// <summary>
-    /// Bitmap of cloned item we are dragging
-    /// </summary>
+    // private Point mouseMoveLocation = Point.Empty;
     private Bitmap draggedBitmap;
-
-    /// <summary>
-    /// Item that is being dragged
-    /// </summary>
-    private AuthenticatorListitem draggedItem;
-
-    /// <summary>
-    /// Offset of last position of dragged bitmap so we can paint behind it
-    /// </summary>
+    private AuthenticatorListItem draggedItem;
     private Rectangle draggedBitmapRect;
-
-    /// <summary>
-    /// Offset of mouseY and top of item
-    /// </summary>
     private int draggedBitmapOffsetY;
-
-    /// <summary>
-    /// Last TopIndex if we scrolled while dragging
-    /// </summary>
     private int? lastDragTopIndex;
-
-    /// <summary>
-    /// When we last changed the TopIndex
-    /// </summary>
     private DateTime lastDragScroll;
 
-    /// <summary>
-    /// Default constructor for our authenticator list box
-    /// </summary>
     public AuthenticatorListBox() {
       // set owner draw stlying
       SetStyle(
@@ -251,88 +112,56 @@ namespace Authenticator {
       LoadContextMenuStrip();
     }
 
-    /// <summary>
-    /// Capture the mouse wheel events and scroll to appropriate position
-    /// </summary>
-    /// <param name="e"></param>
     protected override void OnMouseWheel(MouseEventArgs e) {
       base.OnMouseWheel(e);
 
-      var y = (e.Delta * ItemHeight) + MARGIN_TOP;
+      var y = e.Delta * ItemHeight + MARGIN_TOP;
       var sargs = new ScrollEventArgs(ScrollEventType.ThumbPosition, y, ScrollOrientation.VerticalScroll);
-      Scrolled(this, sargs);
+      Scrolled?.Invoke(this, sargs);
     }
 
-    /// <summary>
-    /// Copy the current code when double-clicking
-    /// </summary>
-    /// <param name="e"></param>
     protected override void OnMouseDoubleClick(MouseEventArgs e) {
       var item = CurrentItem;
       if (item != null) {
-        DoubleClick(this, new AuthenticatorListDoubleClickEventArgs(item.Authenticator));
+        DoubleClick?.Invoke(this, new AuthenticatorListDoubleClickEventArgs(item.Authenticator));
       }
     }
 
     #region Control Events
 
-    /// <summary>
-    /// Resize event to resize base and fix rename box location
-    /// </summary>
-    /// <param name="e"></param>
     protected override void OnResize(EventArgs e) {
       base.OnResize(e);
       SetRenameTextboxLocation();
     }
 
-    /// <summary>
-    /// Fix position of rename box when scrolling
-    /// </summary>
-    /// <param name="sender"></param>
-    /// <param name="e"></param>
     void AuthenticatorListBox_Scrolled(object sender, ScrollEventArgs e) {
       if (e.Type == ScrollEventType.EndScroll || e.Type == ScrollEventType.ThumbPosition) {
         SetRenameTextboxLocation();
       }
     }
 
-    /// <summary>
-    /// Click an item in the context menu
-    /// </summary>
-    /// <param name="sender"></param>
-    /// <param name="e"></param>
     void ContextMenu_Click(object sender, EventArgs e) {
-      ProcessMenu((ToolStripItem) sender);
+      ProcessMenu((ToolStripItem)sender);
     }
 
-    /// <summary>
-    /// Click to open the contxet menu and set the state
-    /// </summary>
-    /// <param name="sender"></param>
-    /// <param name="e"></param>
     void ContextMenuStrip_Opening(object sender, CancelEventArgs e) {
       SetContextMenuItems();
     }
 
-    /// <summary>
-    /// Tick event used to update the pie, codes and relock authenticators
-    /// </summary>
-    /// <param name="sender"></param>
-    /// <param name="e"></param>
     public void Tick(object sender, EventArgs e) {
       for (var index = 0; index < Items.Count; index++) {
         // get the item
-        var item = Items[index] as AuthenticatorListitem;
+        var item = Items[index] as AuthenticatorListItem;
         var auth = item.Authenticator;
 
-        var y = (ItemHeight * index) - (TopIndex * ItemHeight);
+        var y = ItemHeight * index - TopIndex * ItemHeight;
         if (auth.AutoRefresh) {
           // for autorefresh we repaint the pie or the code too
           //int tillUpdate = (int)((auth.AuthenticatorData.ServerTime % ((long)auth.AuthenticatorData.Period * 1000L)) / 1000L);
           var tillUpdate =
-            (int) Math.Round(
-              (decimal) ((auth.AuthenticatorData.ServerTime % ((long) auth.AuthenticatorData.Period * 1000L)) / 1000L) *
-              (360M / (decimal) auth.AuthenticatorData.Period));
+            (int)Math.Round(
+              (decimal)(auth.AuthenticatorData.ServerTime % ((long)auth.AuthenticatorData.Period * 1000L) / 1000L) *
+              (360M / (decimal)auth.AuthenticatorData.Period));
           if (item.LastUpdate == DateTime.MinValue || tillUpdate == 0) {
             Invalidate(new Rectangle(0, y, Width, ItemHeight), false);
             item.LastUpdate = DateTime.Now;
@@ -365,10 +194,6 @@ namespace Authenticator {
       }
     }
 
-    /// <summary>
-    /// Handle mouse down event
-    /// </summary>
-    /// <param name="e"></param>
     protected override void OnMouseDown(MouseEventArgs e) {
       // set the current item based on position
       SetCurrentItem(e.Location);
@@ -377,10 +202,6 @@ namespace Authenticator {
       base.OnMouseDown(e);
     }
 
-    /// <summary>
-    /// Handle the mouse up and check for click in the refresh icon
-    /// </summary>
-    /// <param name="e"></param>
     protected override void OnMouseUp(MouseEventArgs e) {
       base.OnMouseUp(e);
 
@@ -388,13 +209,12 @@ namespace Authenticator {
         // if this was in a refresh icon, we do a refresh
         var index = IndexFromPoint(e.Location);
         if (index >= 0 && index < Items.Count) {
-          var item = Items[index] as AuthenticatorListitem;
-          var x = 0;
-          var y = (ItemHeight * index) - (ItemHeight * TopIndex);
-          var hasvscroll = (Height < (Items.Count * ItemHeight));
+          var item = Items[index] as AuthenticatorListItem;
+          var y = ItemHeight * index - ItemHeight * TopIndex;
+          var hasvscroll = Height < Items.Count * ItemHeight;
           if (item.Authenticator.AutoRefresh == false && item.DisplayUntil < DateTime.Now
                                                       && new Rectangle(
-                                                        x + Width - (ICON_WIDTH + MARGIN_RIGHT) -
+                                                        Width - (ICON_WIDTH + MARGIN_RIGHT) -
                                                         (hasvscroll ? SystemInformation.VerticalScrollBarWidth : 0),
                                                         y + MARGIN_TOP, ICON_WIDTH, ICON_HEIGHT).Contains(e.Location)) {
             if (UnprotectAuthenticator(item) == DialogResult.Cancel) {
@@ -423,17 +243,11 @@ namespace Authenticator {
         Invalidate(draggedBitmapRect);
       }
 
-      if (draggedItem != null) {
-        draggedItem = null;
-      }
+      draggedItem = null;
     }
 
-    /// <summary>
-    /// Handle the mouse move event to capture cursor position
-    /// </summary>
-    /// <param name="e"></param>
     protected override void OnMouseMove(MouseEventArgs e) {
-      mouseMoveLocation = e.Location;
+      // mouseMoveLocation = e.Location;
 
       // if we are moving with LeftMouse down and moved more than 2 pixles then we are dragging
       if (e.Button == MouseButtons.Left && mouseDownLocation != Point.Empty && Items.Count > 1) {
@@ -443,11 +257,11 @@ namespace Authenticator {
           draggedItem = CurrentItem;
 
           // get a snapshot of the current item for the drag
-          var hasvscroll = (Height < (Items.Count * ItemHeight));
+          var hasvscroll = Height < Items.Count * ItemHeight;
           draggedBitmap = new Bitmap(Width - (hasvscroll ? SystemInformation.VerticalScrollBarWidth : 0), ItemHeight);
           draggedBitmapRect = Rectangle.Empty;
           using (var g = Graphics.FromImage(draggedBitmap)) {
-            var y = (ItemHeight * CurrentItem.Index) - (ItemHeight * TopIndex);
+            var y = ItemHeight * CurrentItem.Index - ItemHeight * TopIndex;
 
             var screen = Parent.PointToScreen(new Point(Location.X, Location.Y + y));
             g.CopyFromScreen(screen.X, screen.Y, 0, 0,
@@ -475,10 +289,6 @@ namespace Authenticator {
       base.OnMouseMove(e);
     }
 
-    /// <summary>
-    /// When we are dragging over
-    /// </summary>
-    /// <param name="e"></param>
     protected override void OnDragOver(DragEventArgs e) {
       var screen = Parent.RectangleToScreen(new Rectangle(Location.X, Location.Y, Width, Height));
       var mousePoint = new Point(e.X, e.Y);
@@ -507,10 +317,6 @@ namespace Authenticator {
       }
     }
 
-    /// <summary>
-    /// Check if we should continue dragging
-    /// </summary>
-    /// <param name="e"></param>
     protected override void OnQueryContinueDrag(QueryContinueDragEventArgs e) {
       var screen = Parent.RectangleToScreen(new Rectangle(Location.X, Location.Y, Width, Height));
       var mousePoint = Cursor.Position;
@@ -547,7 +353,7 @@ namespace Authenticator {
           }
         }
         else if (mousePoint.Y <= screen.Top) {
-          var visible = ClientSize.Height / ItemHeight;
+          // var visible = ClientSize.Height / ItemHeight;
           if (TopIndex > 0 && now.Subtract(lastDragScroll).TotalMilliseconds >= 150) {
             TopIndex--;
             lastDragScroll = now;
@@ -561,12 +367,8 @@ namespace Authenticator {
       }
     }
 
-    /// <summary>
-    /// When a dragdrop operation has completed
-    /// </summary>
-    /// <param name="e"></param>
     protected override void OnDragDrop(DragEventArgs e) {
-      var item = e.Data.GetData(typeof(AuthenticatorListitem)) as AuthenticatorListitem;
+      var item = e.Data.GetData(typeof(AuthenticatorListItem)) as AuthenticatorListItem;
       if (item != null) {
         // stop paiting as we reorder to reduce flicker
         WinApi.SendMessage(Handle, WinApi.WM_SETREDRAW, 0, IntPtr.Zero);
@@ -584,11 +386,11 @@ namespace Authenticator {
 
           // set the correct indexes of our items
           for (var i = 0; i < Items.Count; i++) {
-            (Items[i] as AuthenticatorListitem).Index = i;
+            ((AuthenticatorListItem) Items[i]).Index = i;
           }
 
           // fire the reordered event
-          Reordered(this, new AuthenticatorListReorderedEventArgs());
+          Reordered?.Invoke(this, new AuthenticatorListReorderedEventArgs());
 
           // clear state
           item.Dragging = false;
@@ -614,10 +416,6 @@ namespace Authenticator {
       }
     }
 
-    /// <summary>
-    /// Main WndProc handler to capture scroll events
-    /// </summary>
-    /// <param name="msg"></param>
     protected override void WndProc(ref Message msg) {
       if (msg.Msg == WinApi.WM_VSCROLL) {
         if (Scrolled != null) {
@@ -644,14 +442,11 @@ namespace Authenticator {
 
     #region Item renaming
 
-    /// <summary>
-    /// Set the position of the rename textbox
-    /// </summary>
     private void SetRenameTextboxLocation() {
       if (renameTextbox != null && renameTextbox.Visible) {
-        var item = renameTextbox.Tag as AuthenticatorListitem;
+        var item = renameTextbox.Tag as AuthenticatorListItem;
         if (item != null) {
-          var y = (ItemHeight * item.Index) - (TopIndex * ItemHeight) + MARGIN_TOP;
+          var y = ItemHeight * item.Index - TopIndex * ItemHeight + MARGIN_TOP;
           if (RenameTextbox.Location.Y != y) {
             RenameTextbox.Location = new Point(RenameTextbox.Location.X, y);
           }
@@ -661,12 +456,9 @@ namespace Authenticator {
       }
     }
 
-    /// <summary>
-    /// Get or create the rename textbox
-    /// </summary>
     public TextBox RenameTextbox {
       get {
-        var hasvscroll = (Height < (Items.Count * ItemHeight));
+        var hasvscroll = Height < Items.Count * ItemHeight;
         var labelMaxWidth = GetMaxAvailableLabelWidth(Width - Margin.Horizontal - DefaultPadding.Horizontal -
                                                       (hasvscroll ? SystemInformation.VerticalScrollBarWidth : 0));
         if (renameTextbox == null) {
@@ -674,8 +466,7 @@ namespace Authenticator {
           renameTextbox.Name = "renameTextBox";
           renameTextbox.AllowDrop = true;
           renameTextbox.CausesValidation = false;
-          renameTextbox.Font =
-            new Font("Microsoft Sans Serif", 10F, FontStyle.Regular, GraphicsUnit.Point, ((byte) (0)));
+          renameTextbox.Font = new Font("Microsoft Sans Serif", 10F, FontStyle.Regular, GraphicsUnit.Point, 0);
           renameTextbox.Location = new Point(0, 0);
           renameTextbox.Multiline = false;
           renameTextbox.Name = "secretCodeField";
@@ -695,17 +486,10 @@ namespace Authenticator {
       }
     }
 
-    /// <summary>
-    /// Get flag is we are renaming
-    /// </summary>
     public bool IsRenaming {
       get { return RenameTextbox.Visible; }
     }
 
-    /// <summary>
-    /// End the renaming and decide to save
-    /// </summary>
-    /// <param name="save"></param>
     public void EndRenaming(bool save = true) {
       if (save == false) {
         RenameTextbox.Tag = null;
@@ -714,11 +498,6 @@ namespace Authenticator {
       RenameTextbox.Visible = false;
     }
 
-    /// <summary>
-    /// Keypress event to cancel or commit renaming
-    /// </summary>
-    /// <param name="sender"></param>
-    /// <param name="e"></param>
     void _renameTextbox_KeyPress(object sender, KeyPressEventArgs e) {
       if (e.KeyChar == 27) {
         RenameTextbox.Tag = null;
@@ -731,14 +510,9 @@ namespace Authenticator {
       }
     }
 
-    /// <summary>
-    /// Handle the focus leave for rename box
-    /// </summary>
-    /// <param name="sender"></param>
-    /// <param name="e"></param>
     void RenameTextbox_Leave(object sender, EventArgs e) {
       RenameTextbox.Visible = false;
-      var item = RenameTextbox.Tag as AuthenticatorListitem;
+      var item = RenameTextbox.Tag as AuthenticatorListItem;
       if (item != null) {
         var newname = RenameTextbox.Text.Trim();
         if (newname.Length != 0) {
@@ -754,18 +528,12 @@ namespace Authenticator {
 
     #region Public Properties
 
-    /// <summary>
-    /// Readonly flag
-    /// </summary>
     public bool ReadOnly { get; set; }
 
-    /// <summary>
-    /// The current (selected) authenticator
-    /// </summary>
-    public AuthenticatorListitem CurrentItem {
+    public AuthenticatorListItem CurrentItem {
       get {
         if (currentItem == null && Items.Count != 0) {
-          currentItem = (AuthenticatorListitem) Items[0];
+          currentItem = (AuthenticatorListItem)Items[0];
         }
 
         return currentItem;
@@ -777,10 +545,6 @@ namespace Authenticator {
 
     #region Private methods
 
-    /// <summary>
-    /// Set the current item based on the mouse position
-    /// </summary>
-    /// <param name="mouseLocation">mouse position</param>
     private void SetCurrentItem(Point mouseLocation) {
       var index = IndexFromPoint(mouseLocation);
       if (index < 0) {
@@ -794,27 +558,22 @@ namespace Authenticator {
         CurrentItem = null;
       }
       else {
-        CurrentItem = Items[index] as AuthenticatorListitem;
+        CurrentItem = Items[index] as AuthenticatorListItem;
       }
     }
 
-    /// <summary>
-    /// Set the current cursor based on position
-    /// </summary>
-    /// <param name="mouseLocation">current mouse position</param>
     private void SetCursor(Point mouseLocation, Cursor force = null) {
       // set cursor if we are over a refresh icon
       var cursor = Cursor.Current;
       if (force == null) {
         var index = IndexFromPoint(mouseLocation);
         if (index >= 0 && index < Items.Count) {
-          var item = Items[index] as AuthenticatorListitem;
-          var x = 0;
-          var y = (ItemHeight * index) - (TopIndex * ItemHeight);
-          var hasvscroll = (Height < (Items.Count * ItemHeight));
+          var item = Items[index] as AuthenticatorListItem;
+          var y = ItemHeight * index - TopIndex * ItemHeight;
+          var hasvscroll = Height < Items.Count * ItemHeight;
           if (item.Authenticator.AutoRefresh == false && item.DisplayUntil < DateTime.Now
                                                       && new Rectangle(
-                                                          x + Width - (ICON_WIDTH + MARGIN_RIGHT) -
+                                                          Width - (ICON_WIDTH + MARGIN_RIGHT) -
                                                           (hasvscroll ? SystemInformation.VerticalScrollBarWidth : 0),
                                                           y + MARGIN_TOP, ICON_WIDTH, ICON_HEIGHT)
                                                         .Contains(mouseLocation)) {
@@ -831,13 +590,7 @@ namespace Authenticator {
       }
     }
 
-    /// <summary>
-    /// Unprotected an authenticator (if possible)
-    /// </summary>
-    /// <param name="item">item to unprotect</param>
-    /// <param name="screen">screen to display dialog for multi-monitors</param>
-    /// <returns></returns>
-    private DialogResult UnprotectAuthenticator(AuthenticatorListitem item, Screen screen = null) {
+    private DialogResult UnprotectAuthenticator(AuthenticatorListItem item, Screen screen = null) {
       // keep a count so we can have multiples
       if (item.UnprotectCount > 0) {
         item.UnprotectCount++;
@@ -857,8 +610,8 @@ namespace Authenticator {
       if (screen != null) {
         // center on the current windows screen (in case of multiple monitors)
         getPassForm.StartPosition = FormStartPosition.Manual;
-        var left = (screen.Bounds.Width / 2) - (getPassForm.Width / 2) + screen.Bounds.Left;
-        var top = (screen.Bounds.Height / 2) - (getPassForm.Height / 2) + screen.Bounds.Top;
+        var left = screen.Bounds.Width / 2 - getPassForm.Width / 2 + screen.Bounds.Left;
+        var top = screen.Bounds.Height / 2 - getPassForm.Height / 2 + screen.Bounds.Top;
         getPassForm.Location = new Point(left, top);
       }
 
@@ -870,11 +623,7 @@ namespace Authenticator {
       return result;
     }
 
-    /// <summary>
-    /// Reprotect the authenticator and each action or when the 30second window has expired
-    /// </summary>
-    /// <param name="item"></param>
-    private void ProtectAuthenticator(AuthenticatorListitem item) {
+    private void ProtectAuthenticator(AuthenticatorListItem item) {
       // if already protected just decrement counter
       item.UnprotectCount--;
       if (item.UnprotectCount > 0) {
@@ -891,9 +640,6 @@ namespace Authenticator {
       item.UnprotectCount = 0;
     }
 
-    /// <summary>
-    /// Preload the context menu items
-    /// </summary>
     private void LoadContextMenuStrip() {
       ContextMenuStrip.Items.Clear();
 
@@ -903,12 +649,10 @@ namespace Authenticator {
       ContextMenuStrip.Items.Add(label);
       ContextMenuStrip.Items.Add(new ToolStripSeparator());
       //
-      EventHandler onclick = ContextMenu_Click;
+      // EventHandler onclick = ContextMenu_Click;
       //
-      ToolStripMenuItem menuitem;
-      ToolStripMenuItem subitem;
       //
-      menuitem = new ToolStripMenuItem(strings.SetPassword + "...");
+      var menuitem = new ToolStripMenuItem(strings.SetPassword + "...");
       menuitem.Name = "setPasswordMenuItem";
       menuitem.Click += ContextMenu_Click;
       ContextMenuStrip.Items.Add(menuitem);
@@ -946,7 +690,7 @@ namespace Authenticator {
       menuitem.Click += ContextMenu_Click;
       ContextMenuStrip.Items.Add(menuitem);
       //
-      ContextMenuStrip.Items.Add(new ToolStripSeparator {Name = "steamSeperator"});
+      ContextMenuStrip.Items.Add(new ToolStripSeparator { Name = "steamSeperator" });
       //
       menuitem = new ToolStripMenuItem(strings.ConfirmTrades + "...");
       menuitem.Name = "showSteamTradesMenuItem";
@@ -979,7 +723,7 @@ namespace Authenticator {
       //
       menuitem = new ToolStripMenuItem(strings.Icon);
       menuitem.Name = "iconMenuItem";
-      subitem = new ToolStripMenuItem();
+      var subitem = new ToolStripMenuItem();
       subitem.Text = strings.IconAuto;
       subitem.Name = "iconMenuItem_default";
       subitem.Tag = string.Empty;
@@ -1004,8 +748,7 @@ namespace Authenticator {
           subitem.Text = icon.Substring(1);
           //subitem.Name = "iconMenuItem_" + iconindex++;
           subitem.Tag = parentItem;
-          subitem.Image = new Bitmap(Assembly.GetExecutingAssembly()
-            .GetManifestResourceStream("Authenticator.Resources." + iconfile));
+          subitem.Image = new Bitmap(Assembly.GetExecutingAssembly().GetManifestResourceStream("Authenticator.Resources." + iconfile));
           subitem.ImageAlign = ContentAlignment.MiddleLeft;
           subitem.ImageScaling = ToolStripItemImageScaling.SizeToFit;
           //subitem.Click += ContextMenu_Click;
@@ -1017,8 +760,7 @@ namespace Authenticator {
           subitem.Text = icon;
           subitem.Name = "iconMenuItem_" + iconindex++;
           subitem.Tag = iconfile;
-          subitem.Image = new Bitmap(Assembly.GetExecutingAssembly()
-            .GetManifestResourceStream("Authenticator.Resources." + iconfile));
+          subitem.Image = new Bitmap(Assembly.GetExecutingAssembly().GetManifestResourceStream("Authenticator.Resources." + iconfile));
           subitem.ImageAlign = ContentAlignment.MiddleLeft;
           subitem.ImageScaling = ToolStripItemImageScaling.SizeToFit;
           subitem.Click += ContextMenu_Click;
@@ -1045,474 +787,489 @@ namespace Authenticator {
       ContextMenuStrip.Items.Add(menuitem);
     }
 
-    /// <summary>
-    /// Set the options for the context menu items based on the currnet authenticator and state
-    /// </summary>
     private void SetContextMenuItems() {
       var menu = ContextMenuStrip;
       var item = CurrentItem;
-      AuthAuthenticator auth = null;
-      if (item == null || (auth = item.Authenticator) == null || auth.AuthenticatorData == null) {
+      AuthAuthenticator auth;
+      if (item == null || (auth = item.Authenticator) == null || auth.AuthenticatorData == null)
         return;
-      }
 
-      var labelitem =
-        menu.Items.Cast<ToolStripItem>().Where(i => i.Name == "contextMenuItemName").FirstOrDefault() as ToolStripLabel;
-      labelitem.Text = item.Authenticator.Name;
-      if (auth.HotKey != null) {
-        labelitem.Text += " (" + auth.HotKey + ")";
-      }
-
-      ToolStripItem sepitem;
-      var menuitem =
-        menu.Items.Cast<ToolStripItem>().Where(i => i.Name == "setPasswordMenuItem").FirstOrDefault() as
-          ToolStripMenuItem;
-      menuitem.Text = (item.Authenticator.AuthenticatorData.PasswordType == Authenticator.PasswordTypes.Explicit
-        ? strings.ChangeOrRemovePassword + "..."
-        : strings.SetPassword + "...");
-
-      menuitem =
-        menu.Items.Cast<ToolStripItem>().Where(i => i.Name == "showCodeMenuItem").FirstOrDefault() as ToolStripMenuItem;
-      menuitem.Visible = !auth.AutoRefresh;
-      //
-      menuitem =
-        menu.Items.Cast<ToolStripItem>().Where(i => i.Name == "showRestoreCodeMenuItem").FirstOrDefault() as
-          ToolStripMenuItem;
-      menuitem.Visible = (auth.AuthenticatorData is BattleNetAuthenticator);
-      //
-      menuitem =
-        menu.Items.Cast<ToolStripItem>().Where(i => i.Name == "showGoogleSecretMenuItem").FirstOrDefault() as
-          ToolStripMenuItem;
-      menuitem.Visible = (auth.AuthenticatorData is GoogleAuthenticator || auth.AuthenticatorData is HotpAuthenticator);
-      //
-      menuitem =
-        menu.Items.Cast<ToolStripItem>().Where(i => i.Name == "showTrionSecretMenuItem").FirstOrDefault() as
-          ToolStripMenuItem;
-      menuitem.Visible = (auth.AuthenticatorData is TrionAuthenticator);
-      //
-      menuitem =
-        menu.Items.Cast<ToolStripItem>().Where(i => i.Name == "showSteamSecretMenuItem").FirstOrDefault() as
-          ToolStripMenuItem;
-      menuitem.Visible = (auth.AuthenticatorData is SteamAuthenticator);
-      menuitem.Enabled = (auth.AuthenticatorData is SteamAuthenticator &&
-                          string.IsNullOrEmpty(((SteamAuthenticator) auth.AuthenticatorData).SteamData) == false);
-      //
-      sepitem =
-        menu.Items.Cast<ToolStripItem>().Where(i => i.Name == "steamSeperator").FirstOrDefault() as ToolStripItem;
-      sepitem.Visible = (auth.AuthenticatorData is SteamAuthenticator);
-      //
-      menuitem =
-        menu.Items.Cast<ToolStripItem>().Where(i => i.Name == "showSteamTradesMenuItem").FirstOrDefault() as
-          ToolStripMenuItem;
-      menuitem.Visible = (auth.AuthenticatorData is SteamAuthenticator);
-      menuitem.Enabled = (auth.AuthenticatorData is SteamAuthenticator &&
-                          string.IsNullOrEmpty(((SteamAuthenticator) auth.AuthenticatorData).SteamData) == false);
-      //
-      menuitem =
-        menu.Items.Cast<ToolStripItem>().Where(i => i.Name == "autoRefreshMenuItem").FirstOrDefault() as
-          ToolStripMenuItem;
-      menuitem.Visible = !(auth.AuthenticatorData is HotpAuthenticator);
-      menuitem.CheckState = (auth.AutoRefresh ? CheckState.Checked : CheckState.Unchecked);
-      menuitem.Enabled = (auth.AuthenticatorData.RequiresPassword == false &&
-                          auth.AuthenticatorData.PasswordType != Authenticator.PasswordTypes.Explicit);
-      //
-      menuitem =
-        menu.Items.Cast<ToolStripItem>().Where(i => i.Name == "copyOnCodeMenuItem").FirstOrDefault() as
-          ToolStripMenuItem;
-      menuitem.CheckState = (auth.CopyOnCode ? CheckState.Checked : CheckState.Unchecked);
-      //
-      menuitem =
-        menu.Items.Cast<ToolStripItem>().Where(i => i.Name == "iconMenuItem").FirstOrDefault() as ToolStripMenuItem;
-      var subitem =
-        menuitem.DropDownItems.Cast<ToolStripItem>().Where(i => i.Name == "iconMenuItem_default").FirstOrDefault() as
-          ToolStripMenuItem;
-      subitem.CheckState = CheckState.Checked;
-      foreach (ToolStripItem iconitem in menuitem.DropDownItems) {
-        if (iconitem is ToolStripMenuItem && iconitem.Tag is string) {
-          var iconmenuitem = (ToolStripMenuItem) iconitem;
-          if (string.IsNullOrEmpty((string) iconmenuitem.Tag) && string.IsNullOrEmpty(auth.Skin)) {
-            iconmenuitem.CheckState = CheckState.Checked;
-          }
-          else if (string.Compare((string) iconmenuitem.Tag, auth.Skin) == 0) {
-            iconmenuitem.CheckState = CheckState.Checked;
-          }
-          else {
-            iconmenuitem.CheckState = CheckState.Unchecked;
-          }
+      var labelItem = menu.Items.Cast<ToolStripItem>().FirstOrDefault(i => i.Name == "contextMenuItemName") as ToolStripLabel;
+      if (labelItem != null) {
+        labelItem.Text = item.Authenticator.Name;
+        if (auth.HotKey != null) {
+          labelItem.Text += " (" + auth.HotKey + ")";
         }
       }
 
+      var menuItem = menu.Items.Cast<ToolStripItem>().FirstOrDefault(i => i.Name == "setPasswordMenuItem") as ToolStripMenuItem;
+      if (menuItem != null)
+        menuItem.Text = item.Authenticator.AuthenticatorData.PasswordType == Authenticator.PasswordTypes.Explicit
+          ? strings.ChangeOrRemovePassword + "..."
+          : strings.SetPassword + "...";
+
+      menuItem = menu.Items.Cast<ToolStripItem>().FirstOrDefault(i => i.Name == "showCodeMenuItem") as ToolStripMenuItem;
+      if (menuItem != null) menuItem.Visible = !auth.AutoRefresh;
       //
-      sepitem = menu.Items.Cast<ToolStripItem>().Where(i => i.Name == "syncMenuSep").FirstOrDefault() as ToolStripItem;
-      sepitem.Visible = !(auth.AuthenticatorData is HotpAuthenticator);
-      menuitem =
-        menu.Items.Cast<ToolStripItem>().Where(i => i.Name == "syncMenuItem").FirstOrDefault() as ToolStripMenuItem;
-      menuitem.Visible = !(auth.AuthenticatorData is HotpAuthenticator);
+      menuItem = menu.Items.Cast<ToolStripItem>().FirstOrDefault(i => i.Name == "showRestoreCodeMenuItem") as ToolStripMenuItem;
+      if (menuItem != null) menuItem.Visible = auth.AuthenticatorData is BattleNetAuthenticator;
+      //
+      menuItem = menu.Items.Cast<ToolStripItem>().FirstOrDefault(i => i.Name == "showGoogleSecretMenuItem") as ToolStripMenuItem;
+      if (menuItem != null)
+        menuItem.Visible = auth.AuthenticatorData is GoogleAuthenticator || auth.AuthenticatorData is HotpAuthenticator;
+      //
+      menuItem = menu.Items.Cast<ToolStripItem>().FirstOrDefault(i => i.Name == "showTrionSecretMenuItem") as ToolStripMenuItem;
+      if (menuItem != null) menuItem.Visible = auth.AuthenticatorData is TrionAuthenticator;
+      //
+      menuItem = menu.Items.Cast<ToolStripItem>().FirstOrDefault(i => i.Name == "showSteamSecretMenuItem") as ToolStripMenuItem;
+      if (menuItem != null) {
+        menuItem.Visible = auth.AuthenticatorData is SteamAuthenticator;
+        menuItem.Enabled = auth.AuthenticatorData is SteamAuthenticator &&
+                           string.IsNullOrEmpty(((SteamAuthenticator) auth.AuthenticatorData).SteamData) == false;
+        //
+        var sepItem = menu.Items.Cast<ToolStripItem>().FirstOrDefault(i => i.Name == "steamSeperator");
+        sepItem.Visible = auth.AuthenticatorData is SteamAuthenticator;
+        //
+        menuItem = menu.Items.Cast<ToolStripItem>().FirstOrDefault(i => i.Name == "showSteamTradesMenuItem") as ToolStripMenuItem;
+        if (menuItem != null) {
+          menuItem.Visible = auth.AuthenticatorData is SteamAuthenticator;
+          menuItem.Enabled = auth.AuthenticatorData is SteamAuthenticator steamAuthenticator &&
+                             string.IsNullOrEmpty(steamAuthenticator.SteamData) == false;
+        }
+
+        //
+        menuItem = menu.Items.Cast<ToolStripItem>().FirstOrDefault(i => i.Name == "autoRefreshMenuItem") as ToolStripMenuItem;
+        if (menuItem != null) {
+          menuItem.Visible = !(auth.AuthenticatorData is HotpAuthenticator);
+          menuItem.CheckState = auth.AutoRefresh ? CheckState.Checked : CheckState.Unchecked;
+          menuItem.Enabled = auth.AuthenticatorData.RequiresPassword == false &&
+                             auth.AuthenticatorData.PasswordType != Authenticator.PasswordTypes.Explicit;
+        }
+
+        //
+        menuItem = menu.Items.Cast<ToolStripItem>().FirstOrDefault(i => i.Name == "copyOnCodeMenuItem") as ToolStripMenuItem;
+        if (menuItem != null) menuItem.CheckState = auth.CopyOnCode ? CheckState.Checked : CheckState.Unchecked;
+        //
+        menuItem = menu.Items.Cast<ToolStripItem>().FirstOrDefault(i => i.Name == "iconMenuItem") as ToolStripMenuItem;
+        if (menuItem.DropDownItems.Cast<ToolStripItem>().FirstOrDefault(i => i.Name == "iconMenuItem_default") is ToolStripMenuItem subItem) subItem.CheckState = CheckState.Checked;
+        foreach (ToolStripItem iconItem in menuItem.DropDownItems) {
+          if (iconItem is ToolStripMenuItem toolStripItem && toolStripItem.Tag is string tag) {
+            if (string.IsNullOrEmpty(tag) && string.IsNullOrEmpty(auth.Skin)) {
+              toolStripItem.CheckState = CheckState.Checked;
+            }
+            else if (string.Compare(tag, auth.Skin) == 0) {
+              toolStripItem.CheckState = CheckState.Checked;
+            }
+            else {
+              toolStripItem.CheckState = CheckState.Unchecked;
+            }
+          }
+        }
+
+        //
+        sepItem = menu.Items.Cast<ToolStripItem>().FirstOrDefault(i => i.Name == "syncMenuSep");
+        sepItem.Visible = !(auth.AuthenticatorData is HotpAuthenticator);
+      }
+
+      menuItem =
+        menu.Items.Cast<ToolStripItem>().FirstOrDefault(i => i.Name == "syncMenuItem") as ToolStripMenuItem;
+      menuItem.Visible = !(auth.AuthenticatorData is HotpAuthenticator);
     }
 
-    /// <summary>
-    /// Process the context menu item
-    /// </summary>
-    /// <param name="menuitem"></param>
     private void ProcessMenu(ToolStripItem menuitem) {
       var item = CurrentItem;
       var auth = item.Authenticator;
 
       // check and perform each menu
-      if (menuitem.Name == "setPasswordMenuItem") {
-        // check if the authentcated is still protected
-        var wasprotected = UnprotectAuthenticator(item);
-        if (wasprotected == DialogResult.Cancel) {
-          return;
-        }
-
-        try {
-          // show the new password form
-          var form = new SetPasswordForm();
-          if (form.ShowDialog(Parent as Form) != DialogResult.OK) {
-            return;
-          }
-
-          // set the encrpytion
-          var password = form.Password;
-          if (string.IsNullOrEmpty(password) == false) {
-            auth.AuthenticatorData.SetEncryption(Authenticator.PasswordTypes.Explicit, password);
-            // can't have autorefresh on
-            auth.AutoRefresh = false;
-
-            item.UnprotectCount = 0;
-            item.DisplayUntil = DateTime.MinValue;
-            item.LastUpdate = DateTime.MinValue;
-            item.LastCode = null;
-          }
-          else {
-            auth.AuthenticatorData.SetEncryption(Authenticator.PasswordTypes.None);
-          }
-
-          // make sure authenticator is saved
-          auth.MarkChanged();
-          RefreshCurrentItem();
-        }
-        finally {
-          if (wasprotected == DialogResult.OK) {
-            ProtectAuthenticator(item);
-          }
-        }
-      }
-      else if (menuitem.Name == "showCodeMenuItem") {
-        // check if the authentcated is still protected
-        if (UnprotectAuthenticator(item) == DialogResult.Cancel) {
-          return;
-        }
-
-        // reduce unprotect count if already displayed
-        if (item.DisplayUntil != DateTime.MinValue) {
-          ProtectAuthenticator(item);
-        }
-
-        item.LastCode = auth.CurrentCode;
-        item.LastUpdate = DateTime.Now;
-        item.DisplayUntil = DateTime.Now.AddSeconds(10);
-        RefreshCurrentItem();
-      }
-      else if (menuitem.Name == "copyCodeMenuItem") {
-        // check if the authentcated is still protected
-        var wasprotected = UnprotectAuthenticator(item);
-        if (wasprotected == DialogResult.Cancel) {
-          return;
-        }
-
-        try {
-          auth.CopyCodeToClipboard(Parent as Form, item.LastCode, true);
-        }
-        finally {
-          if (wasprotected == DialogResult.OK) {
-            ProtectAuthenticator(item);
-          }
-        }
-      }
-      else if (menuitem.Name == "autoRefreshMenuItem") {
-        auth.AutoRefresh = !auth.AutoRefresh;
-        item.LastUpdate = DateTime.Now;
-        item.DisplayUntil = DateTime.MinValue;
-        RefreshCurrentItem();
-      }
-      else if (menuitem.Name == "copyOnCodeMenuItem") {
-        auth.CopyOnCode = !auth.CopyOnCode;
-      }
-      else if (menuitem.Name == "showRestoreCodeMenuItem") {
-        // check if the authentcated is still protected
-        var wasprotected = UnprotectAuthenticator(item);
-        if (wasprotected == DialogResult.Cancel) {
-          return;
-        }
-
-        try {
-          if (wasprotected != DialogResult.OK) {
-            // confirm current main password
-            var mainform = Parent as MainForm;
-            if ((mainform.Config.PasswordType & Authenticator.PasswordTypes.Explicit) != 0) {
-              var invalidPassword = false;
-              while (true) {
-                var checkform = new GetPasswordForm();
-                checkform.InvalidPassword = invalidPassword;
-                var result = checkform.ShowDialog(this);
-                if (result == DialogResult.Cancel) {
-                  return;
-                }
-
-                if (mainform.Config.IsPassword(checkform.Password)) {
-                  break;
-                }
-
-                invalidPassword = true;
-              }
-            }
-          }
-
-          // show the serial and restore code for Battle.net authenticator				
-          var form = new ShowRestoreCodeForm();
-          form.CurrentAuthenticator = auth;
-          form.ShowDialog(Parent as Form);
-        }
-        finally {
-          if (wasprotected == DialogResult.OK) {
-            ProtectAuthenticator(item);
-          }
-        }
-      }
-      else if (menuitem.Name == "showGoogleSecretMenuItem") {
-        // check if the authentcated is still protected
-        var wasprotected = UnprotectAuthenticator(item);
-        if (wasprotected == DialogResult.Cancel) {
-          return;
-        }
-
-        try {
-          if (wasprotected != DialogResult.OK) {
-            // confirm current main password
-            var mainform = Parent as MainForm;
-            if ((mainform.Config.PasswordType & Authenticator.PasswordTypes.Explicit) != 0) {
-              var invalidPassword = false;
-              while (true) {
-                var checkform = new GetPasswordForm();
-                checkform.InvalidPassword = invalidPassword;
-                var result = checkform.ShowDialog(this);
-                if (result == DialogResult.Cancel) {
-                  return;
-                }
-
-                if (mainform.Config.IsPassword(checkform.Password)) {
-                  break;
-                }
-
-                invalidPassword = true;
-              }
-            }
-          }
-
-          // show the secret key for Google authenticator				
-          var form = new ShowSecretKeyForm();
-          form.CurrentAuthenticator = auth;
-          form.ShowDialog(Parent as Form);
-        }
-        finally {
-          if (wasprotected == DialogResult.OK) {
-            ProtectAuthenticator(item);
-          }
-        }
-      }
-      else if (menuitem.Name == "showTrionSecretMenuItem") {
-        // check if the authenticator is still protected
-        var wasprotected = UnprotectAuthenticator(item);
-        if (wasprotected == DialogResult.Cancel) {
-          return;
-        }
-
-        try {
-          // show the secret key for Trion authenticator				
-          var form = new ShowTrionSecretForm();
-          form.CurrentAuthenticator = auth;
-          form.ShowDialog(Parent as Form);
-        }
-        finally {
-          if (wasprotected == DialogResult.OK) {
-            ProtectAuthenticator(item);
-          }
-        }
-      }
-      else if (menuitem.Name == "showSteamSecretMenuItem") {
-        // check if the authenticator is still protected
-        var wasprotected = UnprotectAuthenticator(item);
-        if (wasprotected == DialogResult.Cancel) {
-          return;
-        }
-
-        try {
-          if (wasprotected != DialogResult.OK) {
-            // confirm current main password
-            var mainform = Parent as MainForm;
-            if ((mainform.Config.PasswordType & Authenticator.PasswordTypes.Explicit) != 0) {
-              var invalidPassword = false;
-              while (true) {
-                var checkform = new GetPasswordForm();
-                checkform.InvalidPassword = invalidPassword;
-                var result = checkform.ShowDialog(this);
-                if (result == DialogResult.Cancel) {
-                  return;
-                }
-
-                if (mainform.Config.IsPassword(checkform.Password)) {
-                  break;
-                }
-
-                invalidPassword = true;
-              }
-            }
-          }
-
-          // show the secret key for Google authenticator				
-          var form = new ShowSteamSecretForm();
-          form.CurrentAuthenticator = auth;
-          form.ShowDialog(Parent as Form);
-        }
-        finally {
-          if (wasprotected == DialogResult.OK) {
-            ProtectAuthenticator(item);
-          }
-        }
-      }
-      else if (menuitem.Name == "showSteamTradesMenuItem") {
-        // check if the authenticator is still protected
-        var wasprotected = UnprotectAuthenticator(item);
-        if (wasprotected == DialogResult.Cancel) {
-          return;
-        }
-
-        try {
-          // show the Steam trades dialog
-          var form = new ShowSteamTradesForm();
-          form.Authenticator = auth;
-          form.ShowDialog(Parent as Form);
-        }
-        finally {
-          if (wasprotected == DialogResult.OK) {
-            ProtectAuthenticator(item);
-          }
-        }
-      }
-      else if (menuitem.Name == "deleteMenuItem") {
-        if (MainForm.ConfirmDialog(Parent as Form, strings.DeleteAuthenticatorWarning, MessageBoxButtons.YesNo,
-              MessageBoxIcon.Exclamation, MessageBoxDefaultButton.Button2) == DialogResult.Yes) {
-          var index = item.Index;
-          Items.Remove(item);
-          ItemRemoved(this, new AuthenticatorListItemRemovedEventArgs(item));
-          if (index >= Items.Count) {
-            index = Items.Count - 1;
-          }
-
-          CurrentItem = (Items.Count != 0 ? Items[index] as AuthenticatorListitem : null);
-          // reset the correct indexes of our items
-          for (var i = 0; i < Items.Count; i++) {
-            (Items[i] as AuthenticatorListitem).Index = i;
-          }
-        }
-      }
-      else if (menuitem.Name == "renameMenuItem") {
-        var y = (ItemHeight * item.Index) - (TopIndex * ItemHeight) + 8;
-        RenameTextbox.Location = new Point(64, y);
-        RenameTextbox.Text = auth.Name;
-        RenameTextbox.Tag = item;
-        RenameTextbox.Visible = true;
-        RenameTextbox.Focus();
-      }
-      else if (menuitem.Name == "syncMenuItem") {
-        // check if the authentcated is still protected
-        var wasprotected = UnprotectAuthenticator(item);
-        if (wasprotected == DialogResult.Cancel) {
-          return;
-        }
-
-        var cursor = Cursor.Current;
-        try {
-          Cursor.Current = Cursors.WaitCursor;
-          auth.Sync();
-          RefreshItem(item);
-        }
-        finally {
-          Cursor.Current = cursor;
-          if (wasprotected == DialogResult.OK) {
-            ProtectAuthenticator(item);
-          }
-        }
-      }
-      else if (menuitem.Name.StartsWith("iconMenuItem_")) {
-        if (menuitem.Tag is string && string.Compare((string) menuitem.Tag, "OTHER") == 0) {
-          do {
-            // other..choose an image file
-            var ofd = new OpenFileDialog();
-            ofd.AddExtension = true;
-            ofd.CheckFileExists = true;
-            ofd.DefaultExt = "png";
-            ofd.InitialDirectory = Directory.GetCurrentDirectory();
-            ofd.FileName = string.Empty;
-            ofd.Filter = "PNG Image Files (*.png)|*.png|GIF Image Files (*.gif)|*.gif|All Files (*.*)|*.*";
-            ofd.RestoreDirectory = true;
-            ofd.ShowReadOnly = false;
-            ofd.Title = strings.LoadIconImage + " (png or gif @ 48x48)";
-            var result = ofd.ShowDialog(this);
-            if (result != DialogResult.OK) {
+      switch (menuitem.Name) {
+        case "setPasswordMenuItem": {
+            // check if the authentcated is still protected
+            var wasprotected = UnprotectAuthenticator(item);
+            if (wasprotected == DialogResult.Cancel) {
               return;
             }
 
             try {
-              // get the image and create an icon if not already the right size
-              using (var iconimage = (Bitmap) Image.FromFile(ofd.FileName)) {
-                if (iconimage.Width != ICON_WIDTH || iconimage.Height != ICON_HEIGHT) {
-                  using (var scaled = new Bitmap(ICON_WIDTH, ICON_HEIGHT)) {
-                    using (var g = Graphics.FromImage(scaled)) {
-                      g.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.HighQuality;
-                      g.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.HighQualityBicubic;
-                      g.PixelOffsetMode = System.Drawing.Drawing2D.PixelOffsetMode.HighQuality;
-                      g.DrawImage(iconimage, new Rectangle(0, 0, ICON_WIDTH, ICON_HEIGHT));
-                    }
-
-                    auth.Icon = scaled;
-                  }
-                }
-                else {
-                  auth.Icon = iconimage;
-                }
-
-                RefreshCurrentItem();
+              // show the new password form
+              var form = new SetPasswordForm();
+              if (form.ShowDialog(Parent as Form) != DialogResult.OK) {
+                return;
               }
+
+              // set the encrpytion
+              var password = form.Password;
+              if (string.IsNullOrEmpty(password) == false) {
+                auth.AuthenticatorData.SetEncryption(Authenticator.PasswordTypes.Explicit, password);
+                // can't have autorefresh on
+                auth.AutoRefresh = false;
+
+                item.UnprotectCount = 0;
+                item.DisplayUntil = DateTime.MinValue;
+                item.LastUpdate = DateTime.MinValue;
+                item.LastCode = null;
+              }
+              else {
+                auth.AuthenticatorData.SetEncryption(Authenticator.PasswordTypes.None);
+              }
+
+              // make sure authenticator is saved
+              auth.MarkChanged();
+              RefreshCurrentItem();
             }
-            catch (Exception ex) {
-              if (MessageBox.Show(Parent as Form,
-                    string.Format(strings.ErrorLoadingIconFile, ex.Message),
-                    AuthMain.APPLICATION_NAME,
-                    MessageBoxButtons.YesNo, MessageBoxIcon.Warning, MessageBoxDefaultButton.Button2) ==
-                  DialogResult.Yes) {
-                continue;
+            finally {
+              if (wasprotected == DialogResult.OK) {
+                ProtectAuthenticator(item);
               }
             }
 
             break;
-          } while (true);
-        }
-        else {
-          auth.Skin = (((string) menuitem.Tag).Length != 0 ? (string) menuitem.Tag : null);
-          RefreshCurrentItem();
-        }
+          }
+
+        case "showCodeMenuItem": {
+            // check if the authentcated is still protected
+            if (UnprotectAuthenticator(item) == DialogResult.Cancel) {
+              return;
+            }
+
+            // reduce unprotect count if already displayed
+            if (item.DisplayUntil != DateTime.MinValue) {
+              ProtectAuthenticator(item);
+            }
+
+            item.LastCode = auth.CurrentCode;
+            item.LastUpdate = DateTime.Now;
+            item.DisplayUntil = DateTime.Now.AddSeconds(10);
+            RefreshCurrentItem();
+            break;
+          }
+
+        case "copyCodeMenuItem": {
+            // check if the authentcated is still protected
+            var wasprotected = UnprotectAuthenticator(item);
+            if (wasprotected == DialogResult.Cancel) {
+              return;
+            }
+
+            try {
+              auth.CopyCodeToClipboard(Parent as Form, item.LastCode, true);
+            }
+            finally {
+              if (wasprotected == DialogResult.OK) {
+                ProtectAuthenticator(item);
+              }
+            }
+
+            break;
+          }
+
+        case "autoRefreshMenuItem": {
+            auth.AutoRefresh = !auth.AutoRefresh;
+            item.LastUpdate = DateTime.Now;
+            item.DisplayUntil = DateTime.MinValue;
+            RefreshCurrentItem();
+            break;
+          }
+
+        case "copyOnCodeMenuItem": {
+            auth.CopyOnCode = !auth.CopyOnCode;
+            break;
+          }
+
+        case "showRestoreCodeMenuItem": {
+            // check if the authentcated is still protected
+            var wasprotected = UnprotectAuthenticator(item);
+            if (wasprotected == DialogResult.Cancel) {
+              return;
+            }
+
+            try {
+              if (wasprotected != DialogResult.OK) {
+                // confirm current main password
+                var mainform = Parent as MainForm;
+                if ((mainform.Config.PasswordType & Authenticator.PasswordTypes.Explicit) != 0) {
+                  var invalidPassword = false;
+                  while (true) {
+                    var checkform = new GetPasswordForm();
+                    checkform.InvalidPassword = invalidPassword;
+                    var result = checkform.ShowDialog(this);
+                    if (result == DialogResult.Cancel) {
+                      return;
+                    }
+
+                    if (mainform.Config.IsPassword(checkform.Password)) {
+                      break;
+                    }
+
+                    invalidPassword = true;
+                  }
+                }
+              }
+
+              // show the serial and restore code for Battle.net authenticator				
+              var form = new ShowRestoreCodeForm();
+              form.CurrentAuthenticator = auth;
+              form.ShowDialog(Parent as Form);
+            }
+            finally {
+              if (wasprotected == DialogResult.OK) {
+                ProtectAuthenticator(item);
+              }
+            }
+
+            break;
+          }
+
+        case "showGoogleSecretMenuItem": {
+            // check if the authentcated is still protected
+            var wasprotected = UnprotectAuthenticator(item);
+            if (wasprotected == DialogResult.Cancel) {
+              return;
+            }
+
+            try {
+              if (wasprotected != DialogResult.OK) {
+                // confirm current main password
+                var mainform = Parent as MainForm;
+                if ((mainform.Config.PasswordType & Authenticator.PasswordTypes.Explicit) != 0) {
+                  var invalidPassword = false;
+                  while (true) {
+                    var checkform = new GetPasswordForm();
+                    checkform.InvalidPassword = invalidPassword;
+                    var result = checkform.ShowDialog(this);
+                    if (result == DialogResult.Cancel) {
+                      return;
+                    }
+
+                    if (mainform.Config.IsPassword(checkform.Password)) {
+                      break;
+                    }
+
+                    invalidPassword = true;
+                  }
+                }
+              }
+
+              // show the secret key for Google authenticator				
+              var form = new ShowSecretKeyForm();
+              form.CurrentAuthenticator = auth;
+              form.ShowDialog(Parent as Form);
+            }
+            finally {
+              if (wasprotected == DialogResult.OK) {
+                ProtectAuthenticator(item);
+              }
+            }
+
+            break;
+          }
+
+        case "showTrionSecretMenuItem": {
+            // check if the authenticator is still protected
+            var wasprotected = UnprotectAuthenticator(item);
+            if (wasprotected == DialogResult.Cancel) {
+              return;
+            }
+
+            try {
+              // show the secret key for Trion authenticator				
+              var form = new ShowTrionSecretForm();
+              form.CurrentAuthenticator = auth;
+              form.ShowDialog(Parent as Form);
+            }
+            finally {
+              if (wasprotected == DialogResult.OK) {
+                ProtectAuthenticator(item);
+              }
+            }
+
+            break;
+          }
+
+        case "showSteamSecretMenuItem": {
+            // check if the authenticator is still protected
+            var wasprotected = UnprotectAuthenticator(item);
+            if (wasprotected == DialogResult.Cancel) {
+              return;
+            }
+
+            try {
+              if (wasprotected != DialogResult.OK) {
+                // confirm current main password
+                var mainform = Parent as MainForm;
+                if ((mainform.Config.PasswordType & Authenticator.PasswordTypes.Explicit) != 0) {
+                  var invalidPassword = false;
+                  while (true) {
+                    var checkform = new GetPasswordForm();
+                    checkform.InvalidPassword = invalidPassword;
+                    var result = checkform.ShowDialog(this);
+                    if (result == DialogResult.Cancel) {
+                      return;
+                    }
+
+                    if (mainform.Config.IsPassword(checkform.Password)) {
+                      break;
+                    }
+
+                    invalidPassword = true;
+                  }
+                }
+              }
+
+              // show the secret key for Google authenticator				
+              var form = new ShowSteamSecretForm();
+              form.CurrentAuthenticator = auth;
+              form.ShowDialog(Parent as Form);
+            }
+            finally {
+              if (wasprotected == DialogResult.OK) {
+                ProtectAuthenticator(item);
+              }
+            }
+
+            break;
+          }
+
+        case "showSteamTradesMenuItem": {
+            // check if the authenticator is still protected
+            var wasprotected = UnprotectAuthenticator(item);
+            if (wasprotected == DialogResult.Cancel) {
+              return;
+            }
+
+            try {
+              // show the Steam trades dialog
+              var form = new ShowSteamTradesForm();
+              form.Authenticator = auth;
+              form.ShowDialog(Parent as Form);
+            }
+            finally {
+              if (wasprotected == DialogResult.OK) {
+                ProtectAuthenticator(item);
+              }
+            }
+
+            break;
+          }
+
+        case "deleteMenuItem": {
+            if (MainForm.ConfirmDialog(Parent as Form, strings.DeleteAuthenticatorWarning, MessageBoxButtons.YesNo,
+                  MessageBoxIcon.Exclamation, MessageBoxDefaultButton.Button2) == DialogResult.Yes) {
+              var index = item.Index;
+              Items.Remove(item);
+              ItemRemoved?.Invoke(this, new AuthenticatorListItemRemovedEventArgs(item));
+              if (index >= Items.Count) {
+                index = Items.Count - 1;
+              }
+
+              CurrentItem = Items.Count != 0 ? Items[index] as AuthenticatorListItem : null;
+              // reset the correct indexes of our items
+              for (var i = 0; i < Items.Count; i++) {
+                ((AuthenticatorListItem) Items[i]).Index = i;
+              }
+            }
+
+            break;
+          }
+
+        case "renameMenuItem": {
+            var y = ItemHeight * item.Index - TopIndex * ItemHeight + 8;
+            RenameTextbox.Location = new Point(64, y);
+            RenameTextbox.Text = auth.Name;
+            RenameTextbox.Tag = item;
+            RenameTextbox.Visible = true;
+            RenameTextbox.Focus();
+            break;
+          }
+
+        case "syncMenuItem": {
+            // check if the authentcated is still protected
+            var wasprotected = UnprotectAuthenticator(item);
+            if (wasprotected == DialogResult.Cancel) {
+              return;
+            }
+
+            var cursor = Cursor.Current;
+            try {
+              Cursor.Current = Cursors.WaitCursor;
+              auth.Sync();
+              RefreshItem(item);
+            }
+            finally {
+              Cursor.Current = cursor;
+              if (wasprotected == DialogResult.OK) {
+                ProtectAuthenticator(item);
+              }
+            }
+
+            break;
+          }
+
+        default:
+          if (menuitem.Name.StartsWith("iconMenuItem_")) {
+            if (menuitem.Tag is string && string.Compare((string)menuitem.Tag, "OTHER") == 0) {
+              do {
+                // other..choose an image file
+                var ofd = new OpenFileDialog();
+                ofd.AddExtension = true;
+                ofd.CheckFileExists = true;
+                ofd.DefaultExt = "png";
+                ofd.InitialDirectory = Directory.GetCurrentDirectory();
+                ofd.FileName = string.Empty;
+                ofd.Filter = "PNG Image Files (*.png)|*.png|GIF Image Files (*.gif)|*.gif|All Files (*.*)|*.*";
+                ofd.RestoreDirectory = true;
+                ofd.ShowReadOnly = false;
+                ofd.Title = strings.LoadIconImage + " (png or gif @ 48x48)";
+                var result = ofd.ShowDialog(this);
+                if (result != DialogResult.OK) {
+                  return;
+                }
+
+                try {
+                  // get the image and create an icon if not already the right size
+                  using (var iconimage = (Bitmap)Image.FromFile(ofd.FileName)) {
+                    if (iconimage.Width != ICON_WIDTH || iconimage.Height != ICON_HEIGHT) {
+                      using (var scaled = new Bitmap(ICON_WIDTH, ICON_HEIGHT)) {
+                        using (var g = Graphics.FromImage(scaled)) {
+                          g.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.HighQuality;
+                          g.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.HighQualityBicubic;
+                          g.PixelOffsetMode = System.Drawing.Drawing2D.PixelOffsetMode.HighQuality;
+                          g.DrawImage(iconimage, new Rectangle(0, 0, ICON_WIDTH, ICON_HEIGHT));
+                        }
+
+                        auth.Icon = scaled;
+                      }
+                    }
+                    else {
+                      auth.Icon = iconimage;
+                    }
+
+                    RefreshCurrentItem();
+                  }
+                }
+                catch (Exception ex) {
+                  if (MessageBox.Show(Parent as Form,
+                        string.Format(strings.ErrorLoadingIconFile, ex.Message),
+                        AuthMain.APPLICATION_NAME,
+                        MessageBoxButtons.YesNo, MessageBoxIcon.Warning, MessageBoxDefaultButton.Button2) ==
+                      DialogResult.Yes) {
+                    continue;
+                  }
+                }
+
+                break;
+              } while (true);
+            }
+            else {
+              auth.Skin = ((string)menuitem.Tag).Length != 0 ? (string)menuitem.Tag : null;
+              RefreshCurrentItem();
+            }
+          }
+
+          break;
       }
     }
 
-    /// <summary>
-    /// Get the current code for an item in the list, unprotecting and reprotecting the authenticator if necessary
-    /// </summary>
-    /// <param name="item">List item to get code</param>
-    /// <returns>code or null if failed (i.e. bad password)</returns>
-    public string GetItemCode(AuthenticatorListitem item, Screen screen = null) {
+    public string GetItemCode(AuthenticatorListItem item, Screen screen = null) {
       var auth = item.Authenticator;
 
       // check if the authentcated is still protected
@@ -1531,51 +1288,18 @@ namespace Authenticator {
       }
     }
 
-    /// <summary>
-    /// Refresh the current item by invalidating it
-    /// </summary>
     private void RefreshCurrentItem() {
       RefreshItem(CurrentItem);
     }
 
-    /// <summary>
-    /// Refresh the item by invalidating it
-    /// </summary>
-    private void RefreshItem(AuthenticatorListitem item) {
-      var hasvscroll = (Height < (Items.Count * ItemHeight));
-      var y = (ItemHeight * item.Index) - (ItemHeight * TopIndex);
+    private void RefreshItem(AuthenticatorListItem item) {
+      // var hasvscroll = Height < Items.Count * ItemHeight;
+      var y = ItemHeight * item.Index - ItemHeight * TopIndex;
       var rect = new Rectangle(0, y, Width, Height);
       Invalidate(rect, false);
     }
 
-    /// <summary>
-    /// Convert a Bitmap into grayscale
-    /// http://stackoverflow.com/questions/4669317/how-to-convert-a-bitmap-image-to-black-and-white-in-c
-    /// </summary>
-    /// <param name="bmp">Bitmap to convert</param>
-    /// <returns>Original bitmap but grayscale</returns>
-    private static Bitmap GrayScale(Bitmap bmp) {
-      int rgb;
-      Color c;
-
-      for (var y = 0; y < bmp.Height; y++) {
-        for (var x = 0; x < bmp.Width; x++) {
-          c = bmp.GetPixel(x, y);
-          rgb = (int) ((c.R * 0.3) + (c.G * 0.59) + (c.B * 0.11));
-          bmp.SetPixel(x, y, Color.FromArgb(rgb, rgb, rgb));
-        }
-      }
-
-      return bmp;
-    }
-
-    /// <summary>
-    /// Lighten or darken a bitmap
-    /// </summary>
-    /// <param name="bmp">Bitmap</param>
-    /// <param name="amount">amount to change 0-255</param>
-    /// <returns>Original bitmap but darkened</returns>
-    private static Bitmap Lighten(Bitmap bmp, int amount) {
+    private static void Lighten(Bitmap bmp, int amount) {
       Color c;
       int r, g, b;
 
@@ -1588,53 +1312,32 @@ namespace Authenticator {
           bmp.SetPixel(x, y, Color.FromArgb(r, g, b));
         }
       }
-
-      return bmp;
     }
 
     #endregion
 
     #region Owner Draw
 
-    /// <summary>
-    /// Calculate the maximum available label with based on the currnet control size
-    /// </summary>
-    /// <param name="totalWidth">control size</param>
-    /// <returns>maximum possible width for label</returns>
     protected int GetMaxAvailableLabelWidth(int totalWidth) {
       return totalWidth - MARGIN_LEFT - ICON_WIDTH - ICON_MARGIN_RIGHT - PIE_WIDTH - MARGIN_RIGHT;
     }
 
-    /// <summary>
-    /// Calculate the maximum label width based on the currnet names
-    /// </summary>
-    /// <param name="totalWidth">control size</param>
-    /// <returns>maximum possible width for label</returns>
     public int GetMaxItemWidth() {
-      var items = Items.Cast<AuthenticatorListitem>();
-
-      if (items.Where(i => i.AutoWidth == 0).Count() != 0) {
+      var items = Items.Cast<AuthenticatorListItem>().Where(i => i.AutoWidth == 0).ToArray();
+      if (items.Any()) {
         using (var g = CreateGraphics()) {
           using (var font = new Font(Font.FontFamily, FONT_SIZE, FontStyle.Regular)) {
-            foreach (var item in items.Where(i => i.AutoWidth == 0)) {
+            foreach (var item in items) {
               var auth = item.Authenticator;
-
-              var labelsize = g.MeasureString(auth.Name, font);
-              item.AutoWidth = MARGIN_LEFT + ICON_WIDTH + ICON_MARGIN_RIGHT + (int) Math.Ceiling(labelsize.Width) +
-                               PIE_WIDTH + MARGIN_RIGHT;
+              var labelSize = g.MeasureString(auth.Name, font);
+              item.AutoWidth = MARGIN_LEFT + ICON_WIDTH + ICON_MARGIN_RIGHT + (int)Math.Ceiling(labelSize.Width) + PIE_WIDTH + MARGIN_RIGHT;
             }
           }
         }
       }
-
-      var maxWidth = Items.Cast<AuthenticatorListitem>().Max(i => i.AutoWidth);
-      return maxWidth;
+      return Items.Cast<AuthenticatorListItem>().Max(i => i.AutoWidth);
     }
 
-    /// <summary>
-    /// Hook into the default WndProc to make sure we get our redraw messages
-    /// </summary>
-    /// <param name="m"></param>
     protected override void DefWndProc(ref Message m) {
       if (ReadOnly == false || ((m.Msg <= 0x0200 || m.Msg >= 0x020E)
                                 && (m.Msg <= 0x0100 || m.Msg >= 0x0109)
@@ -1644,18 +1347,13 @@ namespace Authenticator {
       }
     }
 
-    /// <summary>
-    /// Event called when an item requires drawing
-    /// </summary>
-    /// <param name="e"></param>
-    /// <param name="cliprect"></param>
     protected void OnDrawItem(DrawItemEventArgs e, Rectangle cliprect) {
       // no need to draw nothing
       if (Items.Count == 0 || e.Index < 0) {
         return;
       }
 
-      var item = Items[e.Index] as AuthenticatorListitem;
+      var item = Items[e.Index] as AuthenticatorListItem;
       var auth = item.Authenticator;
 
       // if the item is being dragged, we draw a blank placeholder
@@ -1674,7 +1372,7 @@ namespace Authenticator {
 
       // draw the requested item
       using (var brush = new SolidBrush(e.ForeColor)) {
-        var showCode = (auth.AutoRefresh || item.DisplayUntil > DateTime.Now);
+        var showCode = auth.AutoRefresh || item.DisplayUntil > DateTime.Now;
 
         e.Graphics.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
 
@@ -1700,7 +1398,7 @@ namespace Authenticator {
             label = newlabel.ToString();
           }
 
-          rect = new Rectangle(e.Bounds.X + 64, e.Bounds.Y + MARGIN_TOP, (int) labelsize.Height, (int) labelsize.Width);
+          rect = new Rectangle(e.Bounds.X + 64, e.Bounds.Y + MARGIN_TOP, (int)labelsize.Height, (int)labelsize.Width);
           if (cliprect.IntersectsWith(rect)) {
             e.Graphics.DrawString(label, font, brush,
               new RectangleF(e.Bounds.X + MARGIN_LEFT + ICON_WIDTH + ICON_MARGIN_RIGHT, e.Bounds.Y + MARGIN_TOP,
@@ -1742,8 +1440,8 @@ namespace Authenticator {
 
           var codesize = e.Graphics.MeasureString(code, e.Font);
           rect = new Rectangle(e.Bounds.X + MARGIN_LEFT + ICON_WIDTH + ICON_MARGIN_RIGHT,
-            e.Bounds.Y + MARGIN_TOP + (int) labelsize.Height + LABEL_MARGIN_BOTTOM, (int) codesize.Width,
-            (int) codesize.Height);
+            e.Bounds.Y + MARGIN_TOP + (int)labelsize.Height + LABEL_MARGIN_BOTTOM, (int)codesize.Width,
+            (int)codesize.Height);
           if (cliprect.IntersectsWith(rect)) {
             e.Graphics.DrawString(code, e.Font, brush,
               new PointF(e.Bounds.X + MARGIN_LEFT + ICON_WIDTH + ICON_MARGIN_RIGHT,
@@ -1761,9 +1459,9 @@ namespace Authenticator {
                 //int y = (this.TopIndex * this.ItemHeight) + e.Bounds.y
                 //int tillUpdate = ((int)((auth.AuthenticatorData.ServerTime % 30000) / 1000L) + 1) * 12;
                 var tillUpdate =
-                  (int) Math.Round(
-                    (decimal) ((auth.AuthenticatorData.ServerTime % ((long) auth.AuthenticatorData.Period * 1000L)) /
-                               1000L) * (360M / (decimal) auth.AuthenticatorData.Period));
+                  (int)Math.Round(
+                    (decimal)(auth.AuthenticatorData.ServerTime % ((long)auth.AuthenticatorData.Period * 1000L) /
+                               1000L) * (360M / (decimal)auth.AuthenticatorData.Period));
                 e.Graphics.DrawPie(piepen, e.Bounds.X + e.Bounds.Width - (MARGIN_RIGHT + ICON_WIDTH),
                   e.Bounds.Y + MARGIN_TOP + PIE_MARGIN, PIE_WIDTH, PIE_HEIGHT, PIE_STARTANGLE, PIE_SWEEPANGLE);
                 e.Graphics.FillPie(piebrush, e.Bounds.X + e.Bounds.Width - (MARGIN_RIGHT + ICON_WIDTH),
@@ -1775,7 +1473,7 @@ namespace Authenticator {
             if (showCode) {
               using (var piebrush = new SolidBrush(SystemColors.ActiveCaption)) {
                 using (var piepen = new Pen(SystemColors.ActiveCaption)) {
-                  var tillUpdate = (int) ((item.DisplayUntil.Subtract(DateTime.Now).TotalSeconds * (double) 360) /
+                  var tillUpdate = (int)(item.DisplayUntil.Subtract(DateTime.Now).TotalSeconds * (double)360 /
                                           item.DisplayUntil.Subtract(item.LastUpdate).TotalSeconds);
                   e.Graphics.DrawPie(piepen, e.Bounds.X + e.Bounds.Width - (MARGIN_RIGHT + ICON_WIDTH),
                     e.Bounds.Y + MARGIN_TOP + PIE_MARGIN, PIE_WIDTH, PIE_HEIGHT, PIE_STARTANGLE, PIE_SWEEPANGLE);
@@ -1804,10 +1502,6 @@ namespace Authenticator {
       }
     }
 
-    /// <summary>
-    /// Handle the paint event and work out if item needs redrawing
-    /// </summary>
-    /// <param name="e"></param>
     protected override void OnPaint(PaintEventArgs e) {
       using (var brush = new SolidBrush(BackColor)) {
         var region = new Region(e.ClipRectangle);
