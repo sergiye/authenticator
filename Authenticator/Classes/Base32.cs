@@ -4,61 +4,25 @@ using System.Text;
 using System.Text.RegularExpressions;
 
 namespace Authenticator {
-  /// <summary>
-  /// Class that implements conversion to Base32 RFC3548
-  /// </summary>
   public class Base32 {
-    /// <summary>
-    /// Default base32 character set as per RFC 4648/3548
-    /// </summary>
     private static string defaultAlphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ234567";
 
-    /// <summary>
-    /// Lookup for the number of zero bits on the right (e.g. 0100 = 2)
-    /// </summary>
     private static readonly int[] numberTrailingZerosLookup = {
       32, 0, 1, 26, 2, 23, 27, 0, 3, 16, 24, 30, 28, 11, 0, 13, 4, 7, 17,
       0, 25, 22, 31, 15, 29, 10, 12, 6, 0, 21, 14, 9, 5, 20, 8, 19, 18
     };
 
-    /// <summary>
-    /// Singleton instance
-    /// </summary>
     private static readonly Base32 instance = new Base32(defaultAlphabet);
 
-    /// <summary>
-    /// Get an instance of a Base32 object, either the standard singleton or for a custom alphabet
-    /// </summary>
-    /// <param name="alphabet"></param>
-    /// <returns></returns>
     public static Base32 GetInstance(string alphabet = null) {
       return (alphabet == null ? instance : new Base32(alphabet));
     }
 
-    /// <summary>
-    /// array of alaphabet chars
-    /// </summary>
     private char[] digits;
-
-    /// <summary>
-    /// bit mask used
-    /// </summary>
     private int mask;
-
-    /// <summary>
-    /// shifting value
-    /// </summary>
     private int shift;
-
-    /// <summary>
-    /// map of chars to position
-    /// </summary>
     private Dictionary<char, int> map;
 
-    /// <summary>
-    /// Create a new Base32 object with a specified alphabet
-    /// </summary>
-    /// <param name="alphabet"></param>
     protected Base32(string alphabet) {
       // initialise the decoder and precalculate the char map
       digits = alphabet.ToCharArray();
@@ -70,12 +34,6 @@ namespace Authenticator {
       }
     }
 
-    /// <summary>
-    /// Calculate the number of zero trailing bits on the right (e.g. 0100 = 2)
-    /// http://graphics.stanford.edu/~seander/bithacks.html#ZerosOnRightModLookup
-    /// </summary>
-    /// <param name="i"></param>
-    /// <returns></returns>
     private static int NumberOfTrailingZeros(int i) {
       return numberTrailingZerosLookup[(i & -i) % 37];
     }

@@ -25,9 +25,7 @@ namespace Authenticator {
     private string name;
     private string skin;
     private bool autoRefresh;
-    private bool allowCopy;
     private bool copyOnCode;
-    private bool hideSerial;
     private HotKey hotkey;
 
     public AuthAuthenticator() {
@@ -54,7 +52,7 @@ namespace Authenticator {
     }
 
     public string Name {
-      get { return name; }
+      get => name;
       set {
         name = value;
         if (OnAuthAuthenticatorChanged != null) {
@@ -64,7 +62,7 @@ namespace Authenticator {
     }
 
     public string Skin {
-      get { return skin; }
+      get => skin;
       set {
         skin = value;
         if (OnAuthAuthenticatorChanged != null) {
@@ -97,18 +95,8 @@ namespace Authenticator {
       }
     }
 
-    public bool AllowCopy {
-      get { return allowCopy; }
-      set {
-        allowCopy = value;
-        if (OnAuthAuthenticatorChanged != null) {
-          OnAuthAuthenticatorChanged(this, new AuthAuthenticatorChangedEventArgs("AllowCopy"));
-        }
-      }
-    }
-
     public bool CopyOnCode {
-      get { return copyOnCode; }
+      get => copyOnCode;
       set {
         copyOnCode = value;
         if (OnAuthAuthenticatorChanged != null) {
@@ -117,24 +105,13 @@ namespace Authenticator {
       }
     }
 
-    public bool HideSerial {
-      get { return hideSerial; }
-      set {
-        hideSerial = value;
-        if (OnAuthAuthenticatorChanged != null) {
-          OnAuthAuthenticatorChanged(this, new AuthAuthenticatorChangedEventArgs("HideSerial"));
-        }
-      }
-    }
-
     public HotKey HotKey {
-      get {
+      get =>
         //if (this.AuthenticatorData != null && _hotkey != null)
         //{
         //	_hotkey.Advanced = this.AuthenticatorData.Script;
         //}
-        return hotkey;
-      }
+        hotkey;
       set {
         hotkey = value;
         //if (this.AuthenticatorData != null && _hotkey != null)
@@ -319,16 +296,8 @@ namespace Authenticator {
               autoRefresh = reader.ReadElementContentAsBoolean();
               break;
 
-            case "allowcopy":
-              allowCopy = reader.ReadElementContentAsBoolean();
-              break;
-
             case "copyoncode":
               copyOnCode = reader.ReadElementContentAsBoolean();
-              break;
-
-            case "hideserial":
-              hideSerial = reader.ReadElementContentAsBoolean();
               break;
 
             case "skin":
@@ -431,16 +400,8 @@ namespace Authenticator {
       writer.WriteValue(AutoRefresh);
       writer.WriteEndElement();
       //
-      writer.WriteStartElement("allowcopy");
-      writer.WriteValue(AllowCopy);
-      writer.WriteEndElement();
-      //
       writer.WriteStartElement("copyoncode");
       writer.WriteValue(CopyOnCode);
-      writer.WriteEndElement();
-      //
-      writer.WriteStartElement("hideserial");
-      writer.WriteValue(HideSerial);
       writer.WriteEndElement();
       //
       writer.WriteStartElement("skin");

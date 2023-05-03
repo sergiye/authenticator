@@ -70,8 +70,6 @@ namespace Authenticator {
 
     private bool readOnly;
 
-    private string pgpKey;
-
     [XmlRoot(ElementName = "settings")]
     public class Setting {
       [XmlAttribute(AttributeName = "key")] public string Key;
@@ -175,7 +173,7 @@ namespace Authenticator {
       }
     }
 
-    public string PgpKey => pgpKey;
+    public string PgpKey { get; private set; }
 
     public bool IsPortable =>
       (string.IsNullOrEmpty(Filename) == false
@@ -423,9 +421,7 @@ namespace Authenticator {
       }
 
       var defaultAutoRefresh = true;
-      var defaultAllowCopy = false;
       var defaultCopyOnCode = false;
-      var defaultHideSerial = true;
 
       reader.Read();
       while (reader.EOF == false) {
@@ -518,7 +514,7 @@ namespace Authenticator {
               break;
 
             case "pgpkey":
-              pgpKey = reader.ReadElementContentAsString();
+              PgpKey = reader.ReadElementContentAsString();
               break;
 
             case "settings":
@@ -531,14 +527,8 @@ namespace Authenticator {
             case "autorefresh":
               defaultAutoRefresh = reader.ReadElementContentAsBoolean();
               break;
-            case "allowcopy":
-              defaultAllowCopy = reader.ReadElementContentAsBoolean();
-              break;
             case "copyoncode":
               defaultCopyOnCode = reader.ReadElementContentAsBoolean();
-              break;
-            case "hideserial":
-              defaultHideSerial = reader.ReadElementContentAsBoolean();
               break;
             case "AuthAuthenticator":
               var wa = new AuthAuthenticator();
@@ -567,9 +557,7 @@ namespace Authenticator {
               Add(waold);
               CurrentAuthenticator = waold;
               waold.AutoRefresh = defaultAutoRefresh;
-              waold.AllowCopy = defaultAllowCopy;
               waold.CopyOnCode = defaultCopyOnCode;
-              waold.HideSerial = defaultHideSerial;
               break;
 
             // old 2.x auto login script
@@ -577,9 +565,7 @@ namespace Authenticator {
               var hks = new HoyKeySequence();
               hks.ReadXml(reader, password);
               if (hks.HotKey != 0) {
-                if (CurrentAuthenticator.HotKey == null) {
-                  CurrentAuthenticator.HotKey = new HotKey();
-                }
+                if (CurrentAuthenticator.HotKey == null) CurrentAuthenticator.HotKey = new HotKey();
 
                 var hotkey = CurrentAuthenticator.HotKey;
                 hotkey.Action = HotKey.HotKeyActions.Inject;

@@ -8,62 +8,26 @@ using System.Xml;
 using Org.BouncyCastle.Crypto.Digests;
 using Org.BouncyCastle.Crypto.Macs;
 using Org.BouncyCastle.Crypto.Parameters;
-#if NUNIT
-using NUnit.Framework;
-#endif
 
 namespace Authenticator {
-  /// <summary>
-  /// Class that implements Trion's version of the RFC6238 Authenticator
-  /// </summary>
-  public class TrionAuthenticator : Authenticator {
-    /// <summary>
-    /// Size of model string
-    /// </summary>
+
+  public sealed class TrionAuthenticator : Authenticator {
+  
     private const int MODEL_SIZE = 15;
-
-    /// <summary>
-    /// String of possible chars we use in our random model string
-    /// </summary>
     private const string MODEL_CHARS = "1234567890ABCDEF";
-
-    /// <summary>
-    /// Number of digits in code
-    /// </summary>
     private const int CODE_DIGITS = 8;
-
-    /// <summary>
-    /// Name of issuer for export
-    /// </summary>
     private const string TRION_ISSUER = "Trion";
 
-    /// <summary>
-    /// URLs for all mobile services
-    /// </summary>
     private static string enrollUrl = "https://rift.trionworlds.com/external/create-device-key";
-
     private static string syncUrl = "https://auth.trionworlds.com/time";
-
-    private static string securityquestionsUrl =
-      "https://rift.trionworlds.com/external/get-account-security-questions.action";
-
+    private static string securityquestionsUrl = "https://rift.trionworlds.com/external/get-account-security-questions.action";
     private static string restoreUrl = "https://rift.trionworlds.com/external/retrieve-device-key.action";
 
-    /// <summary>
-    /// Number of minutes to ignore syncing if network error
-    /// </summary>
     private const int SYNC_ERROR_MINUTES = 60;
-
-    /// <summary>
-    /// Time of last Sync error
-    /// </summary>
     private static DateTime lastSyncError = DateTime.MinValue;
 
     #region Authenticator data
 
-    /// <summary>
-    /// Get/set the combined secret data value
-    /// </summary>
     public override string SecretData {
       get {
         // this is the key |  serial | deviceid
@@ -106,17 +70,10 @@ namespace Authenticator {
 
     #endregion
 
-    /// <summary>
-    /// Create a new Authenticator object
-    /// </summary>
-    public TrionAuthenticator()
-      : base(CODE_DIGITS) {
+    public TrionAuthenticator() : base(CODE_DIGITS) {
       Issuer = TRION_ISSUER;
     }
 
-    /// <summary>
-    /// Enroll the authenticator with the server.
-    /// </summary>
     public void Enroll() {
       // generate model name
       var deviceId = GeneralRandomModel();
@@ -172,10 +129,6 @@ namespace Authenticator {
     }
 
 #if DEBUG
-    /// <summary>
-    /// Debug version of enroll that just returns a known test authenticator
-    /// </summary>
-    /// <param name="testmode"></param>
     public void Enroll(bool testmode) {
       if (!testmode) {
         Enroll();
@@ -210,10 +163,6 @@ namespace Authenticator {
     }
 #endif
 
-
-    /// <summary>
-    /// Synchorise this authenticator's time with server time. We update our data record with the difference from our UTC time.
-    /// </summary>
     public override void Sync() {
       // check if data is protected
       if (SecretKey == null && EncryptedData != null) {
@@ -263,18 +212,11 @@ namespace Authenticator {
       }
     }
 
-    /// <summary>
-    /// Calculate the current code for the authenticator.
-    /// Trion's implementation is broken in that they don't built the signed integer correctly from the 4-byte array, so we have to override
-    /// the proper method
-    /// </summary>
-    /// <param name="resyncTime">flag to resync time</param>
-    /// <returns>authenticator code</returns>
     protected override string CalculateCode(bool resyncTime = false, long interval = -1) {
       // sync time if required
       if (resyncTime || ServerTimeDiff == 0) {
         if (interval > 0) {
-          ServerTimeDiff = (interval * ((long) Period * 1000L)) - CurrentTime;
+          ServerTimeDiff = interval * Period * 1000L - CurrentTime;
         }
         else {
           Sync();
@@ -318,13 +260,6 @@ namespace Authenticator {
       return code;
     }
 
-    /// <summary>
-    /// Get the secret questions for an account
-    /// </summary>
-    /// <param name="email">user's account email</param>
-    /// <param name="password">user's account password</param>
-    /// <param name="question1">returned secret question 1</param>
-    /// <param name="question2">returned secret question 2</param>
     public static void SecurityQuestions(string email, string password, out string question1, out string question2) {
       var postdata = "emailAddress=" + email + "&password=" + password;
 
@@ -340,8 +275,7 @@ namespace Authenticator {
       using (var response = (HttpWebResponse) request.GetResponse()) {
         // OK?
         if (response.StatusCode != HttpStatusCode.OK) {
-          throw new InvalidRestoreResponseException(string.Format("{0}: {1}", (int) response.StatusCode,
-            response.StatusDescription));
+          throw new InvalidRestoreResponseException($"{(int) response.StatusCode}: {response.StatusDescription}");
         }
 
         // load the response
@@ -370,14 +304,6 @@ namespace Authenticator {
       question2 = doc.SelectSingleNode("//SecondQuestion").InnerText;
     }
 
-    /// <summary>
-    /// Restore an authenticator using the account details and security questions
-    /// </summary>
-    /// <param name="email">user's account email</param>
-    /// <param name="password">user's account password</param>
-    /// <param name="deviceId">register authenticator deviceid</param>
-    /// <param name="answer1">answer to secret question 1</param>
-    /// <param name="answer2">answer to secret question 2</param>
     public void Restore(string email, string password, string deviceId, string answer1, string answer2) {
       var postdata = "emailAddress=" + email
                                      + "&password=" + password
@@ -397,8 +323,7 @@ namespace Authenticator {
       using (var response = (HttpWebResponse) request.GetResponse()) {
         // OK?
         if (response.StatusCode != HttpStatusCode.OK) {
-          throw new InvalidRestoreResponseException(string.Format("{0}: {1}", (int) response.StatusCode,
-            response.StatusDescription));
+          throw new InvalidRestoreResponseException($"{(int) response.StatusCode}: {response.StatusDescription}");
         }
 
         // load the response
@@ -433,10 +358,6 @@ namespace Authenticator {
       DeviceId = doc.SelectSingleNode("//DeviceId").InnerText;
     }
 
-    /// <summary>
-    /// Create a random Model string for initialization to armor the init string sent over the wire
-    /// </summary>
-    /// <returns>Random model string</returns>
     private static string GeneralRandomModel() {
       // seed a new RNG
       var randomSeedGenerator = new RNGCryptoServiceProvider();

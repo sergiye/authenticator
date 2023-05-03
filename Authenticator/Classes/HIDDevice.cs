@@ -5,10 +5,6 @@ using System.Runtime.InteropServices;
 using Microsoft.Win32.SafeHandles;
 
 namespace Authenticator {
-  /// <summary>
-  /// Class that loads all current USB devices so we can find the YubiKey
-  /// Credit to http://brandonw.net/
-  /// </summary>
   public class HidDevice : IDisposable {
     #region P/Invoke
 
@@ -48,16 +44,6 @@ namespace Authenticator {
       public Int16 ProductID;
       public Int16 VersionNumber;
     }
-
-    //[StructLayout(LayoutKind.Sequential)]
-    //private struct GUID
-    //{
-    //	public int Data1;
-    //	public System.UInt16 Data2;
-    //	public System.UInt16 Data3;
-    //	[MarshalAs(UnmanagedType.ByValArray, SizeConst = 8)]
-    //	public byte[] data4;
-    //}
 
     [DllImport("hid.dll", SetLastError = true)]
     private static extern void HidD_GetHidGuid(
@@ -204,7 +190,6 @@ namespace Authenticator {
 
     #region Declarations
 
-    private bool found = false;
     private Guid guid;
     private IntPtr hDeviceInfo = IntPtr.Zero;
     private SpDeviceInterfaceData spDeviceInterfaceData;
@@ -245,9 +230,7 @@ namespace Authenticator {
     public int InputReportLength { get; private set; }
     public int OutputReportLength { get; private set; }
 
-    public bool Found {
-      get { return found; }
-    }
+    public bool Found { get; private set; }
 
     #endregion
 
@@ -421,7 +404,7 @@ namespace Authenticator {
         this.devicePath = diDetail.DevicePath;
 
         if (this.devicePath == devicePath) {
-          found = true;
+          Found = true;
           spDeviceInterfaceData = new SpDeviceInterfaceData();
           spDeviceInterfaceData.cbSize = Marshal.SizeOf(spDeviceInterfaceData);
           SetupDiEnumDeviceInterfaces(hDeviceInfo, IntPtr.Zero, ref guid, deviceCount, ref spDeviceInterfaceData);
@@ -453,7 +436,7 @@ namespace Authenticator {
         deviceCount++;
       } while (result);
 
-      if (!found) {
+      if (!Found) {
         if (throwNotFoundError)
           throw new InvalidOperationException("Device not found");
       }
@@ -486,29 +469,22 @@ namespace Authenticator {
   public class HidDeviceDataReceivedEventArgs : EventArgs {
     #region Declarations
 
-    private byte reportType;
-    private byte[] data;
-
     #endregion
 
     #region Constructors / Teardown
 
     public HidDeviceDataReceivedEventArgs(byte reportType, byte[] data) {
-      this.reportType = reportType;
-      this.data = data;
+      ReportType = reportType;
+      Data = data;
     }
 
     #endregion
 
     #region Public Properties
 
-    public byte ReportType {
-      get { return reportType; }
-    }
+    public byte ReportType { get; }
 
-    public byte[] Data {
-      get { return data; }
-    }
+    public byte[] Data { get; }
 
     #endregion
   }

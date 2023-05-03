@@ -1,59 +1,29 @@
 ﻿using System;
 using System.Net;
-#if NUNIT
-using NUnit.Framework;
-#endif
 
 namespace Authenticator {
-  /// <summary>
-  /// Class that implements Google's authenticator
-  /// </summary>
+
   public class GoogleAuthenticator : Authenticator {
-    /// <summary>
-    /// Number of digits in code
-    /// </summary>
+  
     private const int CODE_DIGITS = 6;
-
-    /// <summary>
-    /// Number of minutes to ignore syncing if network error
-    /// </summary>
     private const int SYNC_ERROR_MINUTES = 5;
-
-    /// <summary>
-    /// URL used to sync time
-    /// </summary>
     private const string TIME_SYNC_URL = "http://www.google.com";
-
-    /// <summary>
-    /// Time of last Sync error
-    /// </summary>
     private static DateTime lastSyncError = DateTime.MinValue;
 
     #region Authenticator data
 
-    public string Serial {
-      get { return Base32.GetInstance().Encode(SecretKey); }
-    }
+    public string Serial => Base32.GetInstance().Encode(SecretKey);
 
     #endregion
 
-    /// <summary>
-    /// Create a new Authenticator object
-    /// </summary>
-    public GoogleAuthenticator()
-      : base(CODE_DIGITS) {
+    public GoogleAuthenticator() : base(CODE_DIGITS) {
     }
 
-    /// <summary>
-    /// Enroll the authenticator with the server.
     public void Enroll(string b32Key) {
       SecretKey = Base32.GetInstance().Decode(b32Key);
       Sync();
     }
 
-    /// <summary>
-    /// Synchronise this authenticator's time with Google. We update our data record with the difference from our UTC time.
-    /// </summary>
     public override void Sync() {
       // check if data is protected
       if (SecretKey == null && EncryptedData != null) {
@@ -107,4 +77,14 @@ namespace Authenticator {
       }
     }
   }
+  
+  public class MicrosoftAuthenticator : GoogleAuthenticator {
+  }
+  
+  public class GuildWarsAuthenticator : GoogleAuthenticator {
+  }
+
+  public class OktaVerifyAuthenticator : GoogleAuthenticator {
+  }
+
 }

@@ -11,82 +11,29 @@ using Org.BouncyCastle.Crypto.Digests;
 using Org.BouncyCastle.Crypto.Engines;
 using Org.BouncyCastle.Crypto.Macs;
 using Org.BouncyCastle.Crypto.Parameters;
-#if NUNIT
-using NUnit.Framework;
-#endif
 
 namespace Authenticator {
-  /// <summary>
-  /// Class that implements Battle.net Mobile Authenticator v1.1.0.
-  /// </summary>
   public class BattleNetAuthenticator : Authenticator {
-    /// <summary>
-    /// Size of model string
-    /// </summary>
     private const int MODEL_SIZE = 16;
-
-    /// <summary>
-    /// String of possible chars we use in our random model string
-    /// </summary>
     private const string MODEL_CHARS = " ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz01234567890";
-
-    /// <summary>
-    /// Buffer size used on Http responses
-    /// </summary>
     private const int RESPONSE_BUFFER_SIZE = 64;
-
-    /// <summary>
-    /// Expect size of return data from enroll
-    /// </summary>
     private const int ENROLL_RESPONSE_SIZE = 45;
-
-    /// <summary>
-    /// Expected size of return data from time sync
-    /// </summary>
     private const int SYNC_RESPONSE_SIZE = 8;
-
-    /// <summary>
-    /// Buffer size used on Restore call
-    /// </summary>
     private const int RESTOREINIT_BUFFER_SIZE = 32;
-
-    /// <summary>
-    /// Buffer size used on Restore Validation call
-    /// </summary>
     private const int RESTOREVALIDATE_BUFFER_SIZE = 20;
-
-    /// <summary>
-    /// Number of digits in code
-    /// </summary>
     private const int CODE_DIGITS = 8;
 
-    /// <summary>
-    /// The public key modulus used to encrypt our data
-    /// </summary>
     private const string ENROLL_MODULUS =
       "955e4bd989f3917d2f15544a7e0504eb9d7bb66b6f8a2fe470e453c779200e5e" +
       "3ad2e43a02d06c4adbd8d328f1a426b83658e88bfd949b2af4eaf30054673a14" +
       "19a250fa4cc1278d12855b5b25818d162c6e6ee2ab4a350d401d78f6ddb99711" +
       "e72626b48bd8b5b0b7f3acf9ea3c9e0005fee59e19136cdb7c83f2ab8b0a2a99";
 
-    /// <summary>
-    /// Public key exponent used to encrypt our data
-    /// </summary>
-    private const string ENROLL_EXPONENT =
-      "0101";
-
-    /// <summary>
-    /// Number of minutes to ignore syncing if network error
-    /// </summary>
+    private const string ENROLL_EXPONENT = "0101";
     private const int SYNC_ERROR_MINUTES = 5;
-
     private const string BATTLENET_ISSUER = "BattleNet";
 
-    /// <summary>
-    /// URLs for all mobile services
-    /// </summary>
     private static string regionUs = "US";
-
     private static string regionEu = "EU";
     private static string regionKr = "KR";
     private static string regionCn = "CN";
@@ -103,9 +50,6 @@ namespace Authenticator {
     private static string restorePath = "/enrollment/initiatePaperRestore.htm";
     private static string restorevalidatePath = "/enrollment/validatePaperRestore.htm";
 
-    /// <summary>
-    /// Set of ISO3166 EU countries
-    /// </summary>
     private static List<string> euCountries = new List<string> {
       "AL", "AD", "AM", "AT", "AZ", "BY", "BE", "BA", "BG", "HR",
       "CY", "CZ", "DK", "EE", "FI", "FR", "GE", "DE", "GR", "HU",
@@ -115,42 +59,24 @@ namespace Authenticator {
       "VA"
     };
 
-    /// <summary>
-    /// Set of ISO3166 KR countries
-    /// </summary>
     private static List<string> krCountries = new List<string> {
       "KR", "KP", "TW", "HK", "MO"
     };
 
-    /// <summary>
-    /// URL for GEO IP lookup to determine region
-    /// </summary>
     private static string geoipurl = "http://geoiplookup.wikimedia.org";
 
-    /// <summary>
-    /// Time of last Sync error
-    /// </summary>
     private static DateTime lastSyncError = DateTime.MinValue;
 
     #region Authenticator data
 
-    /// <summary>
-    /// Region for authenticator taken from first 2 chars of serial
-    /// </summary>
-    public string Region {
-      get { return (string.IsNullOrEmpty(Serial) == false ? Serial.Substring(0, 2) : string.Empty); }
-    }
+    public string Region => (string.IsNullOrEmpty(Serial) == false ? Serial.Substring(0, 2) : string.Empty);
 
     public string Serial { get; set; }
 
-    /// <summary>
-    /// Get/set the combined secret data value
-    /// </summary>
     public override string SecretData {
-      get {
+      get =>
         // for Battle.net, this is the key + serial
-        return base.SecretData + "|" + ByteArrayToString(Encoding.UTF8.GetBytes(Serial));
-      }
+        base.SecretData + "|" + ByteArrayToString(Encoding.UTF8.GetBytes(Serial));
       set {
         // for Battle.net, extract key + serial
         if (string.IsNullOrEmpty(value) == false) {
@@ -179,32 +105,17 @@ namespace Authenticator {
       }
     }
 
-    /// <summary>
-    /// We can check if the restore code is valid and rememeber so don't have to do it again
-    /// </summary>
     public bool RestoreCodeVerified { get; set; }
 
-    /// <summary>
-    /// Get the restore code for an authenticator used to recover a lost authenticator along with the serial number.
-    /// </summary>
-    /// <returns>restore code (10 chars)</returns>
-    public string RestoreCode {
-      get { return BuildRestoreCode(); }
-    }
+    public string RestoreCode => BuildRestoreCode();
 
     #endregion
 
-    /// <summary>
-    /// Create a new Authenticator object
-    /// </summary>
     public BattleNetAuthenticator()
       : base(CODE_DIGITS) {
       Issuer = BATTLENET_ISSUER;
     }
 
-    /// <summary>
-    /// Enroll the authenticator with the server.
-    /// </summary>
     public void Enroll() {
       // default to US
       var region = regionUs;
@@ -304,7 +215,7 @@ namespace Authenticator {
       var encrypted = rsa.ProcessBlock(data, 0, data.Length);
 
       // call the enroll server
-      byte[] responseData = null;
+      byte[] responseData;
       try {
         var request = (HttpWebRequest) WebRequest.Create(GetMobileUrl(region) + enrollPath);
         request.Method = "POST";
@@ -317,8 +228,7 @@ namespace Authenticator {
         using (var response = (HttpWebResponse) request.GetResponse()) {
           // OK?
           if (response.StatusCode != HttpStatusCode.OK) {
-            throw new InvalidEnrollResponseException(string.Format("{0}: {1}", (int) response.StatusCode,
-              response.StatusDescription));
+            throw new InvalidEnrollResponseException($"{(int) response.StatusCode}: {response.StatusDescription}");
           }
 
           // load back the buffer - should only be a byte[45]
@@ -335,8 +245,7 @@ namespace Authenticator {
 
               // check it is correct size
               if (responseData.Length != ENROLL_RESPONSE_SIZE) {
-                throw new InvalidEnrollResponseException(
-                  string.Format("Invalid response data size (expected 45 got {0})", responseData.Length));
+                throw new InvalidEnrollResponseException($"Invalid response data size (expected 45 got {responseData.Length})");
               }
             }
           }
@@ -376,10 +285,6 @@ namespace Authenticator {
     }
 
 #if DEBUG
-    /// <summary>
-    /// Debug version of enroll that just returns a known test authenticator
-    /// </summary>
-    /// <param name="testmode"></param>
     public void Enroll(bool testmode) {
       if (!testmode) {
         Enroll();
@@ -396,9 +301,6 @@ namespace Authenticator {
 #endif
 
 
-    /// <summary>
-    /// Synchronise this authenticator's time with server time. We update our data record with the difference from our UTC time.
-    /// </summary>
     public override void Sync() {
       // check if data is protected
       if (SecretKey == null && EncryptedData != null) {
@@ -473,11 +375,6 @@ namespace Authenticator {
       }
     }
 
-    /// <summary>
-    /// Restore an authenticator from the serial number and restore code.
-    /// </summary>
-    /// <param name="serial">serial code, e.g. US-1234-5678-1234</param>
-    /// <param name="restoreCode">restore code given on enroll, 10 chars.</param>
     public void Restore(string serial, string restoreCode) {
       // get the serial data
       var serialBytes = Encoding.UTF8.GetBytes(serial.ToUpper().Replace("-", string.Empty));
@@ -643,12 +540,6 @@ namespace Authenticator {
       Sync();
     }
 
-    /// <summary>
-    /// Read any extra tags from the Xml
-    /// </summary>
-    /// <param name="reader">XmlReader</param>
-    /// <param name="name">name of tag</param>
-    /// <returns>true if read and processed the tag</returns>
     public override bool ReadExtraXml(XmlReader reader, string name) {
       switch (name) {
         case "restorecodeverified":
@@ -659,10 +550,6 @@ namespace Authenticator {
       }
     }
 
-    /// <summary>
-    /// Add extra tags into the XmlWriter
-    /// </summary>
-    /// <param name="writer">XmlWriter to write data</param>
     protected override void WriteExtraXml(XmlWriter writer) {
       if (RestoreCodeVerified) {
         writer.WriteStartElement("restorecodeverified");
@@ -671,11 +558,6 @@ namespace Authenticator {
       }
     }
 
-    /// <summary>
-    /// Get the base mobil url based on the region
-    /// </summary>
-    /// <param name="region">two letter region code, i.e US or CN</param>
-    /// <returns>string of Url for region</returns>
     private static string GetMobileUrl(string region) {
       var upperregion = region.ToUpper();
       if (upperregion.Length > 2) {
@@ -690,11 +572,6 @@ namespace Authenticator {
       }
     }
 
-    /// <summary>
-    /// Calculate the restore code for an authenticator. This is taken from the last 10 bytes of a digest of the serial and secret key,
-    /// which is then specially encoded to alphanumerics.
-    /// </summary>
-    /// <returns>restore code for authenticator (always 10 chars)</returns>
     protected string BuildRestoreCode() {
       // return if not set
       if (string.IsNullOrEmpty(Serial) || SecretKey == null) {
@@ -726,10 +603,6 @@ namespace Authenticator {
       return code.ToString();
     }
 
-    /// <summary>
-    /// Create a random Model string for initialization to armor the init string sent over the wire
-    /// </summary>
-    /// <returns>Random model string</returns>
     private static string GeneralRandomModel() {
       // seed a new RNG
       var randomSeedGenerator = new RNGCryptoServiceProvider();
@@ -748,67 +621,45 @@ namespace Authenticator {
 
     #region Utility functions
 
-    /// <summary>
-    /// Convert a char to a byte but with appropriate mapping to exclude I,L,O and S. E.g. A=10 but J=18 not 19 (as I is missing)
-    /// </summary>
-    /// <param name="c">char to convert.</param>
-    /// <returns>byte value of restore code char</returns>
     private static byte ConvertRestoreCodeCharToByte(char c) {
-      if (c >= '0' && c <= '9') {
+      if (c >= '0' && c <= '9')
         return (byte) (c - '0');
+
+      var index = (byte) (c + 10 - 65);
+      if (c >= 'I') {
+        index--;
       }
-      else {
-        var index = (byte) (c + 10 - 65);
-        if (c >= 'I') {
-          index--;
-        }
-
-        if (c >= 'L') {
-          index--;
-        }
-
-        if (c >= 'O') {
-          index--;
-        }
-
-        if (c >= 'S') {
-          index--;
-        }
-
-        return index;
+      if (c >= 'L') {
+        index--;
       }
+      if (c >= 'O') {
+        index--;
+      }
+      if (c >= 'S') {
+        index--;
+      }
+      return index;
     }
 
-    /// <summary>
-    /// Convert a byte to a char but with appropriate mapping to exclude I,L,O and S.
-    /// </summary>
-    /// <param name="b">byte to convert.</param>
-    /// <returns>char value of restore code value</returns>
     private static char ConvertRestoreCodeByteToChar(byte b) {
       var index = b & 0x1f;
-      if (index <= 9) {
+      if (index <= 9)
         return (char) (index + 48);
+
+      index = (index + 65) - 10;
+      if (index >= 73) {
+        index++;
       }
-      else {
-        index = (index + 65) - 10;
-        if (index >= 73) {
-          index++;
-        }
-
-        if (index >= 76) {
-          index++;
-        }
-
-        if (index >= 79) {
-          index++;
-        }
-
-        if (index >= 83) {
-          index++;
-        }
-
-        return (char) index;
+      if (index >= 76) {
+        index++;
       }
+      if (index >= 79) {
+        index++;
+      }
+      if (index >= 83) {
+        index++;
+      }
+      return (char) index;
     }
 
     #endregion
