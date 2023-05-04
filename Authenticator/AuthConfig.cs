@@ -27,8 +27,6 @@ namespace Authenticator {
 
     public event ConfigChangedHandler OnConfigChanged;
 
-    private string filename;
-
     public decimal Version { get; private set; }
 
     public string Password { protected get; set; }
@@ -82,10 +80,7 @@ namespace Authenticator {
 
     #region System Settings
 
-    public string Filename {
-      get => filename;
-      set => filename = value;
-    }
+    public string Filename { get; set; }
 
     public bool AlwaysOnTop {
       get => alwaysOnTop;
@@ -176,9 +171,8 @@ namespace Authenticator {
     public string PgpKey { get; private set; }
 
     public bool IsPortable =>
-      (string.IsNullOrEmpty(Filename) == false
-       && String.Compare(Path.GetDirectoryName(Filename),
-         Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), StringComparison.OrdinalIgnoreCase) == 0);
+      !string.IsNullOrEmpty(Filename)
+      && Path.GetDirectoryName(Filename) == Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
 
     public string ReadSetting(string name, string defaultValue = null) {
       return IsPortable
@@ -542,51 +536,25 @@ namespace Authenticator {
 
             // for old 2.x configs
             case "authenticator":
-              var waold = new AuthAuthenticator();
-              waold.AuthenticatorData = Authenticator.ReadXmlv2(reader, password);
-              if (waold.AuthenticatorData is BattleNetAuthenticator) {
-                waold.Name = "Battle.net";
-              }
-              else if (waold.AuthenticatorData is GuildWarsAuthenticator) {
-                waold.Name = "GuildWars 2";
-              }
-              else if (waold.AuthenticatorData is GuildWarsAuthenticator) {
-                waold.Name = "Authenticator";
-              }
-
-              Add(waold);
-              CurrentAuthenticator = waold;
-              waold.AutoRefresh = defaultAutoRefresh;
-              waold.CopyOnCode = defaultCopyOnCode;
-              break;
-
-            // old 2.x auto login script
-            case "autologin":
-              var hks = new HoyKeySequence();
-              hks.ReadXml(reader, password);
-              if (hks.HotKey != 0) {
-                if (CurrentAuthenticator.HotKey == null) CurrentAuthenticator.HotKey = new HotKey();
-
-                var hotkey = CurrentAuthenticator.HotKey;
-                hotkey.Action = HotKey.HotKeyActions.Inject;
-                hotkey.Key = hks.HotKey;
-                hotkey.Modifiers = hks.Modifiers;
-                if (hks.WindowTitleRegex && string.IsNullOrEmpty(hks.WindowTitle) == false) {
-                  hotkey.Window = "/" + Regex.Escape(hks.WindowTitle);
-                }
-                else if (string.IsNullOrEmpty(hks.WindowTitle) == false) {
-                  hotkey.Window = hks.WindowTitle;
-                }
-                else if (string.IsNullOrEmpty(hks.ProcessName) == false) {
-                  hotkey.Window = hks.ProcessName;
-                }
-
-                if (hks.Advanced) {
-                  hotkey.Action = HotKey.HotKeyActions.Advanced;
-                  hotkey.Advanced = hks.AdvancedScript;
-                }
+              var authOld = new AuthAuthenticator {
+                AuthenticatorData = Authenticator.ReadXmlv2(reader, password)
+              };
+              switch (authOld.AuthenticatorData) {
+                case BattleNetAuthenticator _:
+                  authOld.Name = "Battle.net";
+                  break;
+                case GuildWarsAuthenticator _:
+                  authOld.Name = "GuildWars 2";
+                  break;
+                default:
+                  authOld.Name = "Authenticator";
+                  break;
               }
 
+              Add(authOld);
+              CurrentAuthenticator = authOld;
+              authOld.AutoRefresh = defaultAutoRefresh;
+              authOld.CopyOnCode = defaultCopyOnCode;
               break;
 
             default:

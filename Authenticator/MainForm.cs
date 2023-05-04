@@ -107,15 +107,13 @@ namespace Authenticator {
     #region Private Methods
 
     private void LoadConfig(string password) {
-      var configFile = startupConfigFile;
-
       loadingPanel.Visible = true;
       passwordPanel.Visible = false;
 
       Task.Factory.StartNew(() => {
         try {
           // use previous config if we have one
-          var config = AuthHelper.LoadConfig(configFile, password);
+          var config = AuthHelper.LoadConfig(startupConfigFile, password);
           return new Tuple<AuthConfig, Exception>(config, null);
         }
         catch (Exception ex) {
@@ -189,19 +187,9 @@ namespace Authenticator {
       }, TaskScheduler.FromCurrentSynchronizationContext());
     }
 
-    /// <summary>
-    /// Import authenticators from a file
-    /// 
-    /// *.xml = Authenticator v2
-    /// *.txt = plain text with KeyUriFormat per line (https://code.google.com/p/google-authenticator/wiki/KeyUriFormat)
-    /// *.zip = encrypted zip, containing import file
-    /// *.pgp = PGP encrypted, containing import file
-    /// 
-    /// </summary>
-    /// <param name="authenticatorFile">name import file</param>
     private void ImportAuthenticator(string authenticatorFile) {
       // call legacy import for v2 xml files
-      if (String.Compare(Path.GetExtension(authenticatorFile), ".xml", StringComparison.OrdinalIgnoreCase) == 0) {
+      if (String.Compare(Path.GetExtension(authenticatorFile), ".config", StringComparison.OrdinalIgnoreCase) == 0) {
         ImportAuthenticatorFromV2(authenticatorFile);
         return;
       }
@@ -288,12 +276,11 @@ namespace Authenticator {
             // make sure there isn't a name clash
             var rename = 0;
             var importedName = importedAuthenticator.Name;
-            while (Config.Where(a => a.Name == importedName).Count() != 0) {
+            while (Config.Any(a => a.Name == importedName)) {
               importedName = importedAuthenticator.Name + " (" + (++rename) + ")";
             }
 
             importedAuthenticator.Name = importedName;
-
             imported.Add(importedAuthenticator);
           }
 
@@ -728,91 +715,6 @@ namespace Authenticator {
       }
     }
 
-    void hotkeyTimer_Tick(object sender, EventArgs e) {
-      var data = hotkeyTimer.Tag as HotKeyLauncher;
-
-      // check we don't wait forever
-      if (data.Started.AddSeconds(5) < DateTime.Now) {
-        hotkeyTimer.Enabled = false;
-        return;
-      }
-
-      // wait until the modifiers are released
-      if ((ModifierKeys & Keys.Alt) != 0
-          || (ModifierKeys & Keys.Control) != 0
-          || (ModifierKeys & Keys.Shift) != 0) {
-        return;
-      }
-
-      // cancel the timer
-      hotkeyTimer.Enabled = false;
-
-      // invoke the handler method in the correct context
-      data.Form.Invoke((MethodInvoker) delegate { HandleHotkey(data.Authenticator); });
-    }
-
-    private void HandleHotkey(AuthAuthenticator auth) {
-      // get the code
-      string code;
-      try {
-        code = auth.CurrentCode;
-      }
-      catch (EncryptedSecretDataException) {
-        // if the authenticator is current protected we display the password window, get the code, and reprotect it
-        // with a bit of window jiggling to make sure we get focus and then put it back
-
-        // save the current window
-        var fgwindow = WinApi.GetForegroundWindow();
-        var screen = Screen.FromHandle(fgwindow);
-        var activewindow = IntPtr.Zero;
-        if (Visible) {
-          activewindow = WinApi.SetActiveWindow(Handle);
-          BringToFront();
-        }
-
-        var item = authenticatorList.Items.Cast<AuthenticatorListItem>().FirstOrDefault(i => i.Authenticator == auth);
-        code = authenticatorList.GetItemCode(item, screen);
-
-        // restore active window
-        if (activewindow != IntPtr.Zero) {
-          WinApi.SetActiveWindow(activewindow);
-        }
-
-        WinApi.SetForegroundWindow(fgwindow);
-      }
-
-      if (code != null) {
-        // default to sending the code to the current window
-        var keysend = new KeyboardSender(auth.HotKey.Window);
-        string command = null;
-        if (auth.HotKey.Action == HotKey.HotKeyActions.Notify) {
-          if (auth.CopyOnCode) {
-            auth.CopyCodeToClipboard(this, code);
-          }
-
-          if (code.Length > 5) {
-            code = code.Insert(code.Length / 2, " ");
-          }
-
-          notifyIcon.ShowBalloonTip(10000, auth.Name, code, ToolTipIcon.Info);
-        }
-
-        if (auth.HotKey.Action == HotKey.HotKeyActions.Copy) {
-          command = "{COPY}";
-        }
-        else if (auth.HotKey.Action == HotKey.HotKeyActions.Advanced) {
-          command = auth.HotKey.Advanced;
-        }
-        else if (auth.HotKey.Action == HotKey.HotKeyActions.Inject) {
-          command = "{CODE}";
-        }
-
-        if (command != null) {
-          keysend.SendKeys(this, command, code);
-        }
-      }
-    }
-
     private void RunAction(AuthAuthenticator auth, AuthConfig.NotifyActions action) {
       // get the code
       string code;
@@ -1190,7 +1092,7 @@ namespace Authenticator {
         ofd.FileName = Path.GetFileName(lastv2File);
       }
 
-      ofd.Filter = "Authenticator Files (*.config)|*.config|WinAuth Files (*.xml)|*.xml|Text Files (*.txt)|*.txt|Zip Files (*.zip)|*.zip|PGP Files (*.pgp)|*.pgp|All Files (*.*)|*.*";
+      ofd.Filter = "Authenticator Files (*.config)|*.config|*.xml|Text Files (*.txt)|*.txt|Zip Files (*.zip)|*.zip|PGP Files (*.pgp)|*.pgp|All Files (*.*)|*.*";
       ofd.RestoreDirectory = true;
       ofd.Title = AuthMain.APPLICATION_TITLE;
       if (ofd.ShowDialog(this) == DialogResult.OK) {

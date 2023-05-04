@@ -1,35 +1,20 @@
 ﻿using System.Windows.Forms;
 
-namespace Authenticator
-{
-	partial class MainForm
-  {
-    /// <summary>
-    /// Required designer variable.
-    /// </summary>
+namespace Authenticator {
+  partial class MainForm {
     private System.ComponentModel.IContainer components = null;
 
-    /// <summary>
-    /// Clean up any resources being used.
-    /// </summary>
-    /// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
-    protected override void Dispose(bool disposing)
-    {
-      if (disposing && (components != null))
-      {
+    protected override void Dispose(bool disposing) {
+      if (disposing && (components != null)) {
         components.Dispose();
       }
+
       base.Dispose(disposing);
     }
 
     #region Windows Form Designer generated code
 
-    /// <summary>
-    /// Required method for Designer support - do not modify
-    /// the contents of this method with the code editor.
-    /// </summary>
-    private void InitializeComponent()
-    {
+    private void InitializeComponent() {
       this.components = new System.ComponentModel.Container();
       this.mainTimer = new System.Windows.Forms.Timer(this.components);
       this.authenticatorMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
@@ -39,7 +24,6 @@ namespace Authenticator
       this.notifyIcon = new System.Windows.Forms.NotifyIcon(this.components);
       this.notifyMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
       this.passwordTimer = new System.Windows.Forms.Timer(this.components);
-      this.hotkeyTimer = new System.Windows.Forms.Timer(this.components);
       this.passwordPanel = new System.Windows.Forms.Panel();
       this.passwordButton = new System.Windows.Forms.Button();
       this.passwordErrorLabel = new System.Windows.Forms.Label();
@@ -56,7 +40,7 @@ namespace Authenticator
       this.passwordPanel.SuspendLayout();
       this.commandPanel.SuspendLayout();
       this.loadingPanel.SuspendLayout();
-      ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
+      ((System.ComponentModel.ISupportInitialize) (this.pictureBox1)).BeginInit();
       this.SuspendLayout();
       // 
       // mainTimer
@@ -68,7 +52,8 @@ namespace Authenticator
       // authenticatorMenu
       // 
       this.authenticatorMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.testToolStripMenuItem});
+        this.testToolStripMenuItem
+      });
       this.authenticatorMenu.Name = "authenticatorMenu";
       this.authenticatorMenu.Size = new System.Drawing.Size(95, 26);
       // 
@@ -106,11 +91,6 @@ namespace Authenticator
       // 
       this.passwordTimer.Interval = 500;
       this.passwordTimer.Tick += new System.EventHandler(this.passwordTimer_Tick);
-      // 
-      // hotkeyTimer
-      // 
-      this.hotkeyTimer.Interval = 250;
-      this.hotkeyTimer.Tick += new System.EventHandler(this.hotkeyTimer_Tick);
       // 
       // passwordPanel
       // 
@@ -160,7 +140,8 @@ namespace Authenticator
       // 
       this.introLabel.BackColor = System.Drawing.SystemColors.Window;
       this.introLabel.Dock = System.Windows.Forms.DockStyle.Fill;
-      this.introLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+      this.introLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold,
+        System.Drawing.GraphicsUnit.Point, ((byte) (204)));
       this.introLabel.Location = new System.Drawing.Point(0, 0);
       this.introLabel.Name = "introLabel";
       this.introLabel.Size = new System.Drawing.Size(284, 106);
@@ -183,7 +164,9 @@ namespace Authenticator
       // 
       // optionsButton
       // 
-      this.optionsButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+      this.optionsButton.Anchor =
+        ((System.Windows.Forms.AnchorStyles) ((System.Windows.Forms.AnchorStyles.Bottom |
+                                               System.Windows.Forms.AnchorStyles.Right)));
       this.optionsButton.BackgroundImage = global::Authenticator.Properties.Resources.OptionsIcon;
       this.optionsButton.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Center;
       this.optionsButton.Location = new System.Drawing.Point(250, 6);
@@ -194,7 +177,9 @@ namespace Authenticator
       // 
       // addAuthenticatorButton
       // 
-      this.addAuthenticatorButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+      this.addAuthenticatorButton.Anchor =
+        ((System.Windows.Forms.AnchorStyles) ((System.Windows.Forms.AnchorStyles.Bottom |
+                                               System.Windows.Forms.AnchorStyles.Left)));
       this.addAuthenticatorButton.Location = new System.Drawing.Point(3, 6);
       this.addAuthenticatorButton.Name = "addAuthenticatorButton";
       this.addAuthenticatorButton.Size = new System.Drawing.Size(70, 23);
@@ -267,35 +252,32 @@ namespace Authenticator
       this.passwordPanel.PerformLayout();
       this.commandPanel.ResumeLayout(false);
       this.loadingPanel.ResumeLayout(false);
-      ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
+      ((System.ComponentModel.ISupportInitialize) (this.pictureBox1)).EndInit();
       this.ResumeLayout(false);
-
     }
 
-		#endregion
+    #endregion
 
-		private AuthenticatorListBox authenticatorList;
-		private System.Windows.Forms.Timer mainTimer;
-		private System.Windows.Forms.ContextMenuStrip authenticatorMenu;
-		private System.Windows.Forms.ToolStripMenuItem testToolStripMenuItem;
-		private Panel commandPanel;
-		private Button addAuthenticatorButton;
-		private System.Windows.Forms.ContextMenuStrip addAuthenticatorMenu;
-		private Button optionsButton;
-		private System.Windows.Forms.ContextMenuStrip optionsMenu;
-		private System.Windows.Forms.NotifyIcon notifyIcon;
-		private Label introLabel;
-		private Panel passwordPanel;
-		private TextBox passwordField;
-		private Button passwordButton;
-		private Label passwordErrorLabel;
-		private System.Windows.Forms.Timer passwordTimer;
-		private Label passwordLabel;
-		private System.Windows.Forms.ContextMenuStrip notifyMenu;
-		private System.Windows.Forms.Timer hotkeyTimer;
-		private Panel loadingPanel;
-		private System.Windows.Forms.PictureBox pictureBox1;
+    private AuthenticatorListBox authenticatorList;
+    private System.Windows.Forms.Timer mainTimer;
+    private System.Windows.Forms.ContextMenuStrip authenticatorMenu;
+    private System.Windows.Forms.ToolStripMenuItem testToolStripMenuItem;
+    private Panel commandPanel;
+    private Button addAuthenticatorButton;
+    private System.Windows.Forms.ContextMenuStrip addAuthenticatorMenu;
+    private Button optionsButton;
+    private System.Windows.Forms.ContextMenuStrip optionsMenu;
+    private System.Windows.Forms.NotifyIcon notifyIcon;
+    private Label introLabel;
+    private Panel passwordPanel;
+    private TextBox passwordField;
+    private Button passwordButton;
+    private Label passwordErrorLabel;
+    private System.Windows.Forms.Timer passwordTimer;
+    private Label passwordLabel;
+    private System.Windows.Forms.ContextMenuStrip notifyMenu;
+    private Panel loadingPanel;
+    private System.Windows.Forms.PictureBox pictureBox1;
 
   }
 }
-

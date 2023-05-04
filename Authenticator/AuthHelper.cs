@@ -21,13 +21,13 @@ using Org.BouncyCastle.Math;
 
 namespace Authenticator {
   class AuthHelper {
-    private const string AUTH2_REGKEY = @"Software\Authenticator";
+    private const string AUTH2_REGKEY = @"Software\sergiye\Authenticator";
 
     private const string AUTHREGKEY_LASTFILE = @"File{0}";
 
-    private const string AUTHREGKEY_BACKUP = @"Software\Authenticator\Backup";
+    private const string AUTHREGKEY_BACKUP = @"Software\sergiye\Authenticator\Backup";
 
-    private const string AUTHREGKEY_CONFIGBACKUP = @"Software\Authenticator\Backup\Config";
+    private const string AUTHREGKEY_CONFIGBACKUP = @"Software\sergiye\Authenticator\Backup\Config";
 
     private const string RUNKEY = @"Software\Microsoft\Windows\CurrentVersion\Run";
 
@@ -63,7 +63,7 @@ namespace Authenticator {
       if (string.IsNullOrEmpty(configFile)) {
         // check for file in current directory
         configFile = Path.Combine(Environment.CurrentDirectory, DEFAULT_AUTHENTICATOR_FILE_NAME);
-        if (File.Exists(configFile) == false) {
+        if (!File.Exists(configFile)) {
           configFile = null;
         }
       }
@@ -71,7 +71,7 @@ namespace Authenticator {
       if (string.IsNullOrEmpty(configFile)) {
         // check for file in exe directory
         configFile = Path.Combine(Path.GetDirectoryName(Application.ExecutablePath), DEFAULT_AUTHENTICATOR_FILE_NAME);
-        if (File.Exists(configFile) == false) {
+        if (!File.Exists(configFile)) {
           configFile = null;
         }
       }
@@ -83,13 +83,13 @@ namespace Authenticator {
         // check for default authenticator
         configFile = Path.Combine(configDirectory, DEFAULT_AUTHENTICATOR_FILE_NAME);
         // if no config file, just return a blank config
-        if (File.Exists(configFile) == false) {
+        if (!File.Exists(configFile)) {
           return config;
         }
       }
 
       // if no config file when one was specified; report an error
-      if (File.Exists(configFile) == false) {
+      if (!File.Exists(configFile)) {
         //MessageBox.Show(form,
         // strings.CannotFindConfigurationFile + ": " + configFile,
         //  form.Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
@@ -103,7 +103,6 @@ namespace Authenticator {
         config.IsReadOnly = true;
       }
 
-      var changed = false;
       try {
         var data = File.ReadAllBytes(configFile);
         if (data.Length == 0 || data[0] == 0) {
@@ -116,6 +115,7 @@ namespace Authenticator {
           }
         }
 
+        bool changed;
         using (var fs = new FileStream(configFile, FileMode.Open, FileAccess.Read)) {
           var reader = XmlReader.Create(fs);
           changed = config.ReadXml(reader, password);

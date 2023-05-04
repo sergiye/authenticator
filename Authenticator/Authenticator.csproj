@@ -243,7 +243,6 @@
         <Compile Include="GetPasswordForm.designer.cs">
             <DependentUpon>GetPasswordForm.cs</DependentUpon>
         </Compile>
-        <Compile Include="HotKeySequence.cs" />
         <Compile Include="ExceptionForm.cs">
             <SubType>Form</SubType>
         </Compile>
@@ -261,7 +260,6 @@
         <Compile Include="GroupRadioButton.cs">
             <SubType>Component</SubType>
         </Compile>
-        <Compile Include="HotKey.cs" />
         <Compile Include="ISecretTextBox.cs" />
         <Compile Include="AddBattleNetAuthenticator.cs">
             <SubType>Form</SubType>

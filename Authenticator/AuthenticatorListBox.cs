@@ -795,12 +795,7 @@ namespace Authenticator {
         return;
 
       var labelItem = menu.Items.Cast<ToolStripItem>().FirstOrDefault(i => i.Name == "contextMenuItemName") as ToolStripLabel;
-      if (labelItem != null) {
-        labelItem.Text = item.Authenticator.Name;
-        if (auth.HotKey != null) {
-          labelItem.Text += " (" + auth.HotKey + ")";
-        }
-      }
+      if (labelItem != null) labelItem.Text = item.Authenticator.Name;
 
       var menuItem = menu.Items.Cast<ToolStripItem>().FirstOrDefault(i => i.Name == "setPasswordMenuItem") as ToolStripMenuItem;
       if (menuItem != null)

@@ -26,7 +26,6 @@ namespace Authenticator {
     private string skin;
     private bool autoRefresh;
     private bool copyOnCode;
-    private HotKey hotkey;
 
     public AuthAuthenticator() {
       Id = Guid.NewGuid();
@@ -46,18 +45,14 @@ namespace Authenticator {
     }
 
     public void MarkChanged() {
-      if (OnAuthAuthenticatorChanged != null) {
-        OnAuthAuthenticatorChanged(this, new AuthAuthenticatorChangedEventArgs());
-      }
+      OnAuthAuthenticatorChanged?.Invoke(this, new AuthAuthenticatorChangedEventArgs());
     }
 
     public string Name {
       get => name;
       set {
         name = value;
-        if (OnAuthAuthenticatorChanged != null) {
-          OnAuthAuthenticatorChanged(this, new AuthAuthenticatorChangedEventArgs("Name"));
-        }
+        OnAuthAuthenticatorChanged?.Invoke(this, new AuthAuthenticatorChangedEventArgs("Name"));
       }
     }
 
@@ -65,33 +60,16 @@ namespace Authenticator {
       get => skin;
       set {
         skin = value;
-        if (OnAuthAuthenticatorChanged != null) {
-          OnAuthAuthenticatorChanged(this, new AuthAuthenticatorChangedEventArgs("Skin"));
-        }
+        OnAuthAuthenticatorChanged?.Invoke(this, new AuthAuthenticatorChangedEventArgs("Skin"));
       }
     }
 
     public bool AutoRefresh {
-      get {
-        if (AuthenticatorData != null && AuthenticatorData is HotpAuthenticator) {
-          return false;
-        }
-        else {
-          return autoRefresh;
-        }
-      }
+      get => !(AuthenticatorData is HotpAuthenticator) && autoRefresh;
       set {
         // HTOP must always be false
-        if (AuthenticatorData != null && AuthenticatorData is HotpAuthenticator) {
-          autoRefresh = false;
-        }
-        else {
-          autoRefresh = value;
-        }
-
-        if (OnAuthAuthenticatorChanged != null) {
-          OnAuthAuthenticatorChanged(this, new AuthAuthenticatorChangedEventArgs("AutoRefresh"));
-        }
+        autoRefresh = !(AuthenticatorData is HotpAuthenticator) && value;
+        OnAuthAuthenticatorChanged?.Invoke(this, new AuthAuthenticatorChangedEventArgs("AutoRefresh"));
       }
     }
 
@@ -99,54 +77,35 @@ namespace Authenticator {
       get => copyOnCode;
       set {
         copyOnCode = value;
-        if (OnAuthAuthenticatorChanged != null) {
-          OnAuthAuthenticatorChanged(this, new AuthAuthenticatorChangedEventArgs("CopyOnCode"));
-        }
-      }
-    }
-
-    public HotKey HotKey {
-      get =>
-        //if (this.AuthenticatorData != null && _hotkey != null)
-        //{
-        //	_hotkey.Advanced = this.AuthenticatorData.Script;
-        //}
-        hotkey;
-      set {
-        hotkey = value;
-        //if (this.AuthenticatorData != null && _hotkey != null)
-        //{
-        //	AuthenticatorData.Script = _hotkey.Advanced;
-        //}
-        if (OnAuthAuthenticatorChanged != null) {
-          OnAuthAuthenticatorChanged(this, new AuthAuthenticatorChangedEventArgs("HotKey"));
-        }
+        OnAuthAuthenticatorChanged?.Invoke(this, new AuthAuthenticatorChangedEventArgs("CopyOnCode"));
       }
     }
 
     public Bitmap Icon {
       get {
-        if (string.IsNullOrEmpty(Skin) == false) {
-          Stream stream;
-          if (Skin.StartsWith("base64:")) {
-            var bytes = Convert.FromBase64String(Skin.Substring(7));
-            stream = new MemoryStream(bytes, 0, bytes.Length);
-          }
-          else {
-            stream = Assembly.GetExecutingAssembly().GetManifestResourceStream("Authenticator.Resources." + Skin);
-          }
 
-          if (stream != null) {
-            return new Bitmap(stream);
-          }
+        if (string.IsNullOrEmpty(Skin)) {
+          return GenerateDrawText(Name.Substring(0, 2).ToUpper(), Color.Azure, Color.CornflowerBlue);
         }
 
-        if (AuthenticatorData == null) {
+        if (Skin.StartsWith("base64:")) {
+          var bytes = Convert.FromBase64String(Skin.Substring(7));
+          if (bytes.Length > 0)
+            using (var stream = new MemoryStream(bytes, 0, bytes.Length))
+              return new Bitmap(stream);
+        }
+        else {
+          using (var stream = Assembly.GetExecutingAssembly()
+                   .GetManifestResourceStream("Authenticator.Resources." + Skin)) {
+            if (stream != null) 
+              return new Bitmap(stream);
+          }
+        }
+        
+        if (AuthenticatorData == null)
           return null;
-        }
 
-        return new Bitmap(Assembly.GetExecutingAssembly()
-          .GetManifestResourceStream("Authenticator.Resources." + AuthenticatorData.GetType().Name + "Icon.png"));
+        return new Bitmap(Assembly.GetExecutingAssembly().GetManifestResourceStream("Authenticator.Resources." + AuthenticatorData.GetType().Name + "Icon.png"));
       }
       set {
         if (value == null) {
@@ -159,6 +118,26 @@ namespace Authenticator {
           Skin = "base64:" + Convert.ToBase64String(ms.ToArray());
         }
       }
+    }
+
+    private static Bitmap GenerateDrawText(string text, Color textColor, Color backColor,
+      int imgSize = 48, int fontSize = 12, string fontName = "Arial", FontStyle fontStyle = FontStyle.Bold) {
+
+      var img = new Bitmap(imgSize, imgSize);
+      using (var font = new Font(fontName, fontSize, fontStyle)) {
+        using (var drawing = Graphics.FromImage(img)) {
+          drawing.Clear(Color.Transparent);
+          using (Brush backBrush = new SolidBrush(backColor))
+            drawing.FillEllipse(backBrush, 0, 0, imgSize, imgSize);
+          using (Brush textBrush = new SolidBrush(textColor)) {
+            var textSize = drawing.MeasureString(text, font);
+            drawing.DrawString(text, font, textBrush, (imgSize - textSize.Width) / 2 + 1,
+              (imgSize - textSize.Height) / 2);
+            drawing.Save();
+          }
+        }
+      }
+      return img;
     }
 
     public string CurrentCode {
@@ -304,11 +283,6 @@ namespace Authenticator {
               skin = reader.ReadElementContentAsString();
               break;
 
-            case "hotkey":
-              hotkey = new HotKey();
-              hotkey.ReadXml(reader);
-              break;
-
             case "authenticatordata":
               try {
                 // we don't pass the password as they are locked till clicked
@@ -326,11 +300,6 @@ namespace Authenticator {
             // v2
             case "authenticator":
               AuthenticatorData = Authenticator.ReadXmlv2(reader, password);
-              break;
-            // v2
-            case "autologin":
-              var hks = new HoyKeySequence();
-              hks.ReadXml(reader, password);
               break;
             // v2
             case "servertimediff":
@@ -409,15 +378,7 @@ namespace Authenticator {
       writer.WriteEndElement();
 
       // save the authenticator to the config file
-      if (AuthenticatorData != null) {
-        AuthenticatorData.WriteToWriter(writer);
-
-        // save script with password and generated salt
-        //if (this.AutoLogin != null)
-        //{
-        //	this.AutoLogin.WriteXmlString(writer, this.AuthenticatorData.PasswordType, this.AuthenticatorData.Password);
-        //}
-      }
+      AuthenticatorData?.WriteToWriter(writer);
 
       writer.WriteEndElement();
     }
