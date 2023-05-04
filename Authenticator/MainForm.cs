@@ -537,8 +537,7 @@ namespace Authenticator {
           Tag = auth
         };
         if (string.IsNullOrEmpty(auth.Icon) == false) {
-          subitem.Image = new Bitmap(Assembly.GetExecutingAssembly()
-            .GetManifestResourceStream("Authenticator.Resources." + auth.Icon));
+          subitem.Image = new Bitmap(Assembly.GetExecutingAssembly().GetManifestResourceStream("Authenticator.Resources." + auth.Icon));
           subitem.ImageAlign = ContentAlignment.MiddleLeft;
           subitem.ImageScaling = ToolStripItemImageScaling.SizeToFit;
         }
@@ -553,8 +552,7 @@ namespace Authenticator {
       subitem = new ToolStripMenuItem {
         Text = "Import...",
         Name = "importTextMenuItem",
-        Image = new Bitmap(Assembly.GetExecutingAssembly()
-        .GetManifestResourceStream("Authenticator.Resources.TextIcon.png")),
+        Image = new Bitmap(Assembly.GetExecutingAssembly().GetManifestResourceStream("Authenticator.Resources.TextIcon.png")),
         ImageAlign = ContentAlignment.MiddleLeft,
         ImageScaling = ToolStripItemImageScaling.SizeToFit
       };
@@ -666,37 +664,28 @@ namespace Authenticator {
         if (steam.ConfirmTrade(confirmation.Id, confirmation.Key, true)) {
           if (action != SteamClient.PollerAction.SilentAutoConfirm) {
             title = "Confirmed";
-            message = string.Format(
-              "<h1>{0}</h1><table width=250 cellspacing=0 cellpadding=0 border=0><tr><td width=40><img src=\"{1}\" /></td><td width=210>{2}<br/>{3}</td></tr></table>",
-              auth.Name, confirmation.Image, confirmation.Details, confirmation.Traded);
+            message =
+              $"<h1>{auth.Name}</h1><table width=250 cellspacing=0 cellpadding=0 border=0><tr><td width=40><img src=\"{confirmation.Image}\" /></td><td width=210>{confirmation.Details}<br/>{confirmation.Traded}</td></tr></table>";
           }
         }
         else {
           title = "Confirmation Failed";
-          message = string.Format(
-            "<h1>{0}</h1><table width=250 cellspacing=0 cellpadding=0 border=0><tr><td width=40><img src=\"{1}\" /></td><td width=210>{2}<br/>{3}<br/>Error: {4}</td></tr></table>",
-            auth.Name, confirmation.Image, confirmation.Details, confirmation.Traded, steam.Error ?? "Unknown error");
+          message =
+            $"<h1>{auth.Name}</h1><table width=250 cellspacing=0 cellpadding=0 border=0><tr><td width=40><img src=\"{confirmation.Image}\" /></td><td width=210>{confirmation.Details}<br/>{confirmation.Traded}<br/>Error: {steam.Error ?? "Unknown error"}</td></tr></table>";
           extraHeight += 20;
         }
       }
       else if (confirmation.IsNew) // if (action == SteamClient.PollerAction.Notify)
       {
         title = "New Confirmation";
-        message = string.Format(
-          "<h1>{0}</h1><table width=250 cellspacing=0 cellpadding=0 border=0><tr valign=top><td width=40><img src=\"{1}\" /></td><td width=210>{2}<br/>{3}</td></tr></table>",
-          auth.Name, confirmation.Image, confirmation.Details, confirmation.Traded);
+        message =
+          $"<h1>{auth.Name}</h1><table width=250 cellspacing=0 cellpadding=0 border=0><tr valign=top><td width=40><img src=\"{confirmation.Image}\" /></td><td width=210>{confirmation.Details}<br/>{confirmation.Traded}</td></tr></table>";
         openOnClick = true;
       }
 
       if (title != null) {
         // show the Notification window in the correct context
-        Invoke(new ShowNotificationCallback(ShowNotification), new object[] {
-          auth,
-          title,
-          message,
-          openOnClick,
-          extraHeight
-        });
+        Invoke(new ShowNotificationCallback(ShowNotification), auth, title, message, openOnClick, extraHeight);
       }
     }
 
@@ -1151,7 +1140,7 @@ namespace Authenticator {
       var count = authenticatorList.Items.Count;
       for (var i = 0; i < count; i++) {
         var item = (AuthenticatorListItem) authenticatorList.Items[i];
-        Config.Where(a => a == item.Authenticator).FirstOrDefault().Index = i;
+        Config.FirstOrDefault(a => a == item.Authenticator).Index = i;
       }
 
       // resort the config list
@@ -1681,19 +1670,5 @@ namespace Authenticator {
     }
 
     #endregion
-
-    class HotKeyLauncher {
-      public MainForm Form { get; }
-
-      public AuthAuthenticator Authenticator { get; }
-
-      public DateTime Started { get; }
-
-      public HotKeyLauncher(MainForm form, AuthAuthenticator auth) {
-        Started = DateTime.Now;
-        Form = form;
-        Authenticator = auth;
-      }
-    }
   }
 }

@@ -9,7 +9,7 @@ using Authenticator.Resources;
 using ZXing;
 
 namespace Authenticator {
-  public partial class AddAuthenticator : ResourceForm {
+  public partial class AddAuthenticator : Form {
     private const string HOTP = "hotp";
     private const string TOTP = "totp";
 

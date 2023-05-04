@@ -7,21 +7,20 @@ using System.Windows.Forms;
 namespace Authenticator {
   [ToolboxBitmap(typeof(Form))]
   public class ResourceForm : Form {
-    class BasedOnComparer : IEqualityComparer<Type> {
-      public bool Equals(Type t1, Type t2) {
-        return (t1 == t2 || t2.IsSubclassOf(t1));
-      }
+    
+    private class BasedOnComparer : IEqualityComparer<Type> {
+      
+      public bool Equals(Type t1, Type t2) => t1 == t2 || t2 != null && t1 != null && t2.IsSubclassOf(t1);
 
       public int GetHashCode(Type t) {
         return t.GetHashCode();
       }
     }
 
-    public ResourceForm()
-      : base() {
-    }
-
     protected override void OnLoad(EventArgs e) {
+      BackColor = SystemColors.Window;
+      StartPosition = FormStartPosition.CenterScreen;
+      
       // go through all controls and set any text from resources (including this form)
       //var controls = GetControls(this, new Type[] { typeof(MetroFramework.Controls.MetroLabel), typeof(MetroFramework.Controls.MetroCheckBox) });
       var controls = GetControls(this);
@@ -48,7 +47,7 @@ namespace Authenticator {
       base.OnLoad(e);
     }
 
-    private List<Control> GetControls(Control control, Type[] controlTypes = null, List<Control> controls = null) {
+    private static List<Control> GetControls(Control control, Type[] controlTypes = null, List<Control> controls = null) {
       if (controls == null) {
         controls = new List<Control>();
       }
@@ -59,7 +58,7 @@ namespace Authenticator {
           controls.Add(c);
         }
 
-        if (c.Controls != null && c.Controls.Count != 0) {
+        if (c.Controls.Count != 0) {
           GetControls(c, controlTypes, controls);
         }
       }

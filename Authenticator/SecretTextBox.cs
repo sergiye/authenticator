@@ -3,22 +3,14 @@ using System.Text;
 using System.Windows.Forms;
 
 namespace Authenticator {
-  public class SecretTextBox : TextBox, ISecretTextBox {
+  public class SecretTextBox : TextBox {
     private string mText;
-
-    private int mSpaceOut;
-
     private bool mSecretMode;
-
     private string mFontFamily;
     private float mFontSize;
 
-    public SecretTextBox()
-      : base() {
-    }
-
     public bool SecretMode {
-      get { return mSecretMode; }
+      get => mSecretMode;
       set {
         mSecretMode = value;
         Enabled = !value; // we disable so cannot select/copy 
@@ -40,13 +32,10 @@ namespace Authenticator {
       }
     }
 
-    public int SpaceOut {
-      get { return mSpaceOut; }
-      set { mSpaceOut = value; }
-    }
+    public int SpaceOut { get; set; }
 
     public override string Text {
-      get { return (SecretMode ? mText : base.Text); }
+      get => (SecretMode ? mText : base.Text);
       set {
         mText = value;
         base.Text =
@@ -66,18 +55,18 @@ namespace Authenticator {
         var text = mText;
 
         // if we have spacing, we add a space in between each set of chars
-        if (mSpaceOut != 0 && mText != null) {
+        if (SpaceOut != 0 && mText != null) {
           var sb = new StringBuilder();
-          for (var i = 0; i < mText.Length; i += mSpaceOut) {
+          for (var i = 0; i < mText.Length; i += SpaceOut) {
             if (i >= mText.Length) {
               break;
             }
 
-            if (i + mSpaceOut >= mText.Length) {
+            if (i + SpaceOut >= mText.Length) {
               sb.Append(mText.Substring(i));
             }
             else {
-              sb.Append(mText.Substring(i, mSpaceOut)).Append(" ");
+              sb.Append(mText.Substring(i, SpaceOut)).Append(" ");
             }
           }
 
@@ -85,7 +74,7 @@ namespace Authenticator {
         }
 
         // draw the whole string
-        g.DrawString((text != null ? text : string.Empty), base.Font, brush, new RectangleF(0, 0, Width, Height), sf);
+        g.DrawString(text ?? string.Empty, base.Font, brush, new RectangleF(0, 0, Width, Height), sf);
       }
     }
   }

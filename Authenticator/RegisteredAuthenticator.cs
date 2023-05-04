@@ -1,7 +1,7 @@
-﻿using System.Collections.Generic;
+﻿namespace Authenticator {
 
-namespace Authenticator {
   public class RegisteredAuthenticator {
+  
     public enum AuthenticatorTypes {
       None = 0,
       BattleNet,
@@ -18,6 +18,5 @@ namespace Authenticator {
     public string Name;
     public AuthenticatorTypes AuthenticatorType;
     public string Icon;
-    public List<RegisteredAuthenticator> Children = new List<RegisteredAuthenticator>();
   }
 }

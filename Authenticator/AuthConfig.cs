@@ -7,7 +7,6 @@ using System.Linq;
 using System.Reflection;
 using System.Security.Cryptography;
 using System.Text;
-using System.Text.RegularExpressions;
 using System.Xml;
 using System.Xml.Serialization;
 using Authenticator.Resources;
@@ -231,23 +230,25 @@ namespace Authenticator {
       }
     }
 
-    public void Add(AuthAuthenticator authenticator) {
-      authenticator.OnAuthAuthenticatorChanged += OnAuthAuthenticatorChanged;
-      authenticators.Add(authenticator);
+    public void Add(AuthAuthenticator auth) {
+      if (auth != null) {
+        auth.OnAuthAuthenticatorChanged += OnAuthAuthenticatorChanged;
+        authenticators.Add(auth);
+      }
       SetIndexes();
     }
 
     public void Clear() {
-      foreach (var authenticator in this) {
-        authenticator.Index = 0;
-        authenticator.OnAuthAuthenticatorChanged -= OnAuthAuthenticatorChanged;
+      foreach (var auth in this) {
+        auth.Index = 0;
+        auth.OnAuthAuthenticatorChanged -= OnAuthAuthenticatorChanged;
       }
 
       authenticators.Clear();
     }
 
-    public bool Contains(AuthAuthenticator authenticator) {
-      return authenticators.Contains(authenticator);
+    public bool Contains(AuthAuthenticator auth) {
+      return authenticators.Contains(auth);
     }
 
     public void CopyTo(int index, AuthAuthenticator[] array, int arrayIndex, int count) {
@@ -260,13 +261,15 @@ namespace Authenticator {
 
     public int Count => authenticators.Count;
 
-    public int IndexOf(AuthAuthenticator authenticator) {
-      return authenticators.IndexOf(authenticator);
+    public int IndexOf(AuthAuthenticator auth) {
+      return authenticators.IndexOf(auth);
     }
 
-    public void Insert(int index, AuthAuthenticator authenticator) {
-      authenticator.OnAuthAuthenticatorChanged += OnAuthAuthenticatorChanged;
-      authenticators.Insert(index, authenticator);
+    public void Insert(int index, AuthAuthenticator auth) {
+      if (auth != null) {
+        auth.OnAuthAuthenticatorChanged += OnAuthAuthenticatorChanged;
+        authenticators.Insert(index, auth);
+      }
       SetIndexes();
     }
 
@@ -275,9 +278,12 @@ namespace Authenticator {
       set => readOnly = value;
     }
 
-    public bool Remove(AuthAuthenticator authenticator) {
-      authenticator.OnAuthAuthenticatorChanged -= OnAuthAuthenticatorChanged;
-      var result = authenticators.Remove(authenticator);
+    public bool Remove(AuthAuthenticator auth) {
+      var result = false;
+      if (auth != null) {
+        auth.OnAuthAuthenticatorChanged -= OnAuthAuthenticatorChanged;
+        result = authenticators.Remove(auth);
+      }
       SetIndexes();
       return result;
     }

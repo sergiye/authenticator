@@ -162,7 +162,6 @@
         <Compile Include="Classes\Base32.cs" />
         <Compile Include="Classes\BattleNetAuthenticator.cs" />
         <Compile Include="Classes\GoogleAuthenticator.cs" />
-        <Compile Include="Classes\HIDDevice.cs" />
         <Compile Include="Classes\HOTPAuthenticator.cs" />
         <Compile Include="Classes\SteamAuthenticator.cs" />
         <Compile Include="Classes\SteamClient.cs" />
@@ -176,7 +175,6 @@
         <Compile Include="InputSimulator\MouseFlag.cs" />
         <Compile Include="InputSimulator\MOUSEINPUT.cs" />
         <Compile Include="InputSimulator\MOUSEKEYBDHARDWAREINPUT.cs" />
-        <Compile Include="Keyboard.cs" />
         <Compile Include="Notification.cs">
             <SubType>Form</SubType>
         </Compile>
@@ -260,7 +258,6 @@
         <Compile Include="GroupRadioButton.cs">
             <SubType>Component</SubType>
         </Compile>
-        <Compile Include="ISecretTextBox.cs" />
         <Compile Include="AddBattleNetAuthenticator.cs">
             <SubType>Form</SubType>
         </Compile>
@@ -338,6 +335,9 @@
         </EmbeddedResource>
         <EmbeddedResource Include="Notification.resx">
             <DependentUpon>Notification.cs</DependentUpon>
+        </EmbeddedResource>
+        <EmbeddedResource Include="ResourceForm.resx">
+          <DependentUpon>ResourceForm.cs</DependentUpon>
         </EmbeddedResource>
         <EmbeddedResource Include="ShowSteamTradesForm.resx">
             <DependentUpon>ShowSteamTradesForm.cs</DependentUpon>

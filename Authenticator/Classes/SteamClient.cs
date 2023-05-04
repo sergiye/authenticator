@@ -14,31 +14,17 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
 namespace Authenticator {
-  /// <summary>
-  /// SteamClient for logging and getting/accepting/rejecting trade confirmations
-  /// </summary>
   public class SteamClient : IDisposable {
-    /// <summary>
-    /// URLs for all mobile services
-    /// </summary>
     private const string COMMUNITY_DOMAIN = "steamcommunity.com";
 
     private const string COMMUNITY_BASE = "https://" + COMMUNITY_DOMAIN;
     private static string webapiBase = "https://api.steampowered.com";
     private static string apiGetwgtoken = webapiBase + "/IMobileAuthService/GetWGToken/v0001";
     private static string apiLogoff = webapiBase + "/ISteamWebUserPresenceOAuth/Logoff/v0001";
-    private static string apiLogon = webapiBase + "/ISteamWebUserPresenceOAuth/Logon/v0001";
-    private static string apiPollstatus = webapiBase + "/ISteamWebUserPresenceOAuth/PollStatus/v0001";
 
-    /// <summary>
-    /// Default mobile user agent
-    /// </summary>
     private const string USERAGENT =
       "Mozilla/5.0 (Linux; U; Android 4.1.1; en-us; Google Nexus 4 - 4.1.1 - API 16 - 768x1280 Build/JRO03S) AppleWebKit/534.30 (KHTML, like Gecko) Version/4.0 Mobile Safari/534.30";
 
-    /// <summary>
-    /// Regular expressions for trade confirmations
-    /// </summary>
     private static Regex tradesRegex = new Regex("\"mobileconf_list_entry\"(.*?)>(.*?)\"mobileconf_list_entry_sep\"",
       RegexOptions.Singleline | RegexOptions.IgnoreCase);
 
@@ -56,19 +42,10 @@ namespace Authenticator {
         "\"mobileconf_list_entry_description\".*?<div>([^<]*)</div>[^<]*<div>([^<]*)</div>[^<]*<div>([^<]*)</div>[^<]*</div>",
         RegexOptions.Singleline | RegexOptions.IgnoreCase);
 
-    /// <summary>
-    /// Number of Confirmation retries
-    /// </summary>
     private const int DEFAULT_CONFIRMATIONPOLLER_RETRIES = 3;
 
-    /// <summary>
-    /// Delay between trade confirmation events
-    /// </summary>
     public const int CONFIRMATION_EVENT_DELAY = 1000;
 
-    /// <summary>
-    /// Action for Confirmation polling
-    /// </summary>
     public enum PollerAction {
       None = 0,
       Notify = 1,
@@ -76,81 +53,33 @@ namespace Authenticator {
       SilentAutoConfirm = 3
     }
 
-    /// <summary>
-    /// Create logger
-    /// </summary>
-    //private static ILogger Logger = LogManager.GetCurrentClassLogger();
-
-    /// <summary>
-    /// Hold the Confirmation polling data
-    /// </summary>
     public class ConfirmationPoller {
-      /// <summary>
-      /// Seconds between polls
-      /// </summary>
       public int Duration;
 
-      /// <summary>
-      /// Action for new Confirmation
-      /// </summary>
       public PollerAction Action;
 
-      /// <summary>
-      /// List of current Confirmations ids
-      /// </summary>
       public List<string> Ids;
 
-      /// <summary>
-      /// Create new ConfirmationPoller object
-      /// </summary>
-      public ConfirmationPoller() {
-      }
-
-      /// <summary>
-      /// Create a JSON string of the object
-      /// </summary>
-      /// <returns></returns>
       public override string ToString() {
         if (Duration == 0) {
           return "null";
         }
-        else {
-          var props = new List<string>();
 
-          props.Add("\"duration\":" + Duration);
-          props.Add("\"action\":" + (int) Action);
-          if (Ids != null) {
-            props.Add("\"ids\":[" +
-                      (Ids.Count != 0 ? "\"" + string.Join("\",\"", Ids.ToArray()) + "\"" : string.Empty) + "]");
-          }
+        var props = new List<string>();
 
-          return "{" + string.Join(",", props.ToArray()) + "}";
-        }
-      }
-
-      /// <summary>
-      /// Create a new ConfirmationPoller from a JSON string
-      /// </summary>
-      /// <param name="json">JSON string</param>
-      /// <returns>new ConfirmationPoller or null</returns>
-      public static ConfirmationPoller FromJson(string json) {
-        if (string.IsNullOrEmpty(json) || json == "null") {
-          return null;
+        props.Add("\"duration\":" + Duration);
+        props.Add("\"action\":" + (int) Action);
+        if (Ids != null) {
+          props.Add("\"ids\":[" +
+                    (Ids.Count != 0 ? "\"" + string.Join("\",\"", Ids.ToArray()) + "\"" : string.Empty) + "]");
         }
 
-        var poller = FromJson(JObject.Parse(json));
-        return (poller.Duration != 0 ? poller : null);
+        return "{" + string.Join(",", props.ToArray()) + "}";
       }
 
-      /// <summary>
-      /// Create a new ConfirmationPoller from a JToken
-      /// </summary>
-      /// <param name="tokens">existing JKToken</param>
-      /// <returns></returns>
       public static ConfirmationPoller FromJson(JToken tokens) {
-        if (tokens == null) {
+        if (tokens == null)
           return null;
-        }
 
         var poller = new ConfirmationPoller();
 
@@ -173,9 +102,6 @@ namespace Authenticator {
       }
     }
 
-    /// <summary>
-    /// A class for a single confirmation
-    /// </summary>
     public class Confirmation {
       public string Id;
       public string Key;
@@ -187,51 +113,18 @@ namespace Authenticator {
       public string When;
     }
 
-    /// <summary>
-    /// Session state to remember logins
-    /// </summary>
     public class SteamSession {
-      /// <summary>
-      /// User's steam ID
-      /// </summary>
       public string SteamId;
-
-      /// <summary>
-      /// Current cookies
-      /// </summary>
       public CookieContainer Cookies;
-
-      /// <summary>
-      /// Authorization token
-      /// </summary>
       public string OAuthToken;
-
-      /// <summary>
-      /// UMQ id
-      /// </summary>
       public string UmqId;
-
-      /// <summary>
-      /// Message id
-      /// </summary>
       public int MessageId;
-
-      /// <summary>
-      /// Current polling state
-      /// </summary>
       public ConfirmationPoller Confirmations;
 
-      /// <summary>
-      /// Create Session instance
-      /// </summary>
       public SteamSession() {
         Clear();
       }
 
-      /// <summary>
-      /// Create session instance from existing json data
-      /// </summary>
-      /// <param name="json">json session data</param>
       public SteamSession(string json) : this() {
         if (string.IsNullOrEmpty(json) == false) {
           try {
@@ -243,9 +136,6 @@ namespace Authenticator {
         }
       }
 
-      /// <summary>
-      /// Clear the session
-      /// </summary>
       public void Clear() {
         OAuthToken = null;
         UmqId = null;
@@ -253,10 +143,6 @@ namespace Authenticator {
         Confirmations = null;
       }
 
-      /// <summary>
-      /// Get session data that can be saved and imported
-      /// </summary>
-      /// <returns></returns>
       public override string ToString() {
         return "{\"steamid\":\"" + (SteamId ?? string.Empty) + "\","
                + "\"cookies\":\"" + Cookies.GetCookieHeader(new Uri(COMMUNITY_BASE + "/")) + "\","
@@ -266,10 +152,6 @@ namespace Authenticator {
                + "}";
       }
 
-      /// <summary>
-      /// Convert json data into session 
-      /// </summary>
-      /// <param name="json"></param>
       private void FromJson(string json) {
         var tokens = JObject.Parse(json);
         var token = tokens.SelectToken("steamid");
@@ -307,11 +189,7 @@ namespace Authenticator {
       }
     }
 
-    /// <summary>
-    /// Login state fields
-    /// </summary>
     public bool InvalidLogin;
-
     public bool RequiresCaptcha;
     public string CaptchaId;
     public string CaptchaUrl;
@@ -320,39 +198,14 @@ namespace Authenticator {
     public string EmailDomain;
     public string Error;
 
-    /// <summary>
-    /// Current session
-    /// </summary>
     public SteamSession Session;
-
-    /// <summary>
-    /// Current authenticator
-    /// </summary>
     public SteamAuthenticator Authenticator;
 
-    /// <summary>
-    /// Saved Html from GetConfirmations used as template for GetDetails
-    /// </summary>
     private string confirmationsHtml;
-
-    /// <summary>
-    /// Query string from GetConfirmations used in GetDetails
-    /// </summary>
     private string confirmationsQuery;
-
-    /// <summary>
-    /// Cancellation token for poller
-    /// </summary>
     private CancellationTokenSource pollerCancellation;
-
-    /// <summary>
-    /// Number of Confirmation retries
-    /// </summary>
     public int ConfirmationPollerRetries = DEFAULT_CONFIRMATIONPOLLER_RETRIES;
 
-    /// <summary>
-    /// Create a new SteamClient
-    /// </summary>
     public SteamClient(SteamAuthenticator auth, string session = null) {
       Authenticator = auth;
       Session = new SteamSession(session);
@@ -370,25 +223,15 @@ namespace Authenticator {
       }
     }
 
-    /// <summary>
-    /// Finalizer
-    /// </summary>
     ~SteamClient() {
       Dispose(false);
     }
 
-    /// <summary>
-    /// Dispose the object
-    /// </summary>
     public void Dispose() {
       Dispose(true);
       GC.SuppressFinalize(this);
     }
 
-    /// <summary>
-    /// Dispose this object
-    /// </summary>
-    /// <param name="disposing"></param>
     protected virtual void Dispose(bool disposing) {
       if (disposing) {
         // clear resources
@@ -400,9 +243,6 @@ namespace Authenticator {
       }
     }
 
-    /// <summary>
-    /// Clear the client state
-    /// </summary>
     public void Clear() {
       InvalidLogin = false;
       RequiresCaptcha = false;
@@ -416,22 +256,10 @@ namespace Authenticator {
       Session.Clear();
     }
 
-    /// <summary>
-    /// Check if user is logged in
-    /// </summary>
-    /// <returns></returns>
     public bool IsLoggedIn() {
       return (Session != null && string.IsNullOrEmpty(Session.OAuthToken) == false);
     }
 
-    /// <summary>
-    /// Login to Steam using credentials and optional captcha
-    /// </summary>
-    /// <param name="username"></param>
-    /// <param name="password"></param>
-    /// <param name="captchaId"></param>
-    /// <param name="captchaText"></param>
-    /// <returns>true if successful</returns>
     public bool Login(string username, string password, string captchaId = null, string captchaText = null) {
       // clear error
       Error = null;
@@ -475,7 +303,7 @@ namespace Authenticator {
         }
 
         // encrypt password with RSA key
-        var random = new RNGCryptoServiceProvider();
+        // var random = new RNGCryptoServiceProvider();
         string encryptedPassword64;
         using (var rsa = new RSACryptoServiceProvider()) {
           var passwordBytes = Encoding.ASCII.GetBytes(password);
@@ -580,9 +408,6 @@ namespace Authenticator {
       return true;
     }
 
-    /// <summary>
-    /// Logout of the current session
-    /// </summary>
     public void Logout() {
       if (string.IsNullOrEmpty(Session.OAuthToken) == false) {
         PollConfirmationsStop();
@@ -598,14 +423,9 @@ namespace Authenticator {
       Clear();
     }
 
-    /// <summary>
-    /// Refresh the login session cookies from the OAuth code
-    /// </summary>
-    /// <returns>true if successful</returns>
     public bool Refresh() {
       try {
-        var data = new NameValueCollection();
-        data.Add("access_token", Session.OAuthToken);
+        var data = new NameValueCollection {{"access_token", Session.OAuthToken}};
         var response = GetString(apiGetwgtoken, "POST", data);
         if (string.IsNullOrEmpty(response)) {
           return false;
@@ -646,55 +466,12 @@ namespace Authenticator {
       }
     }
 
-    /// <summary>
-    /// Perform a UMQ login
-    /// </summary>
-    /// <returns></returns>
-    private bool UmqLogin() {
-      if (IsLoggedIn() == false) {
-        return false;
-      }
-
-      var data = new NameValueCollection();
-      data.Add("access_token", Session.OAuthToken);
-      var response = GetString(apiLogon, "POST", data);
-      var loginresponse = JsonConvert.DeserializeObject<Dictionary<string, object>>(response);
-      if (loginresponse.ContainsKey("umqid")) {
-        Session.UmqId = (string) loginresponse["umqid"];
-        if (loginresponse.ContainsKey("message")) {
-          Session.MessageId = Convert.ToInt32(loginresponse["message"]);
-        }
-
-        return true;
-      }
-
-      return false;
-    }
-
-    /// <summary>
-    /// Delegate for Confirmation event
-    /// </summary>
-    /// <param name="sender"></param>
-    /// <param name="newconfirmation">new Confirmation</param>
-    /// <param name="action">action to be taken</param>
     public delegate void ConfirmationDelegate(object sender, Confirmation newconfirmation, PollerAction action);
 
-    /// <summary>
-    /// Delegate for Confirmation error
-    /// </summary>
-    /// <param name="sender"></param>
-    /// <param name="message">error message</param>
-    /// <param name="ex">optional exception</param>
     public delegate void ConfirmationErrorDelegate(object sender, string message, PollerAction action, Exception ex);
 
-    /// <summary>
-    /// Event fired for new Confirmation
-    /// </summary>
     public event ConfirmationDelegate ConfirmationEvent;
 
-    /// <summary>
-    /// Event fired for error on polling
-    /// </summary>
     public event ConfirmationErrorDelegate ConfirmationErrorEvent;
 
     public static Task Delay(int milliseconds, CancellationToken cancel) {
@@ -705,9 +482,6 @@ namespace Authenticator {
       return tcs.Task;
     }
 
-    /// <summary>
-    /// Stop the current poller
-    /// </summary>
     protected void PollConfirmationsStop() {
       // kill any existing poller
       if (pollerCancellation != null) {
@@ -718,10 +492,6 @@ namespace Authenticator {
       Session.Confirmations = null;
     }
 
-    /// <summary>
-    /// Start a new poller
-    /// </summary>
-    /// <param name="poller"></param>
     public void PollConfirmations(ConfirmationPoller poller) {
       PollConfirmationsStop();
 
@@ -741,10 +511,6 @@ namespace Authenticator {
         TaskScheduler.Default);
     }
 
-    /// <summary>
-    /// Confirmation polling task
-    /// </summary>
-    /// <param name="cancel"></param>
     public async void PollConfirmations(CancellationToken cancel) {
       //lock (this.Session.Confirmations)
       //{
@@ -815,7 +581,7 @@ namespace Authenticator {
           catch (Exception ex) {
             retryCount++;
             if (retryCount >= ConfirmationPollerRetries) {
-              ConfirmationErrorEvent(this, "Failed to read confirmations", Session.Confirmations.Action, ex);
+              ConfirmationErrorEvent?.Invoke(this, "Failed to read confirmations", Session.Confirmations.Action, ex);
             }
             else {
               // try and reset the session
@@ -823,6 +589,7 @@ namespace Authenticator {
                 Refresh();
               }
               catch (Exception) {
+                // ignored
               }
             }
           }
@@ -836,10 +603,6 @@ namespace Authenticator {
       }
     }
 
-    /// <summary>
-    /// Get the current trade Confirmations
-    /// </summary>
-    /// <returns>list of Confirmation objects</returns>
     public List<Confirmation> GetConfirmations() {
       var servertime = (global::Authenticator.Authenticator.CurrentTime + Authenticator.ServerTimeDiff) / 1000L;
 
@@ -931,11 +694,6 @@ namespace Authenticator {
       return trades;
     }
 
-    /// <summary>
-    /// Get details for an individual Confirmation
-    /// </summary>
-    /// <param name="trade">trade Confirmation</param>
-    /// <returns>html string of details</returns>
     public string GetConfirmationDetails(Confirmation trade) {
       // build details URL
       var url = COMMUNITY_BASE + "/mobileconf/details/" + trade.Id + "?" + confirmationsQuery;
@@ -959,13 +717,6 @@ namespace Authenticator {
       return "<html><head></head><body><p>Cannot load trade confirmation details</p></body></html>";
     }
 
-    /// <summary>
-    /// Confirm or reject a specific trade confirmation
-    /// </summary>
-    /// <param name="id">id of trade</param>
-    /// <param name="key">key for trade</param>
-    /// <param name="accept">true to accept, false to reject</param>
-    /// <returns>true if successful</returns>
     public bool ConfirmTrade(string id, string key, bool accept) {
       if (string.IsNullOrEmpty(Session.OAuthToken)) {
         return false;
@@ -1022,13 +773,6 @@ namespace Authenticator {
       }
     }
 
-    /// <summary>
-    /// Create the hash needed for the confirmations query string
-    /// </summary>
-    /// <param name="time">current time</param>
-    /// <param name="tag">tag</param>
-    /// <param name="secret">identity secret</param>
-    /// <returns>hash string</returns>
     private static string CreateTimeHash(long time, string tag, string secret) {
       var b64Secret = Convert.FromBase64String(secret);
 
@@ -1057,46 +801,14 @@ namespace Authenticator {
 
     #region Web Request
 
-    /// <summary>
-    /// Get binary data web request
-    /// </summary>
-    /// <param name="url">url</param>
-    /// <param name="method">GET or POST</param>
-    /// <param name="formdata">optional form data</param>
-    /// <param name="headers">optional headers</param>
-    /// <returns>array of returned data</returns>
-    public byte[] GetData(string url, string method = null, NameValueCollection formdata = null,
-      NameValueCollection headers = null) {
-      return Request(url, method ?? "GET", formdata, headers);
-    }
-
-    /// <summary>
-    /// Get string from web request
-    /// </summary>
-    /// <param name="url">url</param>
-    /// <param name="method">GET or POST</param>
-    /// <param name="formdata">optional form data</param>
-    /// <param name="headers">optional headers</param>
-    /// <returns>string of returned data</returns>
     public string GetString(string url, string method = null, NameValueCollection formdata = null,
       NameValueCollection headers = null) {
       var data = Request(url, method ?? "GET", formdata, headers);
-      if (data == null || data.Length == 0) {
+      if (data == null || data.Length == 0)
         return string.Empty;
-      }
-      else {
-        return Encoding.UTF8.GetString(data);
-      }
+      return Encoding.UTF8.GetString(data);
     }
 
-    /// <summary>
-    /// Make a request to Steam URL
-    /// </summary>
-    /// <param name="url">url</param>
-    /// <param name="method">GET or POST</param>
-    /// <param name="formdata">optional form data</param>
-    /// <param name="headers">optional headers</param>
-    /// <returns>returned data</returns>
     protected byte[] Request(string url, string method, NameValueCollection data, NameValueCollection headers) {
       // ensure only one request per account at a time
       lock (this) {
@@ -1155,7 +867,7 @@ namespace Authenticator {
               var responsedata = ms.ToArray();
 
               LogRequest(method, url, request.CookieContainer, data,
-                responsedata != null && responsedata.Length != 0
+                responsedata.Length != 0
                   ? Encoding.UTF8.GetString(responsedata)
                   : string.Empty);
 
@@ -1166,9 +878,9 @@ namespace Authenticator {
         catch (Exception ex) {
           LogException(method, url, request.CookieContainer, data, ex);
 
-          if (ex is WebException && ((WebException) ex).Response != null &&
-              ((HttpWebResponse) ((WebException) ex).Response).StatusCode == HttpStatusCode.Forbidden) {
-            throw new UnauthorisedSteamRequestException(ex);
+          if (ex is WebException exception && exception.Response != null &&
+              ((HttpWebResponse) exception.Response).StatusCode == HttpStatusCode.Forbidden) {
+            throw new UnauthorisedSteamRequestException(exception);
           }
 
           throw new InvalidSteamRequestException(ex.Message, ex);
@@ -1176,14 +888,6 @@ namespace Authenticator {
       }
     }
 
-    /// <summary>
-    /// Log an exception from a Request
-    /// </summary>
-    /// <param name="method">Get or POST</param>
-    /// <param name="url">Request URL</param>
-    /// <param name="cookies">cookie container</param>
-    /// <param name="request">Request data</param>
-    /// <param name="ex">Thrown exception</param>
     private static void LogException(string method, string url, CookieContainer cookies, NameValueCollection request,
       Exception ex) {
       var data = new StringBuilder();
@@ -1220,14 +924,6 @@ namespace Authenticator {
       //Logger.Error(ex, "{0}\t{1}\t{2}", method, url, data.ToString());
     }
 
-    /// <summary>
-    /// Log a normal response
-    /// </summary>
-    /// <param name="method">Get or POST</param>
-    /// <param name="url">Request URL</param>
-    /// <param name="cookies">cookie container</param>
-    /// <param name="request">Request data</param>
-    /// <param name="response">response body</param>
     private static void LogRequest(string method, string url, CookieContainer cookies, NameValueCollection request,
       string response) {
       var data = new StringBuilder();
@@ -1266,11 +962,6 @@ namespace Authenticator {
 
     #endregion
 
-    /// <summary>
-    /// Convert a hex string into a byte array. E.g. "001f406a" -> byte[] {0x00, 0x1f, 0x40, 0x6a}
-    /// </summary>
-    /// <param name="hex">hex string to convert</param>
-    /// <returns>byte[] of hex string</returns>
     private static byte[] StringToByteArray(string hex) {
       var len = hex.Length;
       var bytes = new byte[len / 2];
@@ -1281,19 +972,6 @@ namespace Authenticator {
       return bytes;
     }
 
-    /// <summary>
-    /// Convert a byte array into a ascii hex string, e.g. byte[]{0x00,0x1f,0x40,ox6a} -> "001f406a"
-    /// </summary>
-    /// <param name="bytes">byte array to convert</param>
-    /// <returns>string version of byte array</returns>
-    private static string ByteArrayToString(byte[] bytes) {
-      // Use BitConverter, but it sticks dashes in the string
-      return BitConverter.ToString(bytes).Replace("-", string.Empty);
-    }
-
-    /// <summary>
-    /// Our custom exception for the internal Http Request
-    /// </summary>
     public class InvalidSteamRequestException : ApplicationException {
       public InvalidSteamRequestException(string msg = null, Exception ex = null) : base(msg, ex) {
       }

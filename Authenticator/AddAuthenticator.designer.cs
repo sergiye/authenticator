@@ -1,4 +1,5 @@
 using System.Windows.Forms;
+using System.Windows.Forms.VisualStyles;
 
 namespace Authenticator {
   partial class AddAuthenticator {
@@ -341,6 +342,7 @@ namespace Authenticator {
       this.AcceptButton = this.okButton;
       this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
       this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+      this.BackColor = System.Drawing.SystemColors.Window;
       this.CancelButton = this.cancelButton;
       this.ClientSize = new System.Drawing.Size(698, 850);
       this.Controls.Add(this.hashField);
@@ -372,7 +374,7 @@ namespace Authenticator {
       this.Name = "AddAuthenticator";
       this.ShowIcon = false;
       this.ShowInTaskbar = false;
-      this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
+      this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
       this.Text = "Add Authenticator";
       this.Load += new System.EventHandler(this.AddAuthenticator_Load);
       this.timeBasedPanel.ResumeLayout(false);

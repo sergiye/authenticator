@@ -114,7 +114,7 @@ namespace Authenticator {
       // sync time if required
       if (resync || ServerTimeDiff == 0) {
         if (interval > 0) {
-          ServerTimeDiff = (interval * ((long) Period * 1000L)) - CurrentTime;
+          ServerTimeDiff = interval * Period * 1000L - CurrentTime;
         }
         else {
           Sync();

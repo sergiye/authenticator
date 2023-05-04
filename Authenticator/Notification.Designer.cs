@@ -178,7 +178,6 @@ namespace Authenticator
 			this.Load += new System.EventHandler(this.Notification_Load);
 			this.Shown += new System.EventHandler(this.Notification_Shown);
 			this.Click += new System.EventHandler(this.Notification_Click);
-			this.Paint += new System.Windows.Forms.PaintEventHandler(this.Notification_Paint);
 			this.buttonPanel.ResumeLayout(false);
 			((System.ComponentModel.ISupportInitialize)(this.tradeSep)).EndInit();
 			this.ResumeLayout(false);
