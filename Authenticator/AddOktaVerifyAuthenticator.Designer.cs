@@ -119,8 +119,6 @@ namespace Authenticator {
       this.iconRadioButton.Size = new System.Drawing.Size(14, 13);
       this.iconRadioButton.TabIndex = 1;
       this.iconRadioButton.TabStop = true;
-      this.iconRadioButton.Tag = "OktaVerifyAuthenticatorIcon.png";
-      this.iconRadioButton.CheckedChanged += new System.EventHandler(this.iconRadioButton_CheckedChanged);
       // 
       // oktaIcon
       // 
@@ -130,7 +128,6 @@ namespace Authenticator {
       this.oktaIcon.Size = new System.Drawing.Size(35, 35);
       this.oktaIcon.TabIndex = 4;
       this.oktaIcon.TabStop = false;
-      this.oktaIcon.Tag = "";
       // 
       // iconLabel
       // 

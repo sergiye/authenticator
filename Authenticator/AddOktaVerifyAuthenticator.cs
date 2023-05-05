@@ -85,12 +85,8 @@ namespace Authenticator {
         DialogResult = DialogResult.None;
         return;
       }
-    }
 
-    private void iconRadioButton_CheckedChanged(object sender, EventArgs e) {
-      if (((RadioButton) sender).Checked) {
-        Authenticator.Skin = (string) ((RadioButton) sender).Tag;
-      }
+      Authenticator.Skin = "OktaVerifyAuthenticatorIcon.png";
     }
 
     #endregion

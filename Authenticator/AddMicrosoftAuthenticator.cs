@@ -20,6 +20,7 @@ namespace Authenticator {
     private void AddMicrosoftAuthenticator_Load(object sender, EventArgs e) {
       nameField.Text = Authenticator.Name;
       codeField.SecretMode = true;
+      Authenticator.Skin = (string) icon1RadioButton.Tag;
     }
 
     private void newAuthenticatorTimer_Tick(object sender, EventArgs e) {
