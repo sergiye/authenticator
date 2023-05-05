@@ -51,16 +51,14 @@ namespace Authenticator {
       // 
       // authenticatorMenu
       // 
-      this.authenticatorMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-        this.testToolStripMenuItem
-      });
+      this.authenticatorMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {this.testToolStripMenuItem});
       this.authenticatorMenu.Name = "authenticatorMenu";
-      this.authenticatorMenu.Size = new System.Drawing.Size(95, 26);
+      this.authenticatorMenu.Size = new System.Drawing.Size(115, 34);
       // 
       // testToolStripMenuItem
       // 
       this.testToolStripMenuItem.Name = "testToolStripMenuItem";
-      this.testToolStripMenuItem.Size = new System.Drawing.Size(94, 22);
+      this.testToolStripMenuItem.Size = new System.Drawing.Size(114, 30);
       this.testToolStripMenuItem.Text = "Test";
       // 
       // addAuthenticatorMenu
@@ -101,38 +99,48 @@ namespace Authenticator {
       this.passwordPanel.Controls.Add(this.passwordField);
       this.passwordPanel.Dock = System.Windows.Forms.DockStyle.Fill;
       this.passwordPanel.Location = new System.Drawing.Point(0, 0);
+      this.passwordPanel.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
       this.passwordPanel.Name = "passwordPanel";
-      this.passwordPanel.Size = new System.Drawing.Size(284, 106);
+      this.passwordPanel.Size = new System.Drawing.Size(441, 160);
+      this.passwordPanel.TabIndex = 2;
       // 
       // passwordButton
       // 
-      this.passwordButton.Location = new System.Drawing.Point(197, 41);
+      this.passwordButton.Location = new System.Drawing.Point(296, 62);
+      this.passwordButton.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
       this.passwordButton.Name = "passwordButton";
-      this.passwordButton.Size = new System.Drawing.Size(75, 23);
+      this.passwordButton.Size = new System.Drawing.Size(112, 34);
+      this.passwordButton.TabIndex = 0;
       this.passwordButton.Text = "OK";
       this.passwordButton.Click += new System.EventHandler(this.passwordButton_Click);
       // 
       // passwordErrorLabel
       // 
       this.passwordErrorLabel.ForeColor = System.Drawing.Color.Red;
-      this.passwordErrorLabel.Location = new System.Drawing.Point(12, 68);
+      this.passwordErrorLabel.Location = new System.Drawing.Point(18, 102);
+      this.passwordErrorLabel.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
       this.passwordErrorLabel.Name = "passwordErrorLabel";
-      this.passwordErrorLabel.Size = new System.Drawing.Size(260, 19);
+      this.passwordErrorLabel.Size = new System.Drawing.Size(390, 28);
+      this.passwordErrorLabel.TabIndex = 1;
       // 
       // passwordLabel
       // 
       this.passwordLabel.AutoSize = true;
-      this.passwordLabel.Location = new System.Drawing.Point(12, 27);
+      this.passwordLabel.Location = new System.Drawing.Point(18, 40);
+      this.passwordLabel.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
       this.passwordLabel.Name = "passwordLabel";
-      this.passwordLabel.Size = new System.Drawing.Size(53, 13);
+      this.passwordLabel.Size = new System.Drawing.Size(78, 20);
+      this.passwordLabel.TabIndex = 2;
       this.passwordLabel.Text = "Password";
       // 
       // passwordField
       // 
-      this.passwordField.Location = new System.Drawing.Point(12, 43);
+      this.passwordField.Location = new System.Drawing.Point(18, 64);
+      this.passwordField.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
       this.passwordField.Name = "passwordField";
       this.passwordField.PasswordChar = '●';
-      this.passwordField.Size = new System.Drawing.Size(179, 20);
+      this.passwordField.Size = new System.Drawing.Size(266, 26);
+      this.passwordField.TabIndex = 3;
       this.passwordField.UseSystemPasswordChar = true;
       this.passwordField.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.passwordField_KeyPress);
       // 
@@ -140,11 +148,12 @@ namespace Authenticator {
       // 
       this.introLabel.BackColor = System.Drawing.SystemColors.Window;
       this.introLabel.Dock = System.Windows.Forms.DockStyle.Fill;
-      this.introLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold,
-        System.Drawing.GraphicsUnit.Point, ((byte) (204)));
+      this.introLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte) (204)));
       this.introLabel.Location = new System.Drawing.Point(0, 0);
+      this.introLabel.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
       this.introLabel.Name = "introLabel";
-      this.introLabel.Size = new System.Drawing.Size(284, 106);
+      this.introLabel.Size = new System.Drawing.Size(441, 160);
+      this.introLabel.TabIndex = 3;
       this.introLabel.Text = "Click the \"Add\" button to create or import your authenticator";
       this.introLabel.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
       this.introLabel.Visible = false;
@@ -152,37 +161,39 @@ namespace Authenticator {
       // commandPanel
       // 
       this.commandPanel.BackColor = System.Drawing.SystemColors.Window;
-      this.commandPanel.BorderStyle = BorderStyle.FixedSingle;
+      this.commandPanel.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
       this.commandPanel.Controls.Add(this.optionsButton);
       this.commandPanel.Controls.Add(this.addAuthenticatorButton);
       this.commandPanel.Dock = System.Windows.Forms.DockStyle.Bottom;
-      this.commandPanel.Location = new System.Drawing.Point(0, 106);
+      this.commandPanel.Location = new System.Drawing.Point(0, 160);
+      this.commandPanel.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
       this.commandPanel.Name = "commandPanel";
-      this.commandPanel.Size = new System.Drawing.Size(284, 35);
+      this.commandPanel.Size = new System.Drawing.Size(441, 52);
+      this.commandPanel.TabIndex = 2;
       this.commandPanel.Visible = false;
       this.commandPanel.MouseDown += new System.Windows.Forms.MouseEventHandler(this.commandPanel_MouseDown);
       // 
       // optionsButton
       // 
-      this.optionsButton.Anchor =
-        ((System.Windows.Forms.AnchorStyles) ((System.Windows.Forms.AnchorStyles.Bottom |
-                                               System.Windows.Forms.AnchorStyles.Right)));
+      this.optionsButton.Anchor = ((System.Windows.Forms.AnchorStyles) ((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
       this.optionsButton.BackgroundImage = global::Authenticator.Properties.Resources.OptionsIcon;
       this.optionsButton.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Center;
-      this.optionsButton.Location = new System.Drawing.Point(250, 6);
+      this.optionsButton.Location = new System.Drawing.Point(391, 9);
+      this.optionsButton.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
       this.optionsButton.Name = "optionsButton";
-      this.optionsButton.Size = new System.Drawing.Size(28, 23);
+      this.optionsButton.Size = new System.Drawing.Size(42, 34);
+      this.optionsButton.TabIndex = 0;
       this.optionsButton.UseVisualStyleBackColor = false;
       this.optionsButton.Click += new System.EventHandler(this.optionsButton_Click);
       // 
       // addAuthenticatorButton
       // 
-      this.addAuthenticatorButton.Anchor =
-        ((System.Windows.Forms.AnchorStyles) ((System.Windows.Forms.AnchorStyles.Bottom |
-                                               System.Windows.Forms.AnchorStyles.Left)));
-      this.addAuthenticatorButton.Location = new System.Drawing.Point(3, 6);
+      this.addAuthenticatorButton.Anchor = ((System.Windows.Forms.AnchorStyles) ((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+      this.addAuthenticatorButton.Location = new System.Drawing.Point(4, 9);
+      this.addAuthenticatorButton.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
       this.addAuthenticatorButton.Name = "addAuthenticatorButton";
-      this.addAuthenticatorButton.Size = new System.Drawing.Size(70, 23);
+      this.addAuthenticatorButton.Size = new System.Drawing.Size(105, 34);
+      this.addAuthenticatorButton.TabIndex = 1;
       this.addAuthenticatorButton.Text = "Add";
       this.addAuthenticatorButton.Click += new System.EventHandler(this.addAuthenticatorButton_Click);
       // 
@@ -197,10 +208,12 @@ namespace Authenticator {
       this.authenticatorList.IntegralHeight = false;
       this.authenticatorList.ItemHeight = 80;
       this.authenticatorList.Location = new System.Drawing.Point(0, 0);
+      this.authenticatorList.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
       this.authenticatorList.Name = "authenticatorList";
       this.authenticatorList.ReadOnly = false;
       this.authenticatorList.SelectionMode = System.Windows.Forms.SelectionMode.None;
-      this.authenticatorList.Size = new System.Drawing.Size(284, 106);
+      this.authenticatorList.Size = new System.Drawing.Size(441, 160);
+      this.authenticatorList.TabIndex = 0;
       this.authenticatorList.Visible = false;
       this.authenticatorList.ItemRemoved += new AuthenticatorListItemRemovedHandler(this.authenticatorList_ItemRemoved);
       this.authenticatorList.Reordered += new AuthenticatorListReorderedHandler(this.authenticatorList_Reordered);
@@ -212,33 +225,39 @@ namespace Authenticator {
       this.loadingPanel.Controls.Add(this.pictureBox1);
       this.loadingPanel.Dock = System.Windows.Forms.DockStyle.Fill;
       this.loadingPanel.Location = new System.Drawing.Point(0, 0);
+      this.loadingPanel.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
       this.loadingPanel.Name = "loadingPanel";
-      this.loadingPanel.Size = new System.Drawing.Size(284, 106);
+      this.loadingPanel.Size = new System.Drawing.Size(441, 160);
+      this.loadingPanel.TabIndex = 4;
       // 
       // pictureBox1
       // 
       this.pictureBox1.Anchor = System.Windows.Forms.AnchorStyles.None;
       this.pictureBox1.Image = global::Authenticator.Properties.Resources.spinner24;
-      this.pictureBox1.Location = new System.Drawing.Point(132, 43);
+      this.pictureBox1.Location = new System.Drawing.Point(205, 65);
+      this.pictureBox1.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
       this.pictureBox1.Name = "pictureBox1";
-      this.pictureBox1.Size = new System.Drawing.Size(25, 25);
+      this.pictureBox1.Size = new System.Drawing.Size(38, 38);
+      this.pictureBox1.TabIndex = 1;
       this.pictureBox1.TabStop = false;
       // 
       // MainForm
       // 
-      this.AutoScaleDimensions = new System.Drawing.SizeF(96F, 96F);
+      this.AutoScaleDimensions = new System.Drawing.SizeF(144F, 144F);
       this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
-      this.ClientSize = new System.Drawing.Size(284, 141);
+      this.ClientSize = new System.Drawing.Size(441, 212);
       this.Controls.Add(this.introLabel);
       this.Controls.Add(this.passwordPanel);
       this.Controls.Add(this.loadingPanel);
       this.Controls.Add(this.authenticatorList);
       this.Controls.Add(this.commandPanel);
       this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
+      this.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
       this.MaximizeBox = false;
-      this.MaximumSize = new System.Drawing.Size(1620, 1080);
-      this.MinimumSize = new System.Drawing.Size(300, 180);
+      this.MaximumSize = new System.Drawing.Size(2427, 1600);
+      this.MinimumSize = new System.Drawing.Size(447, 250);
       this.Name = "MainForm";
+      this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
       this.Text = "Authenticator";
       this.TopMost = true;
       this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.MainForm_FormClosing);
@@ -246,7 +265,6 @@ namespace Authenticator {
       this.Shown += new System.EventHandler(this.MainForm_Shown);
       this.ResizeEnd += new System.EventHandler(this.MainForm_ResizeEnd);
       this.MouseDown += new System.Windows.Forms.MouseEventHandler(this.MainForm_MouseDown);
-      this.Resize += new System.EventHandler(this.MainForm_Resize);
       this.authenticatorMenu.ResumeLayout(false);
       this.passwordPanel.ResumeLayout(false);
       this.passwordPanel.PerformLayout();
@@ -263,12 +281,12 @@ namespace Authenticator {
     private System.Windows.Forms.ContextMenuStrip authenticatorMenu;
     private System.Windows.Forms.ToolStripMenuItem testToolStripMenuItem;
     private Panel commandPanel;
-    private Button addAuthenticatorButton;
+    private System.Windows.Forms.Button addAuthenticatorButton;
     private System.Windows.Forms.ContextMenuStrip addAuthenticatorMenu;
-    private Button optionsButton;
+    private System.Windows.Forms.Button optionsButton;
     private System.Windows.Forms.ContextMenuStrip optionsMenu;
     private System.Windows.Forms.NotifyIcon notifyIcon;
-    private Label introLabel;
+    private System.Windows.Forms.Label introLabel;
     private Panel passwordPanel;
     private TextBox passwordField;
     private Button passwordButton;

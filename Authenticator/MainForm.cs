@@ -31,8 +31,6 @@ namespace Authenticator {
 
     public delegate object GetClipboardDataDelegate(Type format);
 
-    private Rectangle listoffset;
-
     private bool initiallyMinimised;
 
     private string existingv2Config;
@@ -362,8 +360,6 @@ namespace Authenticator {
         // hook into System time change event
         Microsoft.Win32.SystemEvents.TimeChanged += SystemEvents_TimeChanged;
 
-        // save the initial form size
-
         // redirect mouse wheel events
         new WinApi.MessageForwarder(authenticatorList, WinApi.WM_MOUSEWHEEL);
 
@@ -388,8 +384,8 @@ namespace Authenticator {
       loadingPanel.Visible = false;
       passwordPanel.Visible = false;
       commandPanel.Visible = true;
-      authenticatorList.Visible = (Config.Count != 0);
       addAuthenticatorButton.Visible = !Config.IsReadOnly;
+      authenticatorList.Focus();
 
       // set title
       notifyIcon.Visible = Config.UseTrayIcon;
@@ -397,10 +393,6 @@ namespace Authenticator {
 
       // hook Steam notifications
       HookSteam();
-
-      // save the position of the list within the form else starting as minimized breaks the size
-      listoffset = new Rectangle(authenticatorList.Left, authenticatorList.Top, (Width - authenticatorList.Width),
-        (Height - authenticatorList.Height));
 
       // set positions
       if (Config.Position.IsEmpty == false) {
@@ -445,11 +437,7 @@ namespace Authenticator {
 
         // if initially minimized, we need to hide
         if (WindowState == FormWindowState.Minimized) {
-          // hide this and metro owner
-          Form form = this;
-          do {
-            form.Hide();
-          } while ((form = form.Owner) != null);
+          Hide();
         }
       }
     }
@@ -765,24 +753,6 @@ namespace Authenticator {
       } while (clipRetry);
     }
 
-    public object GetClipboardData(Type format) {
-      bool clipRetry;
-      do {
-        try {
-          var clipdata = Clipboard.GetDataObject();
-          return (clipdata != null ? clipdata.GetData(format) : null);
-        }
-        catch (ExternalException) {
-          // only show an error the first time
-          clipRetry = (MessageBox.Show(this, strings.ClipboardInUse,
-            AuthMain.APPLICATION_NAME,
-            MessageBoxButtons.YesNo, MessageBoxIcon.Warning, MessageBoxDefaultButton.Button2) == DialogResult.Yes);
-        }
-      } while (clipRetry);
-
-      return null;
-    }
-
     private void SetAutoSize() {
       if (Config.AutoSize) {
         if (Config.Count != 0) {
@@ -828,11 +798,7 @@ namespace Authenticator {
 
         // if initially minizied, we need to hide
         if (WindowState == FormWindowState.Minimized) {
-          // hide this and metro owner
-          Form form = this;
-          do {
-            form.Hide();
-          } while ((form = form.Owner) != null);
+          Hide();
         }
       }
 
@@ -856,12 +822,7 @@ namespace Authenticator {
       if (Config != null && Config.UseTrayIcon && Visible && mExplictClose == false) {
         e.Cancel = true;
         notifyIcon.Visible = true;
-        // hide this and metro owner
-        Form form = this;
-        do {
-          form.Hide();
-        } while ((form = form.Owner) != null);
-
+        Hide();
         return;
       }
 
@@ -1165,16 +1126,6 @@ namespace Authenticator {
 
     private void commandPanel_MouseDown(object sender, MouseEventArgs e) {
       EndRenaming();
-    }
-
-    private void MainForm_Resize(object sender, EventArgs e) {
-      SuspendLayout();
-      if (listoffset.Bottom != 0) {
-        authenticatorList.Height = Height - listoffset.Height;
-        authenticatorList.Width = Width - listoffset.Width;
-      }
-
-      ResumeLayout(true);
     }
 
     private void MainForm_ResizeEnd(object sender, EventArgs e) {
