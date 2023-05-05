@@ -10,10 +10,6 @@ namespace Authenticator {
       InitializeComponent();
     }
 
-    private void btnOK_Click(object sender, EventArgs e) {
-      Close();
-    }
-
     private void ShowRestoreCodeForm_Load(object sender, EventArgs e) {
       var authenticator = CurrentAuthenticator.AuthenticatorData as BattleNetAuthenticator;
 

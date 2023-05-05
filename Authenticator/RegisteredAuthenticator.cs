@@ -11,7 +11,6 @@
       Microsoft,
       RFC6238_TIME,
       RFC6238_COUNTER,
-      Steam,
       OktaVerify
     }
 

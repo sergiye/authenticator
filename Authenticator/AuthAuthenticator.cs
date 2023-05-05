@@ -413,12 +413,6 @@ namespace Authenticator {
         extraparams += "&serial=" +
                        HttpUtility.UrlEncode(((BattleNetAuthenticator) AuthenticatorData).Serial.Replace("-", ""));
       }
-      else if (AuthenticatorData is SteamAuthenticator) {
-        if (compat == false) {
-          extraparams += "&deviceid=" + HttpUtility.UrlEncode(((SteamAuthenticator) AuthenticatorData).DeviceId);
-          extraparams += "&data=" + HttpUtility.UrlEncode(((SteamAuthenticator) AuthenticatorData).SteamData);
-        }
-      }
       else if (AuthenticatorData is HotpAuthenticator) {
         type = "hotp";
         extraparams += "&counter=" + ((HotpAuthenticator) AuthenticatorData).Counter;

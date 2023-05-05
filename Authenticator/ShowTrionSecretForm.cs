@@ -8,10 +8,6 @@ namespace Authenticator {
       InitializeComponent();
     }
 
-    private void btnOK_Click(object sender, EventArgs e) {
-      Close();
-    }
-
     private void ShowTrionSecretForm_Load(object sender, EventArgs e) {
       serialNumberField.SecretMode = true;
       deviceIdField.SecretMode = true;

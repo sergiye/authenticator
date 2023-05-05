@@ -391,9 +391,6 @@ namespace Authenticator {
       notifyIcon.Visible = Config.UseTrayIcon;
       notifyIcon.Text = Text = AuthMain.APPLICATION_TITLE;
 
-      // hook Steam notifications
-      HookSteam();
-
       // set positions
       if (Config.Position.IsEmpty == false) {
         // check we aren't out of bounds in case of multi-monitor change
@@ -548,137 +545,6 @@ namespace Authenticator {
       addAuthenticatorMenu.Items.Add(subitem);
     }
 
-    #region Steam Notifications
-
-    public void UnhookSteam() {
-      if (Config == null) {
-        return;
-      }
-
-      foreach (var auth in Config) {
-        if (auth.AuthenticatorData != null && auth.AuthenticatorData is SteamAuthenticator &&
-            ((SteamAuthenticator) auth.AuthenticatorData).Client != null) {
-          var client = ((SteamAuthenticator) auth.AuthenticatorData).GetClient();
-          client.ConfirmationEvent -= SteamClient_ConfirmationEvent;
-          client.ConfirmationErrorEvent -= SteamClient_ConfirmationErrorEvent;
-        }
-      }
-    }
-
-    public void HookSteam() {
-      UnhookSteam();
-      if (Config == null) {
-        return;
-      }
-
-      // do async as setting up clients can take time (Task.Factory.StartNew wait for UI so need to use new Thread(...))
-      new Thread(() => {
-        foreach (var auth in Config) {
-          if (auth.AuthenticatorData != null && auth.AuthenticatorData is SteamAuthenticator) {
-            var client = ((SteamAuthenticator) auth.AuthenticatorData).GetClient();
-            client.ConfirmationEvent += SteamClient_ConfirmationEvent;
-            client.ConfirmationErrorEvent += SteamClient_ConfirmationErrorEvent;
-          }
-        }
-      }).Start();
-    }
-
-    private void SteamClient_ConfirmationErrorEvent(object sender, string message, SteamClient.PollerAction action,
-      Exception ex) {
-      var steam = sender as SteamClient;
-      var auth = Config.FirstOrDefault(a => a.AuthenticatorData is SteamAuthenticator authenticator &&
-                                            authenticator.Serial == steam.Authenticator.Serial);
-
-      AuthMain.LogException(ex, true);
-
-      if (action != SteamClient.PollerAction.SilentAutoConfirm) {
-        // show the Notification window in the correct context
-        Invoke(new ShowNotificationCallback(ShowNotification), auth, auth.Name, message, false, 0);
-      }
-    }
-
-    public delegate void ShowNotificationCallback(AuthAuthenticator auth, string title, string message,
-      bool openOnClick, int extraHeight);
-
-    public void ShowNotification(AuthAuthenticator auth, string title, string message, bool openOnClick,
-      int extraHeight) {
-      var notify = new Notification(title, message, 10000);
-      if (extraHeight != 0) {
-        notify.Height += extraHeight;
-      }
-
-      notify.Tag = auth;
-      if (openOnClick) {
-        notify.OnNotificationClicked += Notify_Click;
-      }
-
-      notify.Show();
-    }
-
-    private void Notify_Click(object sender, EventArgs e) {
-      var auth = ((Notification) sender).Tag as AuthAuthenticator;
-
-      // ensure window is front
-      BringToFront();
-      Show();
-      WindowState = FormWindowState.Normal;
-      Activate();
-
-      // show waiting
-      Cursor.Current = Cursors.WaitCursor;
-
-      // open the confirmations
-      var item = authenticatorList.ContextMenuStrip.Items.Cast<ToolStripItem>()
-        .FirstOrDefault(i => i.Name == "showSteamTradesMenuItem");
-      authenticatorList.CurrentItem = authenticatorList.Items.Cast<AuthenticatorListItem>()
-        .FirstOrDefault(i => i.Authenticator == auth);
-      item?.PerformClick();
-    }
-
-    private void SteamClient_ConfirmationEvent(object sender, SteamClient.Confirmation confirmation,
-      SteamClient.PollerAction action) {
-      var steam = sender as SteamClient;
-
-      var auth = Config.FirstOrDefault(a =>
-        a.AuthenticatorData is SteamAuthenticator authenticator &&
-        authenticator.Serial == steam.Authenticator.Serial);
-
-      string title = null;
-      string message = null;
-      var openOnClick = false;
-      var extraHeight = 0;
-
-      if (action == SteamClient.PollerAction.AutoConfirm || action == SteamClient.PollerAction.SilentAutoConfirm) {
-        if (steam.ConfirmTrade(confirmation.Id, confirmation.Key, true)) {
-          if (action != SteamClient.PollerAction.SilentAutoConfirm) {
-            title = "Confirmed";
-            message =
-              $"<h1>{auth.Name}</h1><table width=250 cellspacing=0 cellpadding=0 border=0><tr><td width=40><img src=\"{confirmation.Image}\" /></td><td width=210>{confirmation.Details}<br/>{confirmation.Traded}</td></tr></table>";
-          }
-        }
-        else {
-          title = "Confirmation Failed";
-          message =
-            $"<h1>{auth.Name}</h1><table width=250 cellspacing=0 cellpadding=0 border=0><tr><td width=40><img src=\"{confirmation.Image}\" /></td><td width=210>{confirmation.Details}<br/>{confirmation.Traded}<br/>Error: {steam.Error ?? "Unknown error"}</td></tr></table>";
-          extraHeight += 20;
-        }
-      }
-      else if (confirmation.IsNew) // if (action == SteamClient.PollerAction.Notify)
-      {
-        title = "New Confirmation";
-        message =
-          $"<h1>{auth.Name}</h1><table width=250 cellspacing=0 cellpadding=0 border=0><tr valign=top><td width=40><img src=\"{confirmation.Image}\" /></td><td width=210>{confirmation.Details}<br/>{confirmation.Traded}</td></tr></table>";
-        openOnClick = true;
-      }
-
-      if (title != null) {
-        // show the Notification window in the correct context
-        Invoke(new ShowNotificationCallback(ShowNotification), auth, title, message, openOnClick, extraHeight);
-      }
-    }
-
-    #endregion
-
     protected override void WndProc(ref Message m) {
       base.WndProc(ref m);
 
@@ -826,9 +692,6 @@ namespace Authenticator {
         return;
       }
 
-      // remove the Steam hook
-      UnhookSteam();
-
       // ensure the notify icon is closed
       notifyIcon.Visible = false;
 
@@ -887,23 +750,6 @@ namespace Authenticator {
           authenticator.AutoRefresh = false;
 
           var form = new AddTrionAuthenticator {
-            Authenticator = authenticator
-          };
-          added = (form.ShowDialog(this) == DialogResult.OK);
-        }
-        else if (registeredauth.AuthenticatorType == RegisteredAuthenticator.AuthenticatorTypes.Steam) {
-          // create the authenticator
-          var existing = 0;
-          string name;
-          do {
-            name = "Steam" + (existing != 0 ? " (" + existing + ")" : string.Empty);
-            existing++;
-          } while (authenticatorList.Items.Cast<AuthenticatorListItem>().Count(a => a.Authenticator.Name == name) != 0);
-
-          authenticator.Name = name;
-          authenticator.AutoRefresh = false;
-
-          var form = new AddSteamAuthenticator {
             Authenticator = authenticator
           };
           added = (form.ShowDialog(this) == DialogResult.OK);

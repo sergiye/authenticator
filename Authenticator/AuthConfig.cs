@@ -653,9 +653,10 @@ namespace Authenticator {
 
         byte[] data;
         using (var ms = new MemoryStream()) {
-          var settings = new XmlWriterSettings();
-          settings.Indent = true;
-          settings.Encoding = Encoding.UTF8;
+          var settings = new XmlWriterSettings {
+            Indent = true,
+            Encoding = Encoding.UTF8
+          };
           using (var encryptedwriter = XmlWriter.Create(ms, settings)) {
             encryptedwriter.WriteStartElement("config");
             foreach (var wa in this) {

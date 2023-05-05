@@ -29,24 +29,6 @@ namespace Authenticator {
       public int NTrackPos;
     }
 
-    public enum ShowWindowCommands {
-      Hide = 0,
-      Normal = 1,
-      Minimized = 2,
-      Maximized = 3,
-    }
-
-    [Serializable]
-    [StructLayout(LayoutKind.Sequential)]
-    public struct Windowplacement {
-      public int length;
-      public int flags;
-      public ShowWindowCommands showCmd;
-      public System.Drawing.Point ptMinPosition;
-      public System.Drawing.Point ptMaxPosition;
-      public System.Drawing.Rectangle rcNormalPosition;
-    }
-
     [DllImport("user32.dll", EntryPoint = "SendMessageA", SetLastError = true)]
     internal static extern IntPtr SendMessage(IntPtr hWnd, UInt32 msg, int wParam, IntPtr lParam);
 
@@ -65,10 +47,6 @@ namespace Authenticator {
     [DllImport("user32.dll", ExactSpelling = true, CharSet = CharSet.Auto)]
     internal static extern IntPtr GetParent(IntPtr hWnd);
 
-    [DllImport("User32.dll")]
-    [return: MarshalAs(UnmanagedType.Bool)]
-    internal static extern bool BlockInput([MarshalAs(UnmanagedType.Bool)] bool fBlockIt);
-
     [DllImport("user32.dll", SetLastError = true)]
     internal static extern int GetScrollInfo(IntPtr hWnd, int n, ref ScrollInfoStruct lpScrollInfo);
 
@@ -81,10 +59,6 @@ namespace Authenticator {
     [DllImport("user32.dll", CharSet = CharSet.Auto, SetLastError = true)]
     internal static extern int GetWindowText(IntPtr hWnd, StringBuilder lpString, int nMaxCount);
 
-    /// <summary>
-    /// Class to forward messages to another control, used in redirecting mousewheel events
-    /// http://stackoverflow.com/questions/6036918/how-to-forward-messages-eg-mouse-wheel-to-another-control-without-stealing-fo
-    /// </summary>
     public class MessageForwarder : IMessageFilter {
       private Control control;
       private Control previousParent;

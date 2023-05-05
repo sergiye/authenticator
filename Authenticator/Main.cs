@@ -138,10 +138,6 @@ namespace Authenticator {
         Icon = "GlyphIcon.png"
       },
       new RegisteredAuthenticator {
-        Name = "Steam", AuthenticatorType = RegisteredAuthenticator.AuthenticatorTypes.Steam,
-        Icon = "SteamAuthenticatorIcon.png"
-      },
-      new RegisteredAuthenticator {
         Name = "Okta Verify", AuthenticatorType = RegisteredAuthenticator.AuthenticatorTypes.OktaVerify,
         Icon = "OktaVerifyAuthenticatorIcon.png"
       }
@@ -153,13 +149,6 @@ namespace Authenticator {
     [STAThread]
     static void Main() {
       try {
-        //
-        //string dir = Path.Combine(System.Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), AuthMain.APPLICATION_NAME);
-        //if (Directory.Exists(dir) == false)
-        //{
-        //	dir = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
-        //}
-
         using (var instance = new SingleGlobalInstance(2000)) {
           if (!Debugger.IsAttached) {
             AppDomain.CurrentDomain.UnhandledException += OnUnhandledException;
@@ -203,7 +192,7 @@ namespace Authenticator {
     }
 
     static void OnThreadException(object sender, System.Threading.ThreadExceptionEventArgs e) {
-      LogException(e.Exception as Exception);
+      LogException(e.Exception);
     }
 
     static void OnUnhandledException(object sender, UnhandledExceptionEventArgs e) {
@@ -244,6 +233,7 @@ namespace Authenticator {
         }
       }
       catch (Exception) {
+        // ignored
       }
     }
 

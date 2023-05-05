@@ -352,18 +352,6 @@ namespace Authenticator {
 
             issuer = string.Empty;
           }
-          else if (issuer == "Steam") {
-            auth = new SteamAuthenticator();
-            ((SteamAuthenticator) auth).SecretKey = Base32.GetInstance().Decode(privatekey);
-            ((SteamAuthenticator) auth).Serial = string.Empty;
-            ((SteamAuthenticator) auth).DeviceId = string.Empty;
-            //((SteamAuthenticator)auth).RevocationCode = string.Empty;
-            ((SteamAuthenticator) auth).SteamData = string.Empty;
-
-            Authenticator.Skin = null;
-
-            issuer = string.Empty;
-          }
           else {
             auth = new GoogleAuthenticator();
             ((GoogleAuthenticator) auth).Enroll(privatekey);

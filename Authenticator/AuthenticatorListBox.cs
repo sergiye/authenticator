@@ -685,18 +685,6 @@ namespace Authenticator {
       menuitem.Click += ContextMenu_Click;
       ContextMenuStrip.Items.Add(menuitem);
       //
-      menuitem = new ToolStripMenuItem(strings.ShowRevocation + "...");
-      menuitem.Name = "showSteamSecretMenuItem";
-      menuitem.Click += ContextMenu_Click;
-      ContextMenuStrip.Items.Add(menuitem);
-      //
-      ContextMenuStrip.Items.Add(new ToolStripSeparator { Name = "steamSeperator" });
-      //
-      menuitem = new ToolStripMenuItem(strings.ConfirmTrades + "...");
-      menuitem.Name = "showSteamTradesMenuItem";
-      menuitem.Click += ContextMenu_Click;
-      ContextMenuStrip.Items.Add(menuitem);
-      //
       ContextMenuStrip.Items.Add(new ToolStripSeparator());
       //
       menuitem = new ToolStripMenuItem(strings.Delete);
@@ -815,59 +803,42 @@ namespace Authenticator {
       //
       menuItem = menu.Items.Cast<ToolStripItem>().FirstOrDefault(i => i.Name == "showTrionSecretMenuItem") as ToolStripMenuItem;
       if (menuItem != null) menuItem.Visible = auth.AuthenticatorData is TrionAuthenticator;
+      
       //
-      menuItem = menu.Items.Cast<ToolStripItem>().FirstOrDefault(i => i.Name == "showSteamSecretMenuItem") as ToolStripMenuItem;
+      menuItem = menu.Items.Cast<ToolStripItem>().FirstOrDefault(i => i.Name == "autoRefreshMenuItem") as ToolStripMenuItem;
       if (menuItem != null) {
-        menuItem.Visible = auth.AuthenticatorData is SteamAuthenticator;
-        menuItem.Enabled = auth.AuthenticatorData is SteamAuthenticator &&
-                           string.IsNullOrEmpty(((SteamAuthenticator) auth.AuthenticatorData).SteamData) == false;
-        //
-        var sepItem = menu.Items.Cast<ToolStripItem>().FirstOrDefault(i => i.Name == "steamSeperator");
-        sepItem.Visible = auth.AuthenticatorData is SteamAuthenticator;
-        //
-        menuItem = menu.Items.Cast<ToolStripItem>().FirstOrDefault(i => i.Name == "showSteamTradesMenuItem") as ToolStripMenuItem;
-        if (menuItem != null) {
-          menuItem.Visible = auth.AuthenticatorData is SteamAuthenticator;
-          menuItem.Enabled = auth.AuthenticatorData is SteamAuthenticator steamAuthenticator &&
-                             string.IsNullOrEmpty(steamAuthenticator.SteamData) == false;
-        }
-
-        //
-        menuItem = menu.Items.Cast<ToolStripItem>().FirstOrDefault(i => i.Name == "autoRefreshMenuItem") as ToolStripMenuItem;
-        if (menuItem != null) {
-          menuItem.Visible = !(auth.AuthenticatorData is HotpAuthenticator);
-          menuItem.CheckState = auth.AutoRefresh ? CheckState.Checked : CheckState.Unchecked;
-          menuItem.Enabled = auth.AuthenticatorData.RequiresPassword == false &&
-                             auth.AuthenticatorData.PasswordType != Authenticator.PasswordTypes.Explicit;
-        }
-
-        //
-        menuItem = menu.Items.Cast<ToolStripItem>().FirstOrDefault(i => i.Name == "copyOnCodeMenuItem") as ToolStripMenuItem;
-        if (menuItem != null) menuItem.CheckState = auth.CopyOnCode ? CheckState.Checked : CheckState.Unchecked;
-        //
-        menuItem = menu.Items.Cast<ToolStripItem>().FirstOrDefault(i => i.Name == "iconMenuItem") as ToolStripMenuItem;
-        if (menuItem.DropDownItems.Cast<ToolStripItem>().FirstOrDefault(i => i.Name == "iconMenuItem_default") is ToolStripMenuItem subItem) subItem.CheckState = CheckState.Checked;
-        foreach (ToolStripItem iconItem in menuItem.DropDownItems) {
-          if (iconItem is ToolStripMenuItem toolStripItem && toolStripItem.Tag is string tag) {
-            if (string.IsNullOrEmpty(tag) && string.IsNullOrEmpty(auth.Skin)) {
-              toolStripItem.CheckState = CheckState.Checked;
-            }
-            else if (string.Compare(tag, auth.Skin) == 0) {
-              toolStripItem.CheckState = CheckState.Checked;
-            }
-            else {
-              toolStripItem.CheckState = CheckState.Unchecked;
-            }
-          }
-        }
-
-        //
-        sepItem = menu.Items.Cast<ToolStripItem>().FirstOrDefault(i => i.Name == "syncMenuSep");
-        sepItem.Visible = !(auth.AuthenticatorData is HotpAuthenticator);
+        menuItem.Visible = !(auth.AuthenticatorData is HotpAuthenticator);
+        menuItem.CheckState = auth.AutoRefresh ? CheckState.Checked : CheckState.Unchecked;
+        menuItem.Enabled = auth.AuthenticatorData.RequiresPassword == false &&
+                           auth.AuthenticatorData.PasswordType != Authenticator.PasswordTypes.Explicit;
       }
 
-      menuItem =
-        menu.Items.Cast<ToolStripItem>().FirstOrDefault(i => i.Name == "syncMenuItem") as ToolStripMenuItem;
+      //
+      menuItem = menu.Items.Cast<ToolStripItem>().FirstOrDefault(i => i.Name == "copyOnCodeMenuItem") as ToolStripMenuItem;
+      if (menuItem != null) menuItem.CheckState = auth.CopyOnCode ? CheckState.Checked : CheckState.Unchecked;
+      //
+      menuItem = menu.Items.Cast<ToolStripItem>().FirstOrDefault(i => i.Name == "iconMenuItem") as ToolStripMenuItem;
+      if (menuItem.DropDownItems.Cast<ToolStripItem>().FirstOrDefault(i => i.Name == "iconMenuItem_default") is
+          ToolStripMenuItem subItem) subItem.CheckState = CheckState.Checked;
+      foreach (ToolStripItem iconItem in menuItem.DropDownItems) {
+        if (iconItem is ToolStripMenuItem toolStripItem && toolStripItem.Tag is string tag) {
+          if (string.IsNullOrEmpty(tag) && string.IsNullOrEmpty(auth.Skin)) {
+            toolStripItem.CheckState = CheckState.Checked;
+          }
+          else if (string.Compare(tag, auth.Skin) == 0) {
+            toolStripItem.CheckState = CheckState.Checked;
+          }
+          else {
+            toolStripItem.CheckState = CheckState.Unchecked;
+          }
+        }
+      }
+
+      //
+      var sepItem = menu.Items.Cast<ToolStripItem>().FirstOrDefault(i => i.Name == "syncMenuSep");
+      sepItem.Visible = !(auth.AuthenticatorData is HotpAuthenticator);
+
+      menuItem = menu.Items.Cast<ToolStripItem>().FirstOrDefault(i => i.Name == "syncMenuItem") as ToolStripMenuItem;
       menuItem.Visible = !(auth.AuthenticatorData is HotpAuthenticator);
     }
 
@@ -1069,72 +1040,6 @@ namespace Authenticator {
               // show the secret key for Trion authenticator				
               var form = new ShowTrionSecretForm();
               form.CurrentAuthenticator = auth;
-              form.ShowDialog(Parent as Form);
-            }
-            finally {
-              if (wasprotected == DialogResult.OK) {
-                ProtectAuthenticator(item);
-              }
-            }
-
-            break;
-          }
-
-        case "showSteamSecretMenuItem": {
-            // check if the authenticator is still protected
-            var wasprotected = UnprotectAuthenticator(item);
-            if (wasprotected == DialogResult.Cancel) {
-              return;
-            }
-
-            try {
-              if (wasprotected != DialogResult.OK) {
-                // confirm current main password
-                var mainform = Parent as MainForm;
-                if ((mainform.Config.PasswordType & Authenticator.PasswordTypes.Explicit) != 0) {
-                  var invalidPassword = false;
-                  while (true) {
-                    var checkform = new GetPasswordForm();
-                    checkform.InvalidPassword = invalidPassword;
-                    var result = checkform.ShowDialog(this);
-                    if (result == DialogResult.Cancel) {
-                      return;
-                    }
-
-                    if (mainform.Config.IsPassword(checkform.Password)) {
-                      break;
-                    }
-
-                    invalidPassword = true;
-                  }
-                }
-              }
-
-              // show the secret key for Google authenticator				
-              var form = new ShowSteamSecretForm();
-              form.CurrentAuthenticator = auth;
-              form.ShowDialog(Parent as Form);
-            }
-            finally {
-              if (wasprotected == DialogResult.OK) {
-                ProtectAuthenticator(item);
-              }
-            }
-
-            break;
-          }
-
-        case "showSteamTradesMenuItem": {
-            // check if the authenticator is still protected
-            var wasprotected = UnprotectAuthenticator(item);
-            if (wasprotected == DialogResult.Cancel) {
-              return;
-            }
-
-            try {
-              // show the Steam trades dialog
-              var form = new ShowSteamTradesForm();
-              form.Authenticator = auth;
               form.ShowDialog(Parent as Form);
             }
             finally {

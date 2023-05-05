@@ -477,14 +477,6 @@ namespace Authenticator {
 
               issuer = string.Empty;
             }
-            else if (string.Compare(issuer, "Steam", true) == 0) {
-              auth = new SteamAuthenticator();
-              ((SteamAuthenticator) auth).SecretKey = Base32.GetInstance().Decode(secret);
-              ((SteamAuthenticator) auth).Serial = string.Empty;
-              ((SteamAuthenticator) auth).DeviceId = query["deviceid"] ?? string.Empty;
-              ((SteamAuthenticator) auth).SteamData = query["data"] ?? string.Empty;
-              issuer = string.Empty;
-            }
             else if (uri.Host == "hotp") {
               auth = new HotpAuthenticator();
               ((HotpAuthenticator) auth).SecretKey = Base32.GetInstance().Decode(secret);
