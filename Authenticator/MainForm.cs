@@ -930,6 +930,7 @@ namespace Authenticator {
 
       // update UI
       SetAutoSize();
+      authenticatorList.Refresh();
 
       // if no authenticators, show intro text and remove any encryption
       if (Config.Count == 0) {
