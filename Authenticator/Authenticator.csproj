@@ -333,6 +333,8 @@
     <None Include="Properties\app.manifest" />
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="Resources\XeroIcon.png" />
+    <EmbeddedResource Include="Resources\ZohoIcon.png" />
     <EmbeddedResource Include="LICENSE" />
     <EmbeddedResource Include="Resources\BattleNetAuthenticatorIcon.png" />
     <EmbeddedResource Include="Resources\GoogleAuthenticatorIcon.png" />
