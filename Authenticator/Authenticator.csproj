@@ -119,140 +119,140 @@
         </Reference>
     </ItemGroup>
     <ItemGroup>
-        <Compile Include="AboutForm.cs">
-            <SubType>Form</SubType>
-        </Compile>
-        <Compile Include="AboutForm.Designer.cs">
-            <DependentUpon>AboutForm.cs</DependentUpon>
-        </Compile>
-        <Compile Include="AddGoogleAuthenticator.cs">
-            <SubType>Form</SubType>
-        </Compile>
-        <Compile Include="AddGoogleAuthenticator.designer.cs">
-            <DependentUpon>AddGoogleAuthenticator.cs</DependentUpon>
-        </Compile>
-        <Compile Include="AddGuildWarsAuthenticator.cs">
-            <SubType>Form</SubType>
-        </Compile>
-        <Compile Include="AddGuildWarsAuthenticator.designer.cs">
-            <DependentUpon>AddGuildWarsAuthenticator.cs</DependentUpon>
-        </Compile>
-        <Compile Include="AddMicrosoftAuthenticator.cs">
-            <SubType>Form</SubType>
-        </Compile>
-        <Compile Include="AddMicrosoftAuthenticator.designer.cs">
-            <DependentUpon>AddMicrosoftAuthenticator.cs</DependentUpon>
-        </Compile>
-        <Compile Include="AddOktaVerifyAuthenticator.cs">
-            <SubType>Form</SubType>
-        </Compile>
-        <Compile Include="AddOktaVerifyAuthenticator.Designer.cs">
-            <DependentUpon>AddOktaVerifyAuthenticator.cs</DependentUpon>
-        </Compile>
+        <Compile Include="Classes\AuthAuthenticator.cs" />
+        <Compile Include="Classes\AuthConfig.cs" />
         <Compile Include="Classes\Authenticator.cs" />
-        <Compile Include="Classes\AuthenticatorException.cs" />
+        <Compile Include="Classes\AuthHelper.cs" />
+        <Compile Include="Classes\Exceptions.cs" />
         <Compile Include="Classes\Base32.cs" />
         <Compile Include="Classes\BattleNetAuthenticator.cs" />
         <Compile Include="Classes\GoogleAuthenticator.cs" />
         <Compile Include="Classes\HOTPAuthenticator.cs" />
+        <Compile Include="Classes\RegisteredAuthenticator.cs" />
+        <Compile Include="Classes\SingleGlobalInstance.cs" />
         <Compile Include="Classes\TrionAuthenticator.cs" />
+        <Compile Include="Classes\Updater.cs" />
+        <Compile Include="Classes\WinAPI.cs" />
+        <Compile Include="Controls\AuthenticatorListBox.cs" />
+        <Compile Include="Controls\GroupRadioButton.cs">
+          <SubType>Component</SubType>
+        </Compile>
+        <Compile Include="Controls\SecretTextBox.cs">
+          <SubType>Component</SubType>
+        </Compile>
+        <Compile Include="Dialogs\AboutForm.cs">
+          <SubType>Form</SubType>
+        </Compile>
+        <Compile Include="Dialogs\AboutForm.Designer.cs">
+          <DependentUpon>AboutForm.cs</DependentUpon>
+        </Compile>
+        <Compile Include="Dialogs\AddAuthenticator.cs">
+          <SubType>Form</SubType>
+        </Compile>
+        <Compile Include="Dialogs\AddAuthenticator.designer.cs">
+          <DependentUpon>AddAuthenticator.cs</DependentUpon>
+        </Compile>
+        <Compile Include="Dialogs\AddBattleNetAuthenticator.cs">
+          <SubType>Form</SubType>
+        </Compile>
+        <Compile Include="Dialogs\AddBattleNetAuthenticator.Designer.cs">
+          <DependentUpon>AddBattleNetAuthenticator.cs</DependentUpon>
+        </Compile>
+        <Compile Include="Dialogs\AddGoogleAuthenticator.cs">
+          <SubType>Form</SubType>
+        </Compile>
+        <Compile Include="Dialogs\AddGoogleAuthenticator.designer.cs">
+          <DependentUpon>AddGoogleAuthenticator.cs</DependentUpon>
+        </Compile>
+        <Compile Include="Dialogs\AddGuildWarsAuthenticator.cs">
+          <SubType>Form</SubType>
+        </Compile>
+        <Compile Include="Dialogs\AddGuildWarsAuthenticator.designer.cs">
+          <DependentUpon>AddGuildWarsAuthenticator.cs</DependentUpon>
+        </Compile>
+        <Compile Include="Dialogs\AddMicrosoftAuthenticator.cs">
+          <SubType>Form</SubType>
+        </Compile>
+        <Compile Include="Dialogs\AddMicrosoftAuthenticator.designer.cs">
+          <DependentUpon>AddMicrosoftAuthenticator.cs</DependentUpon>
+        </Compile>
+        <Compile Include="Dialogs\AddOktaVerifyAuthenticator.cs">
+          <SubType>Form</SubType>
+        </Compile>
+        <Compile Include="Dialogs\AddOktaVerifyAuthenticator.Designer.cs">
+          <DependentUpon>AddOktaVerifyAuthenticator.cs</DependentUpon>
+        </Compile>
+        <Compile Include="Dialogs\AddTrionAuthenticator.cs">
+          <SubType>Form</SubType>
+        </Compile>
+        <Compile Include="Dialogs\AddTrionAuthenticator.designer.cs">
+          <DependentUpon>AddTrionAuthenticator.cs</DependentUpon>
+        </Compile>
+        <Compile Include="Dialogs\ChangePasswordForm.cs">
+          <SubType>Form</SubType>
+        </Compile>
+        <Compile Include="Dialogs\ChangePasswordForm.Designer.cs">
+          <DependentUpon>ChangePasswordForm.cs</DependentUpon>
+        </Compile>
+        <Compile Include="Dialogs\ExceptionForm.cs">
+          <SubType>Form</SubType>
+        </Compile>
+        <Compile Include="Dialogs\ExceptionForm.designer.cs">
+          <DependentUpon>ExceptionForm.cs</DependentUpon>
+        </Compile>
+        <Compile Include="Dialogs\ExportForm.cs">
+          <SubType>Form</SubType>
+        </Compile>
+        <Compile Include="Dialogs\ExportForm.Designer.cs">
+          <DependentUpon>ExportForm.cs</DependentUpon>
+        </Compile>
+        <Compile Include="Dialogs\GetPasswordForm.cs">
+          <SubType>Form</SubType>
+        </Compile>
+        <Compile Include="Dialogs\GetPasswordForm.designer.cs">
+          <DependentUpon>GetPasswordForm.cs</DependentUpon>
+        </Compile>
+        <Compile Include="Dialogs\GetPGPKeyForm.cs">
+          <SubType>Form</SubType>
+        </Compile>
+        <Compile Include="Dialogs\GetPGPKeyForm.designer.cs">
+          <DependentUpon>GetPGPKeyForm.cs</DependentUpon>
+        </Compile>
+        <Compile Include="Dialogs\SetPasswordForm.cs">
+          <SubType>Form</SubType>
+        </Compile>
+        <Compile Include="Dialogs\SetPasswordForm.Designer.cs">
+          <DependentUpon>SetPasswordForm.cs</DependentUpon>
+        </Compile>
+        <Compile Include="Dialogs\ShowRestoreCodeForm.cs">
+          <SubType>Form</SubType>
+        </Compile>
+        <Compile Include="Dialogs\ShowRestoreCodeForm.designer.cs">
+          <DependentUpon>ShowRestoreCodeForm.cs</DependentUpon>
+        </Compile>
+        <Compile Include="Dialogs\ShowSecretKeyForm.cs">
+          <SubType>Form</SubType>
+        </Compile>
+        <Compile Include="Dialogs\ShowSecretKeyForm.designer.cs">
+          <DependentUpon>ShowSecretKeyForm.cs</DependentUpon>
+        </Compile>
+        <Compile Include="Dialogs\ShowTrionSecretForm.cs">
+          <SubType>Form</SubType>
+        </Compile>
+        <Compile Include="Dialogs\ShowTrionSecretForm.designer.cs">
+          <DependentUpon>ShowTrionSecretForm.cs</DependentUpon>
+        </Compile>
+        <Compile Include="Dialogs\UnprotectPasswordForm.cs">
+          <SubType>Form</SubType>
+        </Compile>
+        <Compile Include="Dialogs\UnprotectPasswordForm.designer.cs">
+          <DependentUpon>UnprotectPasswordForm.cs</DependentUpon>
+        </Compile>
         <Compile Include="Properties\Resources.Designer.cs">
             <AutoGen>True</AutoGen>
             <DesignTime>True</DesignTime>
             <DependentUpon>Resources.resx</DependentUpon>
         </Compile>
-        <Compile Include="AddTrionAuthenticator.cs">
-            <SubType>Form</SubType>
-        </Compile>
-        <Compile Include="AddTrionAuthenticator.designer.cs">
-            <DependentUpon>AddTrionAuthenticator.cs</DependentUpon>
-        </Compile>
-        <Compile Include="AuthenticatorListBox.cs" />
-        <Compile Include="ChangePasswordForm.cs">
-            <SubType>Form</SubType>
-        </Compile>
-        <Compile Include="ChangePasswordForm.Designer.cs">
-            <DependentUpon>ChangePasswordForm.cs</DependentUpon>
-        </Compile>
-        <Compile Include="AddAuthenticator.cs">
-            <SubType>Form</SubType>
-        </Compile>
-        <Compile Include="AddAuthenticator.designer.cs">
-            <DependentUpon>AddAuthenticator.cs</DependentUpon>
-        </Compile>
-        <Compile Include="GetPGPKeyForm.cs">
-            <SubType>Form</SubType>
-        </Compile>
-        <Compile Include="GetPGPKeyForm.designer.cs">
-            <DependentUpon>GetPGPKeyForm.cs</DependentUpon>
-        </Compile>
-        <Compile Include="ExportForm.cs">
-            <SubType>Form</SubType>
-        </Compile>
-        <Compile Include="ExportForm.Designer.cs">
-            <DependentUpon>ExportForm.cs</DependentUpon>
-        </Compile>
-        <Compile Include="GetPasswordForm.cs">
-            <SubType>Form</SubType>
-        </Compile>
-        <Compile Include="GetPasswordForm.designer.cs">
-            <DependentUpon>GetPasswordForm.cs</DependentUpon>
-        </Compile>
-        <Compile Include="ExceptionForm.cs">
-            <SubType>Form</SubType>
-        </Compile>
-        <Compile Include="ExceptionForm.designer.cs">
-            <DependentUpon>ExceptionForm.cs</DependentUpon>
-        </Compile>
-        <Compile Include="ImportException.cs" />
-        <Compile Include="SingleGlobalInstance.cs" />
-        <Compile Include="UnprotectPasswordForm.cs">
-            <SubType>Form</SubType>
-        </Compile>
-        <Compile Include="UnprotectPasswordForm.designer.cs">
-            <DependentUpon>UnprotectPasswordForm.cs</DependentUpon>
-        </Compile>
-        <Compile Include="GroupRadioButton.cs">
-            <SubType>Component</SubType>
-        </Compile>
-        <Compile Include="AddBattleNetAuthenticator.cs">
-            <SubType>Form</SubType>
-        </Compile>
-        <Compile Include="AddBattleNetAuthenticator.Designer.cs">
-            <DependentUpon>AddBattleNetAuthenticator.cs</DependentUpon>
-        </Compile>
-        <Compile Include="RegisteredAuthenticator.cs" />
-        <Compile Include="SecretTextBox.cs">
-            <SubType>Component</SubType>
-        </Compile>
-        <Compile Include="SetPasswordForm.cs">
-            <SubType>Form</SubType>
-        </Compile>
-        <Compile Include="SetPasswordForm.Designer.cs">
-            <DependentUpon>SetPasswordForm.cs</DependentUpon>
-        </Compile>
-        <Compile Include="ShowRestoreCodeForm.cs">
-            <SubType>Form</SubType>
-        </Compile>
-        <Compile Include="ShowRestoreCodeForm.designer.cs">
-            <DependentUpon>ShowRestoreCodeForm.cs</DependentUpon>
-        </Compile>
-        <Compile Include="ShowSecretKeyForm.cs">
-            <SubType>Form</SubType>
-        </Compile>
-        <Compile Include="ShowSecretKeyForm.designer.cs">
-            <DependentUpon>ShowSecretKeyForm.cs</DependentUpon>
-        </Compile>
-        <Compile Include="ShowTrionSecretForm.cs">
-            <SubType>Form</SubType>
-        </Compile>
-        <Compile Include="ShowTrionSecretForm.designer.cs">
-            <DependentUpon>ShowTrionSecretForm.cs</DependentUpon>
-        </Compile>
-        <Compile Include="Updater.cs" />
-        <Compile Include="WinAPI.cs" />
-        <Compile Include="AuthAuthenticator.cs" />
-        <Compile Include="AuthConfig.cs" />
         <Compile Include="MainForm.cs">
             <SubType>Form</SubType>
         </Compile>
@@ -261,63 +261,62 @@
         </Compile>
         <Compile Include="Main.cs" />
         <Compile Include="Properties\AssemblyInfo.cs" />
-        <Compile Include="AuthHelper.cs" />
-        <EmbeddedResource Include="AboutForm.resx">
-            <DependentUpon>AboutForm.cs</DependentUpon>
+        <EmbeddedResource Include="Dialogs\AboutForm.resx">
+          <DependentUpon>AboutForm.cs</DependentUpon>
         </EmbeddedResource>
-        <EmbeddedResource Include="AddBattleNetAuthenticator.resx">
-            <DependentUpon>AddBattleNetAuthenticator.cs</DependentUpon>
+        <EmbeddedResource Include="Dialogs\AddAuthenticator.resx">
+          <DependentUpon>AddAuthenticator.cs</DependentUpon>
         </EmbeddedResource>
-        <EmbeddedResource Include="AddGoogleAuthenticator.resx">
-            <DependentUpon>AddGoogleAuthenticator.cs</DependentUpon>
+        <EmbeddedResource Include="Dialogs\AddBattleNetAuthenticator.resx">
+          <DependentUpon>AddBattleNetAuthenticator.cs</DependentUpon>
         </EmbeddedResource>
-        <EmbeddedResource Include="AddGuildWarsAuthenticator.resx">
-            <DependentUpon>AddGuildWarsAuthenticator.cs</DependentUpon>
-            <SubType>Designer</SubType>
+        <EmbeddedResource Include="Dialogs\AddGoogleAuthenticator.resx">
+          <DependentUpon>AddGoogleAuthenticator.cs</DependentUpon>
         </EmbeddedResource>
-        <EmbeddedResource Include="AddMicrosoftAuthenticator.resx">
-            <DependentUpon>AddMicrosoftAuthenticator.cs</DependentUpon>
-            <SubType>Designer</SubType>
+        <EmbeddedResource Include="Dialogs\AddGuildWarsAuthenticator.resx">
+          <DependentUpon>AddGuildWarsAuthenticator.cs</DependentUpon>
+          <SubType>Designer</SubType>
         </EmbeddedResource>
-        <EmbeddedResource Include="AddOktaVerifyAuthenticator.resx">
-            <DependentUpon>AddOktaVerifyAuthenticator.cs</DependentUpon>
+        <EmbeddedResource Include="Dialogs\AddMicrosoftAuthenticator.resx">
+          <DependentUpon>AddMicrosoftAuthenticator.cs</DependentUpon>
+          <SubType>Designer</SubType>
         </EmbeddedResource>
-        <EmbeddedResource Include="AddTrionAuthenticator.resx">
-            <DependentUpon>AddTrionAuthenticator.cs</DependentUpon>
+        <EmbeddedResource Include="Dialogs\AddOktaVerifyAuthenticator.resx">
+          <DependentUpon>AddOktaVerifyAuthenticator.cs</DependentUpon>
         </EmbeddedResource>
-        <EmbeddedResource Include="ChangePasswordForm.resx">
-            <DependentUpon>ChangePasswordForm.cs</DependentUpon>
+        <EmbeddedResource Include="Dialogs\AddTrionAuthenticator.resx">
+          <DependentUpon>AddTrionAuthenticator.cs</DependentUpon>
         </EmbeddedResource>
-        <EmbeddedResource Include="AddAuthenticator.resx">
-            <DependentUpon>AddAuthenticator.cs</DependentUpon>
+        <EmbeddedResource Include="Dialogs\ChangePasswordForm.resx">
+          <DependentUpon>ChangePasswordForm.cs</DependentUpon>
         </EmbeddedResource>
-        <EmbeddedResource Include="GetPGPKeyForm.resx">
-            <DependentUpon>GetPGPKeyForm.cs</DependentUpon>
+        <EmbeddedResource Include="Dialogs\ExceptionForm.resx">
+          <DependentUpon>ExceptionForm.cs</DependentUpon>
+          <SubType>Designer</SubType>
         </EmbeddedResource>
-        <EmbeddedResource Include="ExportForm.resx">
-            <DependentUpon>ExportForm.cs</DependentUpon>
+        <EmbeddedResource Include="Dialogs\ExportForm.resx">
+          <DependentUpon>ExportForm.cs</DependentUpon>
         </EmbeddedResource>
-        <EmbeddedResource Include="GetPasswordForm.resx">
-            <DependentUpon>GetPasswordForm.cs</DependentUpon>
+        <EmbeddedResource Include="Dialogs\GetPasswordForm.resx">
+          <DependentUpon>GetPasswordForm.cs</DependentUpon>
         </EmbeddedResource>
-        <EmbeddedResource Include="ExceptionForm.resx">
-            <DependentUpon>ExceptionForm.cs</DependentUpon>
-            <SubType>Designer</SubType>
+        <EmbeddedResource Include="Dialogs\GetPGPKeyForm.resx">
+          <DependentUpon>GetPGPKeyForm.cs</DependentUpon>
         </EmbeddedResource>
-        <EmbeddedResource Include="UnprotectPasswordForm.resx">
-            <DependentUpon>UnprotectPasswordForm.cs</DependentUpon>
+        <EmbeddedResource Include="Dialogs\SetPasswordForm.resx">
+          <DependentUpon>SetPasswordForm.cs</DependentUpon>
         </EmbeddedResource>
-        <EmbeddedResource Include="SetPasswordForm.resx">
-            <DependentUpon>SetPasswordForm.cs</DependentUpon>
+        <EmbeddedResource Include="Dialogs\ShowRestoreCodeForm.resx">
+          <DependentUpon>ShowRestoreCodeForm.cs</DependentUpon>
         </EmbeddedResource>
-        <EmbeddedResource Include="ShowRestoreCodeForm.resx">
-            <DependentUpon>ShowRestoreCodeForm.cs</DependentUpon>
+        <EmbeddedResource Include="Dialogs\ShowSecretKeyForm.resx">
+          <DependentUpon>ShowSecretKeyForm.cs</DependentUpon>
         </EmbeddedResource>
-        <EmbeddedResource Include="ShowSecretKeyForm.resx">
-            <DependentUpon>ShowSecretKeyForm.cs</DependentUpon>
+        <EmbeddedResource Include="Dialogs\ShowTrionSecretForm.resx">
+          <DependentUpon>ShowTrionSecretForm.cs</DependentUpon>
         </EmbeddedResource>
-        <EmbeddedResource Include="ShowTrionSecretForm.resx">
-            <DependentUpon>ShowTrionSecretForm.cs</DependentUpon>
+        <EmbeddedResource Include="Dialogs\UnprotectPasswordForm.resx">
+          <DependentUpon>UnprotectPasswordForm.cs</DependentUpon>
         </EmbeddedResource>
         <EmbeddedResource Include="MainForm.resx">
             <DependentUpon>MainForm.cs</DependentUpon>
@@ -331,6 +330,7 @@
         <None Include="Properties\app.manifest" />
     </ItemGroup>
     <ItemGroup>
+        <EmbeddedResource Include="LICENSE" />
         <EmbeddedResource Include="Resources\BattleNetAuthenticatorIcon.png" />
         <EmbeddedResource Include="Resources\GoogleAuthenticatorIcon.png" />
         <EmbeddedResource Include="Resources\GuildWarsAuthenticatorIcon.png" />
@@ -388,7 +388,6 @@
         <EmbeddedResource Include="Resources\GlyphIcon.png" />
         <EmbeddedResource Include="Resources\SteamAuthenticatorIcon.png" />
         <EmbeddedResource Include="Resources\SteamIcon.png" />
-        <EmbeddedResource Include="Resources\SeedWords.txt" />
         <EmbeddedResource Include="Resources\Swtor.png" />
         <EmbeddedResource Include="Resources\SwtorEmpire.png" />
         <EmbeddedResource Include="Resources\SwtorRepublic.png" />
@@ -446,7 +445,6 @@
             <Install>true</Install>
         </BootstrapperPackage>
     </ItemGroup>
-    <ItemGroup />
     <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
     <PropertyGroup>
         <PostBuildEvent>

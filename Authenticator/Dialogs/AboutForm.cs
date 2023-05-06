@@ -1,4 +1,7 @@
 ﻿using System;
+using System.Diagnostics;
+using System.IO;
+using System.Reflection;
 using System.Windows.Forms;
 
 namespace Authenticator {
@@ -7,6 +10,10 @@ namespace Authenticator {
 
     public AboutForm() {
       InitializeComponent();
+
+      using (var s = new StreamReader(Assembly.GetExecutingAssembly().GetManifestResourceStream("Authenticator.LICENSE"))) {
+        richTextBox1.Text = s.ReadToEnd();
+      }
     }
 
     private void AboutForm_Load(object sender, EventArgs e) {
@@ -19,8 +26,13 @@ namespace Authenticator {
       aboutLabel.Text = string.Format(aboutLabel.Text, version.ToString(3) + debug, DateTime.Today.Year);
     }
 
-    private void closeButton_Click(object sender, EventArgs e) {
-      Close();
+    private void siteLink_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e) {
+      try {
+        Process.Start(new ProcessStartInfo(siteLink.Text));
+      }
+      catch {
+        //ignore
+      }
     }
   }
 }

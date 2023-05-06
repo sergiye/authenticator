@@ -12,7 +12,7 @@ namespace Authenticator {
 
     #endregion
 
-    public HotpAuthenticator() : base(DEFAULT_CODE_DIGITS) {
+    public HotpAuthenticator() : base() {
     }
 
     public HotpAuthenticator(int digits) : base(digits) {

@@ -1,10 +1,12 @@
 ﻿using System;
+using System.Drawing;
 using System.Windows.Forms;
 
 namespace Authenticator {
   public partial class SetPasswordForm : Form {
     public SetPasswordForm() {
       InitializeComponent();
+      Icon = Icon.ExtractAssociatedIcon(Updater.CurrentFileLocation);
     }
 
     public string Password { get; protected set; }
@@ -28,7 +30,6 @@ namespace Authenticator {
       var password = passwordField.Text.Trim();
       var verify = verifyField.Text.Trim();
       if (password != verify) {
-        //MainForm.ErrorDialog(this, "Your passwords do not match.");
         errorLabel.Visible = true;
         errorTimer.Enabled = true;
         DialogResult = DialogResult.None;

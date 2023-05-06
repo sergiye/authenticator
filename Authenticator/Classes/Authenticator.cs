@@ -92,7 +92,7 @@ namespace Authenticator {
           throw new EncryptedSecretDataException();
         }
 
-        return CalculateCode(false);
+        return CalculateCode();
       }
     }
 
@@ -103,7 +103,7 @@ namespace Authenticator {
       System.Net.ServicePointManager.Expect100Continue = false;
     }
 
-    public Authenticator(int codeDigits = DEFAULT_CODE_DIGITS, HmacTypes hmacType = HmacTypes.SHA1,
+    protected Authenticator(int codeDigits = DEFAULT_CODE_DIGITS, HmacTypes hmacType = HmacTypes.SHA1,
       int period = DEFAULT_PERIOD) {
       CodeDigits = codeDigits;
       HmacType = hmacType;
@@ -382,14 +382,15 @@ namespace Authenticator {
           // we need to encrypt changed secret data
           using (var ms = new MemoryStream()) {
             // get the plain version
-            var settings = new XmlWriterSettings();
-            settings.Indent = true;
-            settings.Encoding = Encoding.UTF8;
-            using (var encryptedwriter = XmlWriter.Create(ms, settings)) {
-              WriteToWriter(encryptedwriter);
+            var settings = new XmlWriterSettings {
+              Indent = true,
+              Encoding = Encoding.UTF8
+            };
+            using (var writer = XmlWriter.Create(ms, settings)) {
+              WriteToWriter(writer);
             }
 
-            var encrypteddata = ByteArrayToString(ms.ToArray());
+            var encryptedData = ByteArrayToString(ms.ToArray());
 
             // update secret hash
             using (var sha1 = SHA1.Create()) {
@@ -397,7 +398,7 @@ namespace Authenticator {
             }
 
             // encrypt
-            EncryptedData = EncryptSequence(encrypteddata, passwordType, password);
+            EncryptedData = EncryptSequence(encryptedData, passwordType, password);
           }
         }
 

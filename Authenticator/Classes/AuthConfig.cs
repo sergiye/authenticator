@@ -3,7 +3,6 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
-using System.Linq;
 using System.Reflection;
 using System.Security.Cryptography;
 using System.Text;
@@ -15,7 +14,7 @@ namespace Authenticator {
 
   [Serializable]
   public class AuthConfig : IList<AuthAuthenticator>, ICloneable {
-    public static decimal Currentversion = decimal.Parse(Assembly.GetExecutingAssembly().GetName().Version.ToString(2),
+    public static decimal CurrentVersion = decimal.Parse(Assembly.GetExecutingAssembly().GetName().Version.ToString(2),
       System.Globalization.CultureInfo.InvariantCulture);
 
     public enum NotifyActions {
@@ -73,8 +72,6 @@ namespace Authenticator {
       [XmlAttribute(AttributeName = "value")]
       public string Value;
     }
-
-    private Dictionary<string, string> settings = new Dictionary<string, string>();
 
     #region System Settings
 
@@ -171,48 +168,6 @@ namespace Authenticator {
     public bool IsPortable =>
       !string.IsNullOrEmpty(Filename)
       && Path.GetDirectoryName(Filename) == Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
-
-    public string ReadSetting(string name, string defaultValue = null) {
-      return IsPortable
-        ? settings.TryGetValue(name, out var value) ? value : defaultValue
-        : AuthHelper.ReadRegistryValue(name, defaultValue) as string;
-    }
-
-    public string[] ReadSettingKeys(string name) {
-      if (IsPortable) {
-        var keys = new List<string>();
-        foreach (var entry in settings) {
-          if (entry.Key.StartsWith(name)) {
-            keys.Add(entry.Key);
-          }
-        }
-
-        return keys.ToArray();
-      }
-
-      return AuthHelper.ReadRegistryKeys(name);
-    }
-
-    public void WriteSetting(string name, string value) {
-      if (IsPortable) {
-        if (value == null) {
-          if (settings.ContainsKey(name)) {
-            settings.Remove(name);
-          }
-        }
-        else {
-          settings[name] = value;
-        }
-      }
-      else {
-        if (value == null) {
-          AuthHelper.DeleteRegistryKey(name);
-        }
-        else {
-          AuthHelper.WriteRegistryValue(name, value);
-        }
-      }
-    }
 
     public bool IsPassword(string password) {
       return String.CompareOrdinal(password, Password) == 0;
@@ -322,7 +277,7 @@ namespace Authenticator {
     #endregion
 
     public AuthConfig() {
-      Version = Currentversion;
+      Version = CurrentVersion;
       AutoSize = true;
       NotifyAction = NotifyActions.Notification;
     }
@@ -388,7 +343,7 @@ namespace Authenticator {
             System.Globalization.CultureInfo.InvariantCulture, out var version)) {
         Version = version;
 
-        if (version > Currentversion) {
+        if (version > CurrentVersion) {
           // ensure we don't overwrite a newer config
           throw new AuthInvalidNewerConfigException($"Your authenticators were saved with newer a version of Authenticator and so cannot be loaded. Please use Authenticator {version} or later.");
         }
@@ -516,12 +471,6 @@ namespace Authenticator {
               PgpKey = reader.ReadElementContentAsString();
               break;
 
-            case "settings":
-              var serializer =
-                new XmlSerializer(typeof(Setting[]), new XmlRootAttribute() {ElementName = "settings"});
-              settings = ((Setting[]) serializer.Deserialize(reader)).ToDictionary(e => e.Key, e => e.Value);
-              break;
-
             // previous setting used as defaults for new
             case "autorefresh":
               defaultAutoRefresh = reader.ReadElementContentAsBoolean();
@@ -576,7 +525,7 @@ namespace Authenticator {
       return changed;
     }
 
-    public void WriteXmlString(XmlWriter writer, bool includeFilename = false, bool includeSettings = true) {
+    public void WriteXmlString(XmlWriter writer, bool includeFilename = false) {
       writer.WriteStartDocument(true);
       //
       if (includeFilename && string.IsNullOrEmpty(Filename) == false) {
@@ -682,14 +631,6 @@ namespace Authenticator {
         foreach (var wa in this) {
           wa.WriteXmlString(writer);
         }
-      }
-
-      if (includeSettings && settings.Count != 0) {
-        var ns = new XmlSerializerNamespaces();
-        ns.Add(string.Empty, string.Empty);
-        var serializer =
-          new XmlSerializer(typeof(Setting[]), new XmlRootAttribute() {ElementName = "settings"});
-        serializer.Serialize(writer, settings.Select(e => new Setting {Key = e.Key, Value = e.Value}).ToArray(), ns);
       }
 
       // close Authenticator

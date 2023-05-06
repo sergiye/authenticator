@@ -51,6 +51,7 @@ namespace Authenticator {
       this.secretKeyField.Size = new System.Drawing.Size(619, 75);
       this.secretKeyField.SpaceOut = 0;
       this.secretKeyField.TabIndex = 2;
+      this.secretKeyField.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
       // 
       // qrImage
       // 
@@ -84,7 +85,6 @@ namespace Authenticator {
       this.btnClose.Size = new System.Drawing.Size(112, 35);
       this.btnClose.TabIndex = 4;
       this.btnClose.Text = "Close";
-      this.btnClose.Click += new System.EventHandler(this.btnOK_Click);
       // 
       // metroLabel1
       // 
@@ -101,6 +101,7 @@ namespace Authenticator {
       this.AcceptButton = this.btnClose;
       this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
       this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+      this.BackColor = System.Drawing.SystemColors.Window;
       this.CancelButton = this.btnClose;
       this.ClientSize = new System.Drawing.Size(657, 714);
       this.Controls.Add(this.allowCopyCheckBox);
@@ -114,7 +115,6 @@ namespace Authenticator {
       this.MaximizeBox = false;
       this.MinimizeBox = false;
       this.Name = "ShowSecretKeyForm";
-      this.ShowIcon = false;
       this.ShowInTaskbar = false;
       this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
       this.Text = "Secret Key";

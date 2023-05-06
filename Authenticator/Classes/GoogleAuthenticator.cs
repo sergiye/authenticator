@@ -16,7 +16,7 @@ namespace Authenticator {
 
     #endregion
 
-    public GoogleAuthenticator() : base(CODE_DIGITS) {
+    public GoogleAuthenticator() : base() {
     }
 
     public void Enroll(string b32Key) {

@@ -105,10 +105,9 @@ namespace Authenticator
       this.MaximizeBox = false;
       this.MinimizeBox = false;
       this.Name = "UnprotectPasswordForm";
-      this.ShowIcon = false;
       this.ShowInTaskbar = false;
       this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-      this.Text = "_UnprotectPasswordForm_";
+      this.Text = "Unprotect";
       this.Load += new System.EventHandler(this.UnprotectPasswordForm_Load);
       this.ResumeLayout(false);
       this.PerformLayout();

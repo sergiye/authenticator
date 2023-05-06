@@ -25,13 +25,7 @@ namespace Authenticator {
 
     private bool mExplictClose;
 
-    public delegate void SetClipboardDataDelegate(object data);
-
-    public delegate object GetClipboardDataDelegate(Type format);
-
     private bool initiallyMinimised;
-
-    private string existingv2Config;
 
     private string startupConfigFile;
 
@@ -79,13 +73,12 @@ namespace Authenticator {
       if (string.IsNullOrEmpty(proxy) == false) {
         try {
           var uri = new Uri(proxy.IndexOf("://", StringComparison.Ordinal) == -1 ? "http://" + proxy : proxy);
-          var webproxy = new WebProxy(uri.Host + ":" + uri.Port, true);
+          var webProxy = new WebProxy(uri.Host + ":" + uri.Port, true);
           if (string.IsNullOrEmpty(uri.UserInfo) == false) {
             var auth = uri.UserInfo.Split(':');
-            webproxy.Credentials = new NetworkCredential(auth[0], (auth.Length > 1 ? auth[1] : string.Empty));
+            webProxy.Credentials = new NetworkCredential(auth[0], (auth.Length > 1 ? auth[1] : string.Empty));
           }
-
-          WebRequest.DefaultWebProxy = webproxy;
+          WebRequest.DefaultWebProxy = webProxy;
         }
         catch (UriFormatException) {
           ErrorDialog(this,
@@ -161,18 +154,13 @@ namespace Authenticator {
           return;
         }
 
-        // check for a v2 config file if this is a new config
-        if (config.Count == 0 && string.IsNullOrEmpty(config.Filename)) {
-          existingv2Config = AuthHelper.GetLastV2Config();
-        }
-
         Config = config;
         Config.OnConfigChanged += OnConfigChanged;
 
         if (config.Upgraded) {
           SaveConfig(true);
           // display warning
-          ErrorDialog(this, string.Format("Authenticator has upgraded your authenticators to version {0}.\nDo NOT run an older version of Authenticator as this could overwrite them.\nNow is a good time to make a backup. Click the Options icon and choose Export.", AuthConfig.Currentversion));
+          ErrorDialog(this, string.Format("Authenticator has upgraded your authenticators to version {0}.\nDo NOT run an older version of Authenticator as this could overwrite them.\nNow is a good time to make a backup. Click the Options icon and choose Export.", AuthConfig.CurrentVersion));
         }
 
         InitializeForm();
@@ -219,9 +207,6 @@ namespace Authenticator {
         }
 
         authenticator.Name = importedName;
-
-        // save off any new authenticators as a backup
-        AuthHelper.SaveToRegistry(Config, authenticator);
 
         // first time we prompt for protection and set out main settings from imported config
         if (Config.Count == 0) {
@@ -295,9 +280,6 @@ namespace Authenticator {
           }
 
           foreach (var auth in imported) {
-            // save off any new authenticators as a backup
-            AuthHelper.SaveToRegistry(Config, auth);
-
             // add to main list
             Config.Add(auth);
             LoadAuthenticatorList(auth);
@@ -658,20 +640,6 @@ namespace Authenticator {
           Hide();
         }
       }
-
-      // prompt to import v2
-      if (string.IsNullOrEmpty(existingv2Config) == false) {
-        var importResult = MessageBox.Show(this,
-          $"You have an authenticator from a previous version of application ({existingv2Config}).\nYou can either import it now or use the 'Add' button to import it later.\nWould you like to import your previous authenticator now?",
-          AuthMain.APPLICATION_TITLE,
-          MessageBoxButtons.YesNo,
-          MessageBoxIcon.Question);
-        if (importResult == DialogResult.Yes) {
-          ImportAuthenticatorFromV2(existingv2Config);
-        }
-
-        existingv2Config = null;
-      }
     }
 
     private void MainForm_FormClosing(object sender, FormClosingEventArgs e) {
@@ -839,9 +807,6 @@ namespace Authenticator {
         }
 
         if (added) {
-          // save off any new authenticators as a backup
-          AuthHelper.SaveToRegistry(Config, authenticator);
-
           // first time we prompt for protection
           if (Config.Count == 0) {
             var form = new ChangePasswordForm {
@@ -872,12 +837,6 @@ namespace Authenticator {
         CheckFileExists = true,
         CheckPathExists = true
       };
-      //
-      var lastv2File = AuthHelper.GetLastV2Config();
-      if (string.IsNullOrEmpty(lastv2File) == false) {
-        ofd.InitialDirectory = Path.GetDirectoryName(lastv2File);
-        ofd.FileName = Path.GetFileName(lastv2File);
-      }
 
       ofd.Filter = "Authenticator Files (*.config)|*.config|*.xml|Text Files (*.txt)|*.txt|Zip Files (*.zip)|*.zip|PGP Files (*.pgp)|*.pgp|All Files (*.*)|*.*";
       ofd.RestoreDirectory = true;

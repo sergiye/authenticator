@@ -1,23 +1,31 @@
 ﻿using System;
+using System.Drawing;
 using System.Windows.Forms;
 
 namespace Authenticator {
-  public partial class UnprotectPasswordForm : Form {
-    public UnprotectPasswordForm() {
+  public partial class GetPasswordForm : Form {
+    public GetPasswordForm() {
       InitializeComponent();
     }
 
-    public AuthAuthenticator Authenticator { get; set; }
+    public string Password { get; private set; }
 
-    private void UnprotectPasswordForm_Load(object sender, EventArgs e) {
-      Text = $"{Authenticator.Name} Password";
+    public bool InvalidPassword { get; set; }
 
+    private void GetPasswordForm_Load(object sender, EventArgs e) {
       // force this window to the front and topmost
       // see: http://stackoverflow.com/questions/278237/keep-window-on-top-and-steal-focus-in-winforms
-      var topmost = TopMost;
+      var topMost = TopMost;
       TopMost = true;
-      TopMost = topmost;
+      TopMost = topMost;
+      Icon = Icon.ExtractAssociatedIcon(Updater.CurrentFileLocation);
       Activate();
+
+      if (InvalidPassword) {
+        invalidPasswordLabel.Text = "Invalid password";
+        invalidPasswordLabel.Visible = true;
+        invalidPasswordTimer.Enabled = true;
+      }
     }
 
     private void okButton_Click(object sender, EventArgs e) {
@@ -27,22 +35,11 @@ namespace Authenticator {
         invalidPasswordLabel.Text = "Please enter a password";
         invalidPasswordLabel.Visible = true;
         invalidPasswordTimer.Enabled = true;
-        DialogResult = DialogResult.None;
+        DialogResult = System.Windows.Forms.DialogResult.None;
         return;
       }
 
-      // try to unprotect
-      try {
-        if (Authenticator.AuthenticatorData.Unprotect(password)) {
-          Authenticator.MarkChanged();
-        }
-      }
-      catch (BadPasswordException) {
-        invalidPasswordLabel.Text = "Invalid password";
-        invalidPasswordLabel.Visible = true;
-        invalidPasswordTimer.Enabled = true;
-        DialogResult = DialogResult.None;
-      }
+      Password = password;
     }
 
     private void invalidPasswordTimer_Tick(object sender, EventArgs e) {

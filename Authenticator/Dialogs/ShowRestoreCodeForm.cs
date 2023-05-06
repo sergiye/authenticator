@@ -1,5 +1,6 @@
 ﻿using System;
 using System.ComponentModel;
+using System.Drawing;
 using System.Windows.Forms;
 
 namespace Authenticator {
@@ -8,6 +9,7 @@ namespace Authenticator {
 
     public ShowRestoreCodeForm() {
       InitializeComponent();
+      Icon = Icon.ExtractAssociatedIcon(Updater.CurrentFileLocation);
     }
 
     private void ShowRestoreCodeForm_Load(object sender, EventArgs e) {

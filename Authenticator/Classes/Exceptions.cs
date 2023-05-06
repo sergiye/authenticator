@@ -58,4 +58,15 @@ namespace Authenticator {
     public string Encrypted { get; set; }
     public string Decrypted { get; set; }
   }
+  
+  public class ImportException : ApplicationException {
+    public ImportException() {
+    }
+
+    public ImportException(string message) : base(message) {
+    }
+
+    public ImportException(string message, Exception ex) : base(message, ex) {
+    }
+  }
 }

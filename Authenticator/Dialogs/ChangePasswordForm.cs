@@ -1,9 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Reflection;
-using System.Security.Cryptography;
 using System.Windows.Forms;
 
 namespace Authenticator {
@@ -19,8 +14,6 @@ namespace Authenticator {
     public string Password { get; set; }
 
     public bool HasPassword { get; set; }
-
-    private List<string> seedWords = new List<string>();
 
     private void ChangePasswordForm_Load(object sender, EventArgs e) {
       if ((PasswordType & Authenticator.PasswordTypes.Machine) != 0 ||
@@ -57,7 +50,6 @@ namespace Authenticator {
 
       userCheckbox.Enabled = machineCheckbox.Checked;
     }
-
 
     private void passwordCheckbox_CheckedChanged(object sender, EventArgs e) {
       passwordField.Enabled = (passwordCheckbox.Checked);
@@ -97,39 +89,6 @@ namespace Authenticator {
           Password = passwordField.Text.Trim();
         }
       }
-    }
-
-    private string GetSeed(int wordCount) {
-      if (seedWords.Count == 0) {
-        using (var s = new StreamReader(Assembly.GetExecutingAssembly()
-                 .GetManifestResourceStream("Authenticator.Resources.SeedWords.txt"))) {
-          string line;
-          while ((line = s.ReadLine()) != null) {
-            if (line.Length != 0) {
-              seedWords.Add(line);
-            }
-          }
-        }
-      }
-
-      var words = new List<string>();
-      var random = new RNGCryptoServiceProvider();
-      var buffer = new byte[4];
-      for (var i = 0; i < wordCount; i++) {
-        random.GetBytes(buffer);
-        var pos = (int) (BitConverter.ToUInt32(buffer, 0) % (uint) seedWords.Count());
-
-        // check for duplicates
-        var word = seedWords[pos].ToLower();
-        if (words.IndexOf(word) != -1) {
-          i--;
-          continue;
-        }
-
-        words.Add(word);
-      }
-
-      return string.Join(" ", words.ToArray());
     }
   }
 }

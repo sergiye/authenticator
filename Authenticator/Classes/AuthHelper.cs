@@ -20,38 +20,9 @@ using Org.BouncyCastle.Math;
 
 namespace Authenticator {
   class AuthHelper {
-    private const string AUTH2_REGKEY = @"Software\sergiye\Authenticator";
-
-    private const string AUTHREGKEY_LASTFILE = @"File{0}";
-
-    private const string AUTHREGKEY_BACKUP = @"Software\sergiye\Authenticator\Backup";
-
-    private const string AUTHREGKEY_CONFIGBACKUP = @"Software\sergiye\Authenticator\Backup\Config";
-
     private const string RUNKEY = @"Software\Microsoft\Windows\CurrentVersion\Run";
 
     public const string DEFAULT_AUTHENTICATOR_FILE_NAME = "Authenticator.config";
-
-    public const string AUTH_PGP_PUBLICKEY =
-      @"-----BEGIN PGP PUBLIC KEY BLOCK-----
-			Version: BCPG C# v1.7.4114.6375
-			
-			mQEMBFA8sxQBCAC5EWjbGHDgyo4e9rcwse1mWbCOyeTwGZH2malJreF2v81KwBZa
-			eCAPX6cP6EWJPlMOgkJpBQOgh+AezkYEidrW4+NXCGv+Z03U1YBc7e/nYnABZrJx
-			XsqWVyM3d3iLSpKsMfk2OAIAIvoCvzcdx0ljm2IXGKRHGnc0nU7hSFXh5S/sJErN
-			Cgrll6lD2CPNIPuUiMSWptgO1RAjerk0rwLh1DSChicPMJZfxJWn7JD1VVQLmAon
-			EJ4x0MUIbff7ZmEna4O2rF9mrCjwfANkcz8N6WFp3PrfhxArXkvOBPYF9iEigFRS
-			QVt6XAF6sjGhSYxZRaRj0tE4PyajE/HfNk0DAAkBAbQbV2luQXV0aCA8d2luYXV0
-			aEBnbWFpbC5jb20+iQE0BBABAgASBQJQPRWEApsPAhYBAhUCAgsDABYJEJ3DDyNp
-			qwwqApsPAhYBAhUCAgsDqb8IAKJRlRu5ne2BuHrMlKW/BI6I/hpkGQ8BzmO7LatM
-			YYj//XKkbQ2BSvbDNI1al5HSo1iseokIZqD07iMwsp9GvLXSOVCROK9HYJ4dHsdP
-			l68KgNDWu8ZDhPRGerf4+pn1jRfXW4NdFT8W1TX3RArpdVSd5Q2tV2tZrANErBYa
-			UTDodsNKwikcgk89a2NI+Lh17lFGCFdAdZ07gRwu6cOm4SqP2TjWjDreXqlE9fHd
-			0dwmYeS1QlGYK3ETNS1KvVTNaKdht231jGwlxy09Rxtx1EBLqFNsc+BW5rjYEPN2
-			EAlelUJsVidUjZNB1ySm9uW8xurSEXWPZxWITl+LYmgwtn0=
-			=dvwu
-			-----END PGP PUBLIC KEY BLOCK-----";
-
 
     public static AuthConfig LoadConfig(string configFile, string password = null) {
       var config = new AuthConfig();
@@ -122,7 +93,7 @@ namespace Authenticator {
 
         config.Filename = configFile;
 
-        if (config.Version < AuthConfig.Currentversion) {
+        if (config.Version < AuthConfig.CurrentVersion) {
           // set new created values
           foreach (var wa in config) {
             wa.Created = fi.CreationTime;
@@ -148,29 +119,7 @@ namespace Authenticator {
         throw;
       }
 
-      SaveToRegistry(config);
-
       return config;
-    }
-
-    public static string GetLastV2Config() {
-      // check for a v2 last file entry
-      try {
-        using (var key = Registry.CurrentUser.OpenSubKey(AUTH2_REGKEY, false)) {
-          string lastfile;
-          if (key != null
-              && (lastfile =
-                key.GetValue(string.Format(CultureInfo.InvariantCulture, AUTHREGKEY_LASTFILE, 1), null) as string) !=
-              null
-              && File.Exists(lastfile)) {
-            return lastfile;
-          }
-        }
-      }
-      catch (System.Security.SecurityException) {
-      }
-
-      return null;
     }
 
     public static void SaveConfig(AuthConfig config) {
@@ -237,49 +186,6 @@ namespace Authenticator {
       }
     }
 
-    private static void SaveToRegistry(AuthConfig config) {
-      config.WriteSetting(AUTHREGKEY_CONFIGBACKUP, null);
-    }
-
-    public static void SaveToRegistry(AuthConfig config, AuthAuthenticator wa) {
-      if (config == null || wa == null || wa.AuthenticatorData == null) {
-        return;
-      }
-
-      using (var sha = Authenticator.SafeHasher("SHA256")) {
-        // get a hash based on the authenticator key
-        var authkey = Convert.ToBase64String(sha.ComputeHash(Encoding.UTF8.GetBytes(wa.AuthenticatorData.SecretData)));
-
-        // save the PGP encrypted key
-        using (var sw = new EncodedStringWriter(Encoding.UTF8)) {
-          var xmlsettings = new XmlWriterSettings();
-          xmlsettings.Indent = true;
-          using (var xw = XmlWriter.Create(sw, xmlsettings)) {
-            xw.WriteStartElement("Authenticator");
-            xw.WriteAttributeString("version",
-              System.Reflection.Assembly.GetExecutingAssembly().GetName().Version.ToString(2));
-            wa.WriteXmlString(xw);
-            xw.WriteEndElement();
-          }
-
-          var pgpkey = string.IsNullOrEmpty(config.PgpKey) == false ? config.PgpKey : AUTH_PGP_PUBLICKEY;
-          config.WriteSetting(AUTHREGKEY_BACKUP + "\\" + authkey, PgpEncrypt(sw.ToString(), pgpkey));
-        }
-      }
-    }
-
-    public static string ReadBackupFromRegistry(AuthConfig config) {
-      var buffer = new StringBuilder();
-      foreach (var name in config.ReadSettingKeys(AUTHREGKEY_BACKUP)) {
-        var val = ReadRegistryValue(name);
-        if (val != null) {
-          buffer.Append(name + "=" + Convert.ToString(val)).Append(Environment.NewLine);
-        }
-      }
-
-      return buffer.ToString();
-    }
-
     public static void SetStartWithWindows(bool enabled) {
       if (enabled) {
         // get path of exe and minimize flag
@@ -335,7 +241,7 @@ namespace Authenticator {
               if (ex.Message.IndexOf("password") != -1) {
                 // already have a password
                 if (string.IsNullOrEmpty(password) == false) {
-                  MainForm.ErrorDialog(parent, "Invalid password", ex.InnerException, MessageBoxButtons.OK);
+                  MainForm.ErrorDialog(parent, "Invalid password", ex.InnerException);
                 }
 
                 // need password
@@ -705,106 +611,6 @@ namespace Authenticator {
 
     #region Registry Function
 
-    public static object ReadRegistryValue(string keyname, object defaultValue = null) {
-      RegistryKey basekey;
-      var keyparts = keyname.Split('\\').ToList();
-      switch (keyparts[0]) {
-        case "HKEY_CLASSES_ROOT":
-          basekey = Registry.ClassesRoot;
-          keyparts.RemoveAt(0);
-          break;
-        case "HKEY_CURRENT_CONFIG":
-          basekey = Registry.CurrentConfig;
-          keyparts.RemoveAt(0);
-          break;
-        case "HKEY_CURRENT_USER":
-          basekey = Registry.CurrentUser;
-          keyparts.RemoveAt(0);
-          break;
-        case "HKEY_LOCAL_MACHINE":
-          basekey = Registry.LocalMachine;
-          keyparts.RemoveAt(0);
-          break;
-        case "HKEY_PERFORMANCE_DATA":
-          basekey = Registry.PerformanceData;
-          keyparts.RemoveAt(0);
-          break;
-        default:
-          basekey = Registry.CurrentUser;
-          break;
-      }
-
-      var subkey = string.Join("\\", keyparts.Take(keyparts.Count - 1).ToArray());
-      var valuekey = keyparts[keyparts.Count - 1];
-
-      try {
-        using (var key = basekey.OpenSubKey(subkey)) {
-          return (key != null ? key.GetValue(valuekey, defaultValue) : defaultValue);
-        }
-      }
-      catch (System.Security.SecurityException) {
-        return defaultValue;
-      }
-    }
-
-    public static string[] ReadRegistryKeys(string keyname) {
-      RegistryKey basekey;
-      var keyparts = keyname.Split('\\').ToList();
-      switch (keyparts[0]) {
-        case "HKEY_CLASSES_ROOT":
-          basekey = Registry.ClassesRoot;
-          keyparts.RemoveAt(0);
-          break;
-        case "HKEY_CURRENT_CONFIG":
-          basekey = Registry.CurrentConfig;
-          keyparts.RemoveAt(0);
-          break;
-        case "HKEY_CURRENT_USER":
-          basekey = Registry.CurrentUser;
-          keyparts.RemoveAt(0);
-          break;
-        case "HKEY_LOCAL_MACHINE":
-          basekey = Registry.LocalMachine;
-          keyparts.RemoveAt(0);
-          break;
-        case "HKEY_PERFORMANCE_DATA":
-          basekey = Registry.PerformanceData;
-          keyparts.RemoveAt(0);
-          break;
-        default:
-          basekey = Registry.CurrentUser;
-          break;
-      }
-
-      var subkey = string.Join("\\", keyparts.ToArray());
-
-      try {
-        using (var key = basekey.OpenSubKey(subkey)) {
-          if (key == null) {
-            return new string[0];
-          }
-
-          // get all value names
-          var keys = key.GetValueNames().ToList();
-          for (var i = 0; i < keys.Count; i++) {
-            keys[i] = keyname + "\\" + keys[i];
-          }
-
-          // read any subkeys
-          if (key.SubKeyCount != 0) {
-            foreach (var subkeyname in key.GetSubKeyNames()) {
-              keys.AddRange(ReadRegistryKeys(keyname + "\\" + subkeyname));
-            }
-          }
-
-          return keys.ToArray();
-        }
-      }
-      catch (System.Security.SecurityException) {
-        return new string[0];
-      }
-    }
-
     public static void WriteRegistryValue(string keyname, object value) {
       RegistryKey basekey;
       var keyparts = keyname.Split('\\').ToList();
@@ -847,53 +653,44 @@ namespace Authenticator {
     }
 
     public static void DeleteRegistryKey(string keyname) {
-      RegistryKey basekey;
-      var keyparts = keyname.Split('\\').ToList();
-      switch (keyparts[0]) {
+      RegistryKey baseKey;
+      var parts = keyname.Split('\\').ToList();
+      switch (parts[0]) {
         case "HKEY_CLASSES_ROOT":
-          basekey = Registry.ClassesRoot;
-          keyparts.RemoveAt(0);
+          baseKey = Registry.ClassesRoot;
+          parts.RemoveAt(0);
           break;
         case "HKEY_CURRENT_CONFIG":
-          basekey = Registry.CurrentConfig;
-          keyparts.RemoveAt(0);
+          baseKey = Registry.CurrentConfig;
+          parts.RemoveAt(0);
           break;
         case "HKEY_CURRENT_USER":
-          basekey = Registry.CurrentUser;
-          keyparts.RemoveAt(0);
+          baseKey = Registry.CurrentUser;
+          parts.RemoveAt(0);
           break;
         case "HKEY_LOCAL_MACHINE":
-          basekey = Registry.LocalMachine;
-          keyparts.RemoveAt(0);
+          baseKey = Registry.LocalMachine;
+          parts.RemoveAt(0);
           break;
         case "HKEY_PERFORMANCE_DATA":
-          basekey = Registry.PerformanceData;
-          keyparts.RemoveAt(0);
+          baseKey = Registry.PerformanceData;
+          parts.RemoveAt(0);
           break;
         default:
-          basekey = Registry.CurrentUser;
+          baseKey = Registry.CurrentUser;
           break;
       }
 
-      var subkey = string.Join("\\", keyparts.Take(keyparts.Count - 1).ToArray());
-      var valuekey = keyparts[keyparts.Count - 1];
+      var subKey = string.Join("\\", parts.Take(parts.Count - 1).ToArray());
+      var valueKey = parts[parts.Count - 1];
 
       try {
-        using (var key = basekey.CreateSubKey(subkey)) {
-          if (key != null) {
-            if (key.GetValueNames().Contains(valuekey)) {
-              key.DeleteValue(valuekey, false);
-            }
-
-            if (key.GetSubKeyNames().Contains(valuekey)) {
-              key.DeleteSubKeyTree(valuekey, false);
-            }
-
-            // if the parent now has no values, we can remove it too
-            if (key.SubKeyCount == 0 && key.ValueCount == 0) {
-              basekey.DeleteSubKey(subkey, false);
-            }
-          }
+        using (var key = baseKey.CreateSubKey(subKey)) {
+          if (key == null) return;
+          if (key.GetValueNames().Contains(valueKey)) key.DeleteValue(valueKey, false);
+          if (key.GetSubKeyNames().Contains(valueKey)) key.DeleteSubKeyTree(valueKey, false);
+          // if the parent now has no values, we can remove it too
+          if (key.SubKeyCount == 0 && key.ValueCount == 0) baseKey.DeleteSubKey(subKey, false);
         }
       }
       catch (System.Security.SecurityException) {
@@ -1044,15 +841,5 @@ namespace Authenticator {
     }
 
     #endregion
-  }
-
-  class EncodedStringWriter : StringWriter {
-    private readonly Encoding encoding;
-
-    public EncodedStringWriter(Encoding encoding) {
-      this.encoding = encoding;
-    }
-
-    public override Encoding Encoding => encoding;
   }
 }

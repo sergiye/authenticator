@@ -1,4 +1,5 @@
 using System;
+using System.Drawing;
 using System.Text.RegularExpressions;
 using System.Windows.Forms;
 using ZXing;
@@ -9,10 +10,7 @@ namespace Authenticator {
 
     public ShowSecretKeyForm() {
       InitializeComponent();
-    }
-
-    private void btnOK_Click(object sender, EventArgs e) {
-      Close();
+      Icon = Icon.ExtractAssociatedIcon(Updater.CurrentFileLocation);
     }
 
     private void ShowSecretKeyForm_Load(object sender, EventArgs e) {
