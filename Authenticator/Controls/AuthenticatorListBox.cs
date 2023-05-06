@@ -9,50 +9,27 @@ using System.Text;
 using System.Windows.Forms;
 
 namespace Authenticator {
-  public class AuthenticatorListItem {
-    public AuthenticatorListItem(AuthAuthenticator auth, int index) {
-      Authenticator = auth;
-      LastUpdate = DateTime.MinValue;
-      Index = index;
-      DisplayUntil = DateTime.MinValue;
-    }
-
-    public int Index { get; set; }
-    public AuthAuthenticator Authenticator { get; set; }
-    public DateTime LastUpdate { get; set; }
-    public DateTime DisplayUntil { get; set; }
-    public string LastCode { get; set; }
-    public bool Dragging { get; set; }
-    public int UnprotectCount { get; set; }
-    public int AutoWidth { get; set; }
-  }
-
-  public delegate void AuthenticatorListItemRemovedHandler(object source, AuthenticatorListItemRemovedEventArgs args);
-
-  public delegate void AuthenticatorListReorderedHandler(object source, AuthenticatorListReorderedEventArgs args);
-
-  public class AuthenticatorListItemRemovedEventArgs : EventArgs {
-    public AuthenticatorListItem Item { get; }
-
-    public AuthenticatorListItemRemovedEventArgs(AuthenticatorListItem item) {
-      Item = item;
-    }
-  }
-
-  public class AuthenticatorListReorderedEventArgs : EventArgs {
-  }
-
-  public delegate void AuthenticatorListDoubleClickHandler(object source, AuthenticatorListDoubleClickEventArgs args);
-
-  public class AuthenticatorListDoubleClickEventArgs : EventArgs {
-    public AuthAuthenticator Authenticator;
-
-    public AuthenticatorListDoubleClickEventArgs(AuthAuthenticator auth) {
-      Authenticator = auth;
-    }
-  }
-
   public class AuthenticatorListBox : ListBox {
+
+    public class ListItem {
+
+      public ListItem(AuthAuthenticator auth, int index) {
+        Authenticator = auth;
+        LastUpdate = DateTime.MinValue;
+        Index = index;
+        DisplayUntil = DateTime.MinValue;
+      }
+
+      public int Index { get; set; }
+      public AuthAuthenticator Authenticator { get; set; }
+      public DateTime LastUpdate { get; set; }
+      public DateTime DisplayUntil { get; set; }
+      public string LastCode { get; set; }
+      public bool Dragging { get; set; }
+      public int UnprotectCount { get; set; }
+      public int AutoWidth { get; set; }
+    }
+
     private const int MARGIN_LEFT = 4;
     private const int MARGIN_TOP = 8;
     private const int MARGIN_RIGHT = 8;
@@ -70,21 +47,21 @@ namespace Authenticator {
     private const int PIE_STARTANGLE = 270;
     private const int PIE_SWEEPANGLE = 360;
 
-    public event AuthenticatorListItemRemovedHandler ItemRemoved;
+    public event EventHandler<ListItem> ItemRemoved;
 
-    public event AuthenticatorListReorderedHandler Reordered;
+    public event EventHandler Reordered;
 
     [Category("Action")]
     public event ScrollEventHandler Scrolled;
 
-    public new event AuthenticatorListDoubleClickHandler DoubleClick;
+    public new event EventHandler<AuthAuthenticator> DoubleClick;
 
     private TextBox renameTextbox;
-    private AuthenticatorListItem currentItem;
+    private ListItem currentItem;
     private Point mouseDownLocation = Point.Empty;
     // private Point mouseMoveLocation = Point.Empty;
     private Bitmap draggedBitmap;
-    private AuthenticatorListItem draggedItem;
+    private ListItem draggedItem;
     private Rectangle draggedBitmapRect;
     private int draggedBitmapOffsetY;
     private int? lastDragTopIndex;
@@ -122,7 +99,7 @@ namespace Authenticator {
     protected override void OnMouseDoubleClick(MouseEventArgs e) {
       var item = CurrentItem;
       if (item != null) {
-        DoubleClick?.Invoke(this, new AuthenticatorListDoubleClickEventArgs(item.Authenticator));
+        DoubleClick?.Invoke(this, item.Authenticator);
       }
     }
 
@@ -150,7 +127,7 @@ namespace Authenticator {
     public void Tick(object sender, EventArgs e) {
       for (var index = 0; index < Items.Count; index++) {
         // get the item
-        var item = Items[index] as AuthenticatorListItem;
+        var item = Items[index] as ListItem;
         var auth = item.Authenticator;
 
         var y = ItemHeight * index - TopIndex * ItemHeight;
@@ -208,7 +185,7 @@ namespace Authenticator {
         // if this was in a refresh icon, we do a refresh
         var index = IndexFromPoint(e.Location);
         if (index >= 0 && index < Items.Count) {
-          var item = Items[index] as AuthenticatorListItem;
+          var item = Items[index] as ListItem;
           var y = ItemHeight * index - ItemHeight * TopIndex;
           var hasvscroll = Height < Items.Count * ItemHeight;
           if (item.Authenticator.AutoRefresh == false && item.DisplayUntil < DateTime.Now
@@ -367,7 +344,7 @@ namespace Authenticator {
     }
 
     protected override void OnDragDrop(DragEventArgs e) {
-      var item = e.Data.GetData(typeof(AuthenticatorListItem)) as AuthenticatorListItem;
+      var item = e.Data.GetData(typeof(ListItem)) as ListItem;
       if (item != null) {
         // stop paiting as we reorder to reduce flicker
         WinApi.SendMessage(Handle, WinApi.WM_SETREDRAW, 0, IntPtr.Zero);
@@ -385,11 +362,11 @@ namespace Authenticator {
 
           // set the correct indexes of our items
           for (var i = 0; i < Items.Count; i++) {
-            ((AuthenticatorListItem) Items[i]).Index = i;
+            ((ListItem) Items[i]).Index = i;
           }
 
           // fire the reordered event
-          Reordered?.Invoke(this, new AuthenticatorListReorderedEventArgs());
+          Reordered?.Invoke(this, EventArgs.Empty);
 
           // clear state
           item.Dragging = false;
@@ -443,7 +420,7 @@ namespace Authenticator {
 
     private void SetRenameTextboxLocation() {
       if (renameTextbox != null && renameTextbox.Visible) {
-        var item = renameTextbox.Tag as AuthenticatorListItem;
+        var item = renameTextbox.Tag as ListItem;
         if (item != null) {
           var y = ItemHeight * item.Index - TopIndex * ItemHeight + MARGIN_TOP;
           if (RenameTextbox.Location.Y != y) {
@@ -511,7 +488,7 @@ namespace Authenticator {
 
     void RenameTextbox_Leave(object sender, EventArgs e) {
       RenameTextbox.Visible = false;
-      var item = RenameTextbox.Tag as AuthenticatorListItem;
+      var item = RenameTextbox.Tag as ListItem;
       if (item != null) {
         var newname = RenameTextbox.Text.Trim();
         if (newname.Length != 0) {
@@ -529,10 +506,10 @@ namespace Authenticator {
 
     public bool ReadOnly { get; set; }
 
-    public AuthenticatorListItem CurrentItem {
+    public ListItem CurrentItem {
       get {
         if (currentItem == null && Items.Count != 0) {
-          currentItem = (AuthenticatorListItem)Items[0];
+          currentItem = (ListItem)Items[0];
         }
 
         return currentItem;
@@ -557,7 +534,7 @@ namespace Authenticator {
         CurrentItem = null;
       }
       else {
-        CurrentItem = Items[index] as AuthenticatorListItem;
+        CurrentItem = Items[index] as ListItem;
       }
     }
 
@@ -567,7 +544,7 @@ namespace Authenticator {
       if (force == null) {
         var index = IndexFromPoint(mouseLocation);
         if (index >= 0 && index < Items.Count) {
-          var item = Items[index] as AuthenticatorListItem;
+          var item = Items[index] as ListItem;
           var y = ItemHeight * index - TopIndex * ItemHeight;
           var hasvscroll = Height < Items.Count * ItemHeight;
           if (item.Authenticator.AutoRefresh == false && item.DisplayUntil < DateTime.Now
@@ -589,7 +566,7 @@ namespace Authenticator {
       }
     }
 
-    private DialogResult UnprotectAuthenticator(AuthenticatorListItem item, Screen screen = null) {
+    private DialogResult UnprotectAuthenticator(ListItem item, Screen screen = null) {
       // keep a count so we can have multiples
       if (item.UnprotectCount > 0) {
         item.UnprotectCount++;
@@ -622,7 +599,7 @@ namespace Authenticator {
       return result;
     }
 
-    private void ProtectAuthenticator(AuthenticatorListItem item) {
+    private void ProtectAuthenticator(ListItem item) {
       // if already protected just decrement counter
       item.UnprotectCount--;
       if (item.UnprotectCount > 0) {
@@ -1055,15 +1032,15 @@ namespace Authenticator {
                   MessageBoxIcon.Exclamation, MessageBoxDefaultButton.Button2) == DialogResult.Yes) {
               var index = item.Index;
               Items.Remove(item);
-              ItemRemoved?.Invoke(this, new AuthenticatorListItemRemovedEventArgs(item));
+              ItemRemoved?.Invoke(this, item);
               if (index >= Items.Count) {
                 index = Items.Count - 1;
               }
 
-              CurrentItem = Items.Count != 0 ? Items[index] as AuthenticatorListItem : null;
+              CurrentItem = Items.Count != 0 ? Items[index] as ListItem : null;
               // reset the correct indexes of our items
               for (var i = 0; i < Items.Count; i++) {
-                ((AuthenticatorListItem) Items[i]).Index = i;
+                ((ListItem) Items[i]).Index = i;
               }
             }
 
@@ -1168,7 +1145,7 @@ namespace Authenticator {
       }
     }
 
-    public string GetItemCode(AuthenticatorListItem item, Screen screen = null) {
+    public string GetItemCode(ListItem item, Screen screen = null) {
       var auth = item.Authenticator;
 
       // check if the authentcated is still protected
@@ -1191,7 +1168,7 @@ namespace Authenticator {
       RefreshItem(CurrentItem);
     }
 
-    private void RefreshItem(AuthenticatorListItem item) {
+    private void RefreshItem(ListItem item) {
       // var hasvscroll = Height < Items.Count * ItemHeight;
       var y = ItemHeight * item.Index - ItemHeight * TopIndex;
       var rect = new Rectangle(0, y, Width, Height);
@@ -1222,7 +1199,7 @@ namespace Authenticator {
     }
 
     public int GetMaxItemWidth() {
-      var items = Items.Cast<AuthenticatorListItem>().Where(i => i.AutoWidth == 0).ToArray();
+      var items = Items.Cast<ListItem>().Where(i => i.AutoWidth == 0).ToArray();
       if (items.Any()) {
         using (var g = CreateGraphics()) {
           using (var font = new Font(Font.FontFamily, FONT_SIZE, FontStyle.Regular)) {
@@ -1234,7 +1211,7 @@ namespace Authenticator {
           }
         }
       }
-      return Items.Cast<AuthenticatorListItem>().Max(i => i.AutoWidth);
+      return Items.Cast<ListItem>().Max(i => i.AutoWidth);
     }
 
     protected override void DefWndProc(ref Message m) {
@@ -1252,7 +1229,7 @@ namespace Authenticator {
         return;
       }
 
-      var item = Items[e.Index] as AuthenticatorListItem;
+      var item = Items[e.Index] as ListItem;
       var auth = item.Authenticator;
 
       // if the item is being dragged, we draw a blank placeholder

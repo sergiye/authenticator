@@ -417,7 +417,7 @@ namespace Authenticator {
 
       var index = 0;
       foreach (var auth in Config) {
-        var ali = new AuthenticatorListItem(auth, index);
+        var ali = new AuthenticatorListBox.ListItem(auth, index);
         if (added != null && added == auth && auth.AutoRefresh == false &&
             !(auth.AuthenticatorData is HotpAuthenticator)) {
           ali.LastUpdate = DateTime.Now;
@@ -549,7 +549,7 @@ namespace Authenticator {
           BringToFront();
         }
 
-        var item = authenticatorList.Items.Cast<AuthenticatorListItem>().FirstOrDefault(i => i.Authenticator == auth);
+        var item = authenticatorList.Items.Cast<AuthenticatorListBox.ListItem>().FirstOrDefault(i => i.Authenticator == auth);
         code = authenticatorList.GetItemCode(item, screen);
 
         // restore active window
@@ -685,7 +685,7 @@ namespace Authenticator {
           do {
             name = "Battle.net" + (existing != 0 ? " (" + existing + ")" : string.Empty);
             existing++;
-          } while (authenticatorList.Items.Cast<AuthenticatorListItem>().Count(a => a.Authenticator.Name == name) != 0);
+          } while (authenticatorList.Items.Cast<AuthenticatorListBox.ListItem>().Count(a => a.Authenticator.Name == name) != 0);
 
           authenticator.Name = name;
           authenticator.AutoRefresh = false;
@@ -703,7 +703,7 @@ namespace Authenticator {
           do {
             name = "Trion" + (existing != 0 ? " (" + existing + ")" : string.Empty);
             existing++;
-          } while (authenticatorList.Items.Cast<AuthenticatorListItem>().Count(a => a.Authenticator.Name == name) != 0);
+          } while (authenticatorList.Items.Cast<AuthenticatorListBox.ListItem>().Count(a => a.Authenticator.Name == name) != 0);
 
           authenticator.Name = name;
           authenticator.AutoRefresh = false;
@@ -721,7 +721,7 @@ namespace Authenticator {
           do {
             name = "Google" + (existing != 0 ? " (" + existing + ")" : string.Empty);
             existing++;
-          } while (authenticatorList.Items.Cast<AuthenticatorListItem>().Count(a => a.Authenticator.Name == name) != 0);
+          } while (authenticatorList.Items.Cast<AuthenticatorListBox.ListItem>().Count(a => a.Authenticator.Name == name) != 0);
 
           authenticator.Name = name;
           authenticator.AutoRefresh = false;
@@ -738,7 +738,7 @@ namespace Authenticator {
           do {
             name = "GuildWars" + (existing != 0 ? " (" + existing + ")" : string.Empty);
             existing++;
-          } while (authenticatorList.Items.Cast<AuthenticatorListItem>().Count(a => a.Authenticator.Name == name) != 0);
+          } while (authenticatorList.Items.Cast<AuthenticatorListBox.ListItem>().Count(a => a.Authenticator.Name == name) != 0);
 
           authenticator.Name = name;
           authenticator.AutoRefresh = false;
@@ -755,7 +755,7 @@ namespace Authenticator {
           do {
             name = "Microsoft" + (existing != 0 ? " (" + existing + ")" : string.Empty);
             existing++;
-          } while (authenticatorList.Items.Cast<AuthenticatorListItem>().Count(a => a.Authenticator.Name == name) != 0);
+          } while (authenticatorList.Items.Cast<AuthenticatorListBox.ListItem>().Count(a => a.Authenticator.Name == name) != 0);
 
           authenticator.Name = name;
           authenticator.AutoRefresh = false;
@@ -773,7 +773,7 @@ namespace Authenticator {
           do {
             name = "Authenticator" + (existing != 0 ? " (" + existing + ")" : string.Empty);
             existing++;
-          } while (authenticatorList.Items.Cast<AuthenticatorListItem>().Count(a => a.Authenticator.Name == name) != 0);
+          } while (authenticatorList.Items.Cast<AuthenticatorListBox.ListItem>().Count(a => a.Authenticator.Name == name) != 0);
 
           authenticator.Name = name;
           authenticator.AutoRefresh = false;
@@ -791,7 +791,7 @@ namespace Authenticator {
           do {
             name = "Okta" + (existing != 0 ? " (" + existing + ")" : string.Empty);
             existing++;
-          } while (authenticatorList.Items.Cast<AuthenticatorListItem>().Count(a => a.Authenticator.Name == name) != 0);
+          } while (authenticatorList.Items.Cast<AuthenticatorListBox.ListItem>().Count(a => a.Authenticator.Name == name) != 0);
 
           authenticator.Name = name;
           authenticator.AutoRefresh = false;
@@ -870,9 +870,9 @@ namespace Authenticator {
       Activate();
     }
 
-    private void authenticatorList_ItemRemoved(object source, AuthenticatorListItemRemovedEventArgs args) {
+    private void authenticatorList_ItemRemoved(object source, AuthenticatorListBox.ListItem args) {
       foreach (var auth in Config) {
-        if (auth == args.Item.Authenticator) {
+        if (auth == args.Authenticator) {
           Config.Remove(auth);
           break;
         }
@@ -893,11 +893,11 @@ namespace Authenticator {
       SaveConfig();
     }
 
-    private void authenticatorList_Reordered(object source, AuthenticatorListReorderedEventArgs args) {
+    private void authenticatorList_Reordered(object source, EventArgs args) {
       // set the new order of items in Config from that of the list
       var count = authenticatorList.Items.Count;
       for (var i = 0; i < count; i++) {
-        var item = (AuthenticatorListItem) authenticatorList.Items[i];
+        var item = (AuthenticatorListBox.ListItem) authenticatorList.Items[i];
         Config.FirstOrDefault(a => a == item.Authenticator).Index = i;
       }
 
@@ -913,8 +913,8 @@ namespace Authenticator {
       SaveConfig();
     }
 
-    private void authenticatorList_DoubleClick(object source, AuthenticatorListDoubleClickEventArgs args) {
-      RunAction(args.Authenticator, AuthConfig.NotifyActions.CopyToClipboard);
+    private void authenticatorList_DoubleClick(object source, AuthAuthenticator args) {
+      RunAction(args, AuthConfig.NotifyActions.CopyToClipboard);
     }
 
     private void MainForm_MouseDown(object sender, MouseEventArgs e) {
@@ -1298,7 +1298,7 @@ namespace Authenticator {
     private void authenticatorOptionsMenuItem_Click(object sender, EventArgs e) {
       var menuitem = (ToolStripMenuItem) sender;
       var auth = menuitem.Tag as AuthAuthenticator;
-      var item = authenticatorList.Items.Cast<AuthenticatorListItem>().FirstOrDefault(i => i.Authenticator == auth);
+      var item = authenticatorList.Items.Cast<AuthenticatorListBox.ListItem>().FirstOrDefault(i => i.Authenticator == auth);
       if (item != null) {
         RunAction(auth, Config.NotifyAction);
 

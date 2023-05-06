@@ -1,464 +1,467 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-    <Import Project="..\..\packages\Costura.Fody.4.1.0\build\Costura.Fody.props" Condition="Exists('..\..\packages\Costura.Fody.4.1.0\build\Costura.Fody.props')" />
-    <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="..\..\packages\Costura.Fody.4.1.0\build\Costura.Fody.props" Condition="Exists('..\..\packages\Costura.Fody.4.1.0\build\Costura.Fody.props')" />
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{DC7B671F-E320-4A26-842D-F5AC5CF99887}</ProjectGuid>
+    <OutputType>WinExe</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Authenticator</RootNamespace>
+    <AssemblyName>Authenticator</AssemblyName>
+    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <ProductName>Authenticator</ProductName>
+    <TargetFrameworkProfile />
+  </PropertyGroup>
+  <PropertyGroup>
+    <DefineConstants Condition="$([System.Version]::Parse('$(TargetFrameworkVersion.Substring(1))').CompareTo($([System.Version]::Parse('4.5.1')))) &gt;= 0">$(DefineConstants);NETFX_451</DefineConstants>
+    <DefineConstants Condition="$([System.Version]::Parse('$(TargetFrameworkVersion.Substring(1))').CompareTo($([System.Version]::Parse('4.5'))))   &gt;= 0">$(DefineConstants);NETFX_45</DefineConstants>
+    <DefineConstants Condition="$([System.Version]::Parse('$(TargetFrameworkVersion.Substring(1))').CompareTo($([System.Version]::Parse('4.0'))))   &gt;= 0">$(DefineConstants);NETFX_40</DefineConstants>
+    <DefineConstants Condition="$([System.Version]::Parse('$(TargetFrameworkVersion.Substring(1))').CompareTo($([System.Version]::Parse('3.5'))))   &gt;= 0">$(DefineConstants);NETFX_35</DefineConstants>
+    <DefineConstants Condition="$([System.Version]::Parse('$(TargetFrameworkVersion.Substring(1))').CompareTo($([System.Version]::Parse('3.0'))))   &gt;= 0">$(DefineConstants);NETFX_30</DefineConstants>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\</OutputPath>
+    <DefineConstants>TRACE;DEBUG</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <UseVSHostingProcess>true</UseVSHostingProcess>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup>
+    <StartupObject>Authenticator.AuthMain</StartupObject>
+  </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationIcon>app.ico</ApplicationIcon>
+  </PropertyGroup>
+  <PropertyGroup>
+    <ManifestCertificateThumbprint>F61975099D14D6E0C04E21747F96A289F5AA9989</ManifestCertificateThumbprint>
+  </PropertyGroup>
+  <PropertyGroup Condition="Exists('$(MSBuildProjectDirectory)codesign.pfx')">
+    <ManifestKeyFile>codesign.pfx</ManifestKeyFile>
+  </PropertyGroup>
+  <PropertyGroup>
+    <GenerateManifests>false</GenerateManifests>
+  </PropertyGroup>
+  <PropertyGroup>
+    <TargetZone>LocalIntranet</TargetZone>
+  </PropertyGroup>
+  <PropertyGroup />
+  <PropertyGroup Condition="Exists('$(MSBuildProjectDirectory)codesign.pfx')">
+    <SignManifests>true</SignManifests>
+  </PropertyGroup>
+  <PropertyGroup />
+  <PropertyGroup>
+    <SignAssembly>false</SignAssembly>
+  </PropertyGroup>
+  <PropertyGroup>
+    <AssemblyOriginatorKeyFile>
+    </AssemblyOriginatorKeyFile>
+  </PropertyGroup>
+  <PropertyGroup>
+    <ManifestTimestampUrl>http://timestamp.verisign.com/scripts/timestamp.dll</ManifestTimestampUrl>
+  </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationManifest>Properties\app.manifest</ApplicationManifest>
+  </PropertyGroup>
+  <PropertyGroup>
+    <SignManifests>false</SignManifests>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="BouncyCastle.Crypto, Version=1.7.4137.9688, Culture=neutral, PublicKeyToken=a4292a325f69b123, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\BouncyCastle.1.7.0\lib\Net40-Client\BouncyCastle.Crypto.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Costura, Version=4.1.0.0, Culture=neutral, PublicKeyToken=9919ef960d84173d, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Costura.Fody.4.1.0\lib\net40\Costura.dll</HintPath>
+    </Reference>
+    <Reference Include="ICSharpCode.SharpZipLib, Version=1.3.3.11, Culture=neutral, PublicKeyToken=1b03e6acf1164f73, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\SharpZipLib.1.3.3\lib\net45\ICSharpCode.SharpZipLib.dll</HintPath>
+    </Reference>
+    <Reference Include="Newtonsoft.Json, Version=10.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Newtonsoft.Json.10.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Configuration" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Security" />
+    <Reference Include="System.Web" />
+    <Reference Include="System.Web.Extensions" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Deployment" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml" />
+    <Reference Include="zxing, Version=0.14.0.0, Culture=neutral, PublicKeyToken=4e88037ac681fe60, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\ZXing.Net.0.14.0.1\lib\net40\zxing.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="zxing.presentation, Version=0.14.0.0, Culture=neutral, PublicKeyToken=4e88037ac681fe60, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\ZXing.Net.0.14.0.1\lib\net40\zxing.presentation.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Classes\AuthAuthenticator.cs" />
+    <Compile Include="Classes\AuthConfig.cs" />
+    <Compile Include="Classes\Authenticator.cs" />
+    <Compile Include="Classes\AuthHelper.cs" />
+    <Compile Include="Classes\Exceptions.cs" />
+    <Compile Include="Classes\Base32.cs" />
+    <Compile Include="Classes\BattleNetAuthenticator.cs" />
+    <Compile Include="Classes\GoogleAuthenticator.cs" />
+    <Compile Include="Classes\HOTPAuthenticator.cs" />
+    <Compile Include="Classes\RegisteredAuthenticator.cs" />
+    <Compile Include="Classes\SingleGlobalInstance.cs" />
+    <Compile Include="Classes\TrionAuthenticator.cs" />
+    <Compile Include="Classes\Updater.cs" />
+    <Compile Include="Classes\WinAPI.cs" />
+    <Compile Include="Controls\AuthenticatorListBox.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Controls\GroupRadioButton.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Controls\SecretTextBox.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Dialogs\AboutForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Dialogs\AboutForm.Designer.cs">
+      <DependentUpon>AboutForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Dialogs\AddAuthenticator.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Dialogs\AddAuthenticator.designer.cs">
+      <DependentUpon>AddAuthenticator.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Dialogs\AddBattleNetAuthenticator.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Dialogs\AddBattleNetAuthenticator.Designer.cs">
+      <DependentUpon>AddBattleNetAuthenticator.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Dialogs\AddGoogleAuthenticator.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Dialogs\AddGoogleAuthenticator.designer.cs">
+      <DependentUpon>AddGoogleAuthenticator.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Dialogs\AddGuildWarsAuthenticator.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Dialogs\AddGuildWarsAuthenticator.designer.cs">
+      <DependentUpon>AddGuildWarsAuthenticator.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Dialogs\AddMicrosoftAuthenticator.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Dialogs\AddMicrosoftAuthenticator.designer.cs">
+      <DependentUpon>AddMicrosoftAuthenticator.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Dialogs\AddOktaVerifyAuthenticator.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Dialogs\AddOktaVerifyAuthenticator.Designer.cs">
+      <DependentUpon>AddOktaVerifyAuthenticator.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Dialogs\AddTrionAuthenticator.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Dialogs\AddTrionAuthenticator.designer.cs">
+      <DependentUpon>AddTrionAuthenticator.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Dialogs\ChangePasswordForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Dialogs\ChangePasswordForm.Designer.cs">
+      <DependentUpon>ChangePasswordForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Dialogs\ExceptionForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Dialogs\ExceptionForm.designer.cs">
+      <DependentUpon>ExceptionForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Dialogs\ExportForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Dialogs\ExportForm.Designer.cs">
+      <DependentUpon>ExportForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Dialogs\GetPasswordForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Dialogs\GetPasswordForm.designer.cs">
+      <DependentUpon>GetPasswordForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Dialogs\GetPGPKeyForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Dialogs\GetPGPKeyForm.designer.cs">
+      <DependentUpon>GetPGPKeyForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Dialogs\SetPasswordForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Dialogs\SetPasswordForm.Designer.cs">
+      <DependentUpon>SetPasswordForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Dialogs\ShowRestoreCodeForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Dialogs\ShowRestoreCodeForm.designer.cs">
+      <DependentUpon>ShowRestoreCodeForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Dialogs\ShowSecretKeyForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Dialogs\ShowSecretKeyForm.designer.cs">
+      <DependentUpon>ShowSecretKeyForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Dialogs\ShowTrionSecretForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Dialogs\ShowTrionSecretForm.designer.cs">
+      <DependentUpon>ShowTrionSecretForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Dialogs\UnprotectPasswordForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Dialogs\UnprotectPasswordForm.designer.cs">
+      <DependentUpon>UnprotectPasswordForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+    <Compile Include="MainForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="MainForm.Designer.cs">
+      <DependentUpon>MainForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Main.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <EmbeddedResource Include="Dialogs\AboutForm.resx">
+      <DependentUpon>AboutForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Dialogs\AddAuthenticator.resx">
+      <DependentUpon>AddAuthenticator.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Dialogs\AddBattleNetAuthenticator.resx">
+      <DependentUpon>AddBattleNetAuthenticator.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Dialogs\AddGoogleAuthenticator.resx">
+      <DependentUpon>AddGoogleAuthenticator.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Dialogs\AddGuildWarsAuthenticator.resx">
+      <DependentUpon>AddGuildWarsAuthenticator.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Dialogs\AddMicrosoftAuthenticator.resx">
+      <DependentUpon>AddMicrosoftAuthenticator.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Dialogs\AddOktaVerifyAuthenticator.resx">
+      <DependentUpon>AddOktaVerifyAuthenticator.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Dialogs\AddTrionAuthenticator.resx">
+      <DependentUpon>AddTrionAuthenticator.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Dialogs\ChangePasswordForm.resx">
+      <DependentUpon>ChangePasswordForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Dialogs\ExceptionForm.resx">
+      <DependentUpon>ExceptionForm.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Dialogs\ExportForm.resx">
+      <DependentUpon>ExportForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Dialogs\GetPasswordForm.resx">
+      <DependentUpon>GetPasswordForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Dialogs\GetPGPKeyForm.resx">
+      <DependentUpon>GetPGPKeyForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Dialogs\SetPasswordForm.resx">
+      <DependentUpon>SetPasswordForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Dialogs\ShowRestoreCodeForm.resx">
+      <DependentUpon>ShowRestoreCodeForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Dialogs\ShowSecretKeyForm.resx">
+      <DependentUpon>ShowSecretKeyForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Dialogs\ShowTrionSecretForm.resx">
+      <DependentUpon>ShowTrionSecretForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Dialogs\UnprotectPasswordForm.resx">
+      <DependentUpon>UnprotectPasswordForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="MainForm.resx">
+      <DependentUpon>MainForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <SubType>Designer</SubType>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <None Include="packages.config" />
+    <None Include="Properties\app.manifest" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="LICENSE" />
+    <EmbeddedResource Include="Resources\BattleNetAuthenticatorIcon.png" />
+    <EmbeddedResource Include="Resources\GoogleAuthenticatorIcon.png" />
+    <EmbeddedResource Include="Resources\GuildWarsAuthenticatorIcon.png" />
+    <EmbeddedResource Include="Resources\RefreshIcon.png" />
+    <EmbeddedResource Include="Resources\MicrosoftAuthenticatorIcon.png" />
+    <None Include="Resources\OptionsIcon.png" />
+    <EmbeddedResource Include="Resources\TrionAuthenticatorIcon.png" />
+    <EmbeddedResource Include="Resources\RiftIcon.png" />
+    <None Include="Resources\trion.png" />
+    <None Include="Resources\battlenet.png" />
+    <EmbeddedResource Include="Resources\DiabloIcon.png" />
+    <EmbeddedResource Include="Resources\DefianceIcon.png" />
+    <EmbeddedResource Include="Resources\WarcraftIcon.png" />
+    <EmbeddedResource Include="Resources\GoogleIcon.png" />
+    <EmbeddedResource Include="Resources\ArenaNetIcon.png" />
+    <EmbeddedResource Include="Resources\Windows8Icon.png" />
+    <EmbeddedResource Include="Resources\Windows7Icon.png" />
+    <None Include="Resources\padlock-open.png" />
+    <None Include="Resources\padlock-closed.png" />
+    <None Include="Resources\BluePixel.png" />
+    <EmbeddedResource Include="Resources\RefreshIconWithLock.png" />
+    <EmbeddedResource Include="Resources\AppIcon.png" />
+    <EmbeddedResource Include="Resources\BitcoinIcon.png" />
+    <EmbeddedResource Include="Resources\BitcoinGoldIcon.png" />
+    <EmbeddedResource Include="Resources\LitecoinIcon.png" />
+    <EmbeddedResource Include="Resources\BitcoinEuroIcon.png" />
+    <EmbeddedResource Include="Resources\TextIcon.png" />
+    <EmbeddedResource Include="Resources\AndroidIcon.png" />
+    <EmbeddedResource Include="Resources\AppleIcon.png" />
+    <EmbeddedResource Include="Resources\DropboxIcon.png" />
+    <EmbeddedResource Include="Resources\FacebookIcon.png" />
+    <EmbeddedResource Include="Resources\FlickrIcon.png" />
+    <EmbeddedResource Include="Resources\GitIcon.png" />
+    <EmbeddedResource Include="Resources\Google2Icon.png" />
+    <EmbeddedResource Include="Resources\InstagramIcon.png" />
+    <EmbeddedResource Include="Resources\LinkedinIcon.png" />
+    <EmbeddedResource Include="Resources\MacIcon.png" />
+    <EmbeddedResource Include="Resources\TwitterIcon.png" />
+    <EmbeddedResource Include="Resources\WordpressIcon.png" />
+    <EmbeddedResource Include="Resources\YahooIcon.png" />
+    <EmbeddedResource Include="Resources\DogeIcon.png" />
+    <EmbeddedResource Include="Resources\WindowsPhoneIcon.png" />
+    <EmbeddedResource Include="Resources\AppleWhiteIcon.png" />
+    <EmbeddedResource Include="Resources\AppleColorIcon.png" />
+    <EmbeddedResource Include="Resources\GitHubIcon.png" />
+    <EmbeddedResource Include="Resources\WildstarIcon.png" />
+    <EmbeddedResource Include="Resources\FirefallIcon.png" />
+    <EmbeddedResource Include="Resources\AmazonAWSIcon.png" />
+    <EmbeddedResource Include="Resources\AmazonIcon.png" />
+    <EmbeddedResource Include="Resources\RuneScapeIcon.png" />
+    <EmbeddedResource Include="Resources\EvernoteIcon.png" />
+    <EmbeddedResource Include="Resources\TeamviewerIcon.png" />
+    <EmbeddedResource Include="Resources\LastPassIcon.png" />
+    <EmbeddedResource Include="Resources\ArcheAgeIcon.png" />
+    <EmbeddedResource Include="Resources\GlyphIcon.png" />
+    <EmbeddedResource Include="Resources\SteamAuthenticatorIcon.png" />
+    <EmbeddedResource Include="Resources\SteamIcon.png" />
+    <EmbeddedResource Include="Resources\Swtor.png" />
+    <EmbeddedResource Include="Resources\SwtorEmpire.png" />
+    <EmbeddedResource Include="Resources\SwtorRepublic.png" />
+    <EmbeddedResource Include="Resources\GoogleAuthenticator2Icon.png" />
+    <EmbeddedResource Include="Resources\BitBucketIcon.png" />
+    <EmbeddedResource Include="Resources\DigitalOceanIcon.png" />
+    <EmbeddedResource Include="Resources\DreamhostIcon.png" />
+    <EmbeddedResource Include="Resources\DropboxWhiteIcon.png" />
+    <EmbeddedResource Include="Resources\EA2Icon.png" />
+    <EmbeddedResource Include="Resources\EA3Icon.png" />
+    <EmbeddedResource Include="Resources\EAIcon.png" />
+    <EmbeddedResource Include="Resources\eBayIcon.png" />
+    <EmbeddedResource Include="Resources\GitHub2Icon.png" />
+    <EmbeddedResource Include="Resources\Gitlab2Icon.png" />
+    <EmbeddedResource Include="Resources\GitLabFox2Icon.png" />
+    <EmbeddedResource Include="Resources\GitlabFoxIon.png" />
+    <EmbeddedResource Include="Resources\GitLabIcon.png" />
+    <EmbeddedResource Include="Resources\GMailIcon.png" />
+    <EmbeddedResource Include="Resources\IFTTT2Icon.png" />
+    <EmbeddedResource Include="Resources\IFTTT3Icon.png" />
+    <EmbeddedResource Include="Resources\IFTTTIcon.png" />
+    <EmbeddedResource Include="Resources\ItchIcon.png" />
+    <EmbeddedResource Include="Resources\KickStarterIcon.png" />
+    <EmbeddedResource Include="Resources\NameIcon.png" />
+    <EmbeddedResource Include="Resources\OriginIcon.png" />
+    <EmbeddedResource Include="Resources\PayPalIcon.png" />
+    <EmbeddedResource Include="Resources\Tumblr2Icon.png" />
+    <EmbeddedResource Include="Resources\Tumblr3Icon.png" />
+    <EmbeddedResource Include="Resources\TumblrIcon.png" />
+    <EmbeddedResource Include="Resources\WordpressWhiteIcon.png" />
+    <EmbeddedResource Include="Resources\ChromeIcon.png" />
+    <EmbeddedResource Include="Resources\OktaVerifyAuthenticatorIcon.png" />
+    <Content Include="FodyWeavers.xml" />
+    <Content Include="app.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <BootstrapperPackage Include=".NETFramework,Version=v4.0">
+      <Visible>False</Visible>
+      <ProductName>Microsoft .NET Framework 4 %28x86 and x64%29</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Client.3.5">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1 Client Profile</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Framework.3.5.SP1">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Windows.Installer.4.5">
+      <Visible>False</Visible>
+      <ProductName>Windows Installer 4.5</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PostBuildEvent>
+    </PostBuildEvent>
+  </PropertyGroup>
+  <Import Project="..\..\packages\Fody.6.6.3\build\Fody.targets" Condition="Exists('..\..\packages\Fody.6.6.3\build\Fody.targets')" />
+  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>
-        <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-        <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-        <ProjectGuid>{DC7B671F-E320-4A26-842D-F5AC5CF99887}</ProjectGuid>
-        <OutputType>WinExe</OutputType>
-        <AppDesignerFolder>Properties</AppDesignerFolder>
-        <RootNamespace>Authenticator</RootNamespace>
-        <AssemblyName>Authenticator</AssemblyName>
-        <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
-        <FileAlignment>512</FileAlignment>
-        <ProductName>Authenticator</ProductName>
+      <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them. For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
     </PropertyGroup>
-    <PropertyGroup>
-        <DefineConstants Condition="$([System.Version]::Parse('$(TargetFrameworkVersion.Substring(1))').CompareTo($([System.Version]::Parse('4.5.1')))) &gt;= 0">$(DefineConstants);NETFX_451</DefineConstants>
-        <DefineConstants Condition="$([System.Version]::Parse('$(TargetFrameworkVersion.Substring(1))').CompareTo($([System.Version]::Parse('4.5'))))   &gt;= 0">$(DefineConstants);NETFX_45</DefineConstants>
-        <DefineConstants Condition="$([System.Version]::Parse('$(TargetFrameworkVersion.Substring(1))').CompareTo($([System.Version]::Parse('4.0'))))   &gt;= 0">$(DefineConstants);NETFX_40</DefineConstants>
-        <DefineConstants Condition="$([System.Version]::Parse('$(TargetFrameworkVersion.Substring(1))').CompareTo($([System.Version]::Parse('3.5'))))   &gt;= 0">$(DefineConstants);NETFX_35</DefineConstants>
-        <DefineConstants Condition="$([System.Version]::Parse('$(TargetFrameworkVersion.Substring(1))').CompareTo($([System.Version]::Parse('3.0'))))   &gt;= 0">$(DefineConstants);NETFX_30</DefineConstants>
-    </PropertyGroup>
-    <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-        <PlatformTarget>AnyCPU</PlatformTarget>
-        <DebugSymbols>true</DebugSymbols>
-        <DebugType>full</DebugType>
-        <Optimize>false</Optimize>
-        <OutputPath>bin\</OutputPath>
-        <DefineConstants>TRACE;DEBUG</DefineConstants>
-        <ErrorReport>prompt</ErrorReport>
-        <WarningLevel>4</WarningLevel>
-        <UseVSHostingProcess>true</UseVSHostingProcess>
-        <Prefer32Bit>false</Prefer32Bit>
-    </PropertyGroup>
-    <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-        <PlatformTarget>AnyCPU</PlatformTarget>
-        <DebugType>pdbonly</DebugType>
-        <Optimize>true</Optimize>
-        <OutputPath>bin\</OutputPath>
-        <DefineConstants>TRACE</DefineConstants>
-        <ErrorReport>prompt</ErrorReport>
-        <WarningLevel>4</WarningLevel>
-        <Prefer32Bit>false</Prefer32Bit>
-    </PropertyGroup>
-    <PropertyGroup>
-        <StartupObject>Authenticator.AuthMain</StartupObject>
-    </PropertyGroup>
-    <PropertyGroup>
-        <ApplicationIcon>app.ico</ApplicationIcon>
-    </PropertyGroup>
-    <PropertyGroup>
-        <ManifestCertificateThumbprint>F61975099D14D6E0C04E21747F96A289F5AA9989</ManifestCertificateThumbprint>
-    </PropertyGroup>
-    <PropertyGroup Condition="Exists('$(MSBuildProjectDirectory)codesign.pfx')">
-        <ManifestKeyFile>codesign.pfx</ManifestKeyFile>
-    </PropertyGroup>
-    <PropertyGroup>
-        <GenerateManifests>false</GenerateManifests>
-    </PropertyGroup>
-    <PropertyGroup>
-        <TargetZone>LocalIntranet</TargetZone>
-    </PropertyGroup>
-    <PropertyGroup />
-    <PropertyGroup Condition="Exists('$(MSBuildProjectDirectory)codesign.pfx')">
-        <SignManifests>true</SignManifests>
-    </PropertyGroup>
-    <PropertyGroup />
-    <PropertyGroup>
-        <SignAssembly>false</SignAssembly>
-    </PropertyGroup>
-    <PropertyGroup>
-        <AssemblyOriginatorKeyFile>
-        </AssemblyOriginatorKeyFile>
-    </PropertyGroup>
-    <PropertyGroup>
-        <ManifestTimestampUrl>http://timestamp.verisign.com/scripts/timestamp.dll</ManifestTimestampUrl>
-    </PropertyGroup>
-    <PropertyGroup>
-        <ApplicationManifest>Properties\app.manifest</ApplicationManifest>
-    </PropertyGroup>
-    <PropertyGroup>
-        <SignManifests>false</SignManifests>
-    </PropertyGroup>
-    <ItemGroup>
-        <Reference Include="BouncyCastle.Crypto, Version=1.7.4137.9688, Culture=neutral, PublicKeyToken=a4292a325f69b123, processorArchitecture=MSIL">
-            <HintPath>..\..\packages\BouncyCastle.1.7.0\lib\Net40-Client\BouncyCastle.Crypto.dll</HintPath>
-            <Private>True</Private>
-        </Reference>
-        <Reference Include="Costura, Version=4.1.0.0, Culture=neutral, PublicKeyToken=9919ef960d84173d, processorArchitecture=MSIL">
-            <HintPath>..\..\packages\Costura.Fody.4.1.0\lib\net40\Costura.dll</HintPath>
-        </Reference>
-        <Reference Include="ICSharpCode.SharpZipLib, Version=1.3.3.11, Culture=neutral, PublicKeyToken=1b03e6acf1164f73, processorArchitecture=MSIL">
-            <HintPath>..\..\packages\SharpZipLib.1.3.3\lib\net45\ICSharpCode.SharpZipLib.dll</HintPath>
-        </Reference>
-        <Reference Include="Newtonsoft.Json, Version=10.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
-            <HintPath>..\..\packages\Newtonsoft.Json.10.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
-        </Reference>
-        <Reference Include="System" />
-        <Reference Include="System.Configuration" />
-        <Reference Include="System.Core" />
-        <Reference Include="System.Security" />
-        <Reference Include="System.Web" />
-        <Reference Include="System.Web.Extensions" />
-        <Reference Include="System.Xml.Linq" />
-        <Reference Include="System.Data.DataSetExtensions" />
-        <Reference Include="System.Data" />
-        <Reference Include="System.Deployment" />
-        <Reference Include="System.Drawing" />
-        <Reference Include="System.Windows.Forms" />
-        <Reference Include="System.Xml" />
-        <Reference Include="zxing, Version=0.14.0.0, Culture=neutral, PublicKeyToken=4e88037ac681fe60, processorArchitecture=MSIL">
-            <HintPath>..\..\packages\ZXing.Net.0.14.0.1\lib\net40\zxing.dll</HintPath>
-            <Private>True</Private>
-        </Reference>
-        <Reference Include="zxing.presentation, Version=0.14.0.0, Culture=neutral, PublicKeyToken=4e88037ac681fe60, processorArchitecture=MSIL">
-            <HintPath>..\..\packages\ZXing.Net.0.14.0.1\lib\net40\zxing.presentation.dll</HintPath>
-            <Private>True</Private>
-        </Reference>
-    </ItemGroup>
-    <ItemGroup>
-        <Compile Include="Classes\AuthAuthenticator.cs" />
-        <Compile Include="Classes\AuthConfig.cs" />
-        <Compile Include="Classes\Authenticator.cs" />
-        <Compile Include="Classes\AuthHelper.cs" />
-        <Compile Include="Classes\Exceptions.cs" />
-        <Compile Include="Classes\Base32.cs" />
-        <Compile Include="Classes\BattleNetAuthenticator.cs" />
-        <Compile Include="Classes\GoogleAuthenticator.cs" />
-        <Compile Include="Classes\HOTPAuthenticator.cs" />
-        <Compile Include="Classes\RegisteredAuthenticator.cs" />
-        <Compile Include="Classes\SingleGlobalInstance.cs" />
-        <Compile Include="Classes\TrionAuthenticator.cs" />
-        <Compile Include="Classes\Updater.cs" />
-        <Compile Include="Classes\WinAPI.cs" />
-        <Compile Include="Controls\AuthenticatorListBox.cs" />
-        <Compile Include="Controls\GroupRadioButton.cs">
-          <SubType>Component</SubType>
-        </Compile>
-        <Compile Include="Controls\SecretTextBox.cs">
-          <SubType>Component</SubType>
-        </Compile>
-        <Compile Include="Dialogs\AboutForm.cs">
-          <SubType>Form</SubType>
-        </Compile>
-        <Compile Include="Dialogs\AboutForm.Designer.cs">
-          <DependentUpon>AboutForm.cs</DependentUpon>
-        </Compile>
-        <Compile Include="Dialogs\AddAuthenticator.cs">
-          <SubType>Form</SubType>
-        </Compile>
-        <Compile Include="Dialogs\AddAuthenticator.designer.cs">
-          <DependentUpon>AddAuthenticator.cs</DependentUpon>
-        </Compile>
-        <Compile Include="Dialogs\AddBattleNetAuthenticator.cs">
-          <SubType>Form</SubType>
-        </Compile>
-        <Compile Include="Dialogs\AddBattleNetAuthenticator.Designer.cs">
-          <DependentUpon>AddBattleNetAuthenticator.cs</DependentUpon>
-        </Compile>
-        <Compile Include="Dialogs\AddGoogleAuthenticator.cs">
-          <SubType>Form</SubType>
-        </Compile>
-        <Compile Include="Dialogs\AddGoogleAuthenticator.designer.cs">
-          <DependentUpon>AddGoogleAuthenticator.cs</DependentUpon>
-        </Compile>
-        <Compile Include="Dialogs\AddGuildWarsAuthenticator.cs">
-          <SubType>Form</SubType>
-        </Compile>
-        <Compile Include="Dialogs\AddGuildWarsAuthenticator.designer.cs">
-          <DependentUpon>AddGuildWarsAuthenticator.cs</DependentUpon>
-        </Compile>
-        <Compile Include="Dialogs\AddMicrosoftAuthenticator.cs">
-          <SubType>Form</SubType>
-        </Compile>
-        <Compile Include="Dialogs\AddMicrosoftAuthenticator.designer.cs">
-          <DependentUpon>AddMicrosoftAuthenticator.cs</DependentUpon>
-        </Compile>
-        <Compile Include="Dialogs\AddOktaVerifyAuthenticator.cs">
-          <SubType>Form</SubType>
-        </Compile>
-        <Compile Include="Dialogs\AddOktaVerifyAuthenticator.Designer.cs">
-          <DependentUpon>AddOktaVerifyAuthenticator.cs</DependentUpon>
-        </Compile>
-        <Compile Include="Dialogs\AddTrionAuthenticator.cs">
-          <SubType>Form</SubType>
-        </Compile>
-        <Compile Include="Dialogs\AddTrionAuthenticator.designer.cs">
-          <DependentUpon>AddTrionAuthenticator.cs</DependentUpon>
-        </Compile>
-        <Compile Include="Dialogs\ChangePasswordForm.cs">
-          <SubType>Form</SubType>
-        </Compile>
-        <Compile Include="Dialogs\ChangePasswordForm.Designer.cs">
-          <DependentUpon>ChangePasswordForm.cs</DependentUpon>
-        </Compile>
-        <Compile Include="Dialogs\ExceptionForm.cs">
-          <SubType>Form</SubType>
-        </Compile>
-        <Compile Include="Dialogs\ExceptionForm.designer.cs">
-          <DependentUpon>ExceptionForm.cs</DependentUpon>
-        </Compile>
-        <Compile Include="Dialogs\ExportForm.cs">
-          <SubType>Form</SubType>
-        </Compile>
-        <Compile Include="Dialogs\ExportForm.Designer.cs">
-          <DependentUpon>ExportForm.cs</DependentUpon>
-        </Compile>
-        <Compile Include="Dialogs\GetPasswordForm.cs">
-          <SubType>Form</SubType>
-        </Compile>
-        <Compile Include="Dialogs\GetPasswordForm.designer.cs">
-          <DependentUpon>GetPasswordForm.cs</DependentUpon>
-        </Compile>
-        <Compile Include="Dialogs\GetPGPKeyForm.cs">
-          <SubType>Form</SubType>
-        </Compile>
-        <Compile Include="Dialogs\GetPGPKeyForm.designer.cs">
-          <DependentUpon>GetPGPKeyForm.cs</DependentUpon>
-        </Compile>
-        <Compile Include="Dialogs\SetPasswordForm.cs">
-          <SubType>Form</SubType>
-        </Compile>
-        <Compile Include="Dialogs\SetPasswordForm.Designer.cs">
-          <DependentUpon>SetPasswordForm.cs</DependentUpon>
-        </Compile>
-        <Compile Include="Dialogs\ShowRestoreCodeForm.cs">
-          <SubType>Form</SubType>
-        </Compile>
-        <Compile Include="Dialogs\ShowRestoreCodeForm.designer.cs">
-          <DependentUpon>ShowRestoreCodeForm.cs</DependentUpon>
-        </Compile>
-        <Compile Include="Dialogs\ShowSecretKeyForm.cs">
-          <SubType>Form</SubType>
-        </Compile>
-        <Compile Include="Dialogs\ShowSecretKeyForm.designer.cs">
-          <DependentUpon>ShowSecretKeyForm.cs</DependentUpon>
-        </Compile>
-        <Compile Include="Dialogs\ShowTrionSecretForm.cs">
-          <SubType>Form</SubType>
-        </Compile>
-        <Compile Include="Dialogs\ShowTrionSecretForm.designer.cs">
-          <DependentUpon>ShowTrionSecretForm.cs</DependentUpon>
-        </Compile>
-        <Compile Include="Dialogs\UnprotectPasswordForm.cs">
-          <SubType>Form</SubType>
-        </Compile>
-        <Compile Include="Dialogs\UnprotectPasswordForm.designer.cs">
-          <DependentUpon>UnprotectPasswordForm.cs</DependentUpon>
-        </Compile>
-        <Compile Include="Properties\Resources.Designer.cs">
-            <AutoGen>True</AutoGen>
-            <DesignTime>True</DesignTime>
-            <DependentUpon>Resources.resx</DependentUpon>
-        </Compile>
-        <Compile Include="MainForm.cs">
-            <SubType>Form</SubType>
-        </Compile>
-        <Compile Include="MainForm.Designer.cs">
-            <DependentUpon>MainForm.cs</DependentUpon>
-        </Compile>
-        <Compile Include="Main.cs" />
-        <Compile Include="Properties\AssemblyInfo.cs" />
-        <EmbeddedResource Include="Dialogs\AboutForm.resx">
-          <DependentUpon>AboutForm.cs</DependentUpon>
-        </EmbeddedResource>
-        <EmbeddedResource Include="Dialogs\AddAuthenticator.resx">
-          <DependentUpon>AddAuthenticator.cs</DependentUpon>
-        </EmbeddedResource>
-        <EmbeddedResource Include="Dialogs\AddBattleNetAuthenticator.resx">
-          <DependentUpon>AddBattleNetAuthenticator.cs</DependentUpon>
-        </EmbeddedResource>
-        <EmbeddedResource Include="Dialogs\AddGoogleAuthenticator.resx">
-          <DependentUpon>AddGoogleAuthenticator.cs</DependentUpon>
-        </EmbeddedResource>
-        <EmbeddedResource Include="Dialogs\AddGuildWarsAuthenticator.resx">
-          <DependentUpon>AddGuildWarsAuthenticator.cs</DependentUpon>
-          <SubType>Designer</SubType>
-        </EmbeddedResource>
-        <EmbeddedResource Include="Dialogs\AddMicrosoftAuthenticator.resx">
-          <DependentUpon>AddMicrosoftAuthenticator.cs</DependentUpon>
-          <SubType>Designer</SubType>
-        </EmbeddedResource>
-        <EmbeddedResource Include="Dialogs\AddOktaVerifyAuthenticator.resx">
-          <DependentUpon>AddOktaVerifyAuthenticator.cs</DependentUpon>
-        </EmbeddedResource>
-        <EmbeddedResource Include="Dialogs\AddTrionAuthenticator.resx">
-          <DependentUpon>AddTrionAuthenticator.cs</DependentUpon>
-        </EmbeddedResource>
-        <EmbeddedResource Include="Dialogs\ChangePasswordForm.resx">
-          <DependentUpon>ChangePasswordForm.cs</DependentUpon>
-        </EmbeddedResource>
-        <EmbeddedResource Include="Dialogs\ExceptionForm.resx">
-          <DependentUpon>ExceptionForm.cs</DependentUpon>
-          <SubType>Designer</SubType>
-        </EmbeddedResource>
-        <EmbeddedResource Include="Dialogs\ExportForm.resx">
-          <DependentUpon>ExportForm.cs</DependentUpon>
-        </EmbeddedResource>
-        <EmbeddedResource Include="Dialogs\GetPasswordForm.resx">
-          <DependentUpon>GetPasswordForm.cs</DependentUpon>
-        </EmbeddedResource>
-        <EmbeddedResource Include="Dialogs\GetPGPKeyForm.resx">
-          <DependentUpon>GetPGPKeyForm.cs</DependentUpon>
-        </EmbeddedResource>
-        <EmbeddedResource Include="Dialogs\SetPasswordForm.resx">
-          <DependentUpon>SetPasswordForm.cs</DependentUpon>
-        </EmbeddedResource>
-        <EmbeddedResource Include="Dialogs\ShowRestoreCodeForm.resx">
-          <DependentUpon>ShowRestoreCodeForm.cs</DependentUpon>
-        </EmbeddedResource>
-        <EmbeddedResource Include="Dialogs\ShowSecretKeyForm.resx">
-          <DependentUpon>ShowSecretKeyForm.cs</DependentUpon>
-        </EmbeddedResource>
-        <EmbeddedResource Include="Dialogs\ShowTrionSecretForm.resx">
-          <DependentUpon>ShowTrionSecretForm.cs</DependentUpon>
-        </EmbeddedResource>
-        <EmbeddedResource Include="Dialogs\UnprotectPasswordForm.resx">
-          <DependentUpon>UnprotectPasswordForm.cs</DependentUpon>
-        </EmbeddedResource>
-        <EmbeddedResource Include="MainForm.resx">
-            <DependentUpon>MainForm.cs</DependentUpon>
-        </EmbeddedResource>
-        <EmbeddedResource Include="Properties\Resources.resx">
-            <Generator>ResXFileCodeGenerator</Generator>
-            <SubType>Designer</SubType>
-            <LastGenOutput>Resources.Designer.cs</LastGenOutput>
-        </EmbeddedResource>
-        <None Include="packages.config" />
-        <None Include="Properties\app.manifest" />
-    </ItemGroup>
-    <ItemGroup>
-        <EmbeddedResource Include="LICENSE" />
-        <EmbeddedResource Include="Resources\BattleNetAuthenticatorIcon.png" />
-        <EmbeddedResource Include="Resources\GoogleAuthenticatorIcon.png" />
-        <EmbeddedResource Include="Resources\GuildWarsAuthenticatorIcon.png" />
-        <EmbeddedResource Include="Resources\RefreshIcon.png" />
-        <EmbeddedResource Include="Resources\MicrosoftAuthenticatorIcon.png" />
-        <None Include="Resources\OptionsIcon.png" />
-        <EmbeddedResource Include="Resources\TrionAuthenticatorIcon.png" />
-        <EmbeddedResource Include="Resources\RiftIcon.png" />
-        <None Include="Resources\trion.png" />
-        <None Include="Resources\battlenet.png" />
-        <EmbeddedResource Include="Resources\DiabloIcon.png" />
-        <EmbeddedResource Include="Resources\DefianceIcon.png" />
-        <EmbeddedResource Include="Resources\WarcraftIcon.png" />
-        <EmbeddedResource Include="Resources\GoogleIcon.png" />
-        <EmbeddedResource Include="Resources\ArenaNetIcon.png" />
-        <EmbeddedResource Include="Resources\Windows8Icon.png" />
-        <EmbeddedResource Include="Resources\Windows7Icon.png" />
-        <None Include="Resources\padlock-open.png" />
-        <None Include="Resources\padlock-closed.png" />
-        <None Include="Resources\BluePixel.png" />
-        <EmbeddedResource Include="Resources\RefreshIconWithLock.png" />
-        <EmbeddedResource Include="Resources\AppIcon.png" />
-        <EmbeddedResource Include="Resources\BitcoinIcon.png" />
-        <EmbeddedResource Include="Resources\BitcoinGoldIcon.png" />
-        <EmbeddedResource Include="Resources\LitecoinIcon.png" />
-        <EmbeddedResource Include="Resources\BitcoinEuroIcon.png" />
-        <EmbeddedResource Include="Resources\TextIcon.png" />
-        <EmbeddedResource Include="Resources\AndroidIcon.png" />
-        <EmbeddedResource Include="Resources\AppleIcon.png" />
-        <EmbeddedResource Include="Resources\DropboxIcon.png" />
-        <EmbeddedResource Include="Resources\FacebookIcon.png" />
-        <EmbeddedResource Include="Resources\FlickrIcon.png" />
-        <EmbeddedResource Include="Resources\GitIcon.png" />
-        <EmbeddedResource Include="Resources\Google2Icon.png" />
-        <EmbeddedResource Include="Resources\InstagramIcon.png" />
-        <EmbeddedResource Include="Resources\LinkedinIcon.png" />
-        <EmbeddedResource Include="Resources\MacIcon.png" />
-        <EmbeddedResource Include="Resources\TwitterIcon.png" />
-        <EmbeddedResource Include="Resources\WordpressIcon.png" />
-        <EmbeddedResource Include="Resources\YahooIcon.png" />
-        <EmbeddedResource Include="Resources\DogeIcon.png" />
-        <EmbeddedResource Include="Resources\WindowsPhoneIcon.png" />
-        <EmbeddedResource Include="Resources\AppleWhiteIcon.png" />
-        <EmbeddedResource Include="Resources\AppleColorIcon.png" />
-        <EmbeddedResource Include="Resources\GitHubIcon.png" />
-        <EmbeddedResource Include="Resources\WildstarIcon.png" />
-        <EmbeddedResource Include="Resources\FirefallIcon.png" />
-        <EmbeddedResource Include="Resources\AmazonAWSIcon.png" />
-        <EmbeddedResource Include="Resources\AmazonIcon.png" />
-        <EmbeddedResource Include="Resources\RuneScapeIcon.png" />
-        <EmbeddedResource Include="Resources\EvernoteIcon.png" />
-        <EmbeddedResource Include="Resources\TeamviewerIcon.png" />
-        <EmbeddedResource Include="Resources\LastPassIcon.png" />
-        <EmbeddedResource Include="Resources\ArcheAgeIcon.png" />
-        <EmbeddedResource Include="Resources\GlyphIcon.png" />
-        <EmbeddedResource Include="Resources\SteamAuthenticatorIcon.png" />
-        <EmbeddedResource Include="Resources\SteamIcon.png" />
-        <EmbeddedResource Include="Resources\Swtor.png" />
-        <EmbeddedResource Include="Resources\SwtorEmpire.png" />
-        <EmbeddedResource Include="Resources\SwtorRepublic.png" />
-        <EmbeddedResource Include="Resources\GoogleAuthenticator2Icon.png" />
-        <EmbeddedResource Include="Resources\BitBucketIcon.png" />
-        <EmbeddedResource Include="Resources\DigitalOceanIcon.png" />
-        <EmbeddedResource Include="Resources\DreamhostIcon.png" />
-        <EmbeddedResource Include="Resources\DropboxWhiteIcon.png" />
-        <EmbeddedResource Include="Resources\EA2Icon.png" />
-        <EmbeddedResource Include="Resources\EA3Icon.png" />
-        <EmbeddedResource Include="Resources\EAIcon.png" />
-        <EmbeddedResource Include="Resources\eBayIcon.png" />
-        <EmbeddedResource Include="Resources\GitHub2Icon.png" />
-        <EmbeddedResource Include="Resources\Gitlab2Icon.png" />
-        <EmbeddedResource Include="Resources\GitLabFox2Icon.png" />
-        <EmbeddedResource Include="Resources\GitlabFoxIon.png" />
-        <EmbeddedResource Include="Resources\GitLabIcon.png" />
-        <EmbeddedResource Include="Resources\GMailIcon.png" />
-        <EmbeddedResource Include="Resources\IFTTT2Icon.png" />
-        <EmbeddedResource Include="Resources\IFTTT3Icon.png" />
-        <EmbeddedResource Include="Resources\IFTTTIcon.png" />
-        <EmbeddedResource Include="Resources\ItchIcon.png" />
-        <EmbeddedResource Include="Resources\KickStarterIcon.png" />
-        <EmbeddedResource Include="Resources\NameIcon.png" />
-        <EmbeddedResource Include="Resources\OriginIcon.png" />
-        <EmbeddedResource Include="Resources\PayPalIcon.png" />
-        <EmbeddedResource Include="Resources\Tumblr2Icon.png" />
-        <EmbeddedResource Include="Resources\Tumblr3Icon.png" />
-        <EmbeddedResource Include="Resources\TumblrIcon.png" />
-        <EmbeddedResource Include="Resources\WordpressWhiteIcon.png" />
-        <EmbeddedResource Include="Resources\ChromeIcon.png" />
-        <EmbeddedResource Include="Resources\OktaVerifyAuthenticatorIcon.png" />
-        <Content Include="FodyWeavers.xml" />
-        <Content Include="app.ico" />
-    </ItemGroup>
-    <ItemGroup>
-        <BootstrapperPackage Include=".NETFramework,Version=v4.0">
-            <Visible>False</Visible>
-            <ProductName>Microsoft .NET Framework 4 %28x86 and x64%29</ProductName>
-            <Install>true</Install>
-        </BootstrapperPackage>
-        <BootstrapperPackage Include="Microsoft.Net.Client.3.5">
-            <Visible>False</Visible>
-            <ProductName>.NET Framework 3.5 SP1 Client Profile</ProductName>
-            <Install>false</Install>
-        </BootstrapperPackage>
-        <BootstrapperPackage Include="Microsoft.Net.Framework.3.5.SP1">
-            <Visible>False</Visible>
-            <ProductName>.NET Framework 3.5 SP1</ProductName>
-            <Install>false</Install>
-        </BootstrapperPackage>
-        <BootstrapperPackage Include="Microsoft.Windows.Installer.4.5">
-            <Visible>False</Visible>
-            <ProductName>Windows Installer 4.5</ProductName>
-            <Install>true</Install>
-        </BootstrapperPackage>
-    </ItemGroup>
-    <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-    <PropertyGroup>
-        <PostBuildEvent>
-        </PostBuildEvent>
-    </PropertyGroup>
-    <Import Project="..\..\packages\Fody.6.6.3\build\Fody.targets" Condition="Exists('..\..\packages\Fody.6.6.3\build\Fody.targets')" />
-    <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
-        <PropertyGroup>
-            <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them. For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
-        </PropertyGroup>
-        <Error Condition="!Exists('..\..\packages\Fody.6.6.3\build\Fody.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\Fody.6.6.3\build\Fody.targets'))" />
-        <Error Condition="!Exists('..\..\packages\Costura.Fody.4.1.0\build\Costura.Fody.props')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\Costura.Fody.4.1.0\build\Costura.Fody.props'))" />
-    </Target>
-    <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+    <Error Condition="!Exists('..\..\packages\Fody.6.6.3\build\Fody.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\Fody.6.6.3\build\Fody.targets'))" />
+    <Error Condition="!Exists('..\..\packages\Costura.Fody.4.1.0\build\Costura.Fody.props')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\Costura.Fody.4.1.0\build\Costura.Fody.props'))" />
+  </Target>
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
          Other similar extension points exist, see Microsoft.Common.targets.
     <Target Name="BeforeBuild">
     </Target>
