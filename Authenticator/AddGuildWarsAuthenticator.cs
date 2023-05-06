@@ -1,10 +1,13 @@
 using System;
+using System.Drawing;
 using System.Windows.Forms;
 
 namespace Authenticator {
-  public partial class AddGuildWarsAuthenticator : ResourceForm {
+  public partial class AddGuildWarsAuthenticator : Form {
     public AddGuildWarsAuthenticator() {
       InitializeComponent();
+      BackColor = SystemColors.Window;
+      StartPosition = FormStartPosition.CenterScreen;
     }
 
     public AuthAuthenticator Authenticator { get; set; }
@@ -50,11 +53,9 @@ namespace Authenticator {
           + "Do you want to save this authenticator?", MessageBoxButtons.YesNoCancel);
         if (result == DialogResult.Yes) {
           DialogResult = DialogResult.OK;
-          return;
         }
         else if (result == DialogResult.Cancel) {
           DialogResult = DialogResult.None;
-          return;
         }
       }
     }
@@ -81,7 +82,6 @@ namespace Authenticator {
       if (Authenticator.AuthenticatorData == null) {
         MainForm.ErrorDialog(Owner, "Please enter the Secret Code and click Verify Authenticator");
         DialogResult = DialogResult.None;
-        return;
       }
     }
 

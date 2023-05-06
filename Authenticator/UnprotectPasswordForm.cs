@@ -1,23 +1,22 @@
 ﻿using System;
-using Authenticator.Resources;
+using System.Windows.Forms;
 
 namespace Authenticator {
-  public partial class UnprotectPasswordForm : ResourceForm {
-    public UnprotectPasswordForm() : base() {
+  public partial class UnprotectPasswordForm : Form {
+    public UnprotectPasswordForm() {
       InitializeComponent();
     }
 
     public AuthAuthenticator Authenticator { get; set; }
 
     private void UnprotectPasswordForm_Load(object sender, EventArgs e) {
-      // window text is "{0} Password" 
-      Text = string.Format(Text, Authenticator.Name);
+      Text = $"{Authenticator.Name} Password";
 
       // force this window to the front and topmost
       // see: http://stackoverflow.com/questions/278237/keep-window-on-top-and-steal-focus-in-winforms
-      var oldtopmost = TopMost;
+      var topmost = TopMost;
       TopMost = true;
-      TopMost = oldtopmost;
+      TopMost = topmost;
       Activate();
     }
 
@@ -25,10 +24,10 @@ namespace Authenticator {
       // it isn't empty
       var password = passwordField.Text;
       if (password.Length == 0) {
-        invalidPasswordLabel.Text = strings.EnterPassword;
+        invalidPasswordLabel.Text = "Please enter a password";
         invalidPasswordLabel.Visible = true;
         invalidPasswordTimer.Enabled = true;
-        DialogResult = System.Windows.Forms.DialogResult.None;
+        DialogResult = DialogResult.None;
         return;
       }
 
@@ -38,19 +37,11 @@ namespace Authenticator {
           Authenticator.MarkChanged();
         }
       }
-      catch (BadYubiKeyException) {
-        invalidPasswordLabel.Text = "Please insert your YubiKey";
-        invalidPasswordLabel.Visible = true;
-        invalidPasswordTimer.Enabled = true;
-        DialogResult = System.Windows.Forms.DialogResult.None;
-        return;
-      }
       catch (BadPasswordException) {
-        invalidPasswordLabel.Text = strings.InvalidPassword;
+        invalidPasswordLabel.Text = "Invalid password";
         invalidPasswordLabel.Visible = true;
         invalidPasswordTimer.Enabled = true;
-        DialogResult = System.Windows.Forms.DialogResult.None;
-        return;
+        DialogResult = DialogResult.None;
       }
     }
 

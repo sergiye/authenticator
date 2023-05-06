@@ -5,7 +5,6 @@ using System.Net;
 using System.Text.RegularExpressions;
 using System.Web;
 using System.Windows.Forms;
-using Authenticator.Resources;
 using ZXing;
 
 namespace Authenticator {
@@ -53,11 +52,9 @@ namespace Authenticator {
           + "Do you want to save this authenticator?", MessageBoxButtons.YesNoCancel);
         if (result == DialogResult.Yes) {
           DialogResult = DialogResult.OK;
-          return;
         }
         else if (result == DialogResult.Cancel) {
           DialogResult = DialogResult.None;
-          return;
         }
       }
     }
@@ -396,8 +393,9 @@ namespace Authenticator {
 
         if (!(auth is HotpAuthenticator) && auth.ServerTimeDiff == 0L && syncErrorWarned == false) {
           syncErrorWarned = true;
-          MessageBox.Show(this, string.Format(strings.AuthenticatorSyncError, "Google"), AuthMain.APPLICATION_TITLE,
-            MessageBoxButtons.OK, MessageBoxIcon.Warning);
+          MessageBox.Show(this,
+            "Warning: unable to connect to Google to set time correctly.\nYour code may not be correct",
+            AuthMain.APPLICATION_TITLE, MessageBoxButtons.OK, MessageBoxIcon.Warning);
         }
       }
       catch (Exception irre) {

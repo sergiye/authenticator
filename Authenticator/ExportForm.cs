@@ -1,12 +1,14 @@
 ﻿using System;
+using System.Drawing;
 using System.IO;
 using System.Windows.Forms;
-using Authenticator.Resources;
 
 namespace Authenticator {
-  public partial class ExportForm : ResourceForm {
+  public partial class ExportForm : Form {
     public ExportForm() {
       InitializeComponent();
+      BackColor = SystemColors.Window;
+      StartPosition = FormStartPosition.CenterScreen;
     }
 
     public string Password { get; protected set; }
@@ -77,25 +79,25 @@ namespace Authenticator {
     private void okButton_Click(object sender, EventArgs e) {
       // check password is set if required
       if (passwordCheckbox.Checked && passwordField.Text.Trim().Length == 0) {
-        MainForm.ErrorDialog(this, strings.EnterPassword);
+        MainForm.ErrorDialog(this, "Please enter a password");
         DialogResult = DialogResult.None;
         return;
       }
 
       if (passwordCheckbox.Checked && string.Compare(passwordField.Text, verifyField.Text) != 0) {
-        MainForm.ErrorDialog(this, strings.PasswordsDontMatch);
+        MainForm.ErrorDialog(this, "Passwords do not match");
         DialogResult = DialogResult.None;
         return;
       }
 
       if (pgpCheckbox.Checked && pgpField.Text.Length == 0) {
-        MainForm.ErrorDialog(this, strings.MissingPGPKey);
+        MainForm.ErrorDialog(this, "Please enter a PGP key");
         DialogResult = DialogResult.None;
         return;
       }
 
       if (fileField.Text.Length == 0) {
-        MainForm.ErrorDialog(this, strings.MissingFile);
+        MainForm.ErrorDialog(this, "Select or enter a file");
         DialogResult = DialogResult.None;
         return;
       }

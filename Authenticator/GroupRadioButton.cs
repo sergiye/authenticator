@@ -4,12 +4,10 @@ using System.Windows.Forms;
 
 namespace Authenticator {
   public class GroupMetroRadioButton : RadioButton {
-    public GroupMetroRadioButton()
-      : base() {
+    public GroupMetroRadioButton() {
     }
 
-    public GroupMetroRadioButton(string group)
-      : base() {
+    public GroupMetroRadioButton(string group) {
       Group = group;
     }
 
@@ -58,12 +56,10 @@ namespace Authenticator {
   }
 
   public class GroupRadioButton : RadioButton {
-    public GroupRadioButton()
-      : base() {
+    public GroupRadioButton() {
     }
 
-    public GroupRadioButton(string group)
-      : base() {
+    public GroupRadioButton(string group) {
       Group = group;
     }
 

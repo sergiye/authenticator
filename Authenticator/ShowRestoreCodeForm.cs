@@ -3,7 +3,7 @@ using System.ComponentModel;
 using System.Windows.Forms;
 
 namespace Authenticator {
-  public partial class ShowRestoreCodeForm : ResourceForm {
+  public partial class ShowRestoreCodeForm : Form {
     public AuthAuthenticator CurrentAuthenticator { get; set; }
 
     public ShowRestoreCodeForm() {

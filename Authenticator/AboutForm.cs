@@ -1,7 +1,8 @@
 ﻿using System;
+using System.Windows.Forms;
 
 namespace Authenticator {
-  public partial class AboutForm : ResourceForm {
+  public partial class AboutForm : Form {
     public AuthConfig Config { get; set; }
 
     public AboutForm() {

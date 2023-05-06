@@ -1,7 +1,8 @@
 using System;
+using System.Windows.Forms;
 
 namespace Authenticator {
-  public partial class ShowTrionSecretForm : ResourceForm {
+  public partial class ShowTrionSecretForm : Form {
     public AuthAuthenticator CurrentAuthenticator { get; set; }
 
     public ShowTrionSecretForm() {

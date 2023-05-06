@@ -9,7 +9,6 @@ using System.Text.RegularExpressions;
 using System.Web;
 using System.Windows.Forms;
 using System.Xml;
-using Authenticator.Resources;
 using ICSharpCode.SharpZipLib.Core;
 using ICSharpCode.SharpZipLib.Zip;
 using Microsoft.Win32;
@@ -94,7 +93,7 @@ namespace Authenticator {
         // strings.CannotFindConfigurationFile + ": " + configFile,
         //  form.Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
         // return config;
-        throw new ApplicationException(strings.CannotFindConfigurationFile + ": " + configFile);
+        throw new ApplicationException("Unable to find your configuration file: " + configFile);
       }
 
       // check if readonly
@@ -145,6 +144,7 @@ namespace Authenticator {
         throw;
       }
       catch (Exception) {
+        //generic
         throw;
       }
 
@@ -335,7 +335,7 @@ namespace Authenticator {
               if (ex.Message.IndexOf("password") != -1) {
                 // already have a password
                 if (string.IsNullOrEmpty(password) == false) {
-                  MainForm.ErrorDialog(parent, strings.InvalidPassword, ex.InnerException, MessageBoxButtons.OK);
+                  MainForm.ErrorDialog(parent, "Invalid password", ex.InnerException, MessageBoxButtons.OK);
                 }
 
                 // need password
@@ -379,12 +379,11 @@ namespace Authenticator {
             lines.Append(line);
           }
           catch (Exception ex) {
-            MainForm.ErrorDialog(parent, strings.InvalidPassword, ex.InnerException, MessageBoxButtons.OK);
+            MainForm.ErrorDialog(parent, "Invalid password", ex.InnerException);
 
             pgpKey = null;
             password = null;
             retry = true;
-            continue;
           }
         }
         else // read a plain text file
@@ -499,14 +498,12 @@ namespace Authenticator {
               }
             }
 
-            var period = 0;
-            int.TryParse(query["period"], out period);
+            int.TryParse(query["period"], out var period);
             if (period != 0) {
               auth.Period = period;
             }
 
-            var digits = 0;
-            int.TryParse(query["digits"], out digits);
+            int.TryParse(query["digits"], out var digits);
             if (digits != 0) {
               auth.CodeDigits = digits;
             }
@@ -551,10 +548,10 @@ namespace Authenticator {
         return authenticators;
       }
       catch (UriFormatException ex) {
-        throw new ImportException(string.Format(strings.ImportInvalidUri, linenumber), ex);
+        throw new ImportException($"Invalid authenticator at line {linenumber}", ex);
       }
       catch (Exception ex) {
-        throw new ImportException(string.Format(strings.ImportError, linenumber, ex.Message), ex);
+        throw new ImportException($"Error importing at line {linenumber}:{ex.Message}", ex);
       }
     }
 
@@ -846,7 +843,6 @@ namespace Authenticator {
         }
       }
       catch (System.Security.SecurityException) {
-        return;
       }
     }
 
@@ -901,7 +897,6 @@ namespace Authenticator {
         }
       }
       catch (System.Security.SecurityException) {
-        return;
       }
     }
 
@@ -922,9 +917,9 @@ namespace Authenticator {
       hashedGen.SetKeyFlags(true,
         PgpKeyFlags.CanCertify | PgpKeyFlags.CanSign | PgpKeyFlags.CanEncryptCommunications |
         PgpKeyFlags.CanEncryptStorage);
-      hashedGen.SetPreferredCompressionAlgorithms(false, new int[] {(int) CompressionAlgorithmTag.Zip});
-      hashedGen.SetPreferredHashAlgorithms(false, new int[] {(int) HashAlgorithmTag.Sha1});
-      hashedGen.SetPreferredSymmetricAlgorithms(false, new int[] {(int) SymmetricKeyAlgorithmTag.Cast5});
+      hashedGen.SetPreferredCompressionAlgorithms(false, new[] {(int) CompressionAlgorithmTag.Zip});
+      hashedGen.SetPreferredHashAlgorithms(false, new[] {(int) HashAlgorithmTag.Sha1});
+      hashedGen.SetPreferredSymmetricAlgorithms(false, new[] {(int) SymmetricKeyAlgorithmTag.Cast5});
       var sv = hashedGen.Generate();
       var unhashedGen = new PgpSignatureSubpacketGenerator();
 

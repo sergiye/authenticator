@@ -13,6 +13,10 @@ namespace Authenticator {
 
     #region Windows Form Designer generated code
 
+    /// <summary>
+    /// Required method for Designer support - do not modify
+    /// the contents of this method with the code editor.
+    /// </summary>
     private void InitializeComponent() {
       System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(ChangePasswordForm));
       this.introLabel = new System.Windows.Forms.Label();
@@ -33,26 +37,26 @@ namespace Authenticator {
       this.metroLabel3 = new System.Windows.Forms.Label();
       this.metroLabel1 = new System.Windows.Forms.Label();
       this.metroLabel5 = new System.Windows.Forms.Label();
-      ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
-      ((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).BeginInit();
+      ((System.ComponentModel.ISupportInitialize) (this.pictureBox1)).BeginInit();
+      ((System.ComponentModel.ISupportInitialize) (this.pictureBox2)).BeginInit();
       this.SuspendLayout();
       // 
       // introLabel
       // 
-      this.introLabel.Location = new System.Drawing.Point(12, 9);
+      this.introLabel.Location = new System.Drawing.Point(18, 14);
+      this.introLabel.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
       this.introLabel.Name = "introLabel";
-      this.introLabel.Size = new System.Drawing.Size(718, 42);
+      this.introLabel.Size = new System.Drawing.Size(1077, 65);
       this.introLabel.TabIndex = 1;
-      this.introLabel.Text = "Select how you would like to protect your authenticators. Using a password is str" +
-    "ongly recommended, otherwise your data could be read and stolen by malware runni" +
-    "ng on your computer.";
+      this.introLabel.Text = "Select how you would like to protect your authenticators. Using a password is str" + "ongly recommended, otherwise your data could be read and stolen by malware runni" + "ng on your computer.";
       // 
       // machineCheckbox
       // 
       this.machineCheckbox.AutoSize = true;
-      this.machineCheckbox.Location = new System.Drawing.Point(32, 298);
+      this.machineCheckbox.Location = new System.Drawing.Point(48, 458);
+      this.machineCheckbox.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
       this.machineCheckbox.Name = "machineCheckbox";
-      this.machineCheckbox.Size = new System.Drawing.Size(232, 17);
+      this.machineCheckbox.Size = new System.Drawing.Size(343, 24);
       this.machineCheckbox.TabIndex = 3;
       this.machineCheckbox.Text = "Encrypt to only be useable on this computer";
       this.machineCheckbox.CheckedChanged += new System.EventHandler(this.machineCheckbox_CheckedChanged);
@@ -61,73 +65,78 @@ namespace Authenticator {
       // 
       this.userCheckbox.AutoSize = true;
       this.userCheckbox.Enabled = false;
-      this.userCheckbox.Location = new System.Drawing.Point(53, 329);
+      this.userCheckbox.Location = new System.Drawing.Point(80, 506);
+      this.userCheckbox.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
       this.userCheckbox.Name = "userCheckbox";
-      this.userCheckbox.Size = new System.Drawing.Size(239, 17);
+      this.userCheckbox.Size = new System.Drawing.Size(354, 24);
       this.userCheckbox.TabIndex = 4;
       this.userCheckbox.Text = "And only by the current user on this computer";
       // 
       // passwordCheckbox
       // 
       this.passwordCheckbox.AutoSize = true;
-      this.passwordCheckbox.Location = new System.Drawing.Point(16, 68);
+      this.passwordCheckbox.Location = new System.Drawing.Point(24, 105);
+      this.passwordCheckbox.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
       this.passwordCheckbox.Name = "passwordCheckbox";
-      this.passwordCheckbox.Size = new System.Drawing.Size(169, 17);
+      this.passwordCheckbox.Size = new System.Drawing.Size(247, 24);
       this.passwordCheckbox.TabIndex = 0;
       this.passwordCheckbox.Text = "Protect with my own password";
       this.passwordCheckbox.CheckedChanged += new System.EventHandler(this.passwordCheckbox_CheckedChanged);
       // 
       // passwordLabel
       // 
-      this.passwordLabel.Location = new System.Drawing.Point(16, 90);
+      this.passwordLabel.Location = new System.Drawing.Point(24, 138);
+      this.passwordLabel.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
       this.passwordLabel.Name = "passwordLabel";
-      this.passwordLabel.Size = new System.Drawing.Size(714, 50);
+      this.passwordLabel.Size = new System.Drawing.Size(1071, 77);
       this.passwordLabel.TabIndex = 1;
       this.passwordLabel.Text = resources.GetString("passwordLabel.Text");
       // 
       // pictureBox1
       // 
-      this.pictureBox1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
-            | System.Windows.Forms.AnchorStyles.Right)));
+      this.pictureBox1.Anchor = ((System.Windows.Forms.AnchorStyles) (((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) | System.Windows.Forms.AnchorStyles.Right)));
       this.pictureBox1.Image = global::Authenticator.Properties.Resources.BluePixel;
       this.pictureBox1.ImeMode = System.Windows.Forms.ImeMode.NoControl;
-      this.pictureBox1.Location = new System.Drawing.Point(12, 211);
+      this.pictureBox1.Location = new System.Drawing.Point(18, 325);
+      this.pictureBox1.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
       this.pictureBox1.Name = "pictureBox1";
-      this.pictureBox1.Size = new System.Drawing.Size(690, 1);
+      this.pictureBox1.Size = new System.Drawing.Size(1035, 2);
       this.pictureBox1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
       this.pictureBox1.TabIndex = 2;
       this.pictureBox1.TabStop = false;
       // 
       // pictureBox2
       // 
-      this.pictureBox2.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
-            | System.Windows.Forms.AnchorStyles.Right)));
+      this.pictureBox2.Anchor = ((System.Windows.Forms.AnchorStyles) (((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) | System.Windows.Forms.AnchorStyles.Right)));
       this.pictureBox2.Image = global::Authenticator.Properties.Resources.BluePixel;
       this.pictureBox2.ImeMode = System.Windows.Forms.ImeMode.NoControl;
-      this.pictureBox2.Location = new System.Drawing.Point(13, 368);
+      this.pictureBox2.Location = new System.Drawing.Point(20, 566);
+      this.pictureBox2.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
       this.pictureBox2.Name = "pictureBox2";
-      this.pictureBox2.Size = new System.Drawing.Size(690, 1);
+      this.pictureBox2.Size = new System.Drawing.Size(1035, 2);
       this.pictureBox2.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
       this.pictureBox2.TabIndex = 3;
       this.pictureBox2.TabStop = false;
       // 
       // cancelButton
       // 
-      this.cancelButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+      this.cancelButton.Anchor = ((System.Windows.Forms.AnchorStyles) ((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
       this.cancelButton.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-      this.cancelButton.Location = new System.Drawing.Point(652, 384);
+      this.cancelButton.Location = new System.Drawing.Point(978, 591);
+      this.cancelButton.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
       this.cancelButton.Name = "cancelButton";
-      this.cancelButton.Size = new System.Drawing.Size(75, 23);
+      this.cancelButton.Size = new System.Drawing.Size(112, 35);
       this.cancelButton.TabIndex = 6;
       this.cancelButton.Text = "Cancel";
       // 
       // okButton
       // 
-      this.okButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+      this.okButton.Anchor = ((System.Windows.Forms.AnchorStyles) ((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
       this.okButton.DialogResult = System.Windows.Forms.DialogResult.OK;
-      this.okButton.Location = new System.Drawing.Point(571, 384);
+      this.okButton.Location = new System.Drawing.Point(856, 591);
+      this.okButton.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
       this.okButton.Name = "okButton";
-      this.okButton.Size = new System.Drawing.Size(75, 23);
+      this.okButton.Size = new System.Drawing.Size(112, 35);
       this.okButton.TabIndex = 5;
       this.okButton.Text = "OK";
       this.okButton.Click += new System.EventHandler(this.okButton_Click);
@@ -135,46 +144,51 @@ namespace Authenticator {
       // passwordField
       // 
       this.passwordField.Enabled = false;
-      this.passwordField.Location = new System.Drawing.Point(113, 143);
+      this.passwordField.Location = new System.Drawing.Point(170, 220);
+      this.passwordField.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
       this.passwordField.Name = "passwordField";
       this.passwordField.PasswordChar = '●';
-      this.passwordField.Size = new System.Drawing.Size(262, 20);
+      this.passwordField.Size = new System.Drawing.Size(391, 26);
       this.passwordField.TabIndex = 1;
       this.passwordField.UseSystemPasswordChar = true;
       // 
       // verifyField
       // 
       this.verifyField.Enabled = false;
-      this.verifyField.Location = new System.Drawing.Point(113, 172);
+      this.verifyField.Location = new System.Drawing.Point(170, 265);
+      this.verifyField.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
       this.verifyField.Name = "verifyField";
       this.verifyField.PasswordChar = '●';
-      this.verifyField.Size = new System.Drawing.Size(262, 20);
+      this.verifyField.Size = new System.Drawing.Size(391, 26);
       this.verifyField.TabIndex = 2;
       this.verifyField.UseSystemPasswordChar = true;
       // 
       // verifyFieldLabel
       // 
       this.verifyFieldLabel.AutoSize = true;
-      this.verifyFieldLabel.Location = new System.Drawing.Point(30, 173);
+      this.verifyFieldLabel.Location = new System.Drawing.Point(45, 266);
+      this.verifyFieldLabel.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
       this.verifyFieldLabel.Name = "verifyFieldLabel";
-      this.verifyFieldLabel.Size = new System.Drawing.Size(33, 13);
+      this.verifyFieldLabel.Size = new System.Drawing.Size(49, 20);
       this.verifyFieldLabel.TabIndex = 5;
       this.verifyFieldLabel.Text = "Verify";
       // 
       // passwordFieldLabel
       // 
       this.passwordFieldLabel.AutoSize = true;
-      this.passwordFieldLabel.Location = new System.Drawing.Point(30, 144);
+      this.passwordFieldLabel.Location = new System.Drawing.Point(45, 222);
+      this.passwordFieldLabel.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
       this.passwordFieldLabel.Name = "passwordFieldLabel";
-      this.passwordFieldLabel.Size = new System.Drawing.Size(53, 13);
+      this.passwordFieldLabel.Size = new System.Drawing.Size(78, 20);
       this.passwordFieldLabel.TabIndex = 5;
       this.passwordFieldLabel.Text = "Password";
       // 
       // machineLabel
       // 
-      this.machineLabel.Location = new System.Drawing.Point(12, 224);
+      this.machineLabel.Location = new System.Drawing.Point(18, 345);
+      this.machineLabel.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
       this.machineLabel.Name = "machineLabel";
-      this.machineLabel.Size = new System.Drawing.Size(718, 63);
+      this.machineLabel.Size = new System.Drawing.Size(1077, 97);
       this.machineLabel.TabIndex = 1;
       this.machineLabel.Text = resources.GetString("machineLabel.Text");
       // 
@@ -200,9 +214,7 @@ namespace Authenticator {
       this.metroLabel1.Name = "metroLabel1";
       this.metroLabel1.Size = new System.Drawing.Size(692, 47);
       this.metroLabel1.TabIndex = 1;
-      this.metroLabel1.Text = "Your YubiKey must support Challenge-Response using HMAC-SHA1 in one of its slots." +
-    " Use the YubiKey personalization tool to configure the slot or click the Configu" +
-    "re Slot button.";
+      this.metroLabel1.Text = "Your YubiKey must support Challenge-Response using HMAC-SHA1 in one of its slots." + " Use the YubiKey personalization tool to configure the slot or click the Configu" + "re Slot button.";
       // 
       // metroLabel5
       // 
@@ -215,10 +227,11 @@ namespace Authenticator {
       // ChangePasswordForm
       // 
       this.AcceptButton = this.okButton;
-      this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
+      this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
       this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+      this.BackColor = System.Drawing.SystemColors.Window;
       this.CancelButton = this.cancelButton;
-      this.ClientSize = new System.Drawing.Size(739, 419);
+      this.ClientSize = new System.Drawing.Size(1108, 645);
       this.Controls.Add(this.verifyField);
       this.Controls.Add(this.passwordField);
       this.Controls.Add(this.verifyFieldLabel);
@@ -234,18 +247,18 @@ namespace Authenticator {
       this.Controls.Add(this.machineCheckbox);
       this.Controls.Add(this.introLabel);
       this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
+      this.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
       this.MaximizeBox = false;
       this.MinimizeBox = false;
       this.Name = "ChangePasswordForm";
-      this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
+      this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
       this.Text = "Protection";
       this.Load += new System.EventHandler(this.ChangePasswordForm_Load);
       this.Shown += new System.EventHandler(this.ChangePasswordForm_Shown);
-      ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
-      ((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).EndInit();
+      ((System.ComponentModel.ISupportInitialize) (this.pictureBox1)).EndInit();
+      ((System.ComponentModel.ISupportInitialize) (this.pictureBox2)).EndInit();
       this.ResumeLayout(false);
       this.PerformLayout();
-
     }
 
     #endregion

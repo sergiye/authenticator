@@ -652,9 +652,6 @@ namespace Authenticator {
       catch (EncryptedSecretDataException) {
         throw;
       }
-      catch (BadYubiKeyException) {
-        throw;
-      }
       catch (Exception ex) {
         throw new BadPasswordException(ex.Message, ex);
       }

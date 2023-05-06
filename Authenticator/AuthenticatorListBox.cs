@@ -7,7 +7,6 @@ using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Windows.Forms;
-using Authenticator.Resources;
 
 namespace Authenticator {
   public class AuthenticatorListItem {
@@ -652,67 +651,67 @@ namespace Authenticator {
       // EventHandler onclick = ContextMenu_Click;
       //
       //
-      var menuitem = new ToolStripMenuItem(strings.SetPassword + "...");
+      var menuitem = new ToolStripMenuItem("Set Password...");
       menuitem.Name = "setPasswordMenuItem";
       menuitem.Click += ContextMenu_Click;
       ContextMenuStrip.Items.Add(menuitem);
       ContextMenuStrip.Items.Add(new ToolStripSeparator());
       //
-      menuitem = new ToolStripMenuItem(strings.ShowCode);
+      menuitem = new ToolStripMenuItem("Show Code");
       menuitem.Name = "showCodeMenuItem";
       menuitem.Click += ContextMenu_Click;
       ContextMenuStrip.Items.Add(menuitem);
       //
-      menuitem = new ToolStripMenuItem(strings.CopyCode);
+      menuitem = new ToolStripMenuItem("Copy Code");
       menuitem.Name = "copyCodeMenuItem";
       menuitem.Click += ContextMenu_Click;
       ContextMenuStrip.Items.Add(menuitem);
       //
       ContextMenuStrip.Items.Add(new ToolStripSeparator());
       //
-      menuitem = new ToolStripMenuItem(strings.ShowSerialAndRestoreCode + "...");
+      menuitem = new ToolStripMenuItem("Show Serial && Restore Code...");
       menuitem.Name = "showRestoreCodeMenuItem";
       menuitem.Click += ContextMenu_Click;
       ContextMenuStrip.Items.Add(menuitem);
       //
-      menuitem = new ToolStripMenuItem(strings.ShowSecretKey + "...");
+      menuitem = new ToolStripMenuItem("Show Secret Key...");
       menuitem.Name = "showGoogleSecretMenuItem";
       menuitem.Click += ContextMenu_Click;
       ContextMenuStrip.Items.Add(menuitem);
       //
-      menuitem = new ToolStripMenuItem(strings.ShowSerialKeyAndDeviceId + "...");
+      menuitem = new ToolStripMenuItem("Show Serial Key and Device ID...");
       menuitem.Name = "showTrionSecretMenuItem";
       menuitem.Click += ContextMenu_Click;
       ContextMenuStrip.Items.Add(menuitem);
       //
       ContextMenuStrip.Items.Add(new ToolStripSeparator());
       //
-      menuitem = new ToolStripMenuItem(strings.Delete);
+      menuitem = new ToolStripMenuItem("Delete");
       menuitem.Name = "deleteMenuItem";
       menuitem.Click += ContextMenu_Click;
       ContextMenuStrip.Items.Add(menuitem);
       //
-      menuitem = new ToolStripMenuItem(strings.Rename);
+      menuitem = new ToolStripMenuItem("Rename");
       menuitem.Name = "renameMenuItem";
       menuitem.Click += ContextMenu_Click;
       ContextMenuStrip.Items.Add(menuitem);
       //
       ContextMenuStrip.Items.Add(new ToolStripSeparator());
       //
-      menuitem = new ToolStripMenuItem(strings.AutoRefresh);
+      menuitem = new ToolStripMenuItem("Auto Refresh");
       menuitem.Name = "autoRefreshMenuItem";
       menuitem.Click += ContextMenu_Click;
       ContextMenuStrip.Items.Add(menuitem);
       //
-      menuitem = new ToolStripMenuItem(strings.CopyOnNewCode);
+      menuitem = new ToolStripMenuItem("Copy on New Code");
       menuitem.Name = "copyOnCodeMenuItem";
       menuitem.Click += ContextMenu_Click;
       ContextMenuStrip.Items.Add(menuitem);
       //
-      menuitem = new ToolStripMenuItem(strings.Icon);
+      menuitem = new ToolStripMenuItem("Icon");
       menuitem.Name = "iconMenuItem";
       var subitem = new ToolStripMenuItem();
-      subitem.Text = strings.IconAuto;
+      subitem.Text = "Auto";
       subitem.Name = "iconMenuItem_default";
       subitem.Tag = string.Empty;
       subitem.Click += ContextMenu_Click;
@@ -758,7 +757,7 @@ namespace Authenticator {
 
       menuitem.DropDownItems.Add("-");
       subitem = new ToolStripMenuItem();
-      subitem.Text = strings.Other + "...";
+      subitem.Text = "Other...";
       subitem.Name = "iconMenuItem_0";
       subitem.Tag = "OTHER";
       subitem.Click += ContextMenu_Click;
@@ -769,7 +768,7 @@ namespace Authenticator {
       sepitem.Name = "syncMenuSep";
       ContextMenuStrip.Items.Add(sepitem);
       //
-      menuitem = new ToolStripMenuItem(strings.SyncTime);
+      menuitem = new ToolStripMenuItem("Sync Time");
       menuitem.Name = "syncMenuItem";
       menuitem.Click += ContextMenu_Click;
       ContextMenuStrip.Items.Add(menuitem);
@@ -788,8 +787,8 @@ namespace Authenticator {
       var menuItem = menu.Items.Cast<ToolStripItem>().FirstOrDefault(i => i.Name == "setPasswordMenuItem") as ToolStripMenuItem;
       if (menuItem != null)
         menuItem.Text = item.Authenticator.AuthenticatorData.PasswordType == Authenticator.PasswordTypes.Explicit
-          ? strings.ChangeOrRemovePassword + "..."
-          : strings.SetPassword + "...";
+          ? "Change or Remove Password..."
+          : "Set Password...";
 
       menuItem = menu.Items.Cast<ToolStripItem>().FirstOrDefault(i => i.Name == "showCodeMenuItem") as ToolStripMenuItem;
       if (menuItem != null) menuItem.Visible = !auth.AutoRefresh;
@@ -1052,7 +1051,7 @@ namespace Authenticator {
           }
 
         case "deleteMenuItem": {
-            if (MainForm.ConfirmDialog(Parent as Form, strings.DeleteAuthenticatorWarning, MessageBoxButtons.YesNo,
+            if (MainForm.ConfirmDialog(Parent as Form, "Are you sure you want to delete this authenticator?\nThis will permanently remove it and you may no longer be able to access you account.", MessageBoxButtons.YesNo,
                   MessageBoxIcon.Exclamation, MessageBoxDefaultButton.Button2) == DialogResult.Yes) {
               var index = item.Index;
               Items.Remove(item);
@@ -1118,7 +1117,7 @@ namespace Authenticator {
                 ofd.Filter = "PNG Image Files (*.png)|*.png|GIF Image Files (*.gif)|*.gif|All Files (*.*)|*.*";
                 ofd.RestoreDirectory = true;
                 ofd.ShowReadOnly = false;
-                ofd.Title = strings.LoadIconImage + " (png or gif @ 48x48)";
+                ofd.Title = "Load Icon Image (png or gif @ 48x48)";
                 var result = ofd.ShowDialog(this);
                 if (result != DialogResult.OK) {
                   return;
@@ -1148,7 +1147,7 @@ namespace Authenticator {
                 }
                 catch (Exception ex) {
                   if (MessageBox.Show(Parent as Form,
-                        string.Format(strings.ErrorLoadingIconFile, ex.Message),
+                        $"Error loading image file: {ex.Message}\nDo you want to try again?",
                         AuthMain.APPLICATION_NAME,
                         MessageBoxButtons.YesNo, MessageBoxIcon.Warning, MessageBoxDefaultButton.Button2) ==
                       DialogResult.Yes) {

@@ -8,9 +8,11 @@ using System.Windows.Forms;
 using ZXing;
 
 namespace Authenticator {
-  public partial class AddOktaVerifyAuthenticator : ResourceForm {
+  public partial class AddOktaVerifyAuthenticator : Form {
     public AddOktaVerifyAuthenticator() {
       InitializeComponent();
+      BackColor = SystemColors.Window;
+      StartPosition = FormStartPosition.CenterScreen;
     }
 
     public AuthAuthenticator Authenticator { get; set; }
@@ -52,11 +54,9 @@ namespace Authenticator {
           + "Do you want to save this authenticator?", MessageBoxButtons.YesNoCancel);
         if (result == DialogResult.Yes) {
           DialogResult = DialogResult.OK;
-          return;
         }
         else if (result == DialogResult.Cancel) {
           DialogResult = DialogResult.None;
-          return;
         }
       }
     }

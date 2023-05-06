@@ -5,7 +5,7 @@ namespace Authenticator {
   /// Exception class wrapper for importing error
   /// </summary>
   public class ImportException : ApplicationException {
-    public ImportException() : base() {
+    public ImportException() {
     }
 
     public ImportException(string message) : base(message) {

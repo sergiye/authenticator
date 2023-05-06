@@ -221,15 +221,7 @@
         <Compile Include="AddBattleNetAuthenticator.Designer.cs">
             <DependentUpon>AddBattleNetAuthenticator.cs</DependentUpon>
         </Compile>
-        <Compile Include="ResourceForm.cs">
-            <SubType>Form</SubType>
-        </Compile>
         <Compile Include="RegisteredAuthenticator.cs" />
-        <Compile Include="Resources\strings.Designer.cs">
-            <AutoGen>True</AutoGen>
-            <DesignTime>True</DesignTime>
-            <DependentUpon>strings.resx</DependentUpon>
-        </Compile>
         <Compile Include="SecretTextBox.cs">
             <SubType>Component</SubType>
         </Compile>
@@ -290,9 +282,6 @@
         <EmbeddedResource Include="AddOktaVerifyAuthenticator.resx">
             <DependentUpon>AddOktaVerifyAuthenticator.cs</DependentUpon>
         </EmbeddedResource>
-        <EmbeddedResource Include="ResourceForm.resx">
-          <DependentUpon>ResourceForm.cs</DependentUpon>
-        </EmbeddedResource>
         <EmbeddedResource Include="AddTrionAuthenticator.resx">
             <DependentUpon>AddTrionAuthenticator.cs</DependentUpon>
         </EmbeddedResource>
@@ -317,11 +306,6 @@
         </EmbeddedResource>
         <EmbeddedResource Include="UnprotectPasswordForm.resx">
             <DependentUpon>UnprotectPasswordForm.cs</DependentUpon>
-        </EmbeddedResource>
-        <EmbeddedResource Include="Resources\strings.resx">
-            <Generator>ResXFileCodeGenerator</Generator>
-            <LastGenOutput>strings.Designer.cs</LastGenOutput>
-            <SubType>Designer</SubType>
         </EmbeddedResource>
         <EmbeddedResource Include="SetPasswordForm.resx">
             <DependentUpon>SetPasswordForm.cs</DependentUpon>

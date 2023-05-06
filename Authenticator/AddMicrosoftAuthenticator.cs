@@ -8,9 +8,11 @@ using System.Windows.Forms;
 using ZXing;
 
 namespace Authenticator {
-  public partial class AddMicrosoftAuthenticator : ResourceForm {
+  public partial class AddMicrosoftAuthenticator : Form {
     public AddMicrosoftAuthenticator() {
       InitializeComponent();
+      BackColor = SystemColors.Window;
+      StartPosition = FormStartPosition.CenterScreen;
     }
 
     public AuthAuthenticator Authenticator { get; set; }
@@ -56,11 +58,9 @@ namespace Authenticator {
           + "Do you want to save this authenticator?", MessageBoxButtons.YesNoCancel);
         if (result == DialogResult.Yes) {
           DialogResult = DialogResult.OK;
-          return;
         }
         else if (result == DialogResult.Cancel) {
           DialogResult = DialogResult.None;
-          return;
         }
       }
     }
@@ -87,7 +87,6 @@ namespace Authenticator {
       if (Authenticator.AuthenticatorData == null) {
         MainForm.ErrorDialog(Owner, "Please enter the Secret Code and click Verify Authenticator");
         DialogResult = DialogResult.None;
-        return;
       }
     }
 

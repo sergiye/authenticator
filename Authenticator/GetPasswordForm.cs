@@ -1,10 +1,9 @@
 ﻿using System;
-using Authenticator.Resources;
+using System.Windows.Forms;
 
 namespace Authenticator {
-  public partial class GetPasswordForm : ResourceForm {
-    public GetPasswordForm()
-      : base() {
+  public partial class GetPasswordForm : Form {
+    public GetPasswordForm() {
       InitializeComponent();
     }
 
@@ -15,13 +14,13 @@ namespace Authenticator {
     private void GetPasswordForm_Load(object sender, EventArgs e) {
       // force this window to the front and topmost
       // see: http://stackoverflow.com/questions/278237/keep-window-on-top-and-steal-focus-in-winforms
-      var oldtopmost = TopMost;
+      var topMost = TopMost;
       TopMost = true;
-      TopMost = oldtopmost;
+      TopMost = topMost;
       Activate();
 
       if (InvalidPassword) {
-        invalidPasswordLabel.Text = strings.InvalidPassword;
+        invalidPasswordLabel.Text = "Invalid password";
         invalidPasswordLabel.Visible = true;
         invalidPasswordTimer.Enabled = true;
       }
@@ -31,7 +30,7 @@ namespace Authenticator {
       // it isn't empty
       var password = passwordField.Text;
       if (password.Length == 0) {
-        invalidPasswordLabel.Text = strings.EnterPassword;
+        invalidPasswordLabel.Text = "Please enter a password";
         invalidPasswordLabel.Visible = true;
         invalidPasswordTimer.Enabled = true;
         DialogResult = System.Windows.Forms.DialogResult.None;

@@ -4,10 +4,10 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Security.Cryptography;
-using Authenticator.Resources;
+using System.Windows.Forms;
 
 namespace Authenticator {
-  public partial class ChangePasswordForm : ResourceForm {
+  public partial class ChangePasswordForm : Form {
     private const string EXISTING_PASSWORD = "******";
 
     public ChangePasswordForm() {
@@ -70,14 +70,14 @@ namespace Authenticator {
     private void okButton_Click(object sender, EventArgs e) {
       // check password is set if requried
       if (passwordCheckbox.Checked && passwordField.Text.Trim().Length == 0) {
-        MainForm.ErrorDialog(this, strings.EnterPassword);
-        DialogResult = System.Windows.Forms.DialogResult.None;
+        MainForm.ErrorDialog(this, "Please enter a password");
+        DialogResult = DialogResult.None;
         return;
       }
 
       if (passwordCheckbox.Checked && string.Compare(passwordField.Text.Trim(), verifyField.Text.Trim()) != 0) {
-        MainForm.ErrorDialog(this, strings.PasswordsDontMatch);
-        DialogResult = System.Windows.Forms.DialogResult.None;
+        MainForm.ErrorDialog(this, "Passwords do not match");
+        DialogResult = DialogResult.None;
         return;
       }
 

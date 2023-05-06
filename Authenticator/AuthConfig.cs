@@ -9,7 +9,6 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Xml;
 using System.Xml.Serialization;
-using Authenticator.Resources;
 
 namespace Authenticator {
   public delegate void ConfigChangedHandler(object source, ConfigChangedEventArgs args);
@@ -391,7 +390,7 @@ namespace Authenticator {
 
         if (version > Currentversion) {
           // ensure we don't overwrite a newer config
-          throw new AuthInvalidNewerConfigException(string.Format(strings.ConfigIsNewer, version));
+          throw new AuthInvalidNewerConfigException($"Your authenticators were saved with newer a version of Authenticator and so cannot be loaded. Please use Authenticator {version} or later.");
         }
       }
 

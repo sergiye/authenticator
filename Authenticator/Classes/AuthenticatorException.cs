@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 
 namespace Authenticator {
   public class AuthenticatorException : ApplicationException {
@@ -23,11 +22,6 @@ namespace Authenticator {
     }
   }
 
-  public class InvalidTradesResponseException : AuthenticatorException {
-    public InvalidTradesResponseException(string msg = null, Exception ex = null) : base(msg, ex) {
-    }
-  }
-
   public class InvalidSyncResponseException : AuthenticatorException {
     public InvalidSyncResponseException(string msg) : base(msg) {
     }
@@ -38,11 +32,6 @@ namespace Authenticator {
 
   public class BadPasswordException : AuthenticatorException {
     public BadPasswordException(string msg = null, Exception ex = null) : base(msg, ex) {
-    }
-  }
-
-  public class BadYubiKeyException : BadPasswordException {
-    public BadYubiKeyException(string msg = null, Exception ex = null) : base(msg, ex) {
     }
   }
 
@@ -68,18 +57,5 @@ namespace Authenticator {
     public string Password { get; set; }
     public string Encrypted { get; set; }
     public string Decrypted { get; set; }
-  }
-
-  public class InvalidSecretDataException : AuthenticatorException {
-    public InvalidSecretDataException(Exception inner, string password, string encType, List<string> decrypted)
-      : base("Error decoding Secret Data", inner) {
-      Password = password;
-      EncType = encType;
-      Decrypted = decrypted;
-    }
-
-    public string Password { get; set; }
-    public string EncType { get; set; }
-    public List<string> Decrypted { get; set; }
   }
 }

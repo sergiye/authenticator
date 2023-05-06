@@ -13,6 +13,10 @@ namespace Authenticator {
 
     #region Windows Form Designer generated code
 
+    /// <summary>
+    /// Required method for Designer support - do not modify
+    /// the contents of this method with the code editor.
+    /// </summary>
     private void InitializeComponent() {
       System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(ShowRestoreCodeForm));
       this.allowCopyCheckBox = new System.Windows.Forms.CheckBox();
@@ -119,7 +123,7 @@ namespace Authenticator {
       this.Name = "ShowRestoreCodeForm";
       this.ShowIcon = false;
       this.ShowInTaskbar = false;
-      this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
+      this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
       this.Text = "Battle.net Restore Code";
       this.Load += new System.EventHandler(this.ShowRestoreCodeForm_Load);
       this.ResumeLayout(false);

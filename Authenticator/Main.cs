@@ -2,9 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Net;
-using System.Resources;
 using System.Windows.Forms;
-using Authenticator.Resources;
 
 namespace Authenticator {
   static class AuthMain {
@@ -143,9 +141,6 @@ namespace Authenticator {
       }
     };
 
-    public static ResourceManager StringResources =
-      new ResourceManager(typeof(strings).FullName, typeof(strings).Assembly);
-
     [STAThread]
     static void Main() {
       try {
@@ -186,7 +181,7 @@ namespace Authenticator {
         }
 
         // fallback
-        MessageBox.Show(string.Format(strings.AlreadyRunning, APPLICATION_NAME), APPLICATION_TITLE,
+        MessageBox.Show($"{APPLICATION_NAME} is already running.", APPLICATION_TITLE,
           MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
       }
     }
@@ -221,7 +216,7 @@ namespace Authenticator {
 
         if (silently == false) {
           var report = new ExceptionForm();
-          report.ErrorException = ex;
+          report.Error = ex;
           report.TopMost = true;
           if (form != null && form.Config != null) {
             report.Config = form.Config;
@@ -248,8 +243,6 @@ namespace Authenticator {
       catch (Exception) {
         // not 4.5 installed - we could prompt, but not for now
       }
-
-      strings.Culture = System.Threading.Thread.CurrentThread.CurrentUICulture;
 
       Application.EnableVisualStyles();
       Application.SetCompatibleTextRenderingDefault(false);

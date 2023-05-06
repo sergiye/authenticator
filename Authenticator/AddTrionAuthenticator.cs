@@ -3,9 +3,11 @@ using System.Drawing;
 using System.Windows.Forms;
 
 namespace Authenticator {
-  public partial class AddTrionAuthenticator : ResourceForm {
+  public partial class AddTrionAuthenticator : Form {
     public AddTrionAuthenticator() {
       InitializeComponent();
+      BackColor = SystemColors.Window;
+      StartPosition = FormStartPosition.CenterScreen;
     }
 
     public AuthAuthenticator Authenticator { get; set; }
@@ -50,11 +52,9 @@ namespace Authenticator {
       }
       catch (InvalidRestoreResponseException irre) {
         MainForm.ErrorDialog(Owner, irre.Message, irre);
-        return;
       }
       catch (Exception ex) {
         MainForm.ErrorDialog(Owner, "Unable to access account: " + ex.Message, ex);
-        return;
       }
     }
 
@@ -67,11 +67,9 @@ namespace Authenticator {
           + "Do you want to save this authenticator?", MessageBoxButtons.YesNoCancel);
         if (result == DialogResult.Yes) {
           DialogResult = DialogResult.OK;
-          return;
         }
         else if (result == DialogResult.Cancel) {
           DialogResult = DialogResult.None;
-          return;
         }
       }
     }
@@ -79,7 +77,6 @@ namespace Authenticator {
     private void okButton_Click(object sender, EventArgs e) {
       if (VerifyAuthenticator() == false) {
         DialogResult = DialogResult.None;
-        return;
       }
     }
 

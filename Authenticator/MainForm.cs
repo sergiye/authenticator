@@ -8,13 +8,11 @@ using System.Net;
 using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Text;
-using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using Authenticator.Resources;
 
 namespace Authenticator {
-  public partial class MainForm : ResourceForm {
+  public partial class MainForm : Form {
     public MainForm() {
       InitializeComponent();
     }
@@ -132,14 +130,10 @@ namespace Authenticator {
             passwordField.Focus();
 
             return;
-          case BadYubiKeyException _:
-            loadingPanel.Visible = false;
-            passwordPanel.Visible = false;
-            return;
           case BadPasswordException _:
             loadingPanel.Visible = false;
             passwordPanel.Visible = true;
-            passwordErrorLabel.Text = strings.InvalidPassword;
+            passwordErrorLabel.Text = "Invalid password";
             passwordErrorLabel.Tag = DateTime.Now.AddSeconds(3);
             // oddity with MetroFrame controls in have to set focus away and back to field to make it stick
             Invoke((MethodInvoker) delegate {
@@ -151,7 +145,7 @@ namespace Authenticator {
         }
 
         if (ex != null) {
-          if (ErrorDialog(this, strings.UnknownError + ": " + ex.Message, ex, MessageBoxButtons.RetryCancel) ==
+          if (ErrorDialog(this, "An unknown error occured: " + ex.Message, ex, MessageBoxButtons.RetryCancel) ==
               DialogResult.Cancel) {
             Close();
             return;
@@ -178,7 +172,7 @@ namespace Authenticator {
         if (config.Upgraded) {
           SaveConfig(true);
           // display warning
-          ErrorDialog(this, string.Format(strings.ConfigUpgraded, AuthConfig.Currentversion));
+          ErrorDialog(this, string.Format("Authenticator has upgraded your authenticators to version {0}.\nDo NOT run an older version of Authenticator as this could overwrite them.\nNow is a good time to make a backup. Click the Options icon and choose Export.", AuthConfig.Currentversion));
         }
 
         InitializeForm();
@@ -321,16 +315,12 @@ namespace Authenticator {
           needPassword = true;
           invalidPassword = false;
         }
-        catch (BadYubiKeyException) {
-          needPassword = true;
-          invalidPassword = false;
-        }
         catch (BadPasswordException) {
           needPassword = true;
           invalidPassword = true;
         }
         catch (Exception ex) {
-          if (ErrorDialog(this, strings.UnknownError + ": " + ex.Message, ex, MessageBoxButtons.RetryCancel) ==
+          if (ErrorDialog(this, "An unknown error occured: " + ex.Message, ex, MessageBoxButtons.RetryCancel) ==
               DialogResult.Cancel) {
             return;
           }
@@ -475,7 +465,7 @@ namespace Authenticator {
     public static DialogResult ErrorDialog(Form form, string message = null, Exception ex = null,
       MessageBoxButtons buttons = MessageBoxButtons.OK) {
       if (message == null) {
-        message = strings.ErrorOccured + (ex != null ? ": " + ex.Message : string.Empty);
+        message = $"An error has occurred{(ex != null ? ": " + ex.Message : string.Empty)}";
       }
 
       if (ex != null && string.IsNullOrEmpty(ex.Message) == false) {
@@ -612,9 +602,10 @@ namespace Authenticator {
         }
         catch (ExternalException) {
           // only show an error the first time
-          clipRetry = (MessageBox.Show(this, strings.ClipboardInUse,
-            AuthMain.APPLICATION_NAME,
-            MessageBoxButtons.YesNo, MessageBoxIcon.Warning, MessageBoxDefaultButton.Button2) == DialogResult.Yes);
+          clipRetry = (MessageBox.Show(this,
+            "Unable to copy to the clipboard. Another application is probably using it.\nTry again?",
+            AuthMain.APPLICATION_NAME, MessageBoxButtons.YesNo, MessageBoxIcon.Warning,
+            MessageBoxDefaultButton.Button2) == DialogResult.Yes);
         }
       } while (clipRetry);
     }
@@ -671,7 +662,7 @@ namespace Authenticator {
       // prompt to import v2
       if (string.IsNullOrEmpty(existingv2Config) == false) {
         var importResult = MessageBox.Show(this,
-          string.Format(strings.LoadPreviousAuthenticator, existingv2Config),
+          $"You have an authenticator from a previous version of application ({existingv2Config}).\nYou can either import it now or use the 'Add' button to import it later.\nWould you like to import your previous authenticator now?",
           AuthMain.APPLICATION_TITLE,
           MessageBoxButtons.YesNo,
           MessageBoxIcon.Question);
@@ -843,7 +834,7 @@ namespace Authenticator {
           added = (form.ShowDialog(this) == DialogResult.OK);
         }
         else {
-          throw new NotImplementedException(strings.AuthenticatorNotImplemented + ": " +
+          throw new NotImplementedException("Authenticator not implemented: " +
                                             registeredauth.AuthenticatorType);
         }
 
@@ -984,7 +975,7 @@ namespace Authenticator {
 
     private void passwordButton_Click(object sender, EventArgs e) {
       if (passwordField.Text.Trim().Length == 0) {
-        passwordErrorLabel.Text = strings.EnterPassword;
+        passwordErrorLabel.Text = "Please enter a password";
         passwordErrorLabel.Tag = DateTime.Now.AddSeconds(3);
         passwordTimer.Enabled = true;
         return;
@@ -1035,15 +1026,6 @@ namespace Authenticator {
 
       menu.Items.Clear();
 
-      if (Config == null || Config.IsReadOnly == false) {
-        menuitem = new ToolStripMenuItem("Change Protection...") {
-          Name = "changePasswordOptionsMenuItem"
-        };
-        menuitem.Click += changePasswordOptionsMenuItem_Click;
-        menu.Items.Add(menuitem);
-        menu.Items.Add(new ToolStripSeparator() {Name = "changePasswordOptionsSeparatorItem"});
-      }
-
       if (Config != null && Config.IsPortable == false) {
         menuitem = new ToolStripMenuItem("Start With Windows") {
           Name = "startWithWindowsOptionsMenuItem"
@@ -1072,6 +1054,14 @@ namespace Authenticator {
 
       menu.Items.Add(new ToolStripSeparator());
 
+      if (Config == null || Config.IsReadOnly == false) {
+        menuitem = new ToolStripMenuItem("Change Protection...") {
+          Name = "changePasswordOptionsMenuItem"
+        };
+        menuitem.Click += changePasswordOptionsMenuItem_Click;
+        menu.Items.Add(menuitem);
+      }
+
       menuitem = new ToolStripMenuItem("Export...") {
         Name = "exportOptionsMenuItem"
       };
@@ -1080,16 +1070,16 @@ namespace Authenticator {
 
       menu.Items.Add(new ToolStripSeparator());
 
-      menuitem = new ToolStripMenuItem("About...") {
-        Name = "aboutOptionsMenuItem"
-      };
-      menuitem.Click += aboutOptionMenuItem_Click;
-      menu.Items.Add(menuitem);
-
       menuitem = new ToolStripMenuItem("Check for updates") {
         Name = "checkUpdatesMenuItem"
       };
       menuitem.Click += (s, e) => Updater.CheckForUpdates(false);
+      menu.Items.Add(menuitem);
+
+      menuitem = new ToolStripMenuItem("About...") {
+        Name = "aboutOptionsMenuItem"
+      };
+      menuitem.Click += aboutOptionMenuItem_Click;
       menu.Items.Add(menuitem);
 
       menu.Items.Add(new ToolStripSeparator());
@@ -1113,7 +1103,7 @@ namespace Authenticator {
       };
       menuitem.Click += openOptionsMenuItem_Click;
       menu.Items.Add(menuitem);
-      menu.Items.Add(new ToolStripSeparator() {Name = "openOptionsSeparatorItem"});
+      menu.Items.Add(new ToolStripSeparator {Name = "openOptionsSeparatorItem"});
 
       if (Config != null && Config.Count != 0) {
         // because of window size, we only show first 30.
@@ -1134,16 +1124,16 @@ namespace Authenticator {
         };
         menu.Items.Add(separator);
 
-        menuitem = new ToolStripMenuItem(strings.DefaultAction) {
+        menuitem = new ToolStripMenuItem("Action") {
           Name = "defaultActionOptionsMenuItem"
         };
         menu.Items.Add(menuitem);
-        subitem = new ToolStripMenuItem(strings.DefaultActionNotification) {
+        subitem = new ToolStripMenuItem("Show Notification") {
           Name = "defaultActionNotificationOptionsMenuItem"
         };
         subitem.Click += defaultActionNotificationOptionsMenuItem_Click;
         menuitem.DropDownItems.Add(subitem);
-        subitem = new ToolStripMenuItem(strings.DefaultActionCopyToClipboard) {
+        subitem = new ToolStripMenuItem("Copy To Clipboard") {
           Name = "defaultActionCopyToClipboardOptionsMenuItem"
         };
         subitem.Click += defaultActionCopyToClipboardOptionsMenuItem_Click;
@@ -1202,7 +1192,7 @@ namespace Authenticator {
       }
 
       if (menu.Items.Cast<ToolStripItem>().FirstOrDefault(t => t.Name == "changePasswordOptionsMenuItem") is ToolStripMenuItem menuItem) {
-        menuItem.Enabled = (Config != null && Config.Count != 0);
+        menuItem.Enabled = Config != null && Config.Count != 0;
       }
 
       menuItem = menu.Items.Cast<ToolStripItem>().FirstOrDefault(t => t.Name == "openOptionsMenuItem") as
@@ -1252,7 +1242,7 @@ namespace Authenticator {
       }
 
       if (menu.Items.Cast<ToolStripItem>().FirstOrDefault(t => t.Name == "changePasswordOptionsMenuItem") is ToolStripMenuItem menuItem) {
-        menuItem.Enabled = (Config != null && Config.Count != 0);
+        menuItem.Enabled = Config != null && Config.Count != 0;
       }
 
       menuItem = menu.Items.Cast<ToolStripItem>().FirstOrDefault(t => t.Name == "openOptionsMenuItem") as

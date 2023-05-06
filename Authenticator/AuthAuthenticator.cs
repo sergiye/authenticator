@@ -8,7 +8,6 @@ using System.Text.RegularExpressions;
 using System.Web;
 using System.Windows.Forms;
 using System.Xml;
-using Authenticator.Resources;
 
 namespace Authenticator {
   public class AuthAuthenticator : ICloneable {
@@ -209,9 +208,10 @@ namespace Authenticator {
 
         if (failed && showError) {
           // only show an error the first time
-          clipRetry = (MessageBox.Show(form, strings.ClipboardInUse,
-            AuthMain.APPLICATION_NAME,
-            MessageBoxButtons.YesNo, MessageBoxIcon.Warning, MessageBoxDefaultButton.Button2) == DialogResult.Yes);
+          clipRetry = (MessageBox.Show(form,
+            "Unable to copy to the clipboard. Another application is probably using it.\nTry again?",
+            AuthMain.APPLICATION_NAME, MessageBoxButtons.YesNo, MessageBoxIcon.Warning,
+            MessageBoxDefaultButton.Button2) == DialogResult.Yes);
         }
       } while (clipRetry);
     }

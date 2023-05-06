@@ -1,9 +1,10 @@
 using System;
 using System.Text.RegularExpressions;
+using System.Windows.Forms;
 using ZXing;
 
 namespace Authenticator {
-  public partial class ShowSecretKeyForm : ResourceForm {
+  public partial class ShowSecretKeyForm : Form {
     public AuthAuthenticator CurrentAuthenticator { get; set; }
 
     public ShowSecretKeyForm() {

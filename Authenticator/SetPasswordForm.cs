@@ -1,8 +1,8 @@
 ﻿using System;
-using Authenticator.Resources;
+using System.Windows.Forms;
 
 namespace Authenticator {
-  public partial class SetPasswordForm : ResourceForm {
+  public partial class SetPasswordForm : Form {
     public SetPasswordForm() {
       InitializeComponent();
     }
@@ -29,10 +29,9 @@ namespace Authenticator {
       var verify = verifyField.Text.Trim();
       if (password != verify) {
         //MainForm.ErrorDialog(this, "Your passwords do not match.");
-        errorLabel.Text = strings.PasswordsDontMatch;
         errorLabel.Visible = true;
         errorTimer.Enabled = true;
-        DialogResult = System.Windows.Forms.DialogResult.None;
+        DialogResult = DialogResult.None;
         return;
       }
 
@@ -41,7 +40,6 @@ namespace Authenticator {
 
     private void errorTimer_Tick(object sender, EventArgs e) {
       errorTimer.Enabled = false;
-      errorLabel.Text = string.Empty;
       errorLabel.Visible = false;
     }
   }
