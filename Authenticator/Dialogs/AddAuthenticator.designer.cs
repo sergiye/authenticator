@@ -1,5 +1,4 @@
 using System.Windows.Forms;
-using System.Windows.Forms.VisualStyles;
 
 namespace Authenticator {
   partial class AddAuthenticator {
@@ -31,16 +30,12 @@ namespace Authenticator {
       this.verifyButton = new System.Windows.Forms.Button();
       this.codeProgress = new System.Windows.Forms.ProgressBar();
       this.codeField = new SecretTextBox();
-      this.step5Label = new System.Windows.Forms.Label();
+      this.step4Label = new System.Windows.Forms.Label();
       this.timer = new System.Windows.Forms.Timer(this.components);
-      this.step4TimerLabel = new System.Windows.Forms.Label();
+      this.step3Label = new System.Windows.Forms.Label();
       this.timeBasedRadio = new System.Windows.Forms.RadioButton();
       this.counterBasedRadio = new System.Windows.Forms.RadioButton();
-      this.timeBasedPanel = new System.Windows.Forms.Panel();
-      this.counterBasedPanel = new System.Windows.Forms.Panel();
-      this.verifyCounterButton = new System.Windows.Forms.Button();
       this.counterField = new System.Windows.Forms.TextBox();
-      this.step4CounterLabel = new System.Windows.Forms.Label();
       this.hashField = new System.Windows.Forms.ComboBox();
       this.intervalField = new System.Windows.Forms.TextBox();
       this.labelTYpe = new System.Windows.Forms.Label();
@@ -49,129 +44,119 @@ namespace Authenticator {
       this.digitsField = new System.Windows.Forms.TextBox();
       this.digitsLabel = new System.Windows.Forms.Label();
       this.intervalLabelPost = new System.Windows.Forms.Label();
-      this.timeBasedPanel.SuspendLayout();
-      this.counterBasedPanel.SuspendLayout();
+      this.getFromScreenButton = new System.Windows.Forms.Button();
       this.SuspendLayout();
       // 
       // secretCodeField
       // 
       this.secretCodeField.AllowDrop = true;
       this.secretCodeField.CausesValidation = false;
-      this.secretCodeField.CharacterCasing = System.Windows.Forms.CharacterCasing.Upper;
-      this.secretCodeField.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte) (204)));
-      this.secretCodeField.Location = new System.Drawing.Point(32, 155);
-      this.secretCodeField.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+      this.secretCodeField.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+      this.secretCodeField.Location = new System.Drawing.Point(15, 102);
       this.secretCodeField.Name = "secretCodeField";
-      this.secretCodeField.Size = new System.Drawing.Size(628, 35);
-      this.secretCodeField.TabIndex = 1;
+      this.secretCodeField.Size = new System.Drawing.Size(417, 26);
+      this.secretCodeField.TabIndex = 3;
       this.secretCodeField.Leave += new System.EventHandler(this.secretCodeField_Leave);
       // 
       // step1Label
       // 
-      this.step1Label.Location = new System.Drawing.Point(32, 100);
-      this.step1Label.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+      this.step1Label.Location = new System.Drawing.Point(12, 54);
       this.step1Label.Name = "step1Label";
-      this.step1Label.Size = new System.Drawing.Size(638, 50);
-      this.step1Label.TabIndex = 1;
-      this.step1Label.Text = "1. Enter the Secret Code or KeyUri string. Spaces don\'t matter. If you have a QR " + "code, you can paste the URL of the image instead.\r\n";
+      this.step1Label.Size = new System.Drawing.Size(425, 45);
+      this.step1Label.TabIndex = 2;
+      this.step1Label.Text = "1. Enter the Secret Code or KeyUri string. Spaces don\'t matter. If you have a QR " +
+    "code, you can paste the URL of the image instead. Or you can take QR code from y" +
+    "our dislay like a screenshot";
       // 
       // okButton
       // 
-      this.okButton.Anchor = ((System.Windows.Forms.AnchorStyles) ((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+      this.okButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
       this.okButton.DialogResult = System.Windows.Forms.DialogResult.OK;
-      this.okButton.Location = new System.Drawing.Point(452, 801);
-      this.okButton.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+      this.okButton.Location = new System.Drawing.Point(279, 500);
       this.okButton.Name = "okButton";
-      this.okButton.Size = new System.Drawing.Size(112, 35);
-      this.okButton.TabIndex = 3;
+      this.okButton.Size = new System.Drawing.Size(75, 23);
+      this.okButton.TabIndex = 21;
       this.okButton.Text = "OK";
       this.okButton.Click += new System.EventHandler(this.okButton_Click);
       // 
       // cancelButton
       // 
-      this.cancelButton.Anchor = ((System.Windows.Forms.AnchorStyles) ((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+      this.cancelButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
       this.cancelButton.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-      this.cancelButton.Location = new System.Drawing.Point(574, 801);
-      this.cancelButton.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+      this.cancelButton.Location = new System.Drawing.Point(361, 500);
       this.cancelButton.Name = "cancelButton";
-      this.cancelButton.Size = new System.Drawing.Size(112, 35);
-      this.cancelButton.TabIndex = 4;
+      this.cancelButton.Size = new System.Drawing.Size(75, 23);
+      this.cancelButton.TabIndex = 22;
       this.cancelButton.Text = "Cancel";
       this.cancelButton.Click += new System.EventHandler(this.cancelButton_Click);
       // 
       // nameLabel
       // 
       this.nameLabel.AutoSize = true;
-      this.nameLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte) (204)));
-      this.nameLabel.Location = new System.Drawing.Point(32, 28);
-      this.nameLabel.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+      this.nameLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+      this.nameLabel.Location = new System.Drawing.Point(12, 18);
       this.nameLabel.Name = "nameLabel";
-      this.nameLabel.Size = new System.Drawing.Size(60, 20);
-      this.nameLabel.TabIndex = 3;
+      this.nameLabel.Size = new System.Drawing.Size(43, 13);
+      this.nameLabel.TabIndex = 0;
       this.nameLabel.Text = "Name:";
       // 
       // nameField
       // 
-      this.nameField.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte) (204)));
-      this.nameField.Location = new System.Drawing.Point(113, 18);
-      this.nameField.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+      this.nameField.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+      this.nameField.Location = new System.Drawing.Point(66, 12);
       this.nameField.Name = "nameField";
-      this.nameField.Size = new System.Drawing.Size(547, 35);
-      this.nameField.TabIndex = 0;
+      this.nameField.Size = new System.Drawing.Size(366, 26);
+      this.nameField.TabIndex = 1;
       // 
       // step2Label
       // 
-      this.step2Label.Location = new System.Drawing.Point(32, 206);
-      this.step2Label.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+      this.step2Label.Location = new System.Drawing.Point(12, 169);
       this.step2Label.Name = "step2Label";
-      this.step2Label.Size = new System.Drawing.Size(634, 50);
-      this.step2Label.TabIndex = 10;
-      this.step2Label.Text = "2. Select additional settings. If you don\'t know, it\'s likely the pre-selected on" + "es so just leave the default choice.";
+      this.step2Label.Size = new System.Drawing.Size(423, 32);
+      this.step2Label.TabIndex = 4;
+      this.step2Label.Text = "2. Select additional settings. If you don\'t know, it\'s likely the pre-selected on" +
+    "es so just leave the default choice.";
       // 
       // verifyButton
       // 
-      this.verifyButton.Location = new System.Drawing.Point(228, 66);
-      this.verifyButton.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+      this.verifyButton.Location = new System.Drawing.Point(139, 377);
       this.verifyButton.Name = "verifyButton";
-      this.verifyButton.Size = new System.Drawing.Size(237, 35);
-      this.verifyButton.TabIndex = 2;
+      this.verifyButton.Size = new System.Drawing.Size(158, 23);
+      this.verifyButton.TabIndex = 17;
       this.verifyButton.Text = "Verify Authenticator";
       this.verifyButton.Click += new System.EventHandler(this.verifyButton_Click);
       // 
       // codeProgress
       // 
-      this.codeProgress.Location = new System.Drawing.Point(222, 769);
-      this.codeProgress.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+      this.codeProgress.Location = new System.Drawing.Point(139, 472);
       this.codeProgress.Maximum = 30;
       this.codeProgress.Minimum = 1;
       this.codeProgress.Name = "codeProgress";
-      this.codeProgress.Size = new System.Drawing.Size(237, 12);
+      this.codeProgress.Size = new System.Drawing.Size(158, 8);
       this.codeProgress.Style = System.Windows.Forms.ProgressBarStyle.Continuous;
-      this.codeProgress.TabIndex = 13;
+      this.codeProgress.TabIndex = 20;
       this.codeProgress.Value = 1;
       this.codeProgress.Visible = false;
       // 
       // codeField
       // 
       this.codeField.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F);
-      this.codeField.Location = new System.Drawing.Point(222, 720);
-      this.codeField.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+      this.codeField.Location = new System.Drawing.Point(139, 440);
       this.codeField.Multiline = true;
       this.codeField.Name = "codeField";
       this.codeField.SecretMode = false;
-      this.codeField.Size = new System.Drawing.Size(235, 38);
+      this.codeField.Size = new System.Drawing.Size(158, 26);
       this.codeField.SpaceOut = 3;
-      this.codeField.TabIndex = 5;
+      this.codeField.TabIndex = 19;
       // 
-      // step5Label
+      // step4Label
       // 
-      this.step5Label.AutoSize = true;
-      this.step5Label.Location = new System.Drawing.Point(32, 678);
-      this.step5Label.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
-      this.step5Label.Name = "step5Label";
-      this.step5Label.Size = new System.Drawing.Size(353, 20);
-      this.step5Label.TabIndex = 11;
-      this.step5Label.Text = "4. Verify the following code matches your service.";
+      this.step4Label.AutoSize = true;
+      this.step4Label.Location = new System.Drawing.Point(12, 413);
+      this.step4Label.Name = "step4Label";
+      this.step4Label.Size = new System.Drawing.Size(240, 13);
+      this.step4Label.TabIndex = 18;
+      this.step4Label.Text = "4. Verify the following code matches your service.";
       // 
       // timer
       // 
@@ -179,138 +164,90 @@ namespace Authenticator {
       this.timer.Interval = 500;
       this.timer.Tick += new System.EventHandler(this.timer_Tick);
       // 
-      // step4TimerLabel
+      // step3Label
       // 
-      this.step4TimerLabel.Location = new System.Drawing.Point(34, 18);
-      this.step4TimerLabel.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
-      this.step4TimerLabel.Name = "step4TimerLabel";
-      this.step4TimerLabel.Size = new System.Drawing.Size(634, 43);
-      this.step4TimerLabel.TabIndex = 10;
-      this.step4TimerLabel.Text = "3. Click the Verify button to check the first code.";
+      this.step3Label.Location = new System.Drawing.Point(12, 331);
+      this.step3Label.Name = "step3Label";
+      this.step3Label.Size = new System.Drawing.Size(423, 40);
+      this.step3Label.TabIndex = 15;
+      this.step3Label.Text = "3. Click the Verify button to check the first code.";
       // 
       // timeBasedRadio
       // 
       this.timeBasedRadio.AutoSize = true;
       this.timeBasedRadio.Checked = true;
-      this.timeBasedRadio.Location = new System.Drawing.Point(243, 272);
-      this.timeBasedRadio.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+      this.timeBasedRadio.Location = new System.Drawing.Point(153, 212);
       this.timeBasedRadio.Name = "timeBasedRadio";
-      this.timeBasedRadio.Size = new System.Drawing.Size(117, 24);
-      this.timeBasedRadio.TabIndex = 5;
+      this.timeBasedRadio.Size = new System.Drawing.Size(80, 17);
+      this.timeBasedRadio.TabIndex = 6;
       this.timeBasedRadio.TabStop = true;
       this.timeBasedRadio.Text = "Time-based";
-      this.timeBasedRadio.CheckedChanged += new System.EventHandler(this.timeBasedRadio_CheckedChanged);
+      this.timeBasedRadio.CheckedChanged += new System.EventHandler(this.basementRadio_CheckedChanged);
       // 
       // counterBasedRadio
       // 
       this.counterBasedRadio.AutoSize = true;
-      this.counterBasedRadio.Location = new System.Drawing.Point(429, 272);
-      this.counterBasedRadio.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+      this.counterBasedRadio.Location = new System.Drawing.Point(277, 212);
       this.counterBasedRadio.Name = "counterBasedRadio";
-      this.counterBasedRadio.Size = new System.Drawing.Size(140, 24);
-      this.counterBasedRadio.TabIndex = 6;
+      this.counterBasedRadio.Size = new System.Drawing.Size(94, 17);
+      this.counterBasedRadio.TabIndex = 7;
       this.counterBasedRadio.Text = "Counter-based";
-      this.counterBasedRadio.CheckedChanged += new System.EventHandler(this.counterBasedRadio_CheckedChanged);
-      // 
-      // timeBasedPanel
-      // 
-      this.timeBasedPanel.Anchor = ((System.Windows.Forms.AnchorStyles) (((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) | System.Windows.Forms.AnchorStyles.Right)));
-      this.timeBasedPanel.Controls.Add(this.step4TimerLabel);
-      this.timeBasedPanel.Controls.Add(this.verifyButton);
-      this.timeBasedPanel.Location = new System.Drawing.Point(-2, 501);
-      this.timeBasedPanel.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
-      this.timeBasedPanel.Name = "timeBasedPanel";
-      this.timeBasedPanel.Size = new System.Drawing.Size(688, 129);
-      this.timeBasedPanel.TabIndex = 15;
-      // 
-      // counterBasedPanel
-      // 
-      this.counterBasedPanel.Anchor = ((System.Windows.Forms.AnchorStyles) (((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) | System.Windows.Forms.AnchorStyles.Right)));
-      this.counterBasedPanel.Controls.Add(this.verifyCounterButton);
-      this.counterBasedPanel.Controls.Add(this.counterField);
-      this.counterBasedPanel.Controls.Add(this.step4CounterLabel);
-      this.counterBasedPanel.Location = new System.Drawing.Point(-2, 498);
-      this.counterBasedPanel.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
-      this.counterBasedPanel.Name = "counterBasedPanel";
-      this.counterBasedPanel.Size = new System.Drawing.Size(688, 129);
-      this.counterBasedPanel.TabIndex = 2;
-      this.counterBasedPanel.Visible = false;
-      // 
-      // verifyCounterButton
-      // 
-      this.verifyCounterButton.Location = new System.Drawing.Point(306, 86);
-      this.verifyCounterButton.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
-      this.verifyCounterButton.Name = "verifyCounterButton";
-      this.verifyCounterButton.Size = new System.Drawing.Size(237, 35);
-      this.verifyCounterButton.TabIndex = 2;
-      this.verifyCounterButton.Text = "Verify Authenticator";
-      this.verifyCounterButton.Click += new System.EventHandler(this.verifyButton_Click);
+      this.counterBasedRadio.CheckedChanged += new System.EventHandler(this.basementRadio_CheckedChanged);
       // 
       // counterField
       // 
       this.counterField.AllowDrop = true;
       this.counterField.CausesValidation = false;
-      this.counterField.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte) (204)));
-      this.counterField.Location = new System.Drawing.Point(135, 86);
-      this.counterField.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+      this.counterField.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+      this.counterField.Location = new System.Drawing.Point(23, 376);
       this.counterField.Name = "counterField";
-      this.counterField.Size = new System.Drawing.Size(163, 35);
-      this.counterField.TabIndex = 0;
-      // 
-      // step4CounterLabel
-      // 
-      this.step4CounterLabel.Location = new System.Drawing.Point(34, 18);
-      this.step4CounterLabel.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
-      this.step4CounterLabel.Name = "step4CounterLabel";
-      this.step4CounterLabel.Size = new System.Drawing.Size(634, 66);
-      this.step4CounterLabel.TabIndex = 10;
-      this.step4CounterLabel.Text = "3. Enter the initial counter value if known. Click the Verify button that will sh" + "ow the last code that was used.";
+      this.counterField.Size = new System.Drawing.Size(110, 26);
+      this.counterField.TabIndex = 16;
+      this.counterField.Visible = false;
       // 
       // hashField
       // 
       this.hashField.FormattingEnabled = true;
-      this.hashField.ItemHeight = 20;
-      this.hashField.Items.AddRange(new object[] {"HMAC-SHA1", "HMAC-SHA256", "HMAC-SHA512"});
-      this.hashField.Location = new System.Drawing.Point(243, 311);
-      this.hashField.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+      this.hashField.ItemHeight = 13;
+      this.hashField.Items.AddRange(new object[] {
+            "HMAC-SHA1",
+            "HMAC-SHA256",
+            "HMAC-SHA512"});
+      this.hashField.Location = new System.Drawing.Point(153, 237);
       this.hashField.Name = "hashField";
-      this.hashField.Size = new System.Drawing.Size(146, 28);
-      this.hashField.TabIndex = 7;
+      this.hashField.Size = new System.Drawing.Size(99, 21);
+      this.hashField.TabIndex = 9;
       // 
       // intervalField
       // 
       this.intervalField.AllowDrop = true;
       this.intervalField.CausesValidation = false;
-      this.intervalField.Location = new System.Drawing.Point(243, 364);
-      this.intervalField.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+      this.intervalField.Location = new System.Drawing.Point(153, 264);
       this.intervalField.Name = "intervalField";
-      this.intervalField.Size = new System.Drawing.Size(142, 26);
-      this.intervalField.TabIndex = 8;
+      this.intervalField.Size = new System.Drawing.Size(100, 20);
+      this.intervalField.TabIndex = 11;
       // 
       // labelTYpe
       // 
-      this.labelTYpe.Location = new System.Drawing.Point(87, 267);
-      this.labelTYpe.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+      this.labelTYpe.Location = new System.Drawing.Point(49, 214);
       this.labelTYpe.Name = "labelTYpe";
-      this.labelTYpe.Size = new System.Drawing.Size(108, 32);
-      this.labelTYpe.TabIndex = 10;
+      this.labelTYpe.Size = new System.Drawing.Size(72, 20);
+      this.labelTYpe.TabIndex = 5;
       this.labelTYpe.Text = "Type";
       // 
       // hashLabel
       // 
-      this.hashLabel.Location = new System.Drawing.Point(87, 317);
-      this.hashLabel.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+      this.hashLabel.Location = new System.Drawing.Point(49, 240);
       this.hashLabel.Name = "hashLabel";
-      this.hashLabel.Size = new System.Drawing.Size(108, 32);
-      this.hashLabel.TabIndex = 10;
+      this.hashLabel.Size = new System.Drawing.Size(72, 20);
+      this.hashLabel.TabIndex = 8;
       this.hashLabel.Text = "Hash";
       // 
       // periodLabel
       // 
-      this.periodLabel.Location = new System.Drawing.Point(87, 364);
-      this.periodLabel.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+      this.periodLabel.Location = new System.Drawing.Point(49, 267);
       this.periodLabel.Name = "periodLabel";
-      this.periodLabel.Size = new System.Drawing.Size(108, 32);
+      this.periodLabel.Size = new System.Drawing.Size(72, 20);
       this.periodLabel.TabIndex = 10;
       this.periodLabel.Text = "Interval";
       // 
@@ -318,46 +255,54 @@ namespace Authenticator {
       // 
       this.digitsField.AllowDrop = true;
       this.digitsField.CausesValidation = false;
-      this.digitsField.Location = new System.Drawing.Point(243, 407);
-      this.digitsField.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+      this.digitsField.Location = new System.Drawing.Point(153, 290);
       this.digitsField.Name = "digitsField";
-      this.digitsField.Size = new System.Drawing.Size(142, 26);
-      this.digitsField.TabIndex = 9;
+      this.digitsField.Size = new System.Drawing.Size(100, 20);
+      this.digitsField.TabIndex = 14;
       // 
       // digitsLabel
       // 
-      this.digitsLabel.Location = new System.Drawing.Point(87, 407);
-      this.digitsLabel.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+      this.digitsLabel.Location = new System.Drawing.Point(49, 293);
       this.digitsLabel.Name = "digitsLabel";
-      this.digitsLabel.Size = new System.Drawing.Size(108, 32);
-      this.digitsLabel.TabIndex = 10;
+      this.digitsLabel.Size = new System.Drawing.Size(72, 20);
+      this.digitsLabel.TabIndex = 13;
       this.digitsLabel.Text = "Digits";
       // 
       // intervalLabelPost
       // 
-      this.intervalLabelPost.Location = new System.Drawing.Point(402, 364);
-      this.intervalLabelPost.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+      this.intervalLabelPost.Location = new System.Drawing.Point(259, 267);
       this.intervalLabelPost.Name = "intervalLabelPost";
-      this.intervalLabelPost.Size = new System.Drawing.Size(194, 32);
-      this.intervalLabelPost.TabIndex = 10;
+      this.intervalLabelPost.Size = new System.Drawing.Size(69, 20);
+      this.intervalLabelPost.TabIndex = 12;
       this.intervalLabelPost.Text = "seconds";
+      // 
+      // getFromScreenButton
+      // 
+      this.getFromScreenButton.Location = new System.Drawing.Point(274, 134);
+      this.getFromScreenButton.Name = "getFromScreenButton";
+      this.getFromScreenButton.Size = new System.Drawing.Size(158, 23);
+      this.getFromScreenButton.TabIndex = 23;
+      this.getFromScreenButton.Text = "Take from screen";
+      this.getFromScreenButton.Click += new System.EventHandler(this.getFromScreenButton_Click);
       // 
       // AddAuthenticator
       // 
       this.AcceptButton = this.okButton;
-      this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
+      this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
       this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
       this.BackColor = System.Drawing.SystemColors.Window;
       this.CancelButton = this.cancelButton;
-      this.ClientSize = new System.Drawing.Size(698, 850);
+      this.ClientSize = new System.Drawing.Size(443, 531);
+      this.Controls.Add(this.getFromScreenButton);
+      this.Controls.Add(this.counterField);
       this.Controls.Add(this.hashField);
-      this.Controls.Add(this.counterBasedPanel);
-      this.Controls.Add(this.timeBasedPanel);
+      this.Controls.Add(this.step3Label);
+      this.Controls.Add(this.verifyButton);
       this.Controls.Add(this.counterBasedRadio);
       this.Controls.Add(this.timeBasedRadio);
       this.Controls.Add(this.codeProgress);
       this.Controls.Add(this.codeField);
-      this.Controls.Add(this.step5Label);
+      this.Controls.Add(this.step4Label);
       this.Controls.Add(this.intervalLabelPost);
       this.Controls.Add(this.digitsLabel);
       this.Controls.Add(this.periodLabel);
@@ -373,20 +318,16 @@ namespace Authenticator {
       this.Controls.Add(this.nameField);
       this.Controls.Add(this.step1Label);
       this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
-      this.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
       this.MaximizeBox = false;
       this.MinimizeBox = false;
       this.Name = "AddAuthenticator";
-      this.ShowIcon = false;
       this.ShowInTaskbar = false;
       this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
       this.Text = "Add Authenticator";
       this.Load += new System.EventHandler(this.AddAuthenticator_Load);
-      this.timeBasedPanel.ResumeLayout(false);
-      this.counterBasedPanel.ResumeLayout(false);
-      this.counterBasedPanel.PerformLayout();
       this.ResumeLayout(false);
       this.PerformLayout();
+
     }
 
     #endregion
@@ -401,16 +342,12 @@ namespace Authenticator {
     private Button verifyButton;
     private System.Windows.Forms.ProgressBar codeProgress;
     private SecretTextBox codeField;
-    private System.Windows.Forms.Label step5Label;
+    private System.Windows.Forms.Label step4Label;
     private System.Windows.Forms.Timer timer;
-    private Label step4TimerLabel;
+    private Label step3Label;
     private System.Windows.Forms.RadioButton timeBasedRadio;
     private System.Windows.Forms.RadioButton counterBasedRadio;
-    private System.Windows.Forms.Panel timeBasedPanel;
-    private System.Windows.Forms.Panel counterBasedPanel;
-    private Label step4CounterLabel;
     private System.Windows.Forms.TextBox counterField;
-    private Button verifyCounterButton;
     private System.Windows.Forms.ComboBox hashField;
     private System.Windows.Forms.TextBox intervalField;
     private System.Windows.Forms.Label labelTYpe;
@@ -419,5 +356,6 @@ namespace Authenticator {
     private System.Windows.Forms.TextBox digitsField;
     private System.Windows.Forms.Label digitsLabel;
     private System.Windows.Forms.Label intervalLabelPost;
+    private Button getFromScreenButton;
   }
 }

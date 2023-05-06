@@ -698,8 +698,8 @@ namespace Authenticator {
       var iconindex = 1;
       var parentItem = menuitem;
       foreach (var entry in AuthMain.AuthenticatorIcons) {
-        var icon = entry.Item1;
-        var iconfile = entry.Item2;
+        var icon = entry.Key;
+        var iconfile = entry.Value;
         if (iconfile.Length == 0) {
           parentItem.DropDownItems.Add(new ToolStripSeparator());
         }
