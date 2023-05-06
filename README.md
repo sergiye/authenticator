@@ -23,6 +23,7 @@ Features include:
   * Data is protected with your password, locked to Windows machine or account
   * Additional password protection per authenticator
   * Selection of standard or custom icons
+  * Ability to scan QR code from computer screen, image URL or parse from 'otpauth' string
   * Portable mode preventing changes to other files or registry settings
   * Import and export in UriKeyFormat and from Authenticator Plus for Android 
 
@@ -43,11 +44,6 @@ To use:
   * Right-click any authenticator to bring up context menu
   * Click the icon on the right to show the current code, if auto-refresh is not enabled
   * Click cog/options icon for program options
-
-To compile and build from source:
-  * Download source code file or clone project
-  * Requires Microsoft Visual Studio 2019 (or higher)
-  * any other dependencies are included in the source tree in the 3rd Party folder
 
 ----
 
