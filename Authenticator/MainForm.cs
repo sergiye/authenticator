@@ -112,7 +112,7 @@ namespace Authenticator {
         var ex = configTask.Result.Item2;
         switch (ex) {
           case AuthInvalidNewerConfigException _:
-            MessageBox.Show(this, ex.Message, AuthMain.APPLICATION_TITLE, MessageBoxButtons.OK, MessageBoxIcon.Error);
+            MessageBox.Show(this, ex.Message, AuthHelper.APPLICATION_TITLE, MessageBoxButtons.OK, MessageBoxIcon.Error);
             System.Diagnostics.Process.GetCurrentProcess().Kill();
             return;
           case EncryptedSecretDataException _:
@@ -361,7 +361,7 @@ namespace Authenticator {
 
       // set title
       notifyIcon.Visible = Config.UseTrayIcon;
-      notifyIcon.Text = Text = AuthMain.APPLICATION_TITLE;
+      notifyIcon.Text = Text = AuthHelper.APPLICATION_TITLE;
 
       // set positions
       if (Config.Position.IsEmpty == false) {
@@ -468,13 +468,13 @@ namespace Authenticator {
       }
 #endif
 
-      return MessageBox.Show(form, message, AuthMain.APPLICATION_TITLE, buttons, MessageBoxIcon.Exclamation);
+      return MessageBox.Show(form, message, AuthHelper.APPLICATION_TITLE, buttons, MessageBoxIcon.Exclamation);
     }
 
     public static DialogResult ConfirmDialog(Form form, string message,
       MessageBoxButtons buttons = MessageBoxButtons.YesNo, MessageBoxIcon icon = MessageBoxIcon.Question,
       MessageBoxDefaultButton defaultButton = MessageBoxDefaultButton.Button1) {
-      return MessageBox.Show(form, message, AuthMain.APPLICATION_TITLE, buttons, icon, defaultButton);
+      return MessageBox.Show(form, message, AuthHelper.APPLICATION_TITLE, buttons, icon, defaultButton);
     }
 
     private void LoadAddAuthenticatorTypes() {
@@ -482,7 +482,7 @@ namespace Authenticator {
 
       ToolStripMenuItem subitem;
       var index = 0;
-      foreach (var auth in AuthMain.RegisteredAuthenticators) {
+      foreach (var auth in AuthHelper.RegisteredAuthenticators) {
         if (auth == null) {
           addAuthenticatorMenu.Items.Add(new ToolStripSeparator());
           continue;
@@ -586,7 +586,7 @@ namespace Authenticator {
           // only show an error the first time
           clipRetry = (MessageBox.Show(this,
             "Unable to copy to the clipboard. Another application is probably using it.\nTry again?",
-            AuthMain.APPLICATION_NAME, MessageBoxButtons.YesNo, MessageBoxIcon.Warning,
+            AuthHelper.APPLICATION_NAME, MessageBoxButtons.YesNo, MessageBoxIcon.Warning,
             MessageBoxDefaultButton.Button2) == DialogResult.Yes);
         }
       } while (clipRetry);
@@ -840,7 +840,7 @@ namespace Authenticator {
 
       ofd.Filter = "Authenticator Files (*.config)|*.config|*.xml|Text Files (*.txt)|*.txt|Zip Files (*.zip)|*.zip|PGP Files (*.pgp)|*.pgp|All Files (*.*)|*.*";
       ofd.RestoreDirectory = true;
-      ofd.Title = AuthMain.APPLICATION_TITLE;
+      ofd.Title = AuthHelper.APPLICATION_TITLE;
       if (ofd.ShowDialog(this) == DialogResult.OK) {
         ImportAuthenticator(ofd.FileName);
       }

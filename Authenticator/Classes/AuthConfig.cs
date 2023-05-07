@@ -10,8 +10,6 @@ using System.Xml;
 using System.Xml.Serialization;
 
 namespace Authenticator {
-  public delegate void ConfigChangedHandler(object source, ConfigChangedEventArgs args);
-
   [Serializable]
   public class AuthConfig : IList<AuthAuthenticator>, ICloneable {
     public static decimal CurrentVersion = decimal.Parse(Assembly.GetExecutingAssembly().GetName().Version.ToString(2),
@@ -22,7 +20,7 @@ namespace Authenticator {
       CopyToClipboard = 1,
     }
 
-    public event ConfigChangedHandler OnConfigChanged;
+    public event EventHandler<ConfigChangedEventArgs> OnConfigChanged;
 
     public decimal Version { get; private set; }
 

@@ -695,12 +695,12 @@ namespace Authenticator {
       menuitem.DropDownItems.Add(subitem);
       menuitem.DropDownItems.Add("-");
       ContextMenuStrip.Items.Add(menuitem);
-      var iconindex = 1;
+      var iconIndex = 1;
       var parentItem = menuitem;
-      foreach (var entry in AuthMain.AuthenticatorIcons) {
+      foreach (var entry in AuthHelper.AuthenticatorIcons) {
         var icon = entry.Key;
-        var iconfile = entry.Value;
-        if (iconfile.Length == 0) {
+        var iconFile = entry.Value;
+        if (iconFile.Length == 0) {
           parentItem.DropDownItems.Add(new ToolStripSeparator());
         }
         else if (icon.StartsWith("+")) {
@@ -712,7 +712,7 @@ namespace Authenticator {
           subitem.Text = icon.Substring(1);
           //subitem.Name = "iconMenuItem_" + iconindex++;
           subitem.Tag = parentItem;
-          subitem.Image = new Bitmap(Assembly.GetExecutingAssembly().GetManifestResourceStream("Authenticator.Resources." + iconfile));
+          subitem.Image = new Bitmap(Assembly.GetExecutingAssembly().GetManifestResourceStream("Authenticator.Resources." + iconFile));
           subitem.ImageAlign = ContentAlignment.MiddleLeft;
           subitem.ImageScaling = ToolStripItemImageScaling.SizeToFit;
           //subitem.Click += ContextMenu_Click;
@@ -722,9 +722,9 @@ namespace Authenticator {
         else {
           subitem = new ToolStripMenuItem();
           subitem.Text = icon;
-          subitem.Name = "iconMenuItem_" + iconindex++;
-          subitem.Tag = iconfile;
-          subitem.Image = new Bitmap(Assembly.GetExecutingAssembly().GetManifestResourceStream("Authenticator.Resources." + iconfile));
+          subitem.Name = "iconMenuItem_" + iconIndex++;
+          subitem.Tag = iconFile;
+          subitem.Image = new Bitmap(Assembly.GetExecutingAssembly().GetManifestResourceStream("Authenticator.Resources." + iconFile));
           subitem.ImageAlign = ContentAlignment.MiddleLeft;
           subitem.ImageScaling = ToolStripItemImageScaling.SizeToFit;
           subitem.Click += ContextMenu_Click;
@@ -1125,7 +1125,7 @@ namespace Authenticator {
                 catch (Exception ex) {
                   if (MessageBox.Show(Parent as Form,
                         $"Error loading image file: {ex.Message}\nDo you want to try again?",
-                        AuthMain.APPLICATION_NAME,
+                        AuthHelper.APPLICATION_NAME,
                         MessageBoxButtons.YesNo, MessageBoxIcon.Warning, MessageBoxDefaultButton.Button2) ==
                       DialogResult.Yes) {
                     continue;

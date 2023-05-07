@@ -71,7 +71,6 @@ namespace Authenticator
       this.closeButton.TabIndex = 0;
       this.closeButton.Text = "Close";
       this.closeButton.UseVisualStyleBackColor = true;
-      this.closeButton.Click += new System.EventHandler(this.quitButton_Click);
       // 
       // panControls
       // 

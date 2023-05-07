@@ -182,12 +182,12 @@ namespace Authenticator {
         if (hWnd != IntPtr.Zero) {
           var len = WinApi.GetWindowTextLength(hWnd);
           if (len == 0) {
-            AuthMain.LogException(new ApplicationException("Clipboard in use by another process"));
+            AuthHelper.ShowException(new ApplicationException("Clipboard in use by another process"));
           }
           else {
             var sb = new StringBuilder(len + 1);
             WinApi.GetWindowText(hWnd, sb, sb.Capacity);
-            AuthMain.LogException(new ApplicationException("Clipboard in use by '" + sb + "'"));
+            AuthHelper.ShowException(new ApplicationException("Clipboard in use by '" + sb + "'"));
           }
 
           failed = true;
@@ -210,7 +210,7 @@ namespace Authenticator {
           // only show an error the first time
           clipRetry = (MessageBox.Show(form,
             "Unable to copy to the clipboard. Another application is probably using it.\nTry again?",
-            AuthMain.APPLICATION_NAME, MessageBoxButtons.YesNo, MessageBoxIcon.Warning,
+            AuthHelper.APPLICATION_NAME, MessageBoxButtons.YesNo, MessageBoxIcon.Warning,
             MessageBoxDefaultButton.Button2) == DialogResult.Yes);
         }
       } while (clipRetry);

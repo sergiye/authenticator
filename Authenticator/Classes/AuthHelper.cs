@@ -1,9 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
-using System.Globalization;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Security;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Web;
@@ -17,12 +18,181 @@ using Org.BouncyCastle.Bcpg.OpenPgp;
 using Org.BouncyCastle.Crypto.Generators;
 using Org.BouncyCastle.Crypto.Parameters;
 using Org.BouncyCastle.Math;
+using Org.BouncyCastle.Security;
 
 namespace Authenticator {
   class AuthHelper {
     private const string RUNKEY = @"Software\Microsoft\Windows\CurrentVersion\Run";
 
     public const string DEFAULT_AUTHENTICATOR_FILE_NAME = "Authenticator.config";
+
+    public const string APPLICATION_NAME = "Authenticator";
+    public const string APPLICATION_TITLE = "Authenticator";
+
+    #region Config
+
+    public static Dictionary<string, string> AuthenticatorIcons = new Dictionary<string, string> {
+      {"Default", "AppIcon.png"},
+
+      {"+Social", "FacebookIcon.png"},
+      {"Facebook", "FacebookIcon.png"},
+      {"Instagram", "InstagramIcon.png"},
+      {"Twitter", "TwitterIcon.png"},
+      {"LinkedIn", "LinkedinIcon.png"},
+      {"Flickr", "FlickrIcon.png"},
+      {"Tumblr", "TumblrIcon.png"},
+      {"Tumblr (Flat)", "Tumblr2Icon.png"},
+      {"Wordpress", "WordpressIcon.png"},
+      {"Wordpress (B&W)", "WordpressWhiteIcon.png"},
+      {"Okta", "OktaVerifyAuthenticatorIcon.png"},
+      {"Yahoo", "YahooIcon.png"},
+      {"eBay", "eBayIcon.png"},
+
+      {"+Software", "MicrosoftAuthenticatorIcon.png"},
+      {"Microsoft", "MicrosoftAuthenticatorIcon.png"},
+      {"Windows 8", "Windows8Icon.png"},
+      {"Windows 7", "Windows7Icon.png"},
+      {"Windows Phone", "WindowsPhoneIcon.png"},
+
+      {"s1", string.Empty},
+      {"Android", "AndroidIcon.png"},
+      {"s2", string.Empty},
+      {"Apple", "AppleIcon.png"},
+      {"Apple (Black)", "AppleWhiteIcon.png"},
+      {"Apple (Color)", "AppleColorIcon.png"},
+      {"Mac", "MacIcon.png"},
+
+      {"s3", string.Empty},
+      {"Amazon", "AmazonIcon.png"},
+      {"Amazon AWS", "AmazonAWSIcon.png"},
+
+      {"s4", string.Empty},
+      {"PayPal", "PayPalIcon.png"},
+
+      {"s5", string.Empty},
+      {"Git", "GitIcon.png"},
+      {"GitHub", "GitHubIcon.png"},
+      {"GitHub (White)", "GitHub2Icon.png"},
+      {"GitLab", "GitLabIcon.png"},
+      {"GitLab (Fox)", "GitLabFox2Icon.png"},
+      {"BitBucket", "BitBucketIcon.png"},
+      {"DigitalOcean", "DigitalOceanIcon.png"},
+      {"Dreamhost", "DreamhostIcon.png"},
+      {"DropBox", "DropboxIcon.png"},
+      {"DropBox (White)", "DropboxWhiteIcon.png"},
+      {"Evernote", "EvernoteIcon.png"},
+      {"IFTTT", "IFTTTIcon.png"},
+      {"Itch.io", "ItchIcon.png"},
+      {"KickStarter", "KickStarterIcon.png"},
+      {"LastPass", "LastPassIcon.png"},
+      {"Name.com", "NameIcon.png"},
+      {"Teamviewer", "TeamviewerIcon.png"},
+      {"Xero", "XeroIcon.png"},
+      {"Zoho", "ZohoIcon.png"},
+
+
+      {"+Google", "GoogleIcon.png"},
+      {"Authenticator", "GoogleAuthenticatorIcon.png"},
+      {"Google", "GoogleIcon.png"},
+      {"Chrome", "ChromeIcon.png"},
+      {"Google (Blue)", "Google2Icon.png"},
+      {"GMail", "GMailIcon.png"},
+
+
+      {"+Crypto", "BitcoinIcon.png"},
+      {"Bitcoin", "BitcoinIcon.png"},
+      {"Bitcoin Gold", "BitcoinGoldIcon.png"},
+      {"Bitcoin Euro", "BitcoinEuroIcon.png"},
+      {"Litecoin", "LitecoinIcon.png"},
+      {"Dogecoin", "DogeIcon.png"},
+
+
+      {"+Games", "BattleNetAuthenticatorIcon.png"},
+      {"Steam", "SteamAuthenticatorIcon.png"},
+      {"Steam (Circle)", "SteamIcon.png"},
+      
+      {"s6", string.Empty},
+      {"Battle.Net", "BattleNetAuthenticatorIcon.png"},
+      {"World of Warcraft", "WarcraftIcon.png"},
+      {"Diablo III", "DiabloIcon.png"},
+
+      {"s7", string.Empty},
+      {"EA", "EAIcon.png"},
+      {"EA (White)", "EA2Icon.png"},
+      {"EA (Black)", "EA3Icon.png"},
+      
+      {"s8", string.Empty},
+      {"Origin", "OriginIcon.png"},
+      
+      {"s9", string.Empty},
+      {"ArenaNet", "ArenaNetIcon.png"},
+      {"Guild Wars 2", "GuildWarsAuthenticatorIcon.png"},
+      
+      {"s10", string.Empty},
+      {"Trion", "TrionAuthenticatorIcon.png"},
+      {"Glyph", "GlyphIcon.png"},
+      {"ArcheAge", "ArcheAgeIcon.png"},
+      {"Rift", "RiftIcon.png"},
+      {"Defiance", "DefianceIcon.png"},
+      
+      {"s11", string.Empty},
+      {"WildStar", "WildstarIcon.png"},
+      
+      {"s12", string.Empty},
+      {"Firefall", "FirefallIcon.png"},
+      
+      {"s13", string.Empty},
+      {"RuneScape", "RuneScapeIcon.png"},
+      
+      {"s14", string.Empty},
+      {"SWTOR", "Swtor.png"},
+      {"SWTOR (Empire)", "SwtorEmpire.png"},
+      {"SWTOR (Republic)", "SwtorRepublic.png"},
+    };
+
+    public static List<RegisteredAuthenticator> RegisteredAuthenticators = new List<RegisteredAuthenticator> {
+      new RegisteredAuthenticator {
+        Name = "Time-Based", 
+        AuthenticatorType = RegisteredAuthenticator.AuthenticatorTypes.RFC6238_TIME,
+        Icon = "AppIcon.png"
+      },
+      
+      null,
+      new RegisteredAuthenticator {
+        Name = "Google", 
+        AuthenticatorType = RegisteredAuthenticator.AuthenticatorTypes.Google, 
+        Icon = "GoogleIcon.png"
+      },
+      new RegisteredAuthenticator {
+        Name = "Microsoft", 
+        AuthenticatorType = RegisteredAuthenticator.AuthenticatorTypes.Microsoft,
+        Icon = "MicrosoftAuthenticatorIcon.png"
+      },
+      new RegisteredAuthenticator {
+        Name = "Okta Verify", 
+        AuthenticatorType = RegisteredAuthenticator.AuthenticatorTypes.OktaVerify,
+        Icon = "OktaVerifyAuthenticatorIcon.png"
+      },
+      
+      null,
+      new RegisteredAuthenticator {
+        Name = "Battle.Net", 
+        AuthenticatorType = RegisteredAuthenticator.AuthenticatorTypes.BattleNet,
+        Icon = "BattleNetAuthenticatorIcon.png"
+      },
+      new RegisteredAuthenticator {
+        Name = "Guild Wars 2", 
+        AuthenticatorType = RegisteredAuthenticator.AuthenticatorTypes.GuildWars,
+        Icon = "GuildWarsAuthenticatorIcon.png"
+      },
+      new RegisteredAuthenticator {
+        Name = "Glyph / Trion", 
+        AuthenticatorType = RegisteredAuthenticator.AuthenticatorTypes.Trion,
+        Icon = "GlyphIcon.png"
+      },
+    };
+    
+    #endregion
 
     public static AuthConfig LoadConfig(string configFile, string password = null) {
       var config = new AuthConfig();
@@ -49,7 +219,7 @@ namespace Authenticator {
       if (string.IsNullOrEmpty(configFile)) {
         // do we have a file specific in the registry?
         var configDirectory = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
-          AuthMain.APPLICATION_NAME);
+          APPLICATION_NAME);
         // check for default authenticator
         configFile = Path.Combine(configDirectory, DEFAULT_AUTHENTICATOR_FILE_NAME);
         // if no config file, just return a blank config
@@ -138,7 +308,7 @@ namespace Authenticator {
         // if no config file yet, use default
         if (string.IsNullOrEmpty(config.Filename)) {
           var configDirectory = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
-            AuthMain.APPLICATION_NAME);
+            APPLICATION_NAME);
           Directory.CreateDirectory(configDirectory);
           config.Filename = Path.Combine(configDirectory, DEFAULT_AUTHENTICATOR_FILE_NAME);
         }
@@ -189,10 +359,10 @@ namespace Authenticator {
     public static void SetStartWithWindows(bool enabled) {
       if (enabled) {
         // get path of exe and minimize flag
-        WriteRegistryValue(RUNKEY + "\\" + AuthMain.APPLICATION_NAME, Application.ExecutablePath + " -min");
+        WriteRegistryValue(RUNKEY + "\\" + APPLICATION_NAME, Application.ExecutablePath + " -min");
       }
       else {
-        DeleteRegistryKey(RUNKEY + "\\" + AuthMain.APPLICATION_NAME);
+        DeleteRegistryKey(RUNKEY + "\\" + APPLICATION_NAME);
       }
     }
 
@@ -536,46 +706,6 @@ namespace Authenticator {
 
     #region HttpUtility
 
-    public static string HtmlEncode(string text) {
-      if (string.IsNullOrEmpty(text)) {
-        return text;
-      }
-
-      var sb = new StringBuilder(text.Length);
-
-      var len = text.Length;
-      for (var i = 0; i < len; i++) {
-        switch (text[i]) {
-          case '<':
-            sb.Append("&lt;");
-            break;
-          case '>':
-            sb.Append("&gt;");
-            break;
-          case '"':
-            sb.Append("&quot;");
-            break;
-          case '&':
-            sb.Append("&amp;");
-            break;
-          default:
-            if (text[i] > 159) {
-              // decimal numeric entity
-              sb.Append("&#");
-              sb.Append(((int) text[i]).ToString(CultureInfo.InvariantCulture));
-              sb.Append(";");
-            }
-            else {
-              sb.Append(text[i]);
-            }
-
-            break;
-        }
-      }
-
-      return sb.ToString();
-    }
-
     public static NameValueCollection ParseQueryString(string qs) {
       var pairs = new NameValueCollection();
 
@@ -648,7 +778,7 @@ namespace Authenticator {
           key.SetValue(valuekey, value);
         }
       }
-      catch (System.Security.SecurityException) {
+      catch (SecurityException) {
       }
     }
 
@@ -693,7 +823,7 @@ namespace Authenticator {
           if (key.SubKeyCount == 0 && key.ValueCount == 0) baseKey.DeleteSubKey(subKey, false);
         }
       }
-      catch (System.Security.SecurityException) {
+      catch (SecurityException) {
       }
     }
 
@@ -705,7 +835,7 @@ namespace Authenticator {
       out string publicKey) {
       // generate a new RSA keypair 
       var gen = new RsaKeyPairGenerator();
-      gen.Init(new RsaKeyGenerationParameters(BigInteger.ValueOf(0x101), new Org.BouncyCastle.Security.SecureRandom(),
+      gen.Init(new RsaKeyGenerationParameters(BigInteger.ValueOf(0x101), new SecureRandom(),
         bits, 80));
       var pair = gen.GenerateKeyPair();
 
@@ -732,7 +862,7 @@ namespace Authenticator {
         (password != null ? password.ToCharArray() : null),
         hashedGen.Generate(),
         unhashedGen.Generate(),
-        new Org.BouncyCastle.Security.SecureRandom());
+        new SecureRandom());
 
       // extract the keys
       using (var ms = new MemoryStream()) {
@@ -776,7 +906,7 @@ namespace Authenticator {
       using (var encryptedStream = new MemoryStream()) {
         using (var armored = new ArmoredOutputStream(encryptedStream)) {
           var pedg = new PgpEncryptedDataGenerator(SymmetricKeyAlgorithmTag.Cast5, true,
-            new Org.BouncyCastle.Security.SecureRandom());
+            new SecureRandom());
           pedg.AddMethod(publicKey);
           using (var pedgStream = pedg.Open(armored, new byte[4096])) {
             var pcdg = new PgpCompressedDataGenerator(CompressionAlgorithmTag.Zip);
@@ -841,5 +971,16 @@ namespace Authenticator {
     }
 
     #endregion
+
+    public static void ShowException(Exception ex) {
+      try {
+        if (new ExceptionForm(ex).ShowDialog() == DialogResult.Cancel) {
+          Process.GetCurrentProcess().Kill();
+        }
+      }
+      catch (Exception) {
+        // ignored
+      }
+    }
   }
 }
