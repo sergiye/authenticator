@@ -23,7 +23,7 @@ Features include:
   * Data is protected with your password, locked to Windows machine or account
   * Additional password protection per authenticator
   * Selection of standard or custom icons
-  * Ability to scan QR code from computer screen, image URL or parse from 'otpauth' string
+  * Capture a QR code from a selected area of the screen, image URL or parse from 'otpauth' string
   * Portable mode preventing changes to other files or registry settings
   * Import and export in UriKeyFormat and from Authenticator Plus for Android 
 
