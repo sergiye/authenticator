@@ -40,10 +40,10 @@ Features include:
 To use:
   * Download the latest version from releases
   * There is no installation required, just start executable file from anywhere on your computer
-  * Click the Add button to add or import an authenticator
+  * Use the Add menu item to add or import an authenticator
   * Right-click any authenticator to bring up context menu
   * Click the icon on the right to show the current code, if auto-refresh is not enabled
-  * Click cog/options icon for program options
+  * Use options menu for program options
 
 ----
 
