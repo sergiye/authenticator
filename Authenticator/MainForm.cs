@@ -464,7 +464,7 @@ namespace Authenticator {
       message += Environment.NewLine + Environment.NewLine + capture;
 
       if (ex != null) {
-        AuthMain.LogException(ex);
+        AuthHelper.ShowException(ex);
       }
 #endif
 
@@ -494,7 +494,7 @@ namespace Authenticator {
           Tag = auth
         };
         if (string.IsNullOrEmpty(auth.Icon) == false) {
-          subitem.Image = new Bitmap(Assembly.GetExecutingAssembly().GetManifestResourceStream("Authenticator.Resources." + auth.Icon));
+          subitem.Image = AuthHelper.GetIconBitmap(auth.Icon);
           subitem.ImageAlign = ContentAlignment.MiddleLeft;
           subitem.ImageScaling = ToolStripItemImageScaling.SizeToFit;
         }

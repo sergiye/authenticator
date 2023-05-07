@@ -3,7 +3,6 @@ using System.ComponentModel;
 using System.Drawing;
 using System.IO;
 using System.Linq;
-using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Windows.Forms;
@@ -712,7 +711,7 @@ namespace Authenticator {
           subitem.Text = icon.Substring(1);
           //subitem.Name = "iconMenuItem_" + iconindex++;
           subitem.Tag = parentItem;
-          subitem.Image = new Bitmap(Assembly.GetExecutingAssembly().GetManifestResourceStream("Authenticator.Resources." + iconFile));
+          subitem.Image = AuthHelper.GetIconBitmap(iconFile);
           subitem.ImageAlign = ContentAlignment.MiddleLeft;
           subitem.ImageScaling = ToolStripItemImageScaling.SizeToFit;
           //subitem.Click += ContextMenu_Click;
@@ -724,8 +723,8 @@ namespace Authenticator {
           subitem.Text = icon;
           subitem.Name = "iconMenuItem_" + iconIndex++;
           subitem.Tag = iconFile;
-          subitem.Image = new Bitmap(Assembly.GetExecutingAssembly().GetManifestResourceStream("Authenticator.Resources." + iconFile));
-          subitem.ImageAlign = ContentAlignment.MiddleLeft;
+          subitem.Image = AuthHelper.GetIconBitmap(iconFile);
+          subitem.ImageAlign = ContentAlignment.MiddleCenter;
           subitem.ImageScaling = ToolStripItemImageScaling.SizeToFit;
           subitem.Click += ContextMenu_Click;
           parentItem.DropDownItems.Add(subitem);
@@ -758,11 +757,9 @@ namespace Authenticator {
       if (item == null || (auth = item.Authenticator) == null || auth.AuthenticatorData == null)
         return;
 
-      var labelItem = menu.Items.Cast<ToolStripItem>().FirstOrDefault(i => i.Name == "contextMenuItemName") as ToolStripLabel;
-      if (labelItem != null) labelItem.Text = item.Authenticator.Name;
+      if (menu.Items.Cast<ToolStripItem>().FirstOrDefault(i => i.Name == "contextMenuItemName") is ToolStripLabel labelItem) labelItem.Text = item.Authenticator.Name;
 
-      var menuItem = menu.Items.Cast<ToolStripItem>().FirstOrDefault(i => i.Name == "setPasswordMenuItem") as ToolStripMenuItem;
-      if (menuItem != null)
+      if (menu.Items.Cast<ToolStripItem>().FirstOrDefault(i => i.Name == "setPasswordMenuItem") is ToolStripMenuItem menuItem)
         menuItem.Text = item.Authenticator.AuthenticatorData.PasswordType == Authenticator.PasswordTypes.Explicit
           ? "Change or Remove Password..."
           : "Set Password...";
@@ -1253,12 +1250,8 @@ namespace Authenticator {
         e.Graphics.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
 
         var rect = new Rectangle(e.Bounds.X + MARGIN_LEFT, e.Bounds.Y + MARGIN_TOP, ICON_WIDTH, ICON_HEIGHT);
-        if (cliprect.IntersectsWith(rect)) {
-          using (var icon = auth.Icon) {
-            if (icon != null) {
-              e.Graphics.DrawImage(icon, e.Bounds.X + MARGIN_LEFT, e.Bounds.Y + MARGIN_TOP, ICON_WIDTH, ICON_HEIGHT);
-            }
-          }
+        if (cliprect.IntersectsWith(rect) && auth.Icon != null) {
+          e.Graphics.DrawImage(auth.Icon, e.Bounds.X + MARGIN_LEFT, e.Bounds.Y + MARGIN_TOP, ICON_WIDTH, ICON_HEIGHT);
         }
 
         using (var font = new Font(e.Font.FontFamily, FONT_SIZE, FontStyle.Regular)) {

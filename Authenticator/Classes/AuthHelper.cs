@@ -2,8 +2,10 @@
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Diagnostics;
+using System.Drawing;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Security;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -971,6 +973,21 @@ namespace Authenticator {
     }
 
     #endregion
+
+    public static Bitmap GetIconBitmap(string iconFile, int width = 48, int height = 48) {
+      using (var iconStream = Assembly.GetExecutingAssembly()
+               .GetManifestResourceStream("Authenticator.Resources." + iconFile)) {
+        if (iconStream == null) return null;
+        // if (iconFile.EndsWith(".png"))
+          return new Bitmap(iconStream);
+        // if (iconFile.EndsWith(".svg")) {
+        //   var svgDoc = SvgDocument.Open<SvgDocument>(iconStream);
+        //   return new Bitmap(svgDoc.Draw(width, height));
+        //   // return new Bitmap(svgDoc.Draw(ICON_WIDTH, ICON_HEIGHT));
+        // }
+        // return null;
+      }
+    }
 
     public static void ShowException(Exception ex) {
       try {

@@ -58,7 +58,9 @@ namespace Authenticator {
     public string Skin {
       get => skin;
       set {
+        if (skin == value) return;
         skin = value;
+        icon = null; //reset
         OnAuthAuthenticatorChanged?.Invoke(this, new AuthAuthenticatorChangedEventArgs("Skin"));
       }
     }
@@ -80,43 +82,40 @@ namespace Authenticator {
       }
     }
 
+    private Bitmap icon;
     public Bitmap Icon {
-      get {
-
-        if (string.IsNullOrEmpty(Skin)) {
-          return GenerateDrawText(Name.Substring(0, 2).ToUpper(), Color.Azure, Color.CornflowerBlue);
-        }
-
-        if (Skin.StartsWith("base64:")) {
-          var bytes = Convert.FromBase64String(Skin.Substring(7));
-          if (bytes.Length > 0)
-            using (var stream = new MemoryStream(bytes, 0, bytes.Length))
-              return new Bitmap(stream);
+      get => icon ?? (icon = GenerateIconFromSkin());
+      set {
+        if (value == icon) return;
+        icon = value;
+        if (icon == null) {
+          Skin = null;
         }
         else {
-          using (var stream = Assembly.GetExecutingAssembly()
-                   .GetManifestResourceStream("Authenticator.Resources." + Skin)) {
-            if (stream != null) 
-              return new Bitmap(stream);
+          using (var ms = new MemoryStream()) {
+            icon.Save(ms, System.Drawing.Imaging.ImageFormat.Png);
+            Skin = "base64:" + Convert.ToBase64String(ms.ToArray());
           }
         }
+      }
+    }
+
+    private Bitmap GenerateIconFromSkin() {
+      if (string.IsNullOrEmpty(Skin)) {
+        return GenerateDrawText(Name.Substring(0, 2).ToUpper(), Color.Azure, Color.CornflowerBlue);
+      }
+
+      if (Skin.StartsWith("base64:")) {
+        var bytes = Convert.FromBase64String(Skin.Substring(7));
+        if (bytes.Length > 0)
+          using (var stream = new MemoryStream(bytes, 0, bytes.Length))
+            return new Bitmap(stream);
+      }
+      else {
+        return AuthHelper.GetIconBitmap(Skin);
+      }
         
-        if (AuthenticatorData == null)
-          return null;
-
-        return new Bitmap(Assembly.GetExecutingAssembly().GetManifestResourceStream("Authenticator.Resources." + AuthenticatorData.GetType().Name + "Icon.png"));
-      }
-      set {
-        if (value == null) {
-          Skin = null;
-          return;
-        }
-
-        using (var ms = new MemoryStream()) {
-          value.Save(ms, System.Drawing.Imaging.ImageFormat.Png);
-          Skin = "base64:" + Convert.ToBase64String(ms.ToArray());
-        }
-      }
+      return AuthenticatorData == null ? null : AuthHelper.GetIconBitmap(AuthenticatorData.GetType().Name + "Icon.png");
     }
 
     private static Bitmap GenerateDrawText(string text, Color textColor, Color backColor,
