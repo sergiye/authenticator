@@ -364,7 +364,6 @@
     <EmbeddedResource Include="Resources\BitcoinGoldIcon.png" />
     <EmbeddedResource Include="Resources\LitecoinIcon.png" />
     <EmbeddedResource Include="Resources\BitcoinEuroIcon.png" />
-    <EmbeddedResource Include="Resources\TextIcon.png" />
     <EmbeddedResource Include="Resources\AndroidIcon.png" />
     <EmbeddedResource Include="Resources\AppleIcon.png" />
     <EmbeddedResource Include="Resources\DropboxIcon.png" />

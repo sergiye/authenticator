@@ -5,14 +5,16 @@ using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Net;
-using System.Reflection;
-using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace Authenticator {
   public partial class MainForm : Form {
+    
+    private NotifyIcon notifyIcon;
+    private ContextMenuStrip notifyMenu;
+
     public MainForm() {
       InitializeComponent();
     }
@@ -36,7 +38,6 @@ namespace Authenticator {
     private void MainForm_Load(object sender, EventArgs e) {
       //Text = $"Authenticator {(Environment.Is64BitProcess ? "x64" : "x32")} - {Updater.CurrentVersion}";
       Icon = Icon.ExtractAssociatedIcon(Updater.CurrentFileLocation);
-      notifyIcon.Icon = Icon;
 
       // get any command arguments
       string password = null;
@@ -328,15 +329,14 @@ namespace Authenticator {
     }
 
     private void InitializeOnce() {
-      if (mInitOnce == false) {
-        // hook into System time change event
-        Microsoft.Win32.SystemEvents.TimeChanged += SystemEvents_TimeChanged;
+      if (mInitOnce) return;
+      // hook into System time change event
+      Microsoft.Win32.SystemEvents.TimeChanged += SystemEvents_TimeChanged;
 
-        // redirect mouse wheel events
-        new WinApi.MessageForwarder(authenticatorList, WinApi.WM_MOUSEWHEEL);
+      // redirect mouse wheel events
+      new WinApi.MessageForwarder(authenticatorList, WinApi.WM_MOUSEWHEEL);
 
-        mInitOnce = true;
-      }
+      mInitOnce = true;
     }
 
     private void InitializeForm() {
@@ -350,18 +350,25 @@ namespace Authenticator {
       SetAutoSize();
 
       // initialize UI
-      LoadAddAuthenticatorTypes();
-      LoadOptionsMenu(optionsMenu);
-      LoadNotifyMenu(notifyMenu);
-      loadingPanel.Visible = false;
-      passwordPanel.Visible = false;
-      commandPanel.Visible = true;
-      addAuthenticatorButton.Visible = !Config.IsReadOnly;
-      authenticatorList.Focus();
+      LoadMainMenu();
+      
+      notifyMenu = new ContextMenuStrip(components);
+      notifyMenu.Opening += (s, e) => OpeningNotifyMenu(notifyMenu, e);
+      LoadNotifyMenu(notifyMenu.Items);
+
+      notifyIcon = new NotifyIcon(components);
+      notifyIcon.Icon = Icon.ExtractAssociatedIcon(Updater.CurrentFileLocation);
+      notifyIcon.DoubleClick += notifyIcon_DoubleClick;
+      notifyIcon.ContextMenuStrip = notifyMenu;
+      notifyIcon.Visible = Config.UseTrayIcon;
 
       // set title
-      notifyIcon.Visible = Config.UseTrayIcon;
       notifyIcon.Text = Text = AuthHelper.APPLICATION_TITLE;
+
+      loadingPanel.Visible = false;
+      passwordPanel.Visible = false;
+      addToolStripMenuItem.Enabled = !Config.IsReadOnly;
+      authenticatorList.Focus();
 
       // set positions
       if (Config.Position.IsEmpty == false) {
@@ -401,9 +408,6 @@ namespace Authenticator {
       }
 
       if (Config.UseTrayIcon) {
-        notifyIcon.Visible = true;
-        notifyIcon.Text = Text;
-
         // if initially minimized, we need to hide
         if (WindowState == FormWindowState.Minimized) {
           Hide();
@@ -477,56 +481,18 @@ namespace Authenticator {
       return MessageBox.Show(form, message, AuthHelper.APPLICATION_TITLE, buttons, icon, defaultButton);
     }
 
-    private void LoadAddAuthenticatorTypes() {
-      addAuthenticatorMenu.Items.Clear();
-
-      ToolStripMenuItem subitem;
-      var index = 0;
-      foreach (var auth in AuthHelper.RegisteredAuthenticators) {
-        if (auth == null) {
-          addAuthenticatorMenu.Items.Add(new ToolStripSeparator());
-          continue;
-        }
-
-        subitem = new ToolStripMenuItem {
-          Text = auth.Name,
-          Name = "addAuthenticatorMenuItem_" + index++,
-          Tag = auth
-        };
-        if (string.IsNullOrEmpty(auth.Icon) == false) {
-          subitem.Image = AuthHelper.GetIconBitmap(auth.Icon);
-          subitem.ImageAlign = ContentAlignment.MiddleLeft;
-          subitem.ImageScaling = ToolStripItemImageScaling.SizeToFit;
-        }
-
-        subitem.Click += addAuthenticatorMenu_Click;
-        addAuthenticatorMenu.Items.Add(subitem);
-      }
-
-      //
-      addAuthenticatorMenu.Items.Add(new ToolStripSeparator());
-      //
-      subitem = new ToolStripMenuItem {
-        Text = "Import...",
-        Name = "importTextMenuItem",
-        Image = new Bitmap(Assembly.GetExecutingAssembly().GetManifestResourceStream("Authenticator.Resources.TextIcon.png")),
-        ImageAlign = ContentAlignment.MiddleLeft,
-        ImageScaling = ToolStripItemImageScaling.SizeToFit
-      };
-      subitem.Click += importTextMenu_Click;
-      addAuthenticatorMenu.Items.Add(subitem);
-    }
-
     protected override void WndProc(ref Message m) {
       base.WndProc(ref m);
 
-      // pick up the HotKey message from RegisterHotKey and call hook callback
-      if (m.Msg == WinApi.WM_USER + 1) {
-        // show the main form
-        BringToFront();
-        Show();
-        WindowState = FormWindowState.Normal;
-        Activate();
+      switch (m.Msg) {
+        // pick up the HotKey message from RegisterHotKey and call hook callback
+        case WinApi.WM_USER + 1:
+          // show the main form
+          BringToFront();
+          Show();
+          WindowState = FormWindowState.Normal;
+          Activate();
+          break;
       }
     }
 
@@ -575,23 +541,6 @@ namespace Authenticator {
       }
     }
 
-    public void SetClipboardData(object data) {
-      var clipRetry = false;
-      do {
-        try {
-          Clipboard.Clear();
-          Clipboard.SetDataObject(data, true, 4, 250);
-        }
-        catch (ExternalException) {
-          // only show an error the first time
-          clipRetry = (MessageBox.Show(this,
-            "Unable to copy to the clipboard. Another application is probably using it.\nTry again?",
-            AuthHelper.APPLICATION_NAME, MessageBoxButtons.YesNo, MessageBoxIcon.Warning,
-            MessageBoxDefaultButton.Button2) == DialogResult.Yes);
-        }
-      } while (clipRetry);
-    }
-
     private void SetAutoSize() {
       if (Config.AutoSize) {
         if (Config.Count != 0) {
@@ -604,7 +553,7 @@ namespace Authenticator {
         }
 
         // take the smallest of full height or 62% screen height
-        var height = commandPanel.Height + this.Height - this.ClientRectangle.Height + Config.Count * authenticatorList.ItemHeight;
+        var height = mainMenu.Height + Height - ClientRectangle.Height + Config.Count * authenticatorList.ItemHeight;
         Height = Math.Min(Screen.GetWorkingArea(this).Height * 62 / 100, height);
 
         FormBorderStyle = FormBorderStyle.FixedDialog;
@@ -632,9 +581,6 @@ namespace Authenticator {
     private void MainForm_Shown(object sender, EventArgs e) {
       // if we use tray icon make sure it is set
       if (Config != null && Config.UseTrayIcon) {
-        notifyIcon.Visible = true;
-        notifyIcon.Text = Text;
-
         // if initially minizied, we need to hide
         if (WindowState == FormWindowState.Minimized) {
           Hide();
@@ -646,7 +592,6 @@ namespace Authenticator {
       // keep in the tray when closing Form 
       if (Config != null && Config.UseTrayIcon && Visible && mExplictClose == false) {
         e.Cancel = true;
-        notifyIcon.Visible = true;
         Hide();
         return;
       }
@@ -838,7 +783,7 @@ namespace Authenticator {
         CheckPathExists = true
       };
 
-      ofd.Filter = "Authenticator Files (*.config)|*.config|*.xml|Text Files (*.txt)|*.txt|Zip Files (*.zip)|*.zip|PGP Files (*.pgp)|*.pgp|All Files (*.*)|*.*";
+      ofd.Filter = "Authenticator Files (*.config)|*.config|Text Files (*.txt)|*.txt|Zip Files (*.zip)|*.zip|PGP Files (*.pgp)|*.pgp|All Files (*.*)|*.*";
       ofd.RestoreDirectory = true;
       ofd.Title = AuthHelper.APPLICATION_TITLE;
       if (ofd.ShowDialog(this) == DialogResult.OK) {
@@ -853,14 +798,6 @@ namespace Authenticator {
       if (saveConfigTime != null && saveConfigTime.Value <= DateTime.Now) {
         SaveConfig();
       }
-    }
-
-    private void addAuthenticatorButton_Click(object sender, EventArgs e) {
-      addAuthenticatorMenu.Show(addAuthenticatorButton, addAuthenticatorButton.Width, 0);
-    }
-
-    private void optionsButton_Click(object sender, EventArgs e) {
-      optionsMenu.Show(optionsButton, optionsButton.Width - optionsMenu.Width, optionsButton.Height - 1);
     }
 
     private void notifyIcon_DoubleClick(object sender, EventArgs e) {
@@ -904,7 +841,7 @@ namespace Authenticator {
       // resort the config list
       Config.Sort();
       // update the notify menu
-      LoadNotifyMenu(notifyMenu);
+      LoadNotifyMenu(notifyMenu.Items);
 
       // update UI
       SetAutoSize();
@@ -918,10 +855,6 @@ namespace Authenticator {
     }
 
     private void MainForm_MouseDown(object sender, MouseEventArgs e) {
-      EndRenaming();
-    }
-
-    private void commandPanel_MouseDown(object sender, MouseEventArgs e) {
       EndRenaming();
     }
 
@@ -959,7 +892,7 @@ namespace Authenticator {
       }
     }
 
-    void SystemEvents_TimeChanged(object sender, EventArgs e) {
+    private void SystemEvents_TimeChanged(object sender, EventArgs e) {
       var cursor = Cursor.Current;
       Cursor.Current = Cursors.WaitCursor;
       foreach (var auth in Config) {
@@ -978,224 +911,121 @@ namespace Authenticator {
 
     #endregion
 
-    #region Options menu
+    #region Menu
 
-    private void LoadOptionsMenu(ContextMenuStrip menu) {
-      ToolStripMenuItem menuitem;
+    private void LoadMainMenu() {
+      mainMenu.Visible = true;
 
-      menu.Items.Clear();
+      //File section
+      AuthHelper.AddMenuItem(fileToolStripMenuItem.DropDownItems, "Export", "exportOptionsMenuItem", exportOptionsMenuItem_Click, Keys.Control | Keys.S);
+      var importMenuItem = AuthHelper.AddMenuItem(fileToolStripMenuItem.DropDownItems, "Import", onClick: importTextMenu_Click, shortcut: Keys.Control | Keys.O);
+      importMenuItem.Enabled = !Config.IsReadOnly;
+
+      AuthHelper.AddMenuItem(fileToolStripMenuItem.DropDownItems);
+      AuthHelper.AddMenuItem(fileToolStripMenuItem.DropDownItems, "Exit", "exitOptionsMenuItem", exitOptionMenuItem_Click, Keys.Control | Keys.W);
+      
+      //Add section
+      addToolStripMenuItem.DropDownItems.Clear();
+      var index = 0;
+      foreach (var auth in AuthHelper.RegisteredAuthenticators) {
+        if (auth == null) {
+          addToolStripMenuItem.DropDownItems.Add(new ToolStripSeparator());
+          continue;
+        }
+
+        var subItem = AuthHelper.AddMenuItem(addToolStripMenuItem.DropDownItems, auth.Name, "addAuthenticatorMenuItem_" + index++, addAuthenticatorMenu_Click, tag: auth);
+        if (string.IsNullOrEmpty(auth.Icon)) continue;
+        subItem.Image = AuthHelper.GetIconBitmap(auth.Icon);
+        subItem.ImageAlign = ContentAlignment.MiddleLeft;
+        subItem.ImageScaling = ToolStripItemImageScaling.SizeToFit;
+      }
+
+      //Options section
+      optionsToolStripMenuItem.DropDownOpening += OpeningOptionsMenu;
 
       if (Config != null && Config.IsPortable == false) {
-        menuitem = new ToolStripMenuItem("Start With Windows") {
-          Name = "startWithWindowsOptionsMenuItem"
-        };
-        menuitem.Click += startWithWindowsOptionsMenuItem_Click;
-        menu.Items.Add(menuitem);
+        AuthHelper.AddMenuItem(optionsToolStripMenuItem.DropDownItems, "Start With Windows", "startWithWindowsOptionsMenuItem", startWithWindowsOptionsMenuItem_Click);
       }
 
-      menuitem = new ToolStripMenuItem("Always on Top") {
-        Name = "alwaysOnTopOptionsMenuItem"
-      };
-      menuitem.Click += alwaysOnTopOptionsMenuItem_Click;
-      menu.Items.Add(menuitem);
-
-      menuitem = new ToolStripMenuItem("Use System Tray Icon") {
-        Name = "useSystemTrayIconOptionsMenuItem"
-      };
-      menuitem.Click += useSystemTrayIconOptionsMenuItem_Click;
-      menu.Items.Add(menuitem);
-
-      menuitem = new ToolStripMenuItem("Auto Size") {
-        Name = "autoSizeOptionsMenuItem"
-      };
-      menuitem.Click += autoSizeOptionsMenuItem_Click;
-      menu.Items.Add(menuitem);
-
-      menu.Items.Add(new ToolStripSeparator());
+      AuthHelper.AddMenuItem(optionsToolStripMenuItem.DropDownItems, "Always on Top", "alwaysOnTopOptionsMenuItem", alwaysOnTopOptionsMenuItem_Click);
+      AuthHelper.AddMenuItem(optionsToolStripMenuItem.DropDownItems, "Use System Tray Icon", "useSystemTrayIconOptionsMenuItem", useSystemTrayIconOptionsMenuItem_Click);
+      AuthHelper.AddMenuItem(optionsToolStripMenuItem.DropDownItems, "Auto Size", "autoSizeOptionsMenuItem", autoSizeOptionsMenuItem_Click);
+      AuthHelper.AddMenuItem(optionsToolStripMenuItem.DropDownItems);
 
       if (Config == null || Config.IsReadOnly == false) {
-        menuitem = new ToolStripMenuItem("Change Protection...") {
-          Name = "changePasswordOptionsMenuItem"
-        };
-        menuitem.Click += changePasswordOptionsMenuItem_Click;
-        menu.Items.Add(menuitem);
+        AuthHelper.AddMenuItem(optionsToolStripMenuItem.DropDownItems, "Change Protection", "changePasswordOptionsMenuItem", changePasswordOptionsMenuItem_Click);
       }
 
-      menuitem = new ToolStripMenuItem("Export...") {
-        Name = "exportOptionsMenuItem"
-      };
-      menuitem.Click += exportOptionsMenuItem_Click;
-      menu.Items.Add(menuitem);
-
-      menu.Items.Add(new ToolStripSeparator());
-
-      menuitem = new ToolStripMenuItem("Check for updates") {
-        Name = "checkUpdatesMenuItem"
-      };
-      menuitem.Click += (s, e) => Updater.CheckForUpdates(false);
-      menu.Items.Add(menuitem);
-
-      menuitem = new ToolStripMenuItem("About...") {
-        Name = "aboutOptionsMenuItem"
-      };
-      menuitem.Click += aboutOptionMenuItem_Click;
-      menu.Items.Add(menuitem);
-
-      menu.Items.Add(new ToolStripSeparator());
-
-      menuitem = new ToolStripMenuItem("Exit") {
-        Name = "exitOptionsMenuItem",
-        ShortcutKeys = Keys.F4 | Keys.Alt
-      };
-      menuitem.Click += exitOptionMenuItem_Click;
-      menu.Items.Add(menuitem);
+      //Help section
+      AuthHelper.AddMenuItem(helpToolStripMenuItem.DropDownItems, "Check for updates", "checkUpdatesMenuItem", (s, e) => Updater.CheckForUpdates(false));
+      AuthHelper.AddMenuItem(helpToolStripMenuItem.DropDownItems, "About", "aboutOptionsMenuItem", aboutOptionMenuItem_Click, Keys.F1);
     }
 
-    private void LoadNotifyMenu(ContextMenuStrip menu) {
-      ToolStripMenuItem menuitem;
-      ToolStripMenuItem subitem;
+    private void LoadNotifyMenu(ToolStripItemCollection menuItems) {
+      menuItems.Clear();
 
-      menu.Items.Clear();
-
-      menuitem = new ToolStripMenuItem("Open") {
-        Name = "openOptionsMenuItem"
-      };
-      menuitem.Click += openOptionsMenuItem_Click;
-      menu.Items.Add(menuitem);
-      menu.Items.Add(new ToolStripSeparator {Name = "openOptionsSeparatorItem"});
+      AuthHelper.AddMenuItem(menuItems,"Open", "openOptionsMenuItem", openOptionsMenuItem_Click);
+      AuthHelper.AddMenuItem(menuItems, null, "openOptionsSeparatorItem");
 
       if (Config != null && Config.Count != 0) {
         // because of window size, we only show first 30.
         // @todo change to MRU
         var index = 1;
         foreach (var auth in Config.Take(30)) {
-          menuitem = new ToolStripMenuItem(index + ". " + auth.Name) {
-            Name = "authenticatorOptionsMenuItem_" + index,
-            Tag = auth
-          };
-          menuitem.Click += authenticatorOptionsMenuItem_Click;
-          menu.Items.Add(menuitem);
+          AuthHelper.AddMenuItem(menuItems, index + ". " + auth.Name, onClick: authenticatorOptionsMenuItem_Click, tag: auth);
           index++;
         }
 
-        var separator = new ToolStripSeparator {
-          Name = "authenticatorOptionsSeparatorItem"
-        };
-        menu.Items.Add(separator);
+        AuthHelper.AddMenuItem(menuItems);
 
-        menuitem = new ToolStripMenuItem("Action") {
-          Name = "defaultActionOptionsMenuItem"
-        };
-        menu.Items.Add(menuitem);
-        subitem = new ToolStripMenuItem("Show Notification") {
+        var menuItem = AuthHelper.AddMenuItem(menuItems, "Action", "defaultActionOptionsMenuItem");
+        var subItem = new ToolStripMenuItem("Show Notification") {
           Name = "defaultActionNotificationOptionsMenuItem"
         };
-        subitem.Click += defaultActionNotificationOptionsMenuItem_Click;
-        menuitem.DropDownItems.Add(subitem);
-        subitem = new ToolStripMenuItem("Copy To Clipboard") {
+        subItem.Click += defaultActionNotificationOptionsMenuItem_Click;
+        menuItem.DropDownItems.Add(subItem);
+        subItem = new ToolStripMenuItem("Copy To Clipboard") {
           Name = "defaultActionCopyToClipboardOptionsMenuItem"
         };
-        subitem.Click += defaultActionCopyToClipboardOptionsMenuItem_Click;
-        menuitem.DropDownItems.Add(subitem);
-        menu.Items.Add(menuitem);
+        subItem.Click += defaultActionCopyToClipboardOptionsMenuItem_Click;
+        menuItem.DropDownItems.Add(subItem);
+        menuItems.Add(menuItem);
 
-        separator = new ToolStripSeparator {
-          Name = "authenticatorActionOptionsSeparatorItem"
-        };
-        menu.Items.Add(separator);
+        AuthHelper.AddMenuItem(menuItems);
       }
 
-      //if (this.Config != null)
-      //{
-      //	menuitem = new ToolStripMenuItem(strings.MenuUseSystemTrayIcon);
-      //	menuitem.Name = "useSystemTrayIconOptionsMenuItem";
-      //	menuitem.Click += useSystemTrayIconOptionsMenuItem_Click;
-      //	menu.Items.Add(menuitem);
-
-      //	menu.Items.Add(new ToolStripSeparator());
-      //}
-
-      menuitem = new ToolStripMenuItem("Check for updates") {
-        Name = "checkUpdatesMenuItem"
-      };
-      menuitem.Click += (s, e) => Updater.CheckForUpdates(false);
-      menu.Items.Add(menuitem);
-
-      menuitem = new ToolStripMenuItem("About...") {
-        Name = "aboutOptionsMenuItem"
-      };
-      menuitem.Click += aboutOptionMenuItem_Click;
-      menu.Items.Add(menuitem);
-
-      menu.Items.Add(new ToolStripSeparator());
-
-      menuitem = new ToolStripMenuItem("Exit") {
-        Name = "exitOptionsMenuItem",
-        ShortcutKeys = Keys.F4 | Keys.Alt
-      };
-      menuitem.Click += exitOptionMenuItem_Click;
-      menu.Items.Add(menuitem);
+      AuthHelper.AddMenuItem(menuItems, "Check for updates", "checkUpdatesMenuItem", (s, e) => Updater.CheckForUpdates(false));
+      AuthHelper.AddMenuItem(menuItems, "About", "aboutOptionsMenuItem", aboutOptionMenuItem_Click);
+      AuthHelper.AddMenuItem(menuItems);
+      AuthHelper.AddMenuItem(menuItems, "Exit", "exitOptionsMenuItem", exitOptionMenuItem_Click);
     }
 
-    private void optionsMenu_Opening(object sender, CancelEventArgs e) {
-      OpeningOptionsMenu(optionsMenu, e);
-    }
-
-    private void notifyMenu_Opening(object sender, CancelEventArgs e) {
-      OpeningNotifyMenu(notifyMenu, e);
-    }
-
-    private void OpeningOptionsMenu(ContextMenuStrip menu, CancelEventArgs e) {
-      if (Config == null) {
+    private void OpeningOptionsMenu(object sender, EventArgs e) {
+      
+      var menuItems = optionsToolStripMenuItem.DropDownItems;
+      
+      if (Config == null)
         return;
-      }
 
-      if (menu.Items.Cast<ToolStripItem>().FirstOrDefault(t => t.Name == "changePasswordOptionsMenuItem") is ToolStripMenuItem menuItem) {
-        menuItem.Enabled = Config != null && Config.Count != 0;
-      }
+      if (menuItems.Find("changePasswordOptionsMenuItem", false).FirstOrDefault() is ToolStripMenuItem changeProtection)
+        changeProtection.Enabled = Config != null && Config.Count != 0;
 
-      menuItem = menu.Items.Cast<ToolStripItem>().FirstOrDefault(t => t.Name == "openOptionsMenuItem") as
-          ToolStripMenuItem;
-      if (menuItem != null) {
-        menuItem.Visible = (Config.UseTrayIcon && Visible == false);
-      }
+      if (menuItems.Find("openOptionsMenuItem", false).FirstOrDefault() is ToolStripMenuItem open)
+        open.Visible = (Config.UseTrayIcon && Visible == false);
+      if (menuItems.Find("openOptionsSeparatorItem", false).FirstOrDefault() is ToolStripMenuItem openSeparator)
+        openSeparator.Visible = (Config.UseTrayIcon && Visible == false);
 
-      var item = menu.Items.Cast<ToolStripItem>().FirstOrDefault(t => t.Name == "openOptionsSeparatorItem");
-      if (item != null) {
-        item.Visible = (Config.UseTrayIcon && Visible == false);
-      }
-
-      menuItem = menu.Items.Cast<ToolStripItem>().FirstOrDefault(t => t.Name == "startWithWindowsOptionsMenuItem") as ToolStripMenuItem;
-      if (menuItem != null) {
-        menuItem.Checked = Config.StartWithWindows;
-      }
-
-      menuItem = menu.Items.Cast<ToolStripItem>().FirstOrDefault(t => t.Name == "alwaysOnTopOptionsMenuItem") as
-          ToolStripMenuItem;
-      if (menuItem != null) {
-        menuItem.Checked = Config.AlwaysOnTop;
-      }
-
-      menuItem = menu.Items.Cast<ToolStripItem>()
-        .FirstOrDefault(t => t.Name == "useSystemTrayIconOptionsMenuItem") as ToolStripMenuItem;
-      if (menuItem != null) {
-        menuItem.Checked = Config.UseTrayIcon;
-      }
-
-      menuItem = menu.Items.Cast<ToolStripItem>().FirstOrDefault(t => t.Name == "autoSizeOptionsMenuItem") as
-          ToolStripMenuItem;
-      if (menuItem != null) {
-        menuItem.Checked = Config.AutoSize;
-      }
-
-      menuItem = menu.Items.Cast<ToolStripItem>().FirstOrDefault(t => t.Name == "autoSizeOptionsMenuItem") as
-          ToolStripMenuItem;
-      if (menuItem != null) {
-        menuItem.Checked = Config.AutoSize;
-      }
+      if (menuItems.Find("startWithWindowsOptionsMenuItem", false).FirstOrDefault() is ToolStripMenuItem startWithWin)
+        startWithWin.Checked = Config.StartWithWindows;
+      if (menuItems.Find("alwaysOnTopOptionsMenuItem", false).FirstOrDefault() is ToolStripMenuItem alwaysOnTop)
+        alwaysOnTop.Checked = Config.AlwaysOnTop;
+      if (menuItems.Find("useSystemTrayIconOptionsMenuItem", false).FirstOrDefault() is ToolStripMenuItem useTray)
+        useTray.Checked = Config.UseTrayIcon;
+      if (menuItems.Find("autoSizeOptionsMenuItem", false).FirstOrDefault() is ToolStripMenuItem autoSize)
+        autoSize.Checked = Config.AutoSize;
     }
 
-    private void OpeningNotifyMenu(ContextMenuStrip menu, CancelEventArgs e) {
+    private void OpeningNotifyMenu(ToolStrip menu, CancelEventArgs e) {
       if (Config == null) {
         return;
       }
@@ -1301,20 +1131,6 @@ namespace Authenticator {
       var item = authenticatorList.Items.Cast<AuthenticatorListBox.ListItem>().FirstOrDefault(i => i.Authenticator == auth);
       if (item != null) {
         RunAction(auth, Config.NotifyAction);
-
-        //string code = authenticatorList.GetItemCode(item);
-        //if (code != null)
-        //{
-        //	if (auth.CopyOnCode)
-        //	{
-        //		auth.CopyCodeToClipboard(this, code);
-        //	}
-        //	if (code.Length > 5)
-        //	{
-        //		code = code.Insert(code.Length / 2, " ");
-        //	}
-        //	notifyIcon.ShowBalloonTip(10000, auth.Name, code, ToolTipIcon.Info);
-        //}
       }
     }
 
@@ -1386,32 +1202,34 @@ namespace Authenticator {
 
     #region Custom Events
 
-    void OnConfigChanged(object source, ConfigChangedEventArgs args) {
-      if (args.PropertyName == "AlwaysOnTop") {
-        TopMost = Config.AlwaysOnTop;
-      }
-      else if (args.PropertyName == "UseTrayIcon") {
-        var useTrayIcon = Config.UseTrayIcon;
-        if (useTrayIcon == false && Visible == false) {
-          BringToFront();
-          Show();
-          WindowState = FormWindowState.Normal;
-          Activate();
+    private void OnConfigChanged(object source, ConfigChangedEventArgs args) {
+      switch (args.PropertyName) {
+        case "AlwaysOnTop":
+          TopMost = Config.AlwaysOnTop;
+          break;
+        case "UseTrayIcon": {
+          var useTrayIcon = Config.UseTrayIcon;
+          if (useTrayIcon == false && Visible == false) {
+            BringToFront();
+            Show();
+            WindowState = FormWindowState.Normal;
+            Activate();
+          }
+          notifyIcon.Visible = useTrayIcon;
+          break;
         }
-
-        notifyIcon.Visible = useTrayIcon;
-      }
-      else if (args.PropertyName == "AutoSize" ||
-               (args.PropertyName == "Authenticator" && args.AuthenticatorChangedEventArgs.Property == "Name")) {
-        SetAutoSize();
-        Invalidate();
-      }
-      else if (args.PropertyName == "StartWithWindows") {
-        if (Config.IsPortable == false) {
-          AuthHelper.SetStartWithWindows(Config.StartWithWindows);
+        case "AutoSize":
+        case "Authenticator" when args.AuthenticatorChangedEventArgs.Property == "Name":
+          SetAutoSize();
+          Invalidate();
+          break;
+        case "StartWithWindows": {
+          if (Config.IsPortable == false) {
+            AuthHelper.SetStartWithWindows(Config.StartWithWindows);
+          }
+          break;
         }
       }
-
       // batch up saves so they can be done out of line
       SaveConfig();
     }

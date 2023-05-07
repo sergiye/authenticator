@@ -11,14 +11,17 @@ namespace Authenticator {
     public AboutForm() {
       InitializeComponent();
 
-      using (var s = new StreamReader(Assembly.GetExecutingAssembly().GetManifestResourceStream("Authenticator.LICENSE"))) {
-        richTextBox1.Text = s.ReadToEnd();
+      using (var stream = Assembly.GetExecutingAssembly().GetManifestResourceStream("Authenticator.LICENSE")) {
+        if (stream == null) return;
+        using (var s = new StreamReader(stream)) {
+          richTextBox1.Text = s.ReadToEnd();
+        }
       }
     }
 
     private void AboutForm_Load(object sender, EventArgs e) {
       // get the version of the application
-      var version = System.Reflection.Assembly.GetExecutingAssembly().GetName().Version;
+      var version = Assembly.GetExecutingAssembly().GetName().Version;
       var debug = string.Empty;
 #if DEBUG
       debug += " (DEBUG)";

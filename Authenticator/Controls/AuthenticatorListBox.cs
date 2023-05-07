@@ -622,80 +622,23 @@ namespace Authenticator {
       label.Name = "contextMenuItemName";
       label.ForeColor = SystemColors.HotTrack;
       ContextMenuStrip.Items.Add(label);
-      ContextMenuStrip.Items.Add(new ToolStripSeparator());
-      //
-      // EventHandler onclick = ContextMenu_Click;
-      //
-      //
-      var menuitem = new ToolStripMenuItem("Set Password...");
-      menuitem.Name = "setPasswordMenuItem";
-      menuitem.Click += ContextMenu_Click;
-      ContextMenuStrip.Items.Add(menuitem);
-      ContextMenuStrip.Items.Add(new ToolStripSeparator());
-      //
-      menuitem = new ToolStripMenuItem("Show Code");
-      menuitem.Name = "showCodeMenuItem";
-      menuitem.Click += ContextMenu_Click;
-      ContextMenuStrip.Items.Add(menuitem);
-      //
-      menuitem = new ToolStripMenuItem("Copy Code");
-      menuitem.Name = "copyCodeMenuItem";
-      menuitem.Click += ContextMenu_Click;
-      ContextMenuStrip.Items.Add(menuitem);
-      //
-      ContextMenuStrip.Items.Add(new ToolStripSeparator());
-      //
-      menuitem = new ToolStripMenuItem("Show Serial && Restore Code...");
-      menuitem.Name = "showRestoreCodeMenuItem";
-      menuitem.Click += ContextMenu_Click;
-      ContextMenuStrip.Items.Add(menuitem);
-      //
-      menuitem = new ToolStripMenuItem("Show Secret Key...");
-      menuitem.Name = "showGoogleSecretMenuItem";
-      menuitem.Click += ContextMenu_Click;
-      ContextMenuStrip.Items.Add(menuitem);
-      //
-      menuitem = new ToolStripMenuItem("Show Serial Key and Device ID...");
-      menuitem.Name = "showTrionSecretMenuItem";
-      menuitem.Click += ContextMenu_Click;
-      ContextMenuStrip.Items.Add(menuitem);
-      //
-      ContextMenuStrip.Items.Add(new ToolStripSeparator());
-      //
-      menuitem = new ToolStripMenuItem("Delete");
-      menuitem.Name = "deleteMenuItem";
-      menuitem.Click += ContextMenu_Click;
-      ContextMenuStrip.Items.Add(menuitem);
-      //
-      menuitem = new ToolStripMenuItem("Rename");
-      menuitem.Name = "renameMenuItem";
-      menuitem.Click += ContextMenu_Click;
-      ContextMenuStrip.Items.Add(menuitem);
-      //
-      ContextMenuStrip.Items.Add(new ToolStripSeparator());
-      //
-      menuitem = new ToolStripMenuItem("Auto Refresh");
-      menuitem.Name = "autoRefreshMenuItem";
-      menuitem.Click += ContextMenu_Click;
-      ContextMenuStrip.Items.Add(menuitem);
-      //
-      menuitem = new ToolStripMenuItem("Copy on New Code");
-      menuitem.Name = "copyOnCodeMenuItem";
-      menuitem.Click += ContextMenu_Click;
-      ContextMenuStrip.Items.Add(menuitem);
-      //
-      menuitem = new ToolStripMenuItem("Icon");
-      menuitem.Name = "iconMenuItem";
-      var subitem = new ToolStripMenuItem();
-      subitem.Text = "Auto";
-      subitem.Name = "iconMenuItem_default";
-      subitem.Tag = string.Empty;
-      subitem.Click += ContextMenu_Click;
-      menuitem.DropDownItems.Add(subitem);
-      menuitem.DropDownItems.Add("-");
-      ContextMenuStrip.Items.Add(menuitem);
+
+      AuthHelper.AddMenuItem(ContextMenuStrip.Items);
+      AuthHelper.AddMenuItem(ContextMenuStrip.Items, "Show Code", "showCodeMenuItem", ContextMenu_Click);
+      AuthHelper.AddMenuItem(ContextMenuStrip.Items, "Copy Code", "copyCodeMenuItem", ContextMenu_Click);
+      AuthHelper.AddMenuItem(ContextMenuStrip.Items, "Show Serial && Restore Code...", "showRestoreCodeMenuItem", ContextMenu_Click);
+      AuthHelper.AddMenuItem(ContextMenuStrip.Items, "Show Secret Key...", "showGoogleSecretMenuItem", ContextMenu_Click);
+      AuthHelper.AddMenuItem(ContextMenuStrip.Items, "Show Serial Key and Device ID...", "showTrionSecretMenuItem", ContextMenu_Click);
+      AuthHelper.AddMenuItem(ContextMenuStrip.Items);
+      AuthHelper.AddMenuItem(ContextMenuStrip.Items, "Auto Refresh", "autoRefreshMenuItem", ContextMenu_Click);
+      AuthHelper.AddMenuItem(ContextMenuStrip.Items, "Copy on New Code", "copyOnCodeMenuItem", ContextMenu_Click);
+      AuthHelper.AddMenuItem(ContextMenuStrip.Items);
+
+      var menuItem = AuthHelper.AddMenuItem(ContextMenuStrip.Items, "Icon", "iconMenuItem");
+      AuthHelper.AddMenuItem(menuItem.DropDownItems, "Auto", "iconMenuItem_default", ContextMenu_Click, tag: string.Empty);
+      AuthHelper.AddMenuItem(menuItem.DropDownItems);
       var iconIndex = 1;
-      var parentItem = menuitem;
+      var parentItem = menuItem;
       foreach (var entry in AuthHelper.AuthenticatorIcons) {
         var icon = entry.Key;
         var iconFile = entry.Value;
@@ -706,48 +649,19 @@ namespace Authenticator {
           if (parentItem.Tag is ToolStripMenuItem) {
             parentItem = parentItem.Tag as ToolStripMenuItem;
           }
-
-          subitem = new ToolStripMenuItem();
-          subitem.Text = icon.Substring(1);
-          //subitem.Name = "iconMenuItem_" + iconindex++;
-          subitem.Tag = parentItem;
-          subitem.Image = AuthHelper.GetIconBitmap(iconFile);
-          subitem.ImageAlign = ContentAlignment.MiddleLeft;
-          subitem.ImageScaling = ToolStripItemImageScaling.SizeToFit;
-          //subitem.Click += ContextMenu_Click;
-          parentItem.DropDownItems.Add(subitem);
-          parentItem = subitem;
+          parentItem = AuthHelper.AddMenuItem(parentItem.DropDownItems, icon.Substring(1), null, ContextMenu_Click, Keys.None, parentItem, AuthHelper.GetIconBitmap(iconFile));
         }
         else {
-          subitem = new ToolStripMenuItem();
-          subitem.Text = icon;
-          subitem.Name = "iconMenuItem_" + iconIndex++;
-          subitem.Tag = iconFile;
-          subitem.Image = AuthHelper.GetIconBitmap(iconFile);
-          subitem.ImageAlign = ContentAlignment.MiddleCenter;
-          subitem.ImageScaling = ToolStripItemImageScaling.SizeToFit;
-          subitem.Click += ContextMenu_Click;
-          parentItem.DropDownItems.Add(subitem);
+          AuthHelper.AddMenuItem(parentItem.DropDownItems, icon, "iconMenuItem_" + iconIndex++, ContextMenu_Click, Keys.None, iconFile, AuthHelper.GetIconBitmap(iconFile));
         }
       }
+      AuthHelper.AddMenuItem(menuItem.DropDownItems);
+      AuthHelper.AddMenuItem(menuItem.DropDownItems, "Other...", "iconMenuItem_0", ContextMenu_Click, tag: "OTHER");
 
-      menuitem.DropDownItems.Add("-");
-      subitem = new ToolStripMenuItem();
-      subitem.Text = "Other...";
-      subitem.Name = "iconMenuItem_0";
-      subitem.Tag = "OTHER";
-      subitem.Click += ContextMenu_Click;
-      menuitem.DropDownItems.Add(subitem);
-      ContextMenuStrip.Items.Add(menuitem);
-      //
-      var sepitem = new ToolStripSeparator();
-      sepitem.Name = "syncMenuSep";
-      ContextMenuStrip.Items.Add(sepitem);
-      //
-      menuitem = new ToolStripMenuItem("Sync Time");
-      menuitem.Name = "syncMenuItem";
-      menuitem.Click += ContextMenu_Click;
-      ContextMenuStrip.Items.Add(menuitem);
+      AuthHelper.AddMenuItem(ContextMenuStrip.Items, "Rename", "renameMenuItem", ContextMenu_Click);
+      AuthHelper.AddMenuItem(ContextMenuStrip.Items, "Set Password...", "setPasswordMenuItem", ContextMenu_Click);
+      AuthHelper.AddMenuItem(ContextMenuStrip.Items, "Sync Time", "syncMenuItem", ContextMenu_Click);
+      AuthHelper.AddMenuItem(ContextMenuStrip.Items, "Delete", "deleteMenuItem", ContextMenu_Click);
     }
 
     private void SetContextMenuItems() {
@@ -806,10 +720,6 @@ namespace Authenticator {
           }
         }
       }
-
-      //
-      var sepItem = menu.Items.Cast<ToolStripItem>().FirstOrDefault(i => i.Name == "syncMenuSep");
-      sepItem.Visible = !(auth.AuthenticatorData is HotpAuthenticator);
 
       menuItem = menu.Items.Cast<ToolStripItem>().FirstOrDefault(i => i.Name == "syncMenuItem") as ToolStripMenuItem;
       menuItem.Visible = !(auth.AuthenticatorData is HotpAuthenticator);

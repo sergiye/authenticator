@@ -706,6 +706,30 @@ namespace Authenticator {
       }
     }
 
+    public static ToolStripMenuItem AddMenuItem(ToolStripItemCollection menuItems, string text = null, string name = null, EventHandler onClick = null, Keys shortcut = Keys.None, object tag = null, Image icon = null) {
+      if (text == null) {
+        menuItems.Add(new ToolStripSeparator { Name = name });
+        return null;
+      }
+      var menuItem = new ToolStripMenuItem(text) {
+        Name = name,
+        Tag = tag,
+      };
+      menuItem.Click += onClick;
+      if (shortcut != Keys.None) {
+        menuItem.ShortcutKeys = shortcut;
+        menuItem.ShowShortcutKeys = true;
+      }
+
+      if (icon != null) {
+        menuItem.Image = icon;
+        menuItem.ImageAlign = ContentAlignment.MiddleLeft;
+        menuItem.ImageScaling = ToolStripItemImageScaling.SizeToFit;
+      }
+      menuItems.Add(menuItem);
+      return menuItem;
+    }
+
     #region HttpUtility
 
     public static NameValueCollection ParseQueryString(string qs) {
