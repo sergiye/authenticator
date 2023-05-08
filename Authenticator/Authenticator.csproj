@@ -245,7 +245,6 @@
     <Compile Include="Dialogs\SnippingTool.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Dialogs\SnippingTool.Designer.cs" />
     <Compile Include="Dialogs\UnprotectPasswordForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -319,7 +318,6 @@
     <EmbeddedResource Include="Dialogs\ShowTrionSecretForm.resx">
       <DependentUpon>ShowTrionSecretForm.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Dialogs\SnippingTool.resx" />
     <EmbeddedResource Include="Dialogs\UnprotectPasswordForm.resx">
       <DependentUpon>UnprotectPasswordForm.cs</DependentUpon>
     </EmbeddedResource>

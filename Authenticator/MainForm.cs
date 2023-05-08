@@ -917,8 +917,8 @@ namespace Authenticator {
       mainMenu.Visible = true;
 
       //File section
-      AuthHelper.AddMenuItem(fileToolStripMenuItem.DropDownItems, "Export", "exportOptionsMenuItem", exportOptionsMenuItem_Click, Keys.Control | Keys.S);
-      var importMenuItem = AuthHelper.AddMenuItem(fileToolStripMenuItem.DropDownItems, "Import", onClick: importTextMenu_Click, shortcut: Keys.Control | Keys.O);
+      AuthHelper.AddMenuItem(fileToolStripMenuItem.DropDownItems, "Export", "exportOptionsMenuItem", exportOptionsMenuItem_Click, Keys.Control | Keys.E);
+      var importMenuItem = AuthHelper.AddMenuItem(fileToolStripMenuItem.DropDownItems, "Import", onClick: importTextMenu_Click, shortcut: Keys.Control | Keys.I);
       importMenuItem.Enabled = !Config.IsReadOnly;
 
       AuthHelper.AddMenuItem(fileToolStripMenuItem.DropDownItems);
@@ -932,8 +932,10 @@ namespace Authenticator {
           addToolStripMenuItem.DropDownItems.Add(new ToolStripSeparator());
           continue;
         }
-
-        var subItem = AuthHelper.AddMenuItem(addToolStripMenuItem.DropDownItems, auth.Name, "addAuthenticatorMenuItem_" + index++, addAuthenticatorMenu_Click, tag: auth);
+        var shortcut = Keys.None;
+        if (index == 0)
+          shortcut = Keys.Control | Keys.A;
+        var subItem = AuthHelper.AddMenuItem(addToolStripMenuItem.DropDownItems, auth.Name, "addAuthenticatorMenuItem_" + index++, addAuthenticatorMenu_Click, shortcut, auth);
         if (string.IsNullOrEmpty(auth.Icon)) continue;
         subItem.Image = AuthHelper.GetIconBitmap(auth.Icon);
         subItem.ImageAlign = ContentAlignment.MiddleLeft;
@@ -947,9 +949,9 @@ namespace Authenticator {
         AuthHelper.AddMenuItem(optionsToolStripMenuItem.DropDownItems, "Start With Windows", "startWithWindowsOptionsMenuItem", startWithWindowsOptionsMenuItem_Click);
       }
 
-      AuthHelper.AddMenuItem(optionsToolStripMenuItem.DropDownItems, "Always on Top", "alwaysOnTopOptionsMenuItem", alwaysOnTopOptionsMenuItem_Click);
+      AuthHelper.AddMenuItem(optionsToolStripMenuItem.DropDownItems, "Always on Top", "alwaysOnTopOptionsMenuItem", alwaysOnTopOptionsMenuItem_Click, Keys.Control | Keys.T);
       AuthHelper.AddMenuItem(optionsToolStripMenuItem.DropDownItems, "Use System Tray Icon", "useSystemTrayIconOptionsMenuItem", useSystemTrayIconOptionsMenuItem_Click);
-      AuthHelper.AddMenuItem(optionsToolStripMenuItem.DropDownItems, "Auto Size", "autoSizeOptionsMenuItem", autoSizeOptionsMenuItem_Click);
+      AuthHelper.AddMenuItem(optionsToolStripMenuItem.DropDownItems, "Auto Size", "autoSizeOptionsMenuItem", autoSizeOptionsMenuItem_Click, Keys.Control | Keys.S);
       AuthHelper.AddMenuItem(optionsToolStripMenuItem.DropDownItems);
 
       if (Config == null || Config.IsReadOnly == false) {

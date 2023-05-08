@@ -1,5 +1,6 @@
 using System;
 using System.Drawing;
+using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -7,6 +8,7 @@ using System.Text.RegularExpressions;
 using System.Web;
 using System.Windows.Forms;
 using ZXing;
+using ZXing.Common;
 
 namespace Authenticator {
   public partial class AddAuthenticator : Form {
@@ -177,20 +179,22 @@ namespace Authenticator {
     
     private void getFromScreenButton_Click(object sender, EventArgs e) {
       try {
+        //using (var bitmap = (Bitmap)SnippingTool.GetMultipleScreenImage()) {
         using (var bitmap = (Bitmap)SnippingTool.SnipMultiple()) {
-          //todo: use gaussian filter to remove noise
-          // var gFilter = new GaussianBlur(2);
-          // image = gFilter.ProcessImage(image);
-          // var reader = new BarcodeReader(null, null, ls => new GlobalHistogramBinarizer(ls)) {
-          //   AutoRotate = false,
-          //   TryInverted = false,
-          //   Options = new DecodingOptions {
-          //     PossibleFormats = new List<BarcodeFormat> {BarcodeFormat.QR_CODE},
-          //     TryHarder = true
-          //   }
-          // };
           if (bitmap == null) return;
-          var reader = new BarcodeReader();
+#if DEBUG
+          bitmap.Save($"d:\\downloads\\snip_{Environment.TickCount}.png", ImageFormat.Png);
+#endif
+          //todo: use gaussian filter to remove noise
+          //image = new GaussianBlur(2).ProcessImage(image);
+          var reader = new BarcodeReader(null, null, ls => new GlobalHistogramBinarizer(ls)) {
+            AutoRotate = false,
+            TryInverted = false,
+            Options = new DecodingOptions {
+              //PossibleFormats = new BarcodeFormat[] { BarcodeFormat.QR_CODE },
+              TryHarder = true
+            }
+          };
           var result = reader.Decode(bitmap);
           if (result != null && string.IsNullOrEmpty(result.Text) == false) {
             if (VerifyAuthenticator(result.Text))
