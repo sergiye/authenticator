@@ -246,7 +246,7 @@ namespace Authenticator {
       this.Controls.Add(this.userCheckbox);
       this.Controls.Add(this.machineCheckbox);
       this.Controls.Add(this.introLabel);
-      this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
+      this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
       this.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
       this.MaximizeBox = false;
       this.MinimizeBox = false;

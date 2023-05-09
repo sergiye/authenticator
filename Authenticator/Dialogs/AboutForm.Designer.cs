@@ -99,7 +99,7 @@ namespace Authenticator {
       this.MaximizeBox = false;
       this.MinimizeBox = false;
       this.Name = "AboutForm";
-      this.ShowIcon = false;
+      this.ShowIcon = true;
       this.ShowInTaskbar = false;
       this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
       this.Text = "About";

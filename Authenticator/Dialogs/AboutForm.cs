@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
+using System.Drawing;
 using System.IO;
 using System.Reflection;
 using System.Windows.Forms;
@@ -10,6 +11,7 @@ namespace Authenticator {
 
     public AboutForm() {
       InitializeComponent();
+      Icon = Icon.ExtractAssociatedIcon(Updater.CurrentFileLocation);
 
       using (var stream = Assembly.GetExecutingAssembly().GetManifestResourceStream("Authenticator.LICENSE")) {
         if (stream == null) return;
