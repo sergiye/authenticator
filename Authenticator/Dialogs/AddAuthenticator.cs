@@ -15,9 +15,10 @@ namespace Authenticator {
     private const string HOTP = "hotp";
     private const string TOTP = "totp";
 
-    public AddAuthenticator() {
+    public AddAuthenticator(AuthAuthenticator authenticator) {
       InitializeComponent();
       Icon = Icon.ExtractAssociatedIcon(Updater.CurrentFileLocation);
+      Authenticator = authenticator;
     }
 
     public AuthAuthenticator Authenticator { get; set; }
@@ -72,7 +73,7 @@ namespace Authenticator {
       }
 
       var first = Authenticator.AuthenticatorData == null;
-      if (VerifyAuthenticator(privateKey) == false) {
+      if (VerifyAuthenticator(privateKey, false) == false) {
         DialogResult = DialogResult.None;
         return;
       }
@@ -81,6 +82,8 @@ namespace Authenticator {
         DialogResult = DialogResult.None;
         return;
       }
+
+      Authenticator.Name = nameField.Text;
 
       // if this is a htop we reduce the counter because we are going to immediate get the code and increment
       if (Authenticator.AuthenticatorData is HotpAuthenticator authenticator) {
@@ -95,7 +98,7 @@ namespace Authenticator {
         return;
       }
 
-      VerifyAuthenticator(privateKey);
+      VerifyAuthenticator(privateKey, true);
     }
 
     private void basementRadio_CheckedChanged(object sender, EventArgs e) {
@@ -112,69 +115,7 @@ namespace Authenticator {
     }
 
     private void secretCodeField_Leave(object sender, EventArgs e) {
-      if (Regex.IsMatch(secretCodeField.Text, "https?://.*", RegexOptions.IgnoreCase) &&
-          Uri.TryCreate(secretCodeField.Text, UriKind.Absolute, out var uri)) {
-        try {
-          var request = (HttpWebRequest) WebRequest.Create(uri);
-          request.AllowAutoRedirect = true;
-          request.Timeout = 20000;
-          request.UserAgent = "Mozilla/4.0 (compatible; MSIE 8.0; Windows NT 6.1; Trident/4.0)";
-          using (var response = (HttpWebResponse) request.GetResponse()) {
-            if (response.StatusCode == HttpStatusCode.OK &&
-                response.ContentType.StartsWith("image/", StringComparison.OrdinalIgnoreCase)) {
-              using (var bitmap = (Bitmap) Image.FromStream(response.GetResponseStream())) {
-                IBarcodeReader reader = new BarcodeReader();
-                var result = reader.Decode(bitmap);
-                if (result != null && string.IsNullOrEmpty(result.Text) == false) {
-                  secretCodeField.Text = HttpUtility.UrlDecode(result.Text);
-                }
-              }
-            }
-          }
-        }
-        catch (Exception ex) {
-          MainForm.ErrorDialog(Owner, "Cannot load QR code image from " + secretCodeField.Text, ex);
-          return;
-        }
-      }
-
-      var match = Regex.Match(secretCodeField.Text, @"otpauth://([^/]+)/([^?]+)\?(.*)", RegexOptions.IgnoreCase);
-      if (!match.Success) return;
-      var authType = match.Groups[1].Value.ToLower();
-      var label = match.Groups[2].Value;
-
-      switch (authType) {
-        case HOTP:
-          counterBasedRadio.Checked = true;
-          break;
-        case TOTP:
-          timeBasedRadio.Checked = true;
-          counterField.Text = string.Empty;
-          break;
-      }
-
-      var qs = AuthHelper.ParseQueryString(match.Groups[3].Value);
-      if (qs["counter"] != null) {
-        if (long.TryParse(qs["counter"], out var counter)) {
-          counterField.Text = counter.ToString();
-        }
-      }
-
-      var issuer = qs["issuer"];
-      if (string.IsNullOrEmpty(issuer) == false) {
-        label = issuer + (string.IsNullOrEmpty(label) == false ? " (" + label + ")" : string.Empty);
-      }
-      nameField.Text = label;
-
-      if (int.TryParse(qs["period"], out var period) && period > 0) {
-        intervalField.Text = period.ToString();
-      }
-      if (int.TryParse(qs["digits"], out var digits) && digits > 0) {
-        digitsField.Text = digits.ToString();
-      }
-      if (Enum.TryParse<Authenticator.HmacTypes>(qs["algorithm"], true, out var hmac)) {
-        hashField.SelectedItem = hmac.ToString();
-      }
+      VerifyAuthenticator(secretCodeField.Text, true);
     }
     
     private void getFromScreenButton_Click(object sender, EventArgs e) {
@@ -196,8 +137,8 @@ namespace Authenticator {
             }
           };
           var result = reader.Decode(bitmap);
-          if (result != null && string.IsNullOrEmpty(result.Text) == false) {
-            if (VerifyAuthenticator(result.Text))
+          if (result != null && !string.IsNullOrEmpty(result.Text)) {
+            if (VerifyAuthenticator(result.Text, true))
               secretCodeField.Text = HttpUtility.UrlDecode(result.Text);
           }
           else {
@@ -214,26 +155,22 @@ namespace Authenticator {
 
     #region Private methods
 
-    private bool IsValidFile(string filename) {
+    private static bool IsValidFile(string filename) {
       try {
         // check path is valid
-        new FileInfo(filename);
-        return File.Exists(filename);
+        var fi = new FileInfo(filename);
+        return fi.Exists;
       }
       catch (Exception) {
-      }
-
-      return false;
-    }
-
-    private bool VerifyAuthenticator(string privateKey) {
-      if (string.IsNullOrEmpty(privateKey)) {
         return false;
       }
+    }
 
-      Authenticator.Name = nameField.Text;
+    private bool VerifyAuthenticator(string privateKey, bool updateNameField) {
+      if (string.IsNullOrEmpty(privateKey))
+        return false;
 
-      if (string.IsNullOrEmpty(digitsField.Text) || int.TryParse(digitsField.Text, out var digits) == false ||
+      if (string.IsNullOrEmpty(digitsField.Text) || !int.TryParse(digitsField.Text, out var digits) ||
           digits <= 0) {
         return false;
       }
@@ -242,7 +179,7 @@ namespace Authenticator {
 
       var authType = timeBasedRadio.Checked ? TOTP : HOTP;
 
-      if (string.IsNullOrEmpty(intervalField.Text) || int.TryParse(intervalField.Text, out var period) == false ||
+      if (string.IsNullOrEmpty(intervalField.Text) || !int.TryParse(intervalField.Text, out var period) ||
           period <= 0) {
         return false;
       }
@@ -251,20 +188,26 @@ namespace Authenticator {
 
       // if this is a URL, pull it down
       Match match;
-      if (Regex.IsMatch(privateKey, "https?://.*") && Uri.TryCreate(privateKey, UriKind.Absolute, out var uri)) {
+      if (Regex.IsMatch(privateKey, "https?://.*", RegexOptions.IgnoreCase) && Uri.TryCreate(privateKey, UriKind.Absolute, out var uri)) {
         try {
           var request = (HttpWebRequest) WebRequest.Create(uri);
           request.AllowAutoRedirect = true;
-          request.Timeout = 20000;
+          request.Timeout = 10000;
           request.UserAgent = "Mozilla/4.0 (compatible; MSIE 8.0; Windows NT 6.1; Trident/4.0)";
           using (var response = (HttpWebResponse) request.GetResponse()) {
             if (response.StatusCode == HttpStatusCode.OK &&
                 response.ContentType.StartsWith("image/", StringComparison.OrdinalIgnoreCase)) {
-              using (var bitmap = (Bitmap) Image.FromStream(response.GetResponseStream())) {
-                IBarcodeReader reader = new BarcodeReader();
-                var result = reader.Decode(bitmap);
-                if (result != null) {
-                  privateKey = HttpUtility.UrlDecode(result.Text);
+              using (var stream = response.GetResponseStream()) {
+                if (stream == null) {
+                  MainForm.ErrorDialog(Owner, "Cannot load QR code image");
+                  return false;
+                }
+                using (var bitmap = (Bitmap) Image.FromStream(stream)) {
+                  IBarcodeReader reader = new BarcodeReader();
+                  var result = reader.Decode(bitmap);
+                  if (result != null && !string.IsNullOrEmpty(result.Text)) {
+                    privateKey = HttpUtility.UrlDecode(result.Text);
+                  }
                 }
               }
             }
@@ -275,7 +218,8 @@ namespace Authenticator {
           return false;
         }
       }
-      else if ((match = Regex.Match(privateKey, @"data:image/([^;]+);base64,(.*)", RegexOptions.IgnoreCase)).Success) {
+      
+      if ((match = Regex.Match(privateKey, @"data:image/([^;]+);base64,(.*)", RegexOptions.IgnoreCase)).Success) {
         var imageData = Convert.FromBase64String(match.Groups[2].Value);
         using (var ms = new MemoryStream(imageData)) {
           using (var bitmap = (Bitmap) Image.FromStream(ms)) {
@@ -287,7 +231,8 @@ namespace Authenticator {
           }
         }
       }
-      else if (IsValidFile(privateKey)) {
+      
+      if (IsValidFile(privateKey)) {
         // assume this is the image file
         using (var bitmap = (Bitmap) Image.FromFile(privateKey)) {
           IBarcodeReader reader = new BarcodeReader();
@@ -306,41 +251,50 @@ namespace Authenticator {
       if (match.Success) {
         authType = match.Groups[1].Value.ToLower();
         var label = match.Groups[2].Value;
-        var p = label.IndexOf(":");
+        var p = label.IndexOf(":", StringComparison.Ordinal);
         if (p != -1) {
-          issuer = label.Substring(0, p);
+          // issuer = label.Substring(0, p);
           label = label.Substring(p + 1);
         }
-
+        
+        switch (authType) {
+          case HOTP:
+            counterBasedRadio.Checked = true;
+            break;
+          case TOTP:
+            timeBasedRadio.Checked = true;
+            counterField.Text = string.Empty;
+            break;
+        }
+        
         var qs = AuthHelper.ParseQueryString(match.Groups[3].Value);
         privateKey = qs["secret"] ?? privateKey;
         if (int.TryParse(qs["digits"], out var queryDigits) && queryDigits != 0) {
           digits = queryDigits;
+          digitsField.Text = digits.ToString();
         }
 
-        if (qs["counter"] != null) {
-          long.TryParse(qs["counter"], out counter);
+        if (qs["counter"] != null && long.TryParse(qs["counter"], out counter)) {
+          counterField.Text = counter.ToString();
         }
 
         issuer = qs["issuer"];
-        if (string.IsNullOrEmpty(issuer) == false) {
+        if (!string.IsNullOrEmpty(issuer)) {
           label = issuer + (string.IsNullOrEmpty(label) == false ? " (" + label + ")" : string.Empty);
         }
-
-        serial = qs["serial"];
-        if (string.IsNullOrEmpty(label) == false) {
+        if (!string.IsNullOrEmpty(label) && updateNameField) {
           Authenticator.Name = nameField.Text = label;
         }
-
+        
+        serial = qs["serial"];
+        
         var periods = qs["period"];
-        if (string.IsNullOrEmpty(periods) == false) {
-          int.TryParse(periods, out period);
+        if (!string.IsNullOrEmpty(periods) && int.TryParse(periods, out period)){
+          intervalField.Text = period.ToString();
         }
 
-        if (qs["algorithm"] != null) {
-          if (Enum.TryParse(qs["algorithm"], true, out hmac)) {
-            hashField.SelectedItem = hmac.ToString();
-          }
+        if (qs["algorithm"] != null && Enum.TryParse(qs["algorithm"], true, out hmac)) {
+          hashField.SelectedItem = hmac.ToString();
         }
       }
 
@@ -353,46 +307,49 @@ namespace Authenticator {
 
       try {
         Authenticator auth;
-        if (authType == TOTP) {
-          if (string.Compare(issuer, "BattleNet", true) == 0) {
-            if (string.IsNullOrEmpty(serial)) {
-              throw new ApplicationException("Battle.net Authenticator does not have a serial");
+        switch (authType) {
+          case TOTP: {
+            if ("BattleNet".Equals(issuer, StringComparison.OrdinalIgnoreCase)) {
+              if (string.IsNullOrEmpty(serial)) {
+                throw new ApplicationException("Battle.net Authenticator does not have a serial");
+              }
+
+              serial = serial.ToUpper();
+              if (Regex.IsMatch(serial, @"^[A-Z]{2}-?[\d]{4}-?[\d]{4}-?[\d]{4}$") == false) {
+                throw new ApplicationException("Invalid serial for Battle.net Authenticator");
+              }
+
+              auth = new BattleNetAuthenticator();
+              ((BattleNetAuthenticator) auth).SecretKey = Base32.GetInstance().Decode(privateKey);
+              ((BattleNetAuthenticator) auth).Serial = serial;
+
+              issuer = string.Empty;
+            }
+            else {
+              auth = new GoogleAuthenticator();
+              ((GoogleAuthenticator) auth).Enroll(privateKey);
             }
 
-            serial = serial.ToUpper();
-            if (Regex.IsMatch(serial, @"^[A-Z]{2}-?[\d]{4}-?[\d]{4}-?[\d]{4}$") == false) {
-              throw new ApplicationException("Invalid serial for Battle.net Authenticator");
+            timer.Enabled = true;
+            codeProgress.Visible = true;
+            timeBasedRadio.Checked = true;
+            break;
+          }
+          case HOTP: {
+            auth = new HotpAuthenticator();
+            if (counterField.Text.Trim().Length != 0) {
+              long.TryParse(counterField.Text.Trim(), out counter);
             }
 
-            auth = new BattleNetAuthenticator();
-            ((BattleNetAuthenticator) auth).SecretKey = Base32.GetInstance().Decode(privateKey);
-            ((BattleNetAuthenticator) auth).Serial = serial;
-
-            issuer = string.Empty;
+            ((HotpAuthenticator) auth).Enroll(privateKey, counter); // start with the next code
+            timer.Enabled = false;
+            codeProgress.Visible = false;
+            counterBasedRadio.Checked = true;
+            break;
           }
-          else {
-            auth = new GoogleAuthenticator();
-            ((GoogleAuthenticator) auth).Enroll(privateKey);
-          }
-
-          timer.Enabled = true;
-          codeProgress.Visible = true;
-          timeBasedRadio.Checked = true;
-        }
-        else if (authType == HOTP) {
-          auth = new HotpAuthenticator();
-          if (counterField.Text.Trim().Length != 0) {
-            long.TryParse(counterField.Text.Trim(), out counter);
-          }
-
-          ((HotpAuthenticator) auth).Enroll(privateKey, counter); // start with the next code
-          timer.Enabled = false;
-          codeProgress.Visible = false;
-          counterBasedRadio.Checked = true;
-        }
-        else {
-          MainForm.ErrorDialog(Owner, "Only TOTP or HOTP authenticators are supported");
-          return false;
+          default:
+            MainForm.ErrorDialog(Owner, "Only TOTP or HOTP authenticators are supported");
+            return false;
         }
 
         auth.HmacType = hmac;
@@ -425,8 +382,8 @@ namespace Authenticator {
             AuthHelper.APPLICATION_TITLE, MessageBoxButtons.OK, MessageBoxIcon.Warning);
         }
       }
-      catch (Exception irre) {
-        MainForm.ErrorDialog(Owner, "Unable to create the authenticator. The secret code is probably invalid.", irre);
+      catch (Exception ex) {
+        MainForm.ErrorDialog(Owner, "Unable to create the authenticator. The secret code is probably invalid.", ex);
         return false;
       }
 

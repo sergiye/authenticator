@@ -89,6 +89,7 @@ namespace Authenticator {
       {"LastPass", "LastPassIcon.png"},
       {"Name.com", "NameIcon.png"},
       {"Teamviewer", "TeamviewerIcon.png"},
+      {"Skyvia", "SkyviaIcon.png"},
       {"Xero", "XeroIcon.png"},
       {"Zoho", "ZohoIcon.png"},
 
@@ -154,17 +155,12 @@ namespace Authenticator {
 
     public static List<RegisteredAuthenticator> RegisteredAuthenticators = new List<RegisteredAuthenticator> {
       new RegisteredAuthenticator {
-        Name = "Time-Based", 
-        AuthenticatorType = RegisteredAuthenticator.AuthenticatorTypes.RFC6238_TIME,
+        Name = "Time-Based / Google", 
+        AuthenticatorType = RegisteredAuthenticator.AuthenticatorTypes.RFC6238_TIME_COUNTER,
         Icon = "AppIcon.png"
       },
       
       null,
-      new RegisteredAuthenticator {
-        Name = "Google", 
-        AuthenticatorType = RegisteredAuthenticator.AuthenticatorTypes.Google, 
-        Icon = "GoogleIcon.png"
-      },
       new RegisteredAuthenticator {
         Name = "Microsoft", 
         AuthenticatorType = RegisteredAuthenticator.AuthenticatorTypes.Microsoft,
@@ -1015,9 +1011,10 @@ namespace Authenticator {
 
     public static void ShowException(Exception ex) {
       try {
-        if (new ExceptionForm(ex).ShowDialog() == DialogResult.Cancel) {
-          Process.GetCurrentProcess().Kill();
-        }
+        new ExceptionForm(ex).ShowDialog();
+        // if (new ExceptionForm(ex).ShowDialog() == DialogResult.Cancel) {
+        //   Process.GetCurrentProcess().Kill();
+        // }
       }
       catch (Exception) {
         // ignored

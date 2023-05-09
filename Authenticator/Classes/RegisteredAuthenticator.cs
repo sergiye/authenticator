@@ -9,8 +9,7 @@
       GuildWars,
       Trion,
       Microsoft,
-      RFC6238_TIME,
-      RFC6238_COUNTER,
+      RFC6238_TIME_COUNTER,
       OktaVerify
     }
 

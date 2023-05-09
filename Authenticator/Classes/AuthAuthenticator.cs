@@ -11,6 +11,7 @@ using System.Xml;
 
 namespace Authenticator {
   public class AuthAuthenticator : ICloneable {
+    public const string ConfigSectionName = "AuthAuthenticator";
     public event AuthAuthenticatorChangedHandler OnAuthAuthenticatorChanged;
 
     public Guid Id { get; set; }
@@ -321,7 +322,7 @@ namespace Authenticator {
     }
 
     public void WriteXmlString(XmlWriter writer) {
-      writer.WriteStartElement(typeof(AuthAuthenticator).Name);
+      writer.WriteStartElement(ConfigSectionName);
       writer.WriteAttributeString("id", Id.ToString());
       if (AuthenticatorData != null) {
         writer.WriteAttributeString("type", AuthenticatorData.GetType().FullName);

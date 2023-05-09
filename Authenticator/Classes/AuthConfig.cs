@@ -476,7 +476,7 @@ namespace Authenticator {
             case "copyoncode":
               defaultCopyOnCode = reader.ReadElementContentAsBoolean();
               break;
-            case "AuthAuthenticator":
+            case AuthAuthenticator.ConfigSectionName:
               var wa = new AuthAuthenticator();
               changed = wa.ReadXml(reader, password) || changed;
               Add(wa);

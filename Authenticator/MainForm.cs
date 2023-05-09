@@ -25,7 +25,7 @@ namespace Authenticator {
 
     private DateTime? saveConfigTime;
 
-    private bool mExplictClose;
+    private bool mExplicitClose;
 
     private bool initiallyMinimised;
 
@@ -590,7 +590,7 @@ namespace Authenticator {
 
     private void MainForm_FormClosing(object sender, FormClosingEventArgs e) {
       // keep in the tray when closing Form 
-      if (Config != null && Config.UseTrayIcon && Visible && mExplictClose == false) {
+      if (Config != null && Config.UseTrayIcon && Visible && mExplicitClose == false) {
         e.Cancel = true;
         Hide();
         return;
@@ -658,24 +658,6 @@ namespace Authenticator {
           };
           added = (form.ShowDialog(this) == DialogResult.OK);
         }
-        else if (registeredauth.AuthenticatorType == RegisteredAuthenticator.AuthenticatorTypes.Google) {
-          // create the Google authenticator
-          // add the new authenticator
-          var existing = 0;
-          string name;
-          do {
-            name = "Google" + (existing != 0 ? " (" + existing + ")" : string.Empty);
-            existing++;
-          } while (authenticatorList.Items.Cast<AuthenticatorListBox.ListItem>().Count(a => a.Authenticator.Name == name) != 0);
-
-          authenticator.Name = name;
-          authenticator.AutoRefresh = false;
-
-          var form = new AddGoogleAuthenticator {
-            Authenticator = authenticator
-          };
-          added = (form.ShowDialog(this) == DialogResult.OK);
-        }
         else if (registeredauth.AuthenticatorType == RegisteredAuthenticator.AuthenticatorTypes.GuildWars) {
           // create the GW2 authenticator
           var existing = 0;
@@ -710,7 +692,7 @@ namespace Authenticator {
           };
           added = (form.ShowDialog(this) == DialogResult.OK);
         }
-        else if (registeredauth.AuthenticatorType == RegisteredAuthenticator.AuthenticatorTypes.RFC6238_TIME) {
+        else if (registeredauth.AuthenticatorType == RegisteredAuthenticator.AuthenticatorTypes.RFC6238_TIME_COUNTER) {
           // create the Google authenticator
           // add the new authenticator
           var existing = 0;
@@ -719,15 +701,10 @@ namespace Authenticator {
             name = "Authenticator" + (existing != 0 ? " (" + existing + ")" : string.Empty);
             existing++;
           } while (authenticatorList.Items.Cast<AuthenticatorListBox.ListItem>().Count(a => a.Authenticator.Name == name) != 0);
-
           authenticator.Name = name;
           authenticator.AutoRefresh = false;
           authenticator.Skin = "AppIcon.png";
-
-          var form = new AddAuthenticator {
-            Authenticator = authenticator
-          };
-          added = (form.ShowDialog(this) == DialogResult.OK);
+          added = new AddAuthenticator(authenticator).ShowDialog(this) == DialogResult.OK;
         }
         else if (registeredauth.AuthenticatorType == RegisteredAuthenticator.AuthenticatorTypes.OktaVerify) {
           // create the Okta Verify authenticator
@@ -1196,7 +1173,7 @@ namespace Authenticator {
     }
 
     private void exitOptionMenuItem_Click(object sender, EventArgs e) {
-      mExplictClose = true;
+      mExplicitClose = true;
       Close();
     }
 

@@ -158,12 +158,6 @@
     <Compile Include="Dialogs\AddBattleNetAuthenticator.Designer.cs">
       <DependentUpon>AddBattleNetAuthenticator.cs</DependentUpon>
     </Compile>
-    <Compile Include="Dialogs\AddGoogleAuthenticator.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Dialogs\AddGoogleAuthenticator.designer.cs">
-      <DependentUpon>AddGoogleAuthenticator.cs</DependentUpon>
-    </Compile>
     <Compile Include="Dialogs\AddGuildWarsAuthenticator.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -273,9 +267,6 @@
     <EmbeddedResource Include="Dialogs\AddBattleNetAuthenticator.resx">
       <DependentUpon>AddBattleNetAuthenticator.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Dialogs\AddGoogleAuthenticator.resx">
-      <DependentUpon>AddGoogleAuthenticator.cs</DependentUpon>
-    </EmbeddedResource>
     <EmbeddedResource Include="Dialogs\AddGuildWarsAuthenticator.resx">
       <DependentUpon>AddGuildWarsAuthenticator.cs</DependentUpon>
       <SubType>Designer</SubType>
@@ -333,6 +324,7 @@
     <None Include="Properties\app.manifest" />
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="Resources\SkyviaIcon.png" />
     <EmbeddedResource Include="Resources\XeroIcon.png" />
     <EmbeddedResource Include="Resources\ZohoIcon.png" />
     <EmbeddedResource Include="LICENSE" />
