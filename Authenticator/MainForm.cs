@@ -358,7 +358,7 @@ namespace Authenticator {
 
       notifyIcon = new NotifyIcon(components);
       notifyIcon.Icon = Icon.ExtractAssociatedIcon(Updater.CurrentFileLocation);
-      notifyIcon.DoubleClick += notifyIcon_DoubleClick;
+      notifyIcon.DoubleClick += ShowHideMenuItem_Click;
       notifyIcon.ContextMenuStrip = notifyMenu;
       notifyIcon.Visible = Config.UseTrayIcon;
 
@@ -777,13 +777,6 @@ namespace Authenticator {
       }
     }
 
-    private void notifyIcon_DoubleClick(object sender, EventArgs e) {
-      BringToFront();
-      Show();
-      WindowState = FormWindowState.Normal;
-      Activate();
-    }
-
     private void authenticatorList_ItemRemoved(object source, AuthenticatorListBox.ListItem args) {
       foreach (var auth in Config) {
         if (auth == args.Authenticator) {
@@ -912,11 +905,8 @@ namespace Authenticator {
         var shortcut = Keys.None;
         if (index == 0)
           shortcut = Keys.Control | Keys.A;
-        var subItem = AuthHelper.AddMenuItem(addToolStripMenuItem.DropDownItems, auth.Name, "addAuthenticatorMenuItem_" + index++, addAuthenticatorMenu_Click, shortcut, auth);
-        if (string.IsNullOrEmpty(auth.Icon)) continue;
-        subItem.Image = AuthHelper.GetIconBitmap(auth.Icon);
-        subItem.ImageAlign = ContentAlignment.MiddleLeft;
-        subItem.ImageScaling = ToolStripItemImageScaling.SizeToFit;
+        var icon = string.IsNullOrEmpty(auth.Icon) ? null : AuthHelper.GetIconBitmap(auth.Icon);
+        var subItem = AuthHelper.AddMenuItem(addToolStripMenuItem.DropDownItems, auth.Name, "addAuthenticatorMenuItem_" + index++, addAuthenticatorMenu_Click, shortcut, auth, icon);
       }
 
       //Options section
@@ -943,8 +933,8 @@ namespace Authenticator {
     private void LoadNotifyMenu(ToolStripItemCollection menuItems) {
       menuItems.Clear();
 
-      AuthHelper.AddMenuItem(menuItems,"Open", "openOptionsMenuItem", openOptionsMenuItem_Click);
-      AuthHelper.AddMenuItem(menuItems, null, "openOptionsSeparatorItem");
+      AuthHelper.AddMenuItem(menuItems,"Show/Hide", "openOptionsMenuItem", ShowHideMenuItem_Click);
+      AuthHelper.AddMenuItem(menuItems);
 
       if (Config != null && Config.Count != 0) {
         // because of window size, we only show first 30.
@@ -989,11 +979,6 @@ namespace Authenticator {
       if (menuItems.Find("changePasswordOptionsMenuItem", false).FirstOrDefault() is ToolStripMenuItem changeProtection)
         changeProtection.Enabled = Config != null && Config.Count != 0;
 
-      if (menuItems.Find("openOptionsMenuItem", false).FirstOrDefault() is ToolStripMenuItem open)
-        open.Visible = (Config.UseTrayIcon && Visible == false);
-      if (menuItems.Find("openOptionsSeparatorItem", false).FirstOrDefault() is ToolStripMenuItem openSeparator)
-        openSeparator.Visible = (Config.UseTrayIcon && Visible == false);
-
       if (menuItems.Find("startWithWindowsOptionsMenuItem", false).FirstOrDefault() is ToolStripMenuItem startWithWin)
         startWithWin.Checked = Config.StartWithWindows;
       if (menuItems.Find("alwaysOnTopOptionsMenuItem", false).FirstOrDefault() is ToolStripMenuItem alwaysOnTop)
@@ -1011,17 +996,6 @@ namespace Authenticator {
 
       if (menu.Items.Cast<ToolStripItem>().FirstOrDefault(t => t.Name == "changePasswordOptionsMenuItem") is ToolStripMenuItem menuItem) {
         menuItem.Enabled = Config != null && Config.Count != 0;
-      }
-
-      menuItem = menu.Items.Cast<ToolStripItem>().FirstOrDefault(t => t.Name == "openOptionsMenuItem") as
-          ToolStripMenuItem;
-      if (menuItem != null) {
-        menuItem.Visible = (Config.UseTrayIcon && Visible == false);
-      }
-
-      var item = menu.Items.Cast<ToolStripItem>().FirstOrDefault(t => t.Name == "openOptionsSeparatorItem");
-      if (item != null) {
-        item.Visible = (Config.UseTrayIcon && Visible == false);
       }
 
       menuItem = menu.Items.Cast<ToolStripItem>().FirstOrDefault(t => t.Name == "defaultActionOptionsMenuItem") as
@@ -1096,12 +1070,14 @@ namespace Authenticator {
       }
     }
 
-    private void openOptionsMenuItem_Click(object sender, EventArgs e) {
-      // show the main form
-      BringToFront();
-      Show();
-      WindowState = FormWindowState.Normal;
-      Activate();
+    private void ShowHideMenuItem_Click(object sender, EventArgs e) {
+      Visible = !Visible;
+      if (Visible) {
+        // show the main form
+        BringToFront();
+        WindowState = FormWindowState.Normal;
+        Activate();
+      }
     }
 
     private void authenticatorOptionsMenuItem_Click(object sender, EventArgs e) {
