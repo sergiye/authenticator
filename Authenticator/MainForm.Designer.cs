@@ -233,8 +233,6 @@ namespace Authenticator {
       this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
       this.MainMenuStrip = this.mainMenu;
       this.MaximizeBox = false;
-      this.MaximumSize = new System.Drawing.Size(1627, 1080);
-      this.MinimumSize = new System.Drawing.Size(307, 180);
       this.Name = "MainForm";
       this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
       this.Text = "Authenticator";

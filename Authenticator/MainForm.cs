@@ -38,6 +38,7 @@ namespace Authenticator {
     private void MainForm_Load(object sender, EventArgs e) {
       //Text = $"Authenticator {(Environment.Is64BitProcess ? "x64" : "x32")} - {Updater.CurrentVersion}";
       Icon = Icon.ExtractAssociatedIcon(Updater.CurrentFileLocation);
+      MinimumSize = new Size(400, mainMenu.Height + Height - ClientRectangle.Height + authenticatorList.ItemHeight);
 
       // get any command arguments
       string password = null;
