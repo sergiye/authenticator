@@ -30,15 +30,16 @@ namespace Authenticator {
     }
 
     private const int MARGIN_LEFT = 4;
-    private const int MARGIN_TOP = 8;
+    private int MARGIN_TOP = 8;
     private const int MARGIN_RIGHT = 8;
     private const int ICON_WIDTH = 48;
     private const int ICON_HEIGHT = 48;
     private const int ICON_MARGIN_RIGHT = 12;
 
-    private const int LABEL_MARGIN_BOTTOM = 2;
+    private const int LABEL_MARGIN_TOP = 8;
+    private const int LABEL_MARGIN_BOTTOM = 4;
 
-    private const int FONT_SIZE = 12;
+    private const int FONT_SIZE = 10;
 
     private const int PIE_WIDTH = 46;
     private const int PIE_HEIGHT = 46;
@@ -87,6 +88,14 @@ namespace Authenticator {
       LoadContextMenuStrip();
     }
 
+    public override int ItemHeight {
+      get => base.ItemHeight;
+      set {
+        base.ItemHeight = value;
+        MARGIN_TOP = (ItemHeight - ICON_HEIGHT) / 2;
+      }
+    }
+
     protected override void OnMouseWheel(MouseEventArgs e) {
       base.OnMouseWheel(e);
 
@@ -126,17 +135,16 @@ namespace Authenticator {
     public void Tick(object sender, EventArgs e) {
       for (var index = 0; index < Items.Count; index++) {
         // get the item
-        var item = Items[index] as ListItem;
+        if (!(Items[index] is ListItem item)) continue;
         var auth = item.Authenticator;
 
         var y = ItemHeight * index - TopIndex * ItemHeight;
         if (auth.AutoRefresh) {
           // for autorefresh we repaint the pie or the code too
           //int tillUpdate = (int)((auth.AuthenticatorData.ServerTime % ((long)auth.AuthenticatorData.Period * 1000L)) / 1000L);
-          var tillUpdate =
-            (int)Math.Round(
-              (decimal)(auth.AuthenticatorData.ServerTime % ((long)auth.AuthenticatorData.Period * 1000L) / 1000L) *
-              (360M / (decimal)auth.AuthenticatorData.Period));
+          var tillUpdate = (int)Math.Round(
+              auth.AuthenticatorData.ServerTime % (auth.AuthenticatorData.Period * 1000L) / 1000L *
+              (360M / auth.AuthenticatorData.Period));
           if (item.LastUpdate == DateTime.MinValue || tillUpdate == 0) {
             Invalidate(new Rectangle(0, y, Width, ItemHeight), false);
             item.LastUpdate = DateTime.Now;
@@ -184,13 +192,13 @@ namespace Authenticator {
         // if this was in a refresh icon, we do a refresh
         var index = IndexFromPoint(e.Location);
         if (index >= 0 && index < Items.Count) {
-          var item = Items[index] as ListItem;
+          if (!(Items[index] is ListItem item)) return;
           var y = ItemHeight * index - ItemHeight * TopIndex;
-          var hasvscroll = Height < Items.Count * ItemHeight;
+          var hasVScroll = Height < Items.Count * ItemHeight;
           if (item.Authenticator.AutoRefresh == false && item.DisplayUntil < DateTime.Now
                                                       && new Rectangle(
                                                         Width - (ICON_WIDTH + MARGIN_RIGHT) -
-                                                        (hasvscroll ? SystemInformation.VerticalScrollBarWidth : 0),
+                                                        (hasVScroll ? SystemInformation.VerticalScrollBarWidth : 0),
                                                         y + MARGIN_TOP, ICON_WIDTH, ICON_HEIGHT).Contains(e.Location)) {
             if (UnprotectAuthenticator(item) == DialogResult.Cancel) {
               return;
@@ -421,7 +429,7 @@ namespace Authenticator {
       if (renameTextbox != null && renameTextbox.Visible) {
         var item = renameTextbox.Tag as ListItem;
         if (item != null) {
-          var y = ItemHeight * item.Index - TopIndex * ItemHeight + MARGIN_TOP;
+          var y = ItemHeight * item.Index - TopIndex * ItemHeight + LABEL_MARGIN_TOP;
           if (RenameTextbox.Location.Y != y) {
             RenameTextbox.Location = new Point(RenameTextbox.Location.X, y);
           }
@@ -543,13 +551,13 @@ namespace Authenticator {
       if (force == null) {
         var index = IndexFromPoint(mouseLocation);
         if (index >= 0 && index < Items.Count) {
-          var item = Items[index] as ListItem;
+          if (!(Items[index] is ListItem item)) return;
           var y = ItemHeight * index - TopIndex * ItemHeight;
-          var hasvscroll = Height < Items.Count * ItemHeight;
+          var hasVScroll = Height < Items.Count * ItemHeight;
           if (item.Authenticator.AutoRefresh == false && item.DisplayUntil < DateTime.Now
                                                       && new Rectangle(
                                                           Width - (ICON_WIDTH + MARGIN_RIGHT) -
-                                                          (hasvscroll ? SystemInformation.VerticalScrollBarWidth : 0),
+                                                          (hasVScroll ? SystemInformation.VerticalScrollBarWidth : 0),
                                                           y + MARGIN_TOP, ICON_WIDTH, ICON_HEIGHT)
                                                         .Contains(mouseLocation)) {
             cursor = Cursors.Hand;
@@ -712,7 +720,7 @@ namespace Authenticator {
           if (string.IsNullOrEmpty(tag) && string.IsNullOrEmpty(auth.Skin)) {
             toolStripItem.CheckState = CheckState.Checked;
           }
-          else if (string.Compare(tag, auth.Skin) == 0) {
+          else if (string.Equals(tag, auth.Skin)) {
             toolStripItem.CheckState = CheckState.Checked;
           }
           else {
@@ -989,7 +997,7 @@ namespace Authenticator {
 
         default:
           if (menuitem.Name.StartsWith("iconMenuItem_")) {
-            if (menuitem.Tag is string && string.Compare((string)menuitem.Tag, "OTHER") == 0) {
+            if (menuitem.Tag is string tag && "OTHER".Equals(tag)) {
               do {
                 // other..choose an image file
                 var ofd = new OpenFileDialog();
@@ -1130,26 +1138,23 @@ namespace Authenticator {
       }
     }
 
-    protected void OnDrawItem(DrawItemEventArgs e, Rectangle cliprect) {
+    protected void OnDrawItem(DrawItemEventArgs e, Rectangle clipRect) {
       // no need to draw nothing
-      if (Items.Count == 0 || e.Index < 0) {
+      if (Items.Count == 0 || e.Index < 0)
         return;
-      }
-
-      var item = Items[e.Index] as ListItem;
+      if (!(Items[e.Index] is ListItem item)) return;
+      
       var auth = item.Authenticator;
 
       // if the item is being dragged, we draw a blank placeholder
       if (item.Dragging) {
-        if (cliprect.IntersectsWith(e.Bounds)) {
-          using (var brush = new SolidBrush(SystemColors.ControlLightLight)) {
-            using (var pen = new Pen(SystemColors.Control)) {
-              e.Graphics.DrawRectangle(pen, e.Bounds);
-              e.Graphics.FillRectangle(brush, e.Bounds);
-            }
+        if (!clipRect.IntersectsWith(e.Bounds)) return;
+        using (var brush = new SolidBrush(SystemColors.ControlLightLight)) {
+          using (var pen = new Pen(SystemColors.Control)) {
+            e.Graphics.DrawRectangle(pen, e.Bounds);
+            e.Graphics.FillRectangle(brush, e.Bounds);
           }
         }
-
         return;
       }
 
@@ -1160,28 +1165,27 @@ namespace Authenticator {
         e.Graphics.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
 
         var rect = new Rectangle(e.Bounds.X + MARGIN_LEFT, e.Bounds.Y + MARGIN_TOP, ICON_WIDTH, ICON_HEIGHT);
-        if (cliprect.IntersectsWith(rect) && auth.Icon != null) {
-          e.Graphics.DrawImage(auth.Icon, e.Bounds.X + MARGIN_LEFT, e.Bounds.Y + MARGIN_TOP, ICON_WIDTH, ICON_HEIGHT);
+        if (clipRect.IntersectsWith(rect) && auth.Icon != null) {
+          e.Graphics.DrawImage(auth.Icon, rect.Left, rect.Top, rect.Width, rect.Height);
         }
 
         using (var font = new Font(e.Font.FontFamily, FONT_SIZE, FontStyle.Regular)) {
           var label = auth.Name;
-          var labelsize = e.Graphics.MeasureString(label, font);
+          var labelSize = e.Graphics.MeasureString(label, font);
           var labelMaxWidth = GetMaxAvailableLabelWidth(e.Bounds.Width);
-          if (labelsize.Width > labelMaxWidth) {
-            var newlabel = new StringBuilder(label + "...");
-            while ((labelsize = e.Graphics.MeasureString(newlabel.ToString(), font)).Width > labelMaxWidth) {
-              newlabel.Remove(newlabel.Length - 4, 1);
+          if (labelSize.Width > labelMaxWidth) {
+            var newLabel = new StringBuilder(label + "...");
+            while ((labelSize = e.Graphics.MeasureString(newLabel.ToString(), font)).Width > labelMaxWidth) {
+              newLabel.Remove(newLabel.Length - 4, 1);
             }
 
-            label = newlabel.ToString();
+            label = newLabel.ToString();
           }
 
-          rect = new Rectangle(e.Bounds.X + 64, e.Bounds.Y + MARGIN_TOP, (int)labelsize.Height, (int)labelsize.Width);
-          if (cliprect.IntersectsWith(rect)) {
-            e.Graphics.DrawString(label, font, brush,
-              new RectangleF(e.Bounds.X + MARGIN_LEFT + ICON_WIDTH + ICON_MARGIN_RIGHT, e.Bounds.Y + MARGIN_TOP,
-                labelMaxWidth, labelsize.Height));
+          rect = new Rectangle(e.Bounds.X + MARGIN_LEFT + ICON_WIDTH + ICON_MARGIN_RIGHT, e.Bounds.Y + LABEL_MARGIN_TOP,
+            labelMaxWidth, (int)labelSize.Height);
+          if (clipRect.IntersectsWith(rect)) {
+            e.Graphics.DrawString(label, font, brush, rect);
           }
 
           string code;
@@ -1189,12 +1193,7 @@ namespace Authenticator {
             try {
               // we we aren't autorefresh we just keep the same code up for the 10 seconds so it doesn't change even crossing the 30s boundary
               if (auth.AutoRefresh == false) {
-                if (item.LastCode == null) {
-                  code = auth.CurrentCode;
-                }
-                else {
-                  code = item.LastCode;
-                }
+                code = item.LastCode ?? auth.CurrentCode;
               }
               else {
                 code = auth.CurrentCode;
@@ -1217,47 +1216,40 @@ namespace Authenticator {
             code = "- - - - - -";
           }
 
-          var codesize = e.Graphics.MeasureString(code, e.Font);
+          var codeSize = e.Graphics.MeasureString(code, e.Font);
           rect = new Rectangle(e.Bounds.X + MARGIN_LEFT + ICON_WIDTH + ICON_MARGIN_RIGHT,
-            e.Bounds.Y + MARGIN_TOP + (int)labelsize.Height + LABEL_MARGIN_BOTTOM, (int)codesize.Width,
-            (int)codesize.Height);
-          if (cliprect.IntersectsWith(rect)) {
-            e.Graphics.DrawString(code, e.Font, brush,
-              new PointF(e.Bounds.X + MARGIN_LEFT + ICON_WIDTH + ICON_MARGIN_RIGHT,
-                e.Bounds.Y + MARGIN_TOP + labelsize.Height + LABEL_MARGIN_BOTTOM));
+            e.Bounds.Y + LABEL_MARGIN_TOP + (int)labelSize.Height + LABEL_MARGIN_BOTTOM, 
+            (int)codeSize.Width, (int)codeSize.Height);
+          if (clipRect.IntersectsWith(rect)) {
+            e.Graphics.DrawString(code, e.Font, brush, rect.Location);
           }
         }
 
         // draw the refresh image or pie
-        rect = new Rectangle(e.Bounds.X + e.Bounds.Width - (MARGIN_RIGHT + ICON_WIDTH), e.Bounds.Y + MARGIN_TOP,
+        rect = new Rectangle(e.Bounds.X + e.Bounds.Width - (MARGIN_RIGHT + ICON_WIDTH), e.Bounds.Y + MARGIN_TOP + PIE_MARGIN,
           ICON_WIDTH, ICON_HEIGHT);
-        if (cliprect.IntersectsWith(rect)) {
+        if (clipRect.IntersectsWith(rect)) {
           if (auth.AutoRefresh) {
-            using (var piebrush = new SolidBrush(SystemColors.ActiveCaption)) {
-              using (var piepen = new Pen(SystemColors.ActiveCaption)) {
-                //int y = (this.TopIndex * this.ItemHeight) + e.Bounds.y
-                //int tillUpdate = ((int)((auth.AuthenticatorData.ServerTime % 30000) / 1000L) + 1) * 12;
-                var tillUpdate =
-                  (int)Math.Round(
-                    (decimal)(auth.AuthenticatorData.ServerTime % ((long)auth.AuthenticatorData.Period * 1000L) /
-                               1000L) * (360M / (decimal)auth.AuthenticatorData.Period));
-                e.Graphics.DrawPie(piepen, e.Bounds.X + e.Bounds.Width - (MARGIN_RIGHT + ICON_WIDTH),
-                  e.Bounds.Y + MARGIN_TOP + PIE_MARGIN, PIE_WIDTH, PIE_HEIGHT, PIE_STARTANGLE, PIE_SWEEPANGLE);
-                e.Graphics.FillPie(piebrush, e.Bounds.X + e.Bounds.Width - (MARGIN_RIGHT + ICON_WIDTH),
-                  e.Bounds.Y + MARGIN_TOP + PIE_MARGIN, PIE_WIDTH, PIE_HEIGHT, PIE_STARTANGLE, tillUpdate);
+            using (var pieBrush = new SolidBrush(SystemColors.ActiveCaption)) {
+              using (var piePen = new Pen(SystemColors.ActiveCaption)) {
+                var tillUpdate = (int)Math.Round(
+                    auth.AuthenticatorData.ServerTime % (auth.AuthenticatorData.Period * 1000L) / 1000L * 
+                    (360M / auth.AuthenticatorData.Period));
+                e.Graphics.DrawPie(piePen, rect.Left, rect.Top, 
+                  PIE_WIDTH, PIE_HEIGHT, PIE_STARTANGLE, PIE_SWEEPANGLE);
+                e.Graphics.FillPie(pieBrush, rect.Left, rect.Top, 
+                  PIE_WIDTH, PIE_HEIGHT, PIE_STARTANGLE, tillUpdate);
               }
             }
           }
           else {
             if (showCode) {
-              using (var piebrush = new SolidBrush(SystemColors.ActiveCaption)) {
-                using (var piepen = new Pen(SystemColors.ActiveCaption)) {
-                  var tillUpdate = (int)(item.DisplayUntil.Subtract(DateTime.Now).TotalSeconds * (double)360 /
+              using (var pieBrush = new SolidBrush(SystemColors.ActiveCaption)) {
+                using (var piePen = new Pen(SystemColors.ActiveCaption)) {
+                  var tillUpdate = (int)(item.DisplayUntil.Subtract(DateTime.Now).TotalSeconds * 360 /
                                           item.DisplayUntil.Subtract(item.LastUpdate).TotalSeconds);
-                  e.Graphics.DrawPie(piepen, e.Bounds.X + e.Bounds.Width - (MARGIN_RIGHT + ICON_WIDTH),
-                    e.Bounds.Y + MARGIN_TOP + PIE_MARGIN, PIE_WIDTH, PIE_HEIGHT, PIE_STARTANGLE, PIE_SWEEPANGLE);
-                  e.Graphics.FillPie(piebrush, e.Bounds.X + e.Bounds.Width - (MARGIN_RIGHT + ICON_WIDTH),
-                    e.Bounds.Y + MARGIN_TOP + PIE_MARGIN, PIE_WIDTH, PIE_HEIGHT, PIE_STARTANGLE, tillUpdate);
+                  e.Graphics.DrawPie(piePen, rect.Left, rect.Top, PIE_WIDTH, PIE_HEIGHT, PIE_STARTANGLE, PIE_SWEEPANGLE);
+                  e.Graphics.FillPie(pieBrush, rect.Left, rect.Top, PIE_WIDTH, PIE_HEIGHT, PIE_STARTANGLE, tillUpdate);
                 }
               }
             }
@@ -1271,11 +1263,11 @@ namespace Authenticator {
         }
 
         // draw the separating line
-        rect = new Rectangle(e.Bounds.X, e.Bounds.Y + ItemHeight - 1, 1, 1);
-        if (cliprect.IntersectsWith(rect)) {
+        rect = new Rectangle(e.Bounds.X, e.Bounds.Y + ItemHeight - 1, e.Bounds.Width, 1);
+        if (clipRect.IntersectsWith(rect)) {
           using (var pen = new Pen(SystemColors.Control)) {
-            e.Graphics.DrawLine(pen, e.Bounds.X, e.Bounds.Y + ItemHeight - 1, e.Bounds.X + e.Bounds.Width,
-              e.Bounds.Y + ItemHeight - 1);
+            // e.Graphics.DrawRectangle(pen, rect);
+            e.Graphics.DrawLine(pen, rect.Left, rect.Top, rect.Right, rect.Bottom);
           }
         }
       }
