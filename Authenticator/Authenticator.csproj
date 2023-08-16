@@ -395,9 +395,6 @@
     <EmbeddedResource Include="Resources\EAIcon.png" />
     <EmbeddedResource Include="Resources\eBayIcon.png" />
     <EmbeddedResource Include="Resources\GitHub2Icon.png" />
-    <EmbeddedResource Include="Resources\Gitlab2Icon.png" />
-    <EmbeddedResource Include="Resources\GitLabFox2Icon.png" />
-    <EmbeddedResource Include="Resources\GitlabFoxIon.png" />
     <EmbeddedResource Include="Resources\GitLabIcon.png" />
     <EmbeddedResource Include="Resources\GMailIcon.png" />
     <EmbeddedResource Include="Resources\IFTTT2Icon.png" />

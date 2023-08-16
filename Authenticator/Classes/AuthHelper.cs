@@ -76,7 +76,6 @@ namespace Authenticator {
       {"GitHub", "GitHubIcon.png"},
       {"GitHub (White)", "GitHub2Icon.png"},
       {"GitLab", "GitLabIcon.png"},
-      {"GitLab (Fox)", "GitLabFox2Icon.png"},
       {"BitBucket", "BitBucketIcon.png"},
       {"DigitalOcean", "DigitalOceanIcon.png"},
       {"Dreamhost", "DreamhostIcon.png"},

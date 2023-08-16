@@ -555,7 +555,7 @@ namespace Authenticator {
 
         // take the smallest of full height or 62% screen height
         var height = mainMenu.Height + Height - ClientRectangle.Height + Config.Count * authenticatorList.ItemHeight;
-        Height = Math.Min(Screen.GetWorkingArea(this).Height * 62 / 100, height);
+        Height = Math.Min(Screen.GetWorkingArea(this).Height, height);
 
         FormBorderStyle = FormBorderStyle.FixedDialog;
       }

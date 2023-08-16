@@ -360,6 +360,11 @@ namespace Authenticator {
         if (!string.IsNullOrEmpty(issuer)) {
           var detectedIssuer =
             AuthHelper.AuthenticatorIcons.FirstOrDefault(i => i.Key.Equals(issuer, StringComparison.OrdinalIgnoreCase));
+          if (detectedIssuer.Value == null && issuer.Contains('.')) {
+            var issuerPart = issuer.Split('.').First(); 
+            detectedIssuer =
+              AuthHelper.AuthenticatorIcons.FirstOrDefault(i => i.Key.Equals(issuerPart, StringComparison.OrdinalIgnoreCase));
+          }
           Authenticator.Skin = detectedIssuer.Value;
         }
 
