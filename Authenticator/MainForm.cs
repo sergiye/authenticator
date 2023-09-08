@@ -554,8 +554,15 @@ namespace Authenticator {
         }
 
         // take the smallest of full height or 62% screen height
-        var height = mainMenu.Height + Height - ClientRectangle.Height + Config.Count * authenticatorList.ItemHeight;
-        Height = Math.Min(Screen.GetWorkingArea(this).Height, height);
+        var screenHeight = Screen.GetWorkingArea(this).Height * 50 / 100; //use only 50% of total screen height 
+        var fixedHeight = mainMenu.Height + Height - ClientRectangle.Height; 
+        var itemsToShow = Config.Count;
+        int height;
+        do {
+          height = fixedHeight + itemsToShow * authenticatorList.ItemHeight;
+          itemsToShow--;
+        } while (screenHeight < height);
+        Height = height;
 
         FormBorderStyle = FormBorderStyle.FixedDialog;
       }
@@ -886,6 +893,12 @@ namespace Authenticator {
 
     private void LoadMainMenu() {
       mainMenu.Visible = true;
+
+#if DEBUG
+      //test
+      // AuthHelper.AddMenuItem(fileToolStripMenuItem.DropDownItems, "Test", "testMenuItem",
+        // (s, e) => { new ShortcutEditor().ShowDialog(); });
+#endif
 
       //File section
       AuthHelper.AddMenuItem(fileToolStripMenuItem.DropDownItems, "Export", "exportOptionsMenuItem", exportOptionsMenuItem_Click, Keys.Control | Keys.E);

@@ -323,6 +323,10 @@
     <None Include="Properties\app.manifest" />
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="Resources\ngrokIcon.png" />
+    <EmbeddedResource Include="Resources\ngrokBlackIcon.png" />
+    <EmbeddedResource Include="Resources\ngrokCoralIcon.png" />
+    <EmbeddedResource Include="Resources\ngrokBlueIcon.png" />
     <EmbeddedResource Include="Resources\SkyviaIcon.png" />
     <EmbeddedResource Include="Resources\XeroIcon.png" />
     <EmbeddedResource Include="Resources\ZohoIcon.png" />

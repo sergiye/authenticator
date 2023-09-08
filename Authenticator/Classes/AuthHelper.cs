@@ -91,6 +91,10 @@ namespace Authenticator {
       {"Skyvia", "SkyviaIcon.png"},
       {"Xero", "XeroIcon.png"},
       {"Zoho", "ZohoIcon.png"},
+      {"ngrok", "ngrokIcon.png"},
+      {"ngrok (blue)", "ngrokBlueIcon.png"},
+      {"ngrok (black)", "ngrokBlackIcon.png"},
+      {"ngrok (coral)", "ngrokCoralIcon.png"},
 
 
       {"+Google", "GoogleIcon.png"},
