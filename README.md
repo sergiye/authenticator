@@ -1,5 +1,7 @@
 # Authenticator
 
+[![Stars](https://img.shields.io/github/stars/sergiye/authenticator?style=flat-square)](https://github.com/sergiye/authenticator/stargazers)
+[![Fork](https://img.shields.io/github/forks/sergiye/authenticator?style=flat-square)](https://github.com/sergiye/authenticator/fork)
 ![GitHub release (latest by date)](https://img.shields.io/github/v/release/sergiye/authenticator?style=plastic)
 ![GitHub all releases](https://img.shields.io/github/downloads/sergiye/authenticator/total?style=plastic)
 ![GitHub last commit](https://img.shields.io/github/last-commit/sergiye/authenticator?style=plastic)
@@ -75,7 +77,7 @@ Authenticator source code is uploaded to GitHub at http://github.com/sergiey/aut
 
 #### Where does Authenticator save my authenticator information?
 
-Unlike some other authenticator applications, Authenticator does not store/send your information to any 3rd party servers. Your authenticator information is saved by default in your account roaming profile, i.e. c:\Users\<username>\AppData\Roaming\Authenticator. However, this file can be moved anywhere and passed into Authenticator when run.
+Unlike some other authenticator applications, Authenticator does not store/send your information to any 3rd party servers. Your authenticator information can be stored near executable file (portable mode), or (by default) is saved in your account roaming profile, i.e. `c:\Users\<username>\AppData\Roaming\Authenticator`. However, this file can be moved anywhere and passed into Authenticator when run.
 
 ----
 
