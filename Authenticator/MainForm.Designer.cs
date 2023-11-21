@@ -150,7 +150,7 @@ namespace Authenticator {
       this.authenticatorList.DrawMode = System.Windows.Forms.DrawMode.OwnerDrawFixed;
       this.authenticatorList.Font = new System.Drawing.Font("Arial", 14.25F, System.Drawing.FontStyle.Bold);
       this.authenticatorList.IntegralHeight = false;
-      this.authenticatorList.ItemHeight = 80;
+      this.authenticatorList.ItemHeight = 66;
       this.authenticatorList.Location = new System.Drawing.Point(0, 0);
       this.authenticatorList.Name = "authenticatorList";
       this.authenticatorList.ReadOnly = false;
