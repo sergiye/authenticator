@@ -103,5 +103,5 @@ You should have received a copy of the GNU General Public License  along with th
 </a>
 
 **If you like the program, you can support the author and transfer money to**
-- Card number: 5169 3600 1644 3834
+- Card number: 5169 3600 1644 3834 (https://easypay.ua/moneytransfer/transfer2card?id=99445709)
 - IBAN number: UA113052990000026208909644481
