@@ -38,7 +38,8 @@ namespace Authenticator {
     private void MainForm_Load(object sender, EventArgs e) {
       //Text = $"Authenticator {(Environment.Is64BitProcess ? "x64" : "x32")} - {Updater.CurrentVersion}";
       Icon = Icon.ExtractAssociatedIcon(Updater.CurrentFileLocation);
-      MinimumSize = new Size(300, mainMenu.Height + Height - ClientRectangle.Height + authenticatorList.ItemHeight);
+      authenticatorList.ItemHeight = 50;
+      MinimumSize = new Size(200, mainMenu.Height + Height - ClientRectangle.Height + authenticatorList.ItemHeight);
 
       // get any command arguments
       string password = null;
@@ -545,7 +546,7 @@ namespace Authenticator {
     private void SetAutoSize() {
       if (Config.AutoSize) {
         if (Config.Count != 0) {
-          Width = Math.Max(320,
+          Width = Math.Max(this.MinimumSize.Width,
             authenticatorList.Margin.Horizontal + authenticatorList.GetMaxItemWidth() +
             (Width - authenticatorList.Width));
         }

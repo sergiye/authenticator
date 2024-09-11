@@ -30,19 +30,19 @@ namespace Authenticator {
     }
 
     private const int MARGIN_LEFT = 4;
-    private int MARGIN_TOP = 8;
-    private const int MARGIN_RIGHT = 8;
-    private const int ICON_WIDTH = 48;
-    private const int ICON_HEIGHT = 48;
-    private const int ICON_MARGIN_RIGHT = 12;
+    private int MARGIN_TOP = 1;
+    private const int MARGIN_RIGHT = 0;
+    private const int ICON_WIDTH = 40;
+    private const int ICON_HEIGHT = 40;
+    private const int ICON_MARGIN_RIGHT = 8;
 
-    private const int LABEL_MARGIN_TOP = 8;
-    private const int LABEL_MARGIN_BOTTOM = 4;
+    private const int LABEL_MARGIN_TOP = -2;
+    private const int LABEL_MARGIN_BOTTOM = -2;
 
     private const int FONT_SIZE = 10;
 
-    private const int PIE_WIDTH = 46;
-    private const int PIE_HEIGHT = 46;
+    private const int PIE_WIDTH = 36;
+    private const int PIE_HEIGHT = 36;
     private const int PIE_MARGIN = 2;
     private const int PIE_STARTANGLE = 270;
     private const int PIE_SWEEPANGLE = 360;
