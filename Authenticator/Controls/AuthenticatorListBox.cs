@@ -36,8 +36,7 @@ namespace Authenticator {
     private const int ICON_HEIGHT = 40;
     private const int ICON_MARGIN_RIGHT = 8;
 
-    private const int LABEL_MARGIN_TOP = -2;
-    private const int LABEL_MARGIN_BOTTOM = -2;
+    private const int LABEL_MARGIN_TOP = 1;
 
     private const int FONT_SIZE = 10;
 
@@ -1217,8 +1216,9 @@ namespace Authenticator {
           }
 
           var codeSize = e.Graphics.MeasureString(code, e.Font);
+          var codeVertShift = (int)(labelSize.Height + (e.Bounds.Height - labelSize.Height - codeSize.Height) / 2);
           rect = new Rectangle(e.Bounds.X + MARGIN_LEFT + ICON_WIDTH + ICON_MARGIN_RIGHT,
-            e.Bounds.Y + LABEL_MARGIN_TOP + (int)labelSize.Height + LABEL_MARGIN_BOTTOM, 
+            e.Bounds.Y + codeVertShift, 
             (int)codeSize.Width, (int)codeSize.Height);
           if (clipRect.IntersectsWith(rect)) {
             e.Graphics.DrawString(code, e.Font, brush, rect.Location);
