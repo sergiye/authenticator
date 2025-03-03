@@ -41,6 +41,9 @@ namespace Authenticator {
       authenticatorList.ItemHeight = 50;
       MinimumSize = new Size(200, mainMenu.Height + Height - ClientRectangle.Height + authenticatorList.ItemHeight);
 
+      //will display prompt only if update available & when main form displayed
+      Task.Delay(500).ContinueWith(_ => Updater.CheckForUpdates(true));
+
       // get any command arguments
       string password = null;
       string proxy = null;
