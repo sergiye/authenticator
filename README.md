@@ -1,10 +1,10 @@
 # Authenticator
 
-[![Stars](https://img.shields.io/github/stars/sergiye/authenticator?style=flat-square)](https://github.com/sergiye/authenticator/stargazers)
-[![Fork](https://img.shields.io/github/forks/sergiye/authenticator?style=flat-square)](https://github.com/sergiye/authenticator/fork)
-![GitHub release (latest by date)](https://img.shields.io/github/v/release/sergiye/authenticator?style=plastic)
-![GitHub all releases](https://img.shields.io/github/downloads/sergiye/authenticator/total?style=plastic)
-![GitHub last commit](https://img.shields.io/github/last-commit/sergiye/authenticator?style=plastic)
+[![Release (latest)](https://img.shields.io/github/v/release/sergiye/authenticator?style=for-the-badge)](https://github.com/sergiye/authenticator/releases/latest)
+![Downloads](https://img.shields.io/github/downloads/sergiye/authenticator/total?style=for-the-badge&color=ff4f42)
+![GitHub last commit](https://img.shields.io/github/last-commit/sergiye/authenticator?style=for-the-badge&color=00AD00)
+[![Stars](https://img.shields.io/github/stars/sergiye/authenticator?style=for-the-badge)](https://github.com/sergiye/authenticator/stargazers)
+[![Forks](https://img.shields.io/github/forks/sergiye/authenticator?style=for-the-badge)](https://github.com/sergiye/authenticator/forks)
 
 *Authenticator is a portable, open-source Authenticator for Windows that provides counter or time-based RFC 6238 authenticators and common implementations, such as the Google Authenticator.*
 
@@ -94,14 +94,3 @@ This program is free software: you can redistribute it and/or modify it under th
 This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License  along with this program.  If not, see http://www.gnu.org/licenses/.
-
-
-## Donate
-
-<a href=https://www.buymeacoffee.com/sergiye>
-<img src="https://www.buymeacoffee.com/assets/img/custom_images/yellow_img.png" alt="Buy Me A Coffee" style="height: auto !important;width: auto !important;" />
-</a>
-
-**If you like the program, you can support the author and transfer money to**
-- Card number: 5169 3600 1644 3834 (https://easypay.ua/moneytransfer/transfer2card?id=99445709)
-- IBAN number: UA113052990000026208909644481
