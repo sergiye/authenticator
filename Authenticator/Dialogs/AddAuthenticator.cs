@@ -21,6 +21,11 @@ namespace Authenticator {
       Authenticator = authenticator;
     }
 
+    protected override void OnLoad(EventArgs e) {
+      base.OnLoad(e);
+      getFromScreenButton_Click(this, EventArgs.Empty);
+    }
+
     public AuthAuthenticator Authenticator { get; set; }
 
     private bool syncErrorWarned;
@@ -120,6 +125,7 @@ namespace Authenticator {
     
     private void getFromScreenButton_Click(object sender, EventArgs e) {
       try {
+        this.Visible = false;
         //using (var bitmap = (Bitmap)SnippingTool.GetMultipleScreenImage()) {
         using (var bitmap = (Bitmap)SnippingTool.SnipMultiple()) {
           if (bitmap == null) return;
@@ -148,6 +154,9 @@ namespace Authenticator {
       }
       catch (Exception ex) {
         MainForm.ErrorDialog(Owner, "Error decoding QR code from captured image", ex);
+      }
+      finally {
+        this.Visible = true;
       }
     }
 
