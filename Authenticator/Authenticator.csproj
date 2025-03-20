@@ -354,6 +354,7 @@
     <Content Include="app.ico" />
     <EmbeddedResource Include="Resources\keeperIcon.png" />
     <EmbeddedResource Include="Resources\keeperYellowIcon.png" />
+    <EmbeddedResource Include="Resources\HubspotIcon.png" />    
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="BouncyCastle">

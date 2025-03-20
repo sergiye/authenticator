@@ -97,6 +97,7 @@ namespace Authenticator {
       {"ngrok (coral)", "ngrokCoralIcon.png"},
       {"keeper", "keeperIcon.png"},
       {"keeper (yellow)", "keeperYellowIcon.png"},
+      {"Hubspot", "HubspotIcon.png"},
 
       {"+Google", "GoogleIcon.png"},
       {"Authenticator", "GoogleAuthenticatorIcon.png"},
