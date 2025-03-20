@@ -1,9 +1,9 @@
 using System;
 using System.Drawing;
-using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Text;
 using System.Text.RegularExpressions;
 using System.Web;
 using System.Windows.Forms;
@@ -14,6 +14,7 @@ namespace Authenticator {
   public partial class AddAuthenticator : Form {
     private const string HOTP = "hotp";
     private const string TOTP = "totp";
+    private const string GoogleMigration = "otpauth-migration://offline?data=";
 
     public AddAuthenticator(AuthAuthenticator authenticator) {
       InitializeComponent();
@@ -70,15 +71,9 @@ namespace Authenticator {
     }
 
     private void okButton_Click(object sender, EventArgs e) {
-      var privateKey = secretCodeField.Text.Trim();
-      if (privateKey.Length == 0) {
-        MainForm.ErrorDialog(Owner, "Please enter the Secret Code");
-        DialogResult = DialogResult.None;
-        return;
-      }
 
       var first = Authenticator.AuthenticatorData == null;
-      if (VerifyAuthenticator(privateKey, false) == false) {
+      if (VerifyAuthenticator(false) == false) {
         DialogResult = DialogResult.None;
         return;
       }
@@ -97,13 +92,7 @@ namespace Authenticator {
     }
 
     private void verifyButton_Click(object sender, EventArgs e) {
-      var privateKey = secretCodeField.Text.Trim();
-      if (privateKey.Length == 0) {
-        MainForm.ErrorDialog(Owner, "Please enter the Secret Code");
-        return;
-      }
-
-      VerifyAuthenticator(privateKey, true);
+      VerifyAuthenticator(true);
     }
 
     private void basementRadio_CheckedChanged(object sender, EventArgs e) {
@@ -120,7 +109,7 @@ namespace Authenticator {
     }
 
     private void secretCodeField_Leave(object sender, EventArgs e) {
-      VerifyAuthenticator(secretCodeField.Text, true);
+      VerifyAuthenticator(true);
     }
     
     private void getFromScreenButton_Click(object sender, EventArgs e) {
@@ -129,9 +118,6 @@ namespace Authenticator {
         //using (var bitmap = (Bitmap)SnippingTool.GetMultipleScreenImage()) {
         using (var bitmap = (Bitmap)SnippingTool.SnipMultiple()) {
           if (bitmap == null) return;
-#if DEBUG
-          bitmap.Save($"d:\\downloads\\snip_{Environment.TickCount}.png", ImageFormat.Png);
-#endif
           //todo: use gaussian filter to remove noise
           //image = new GaussianBlur(2).ProcessImage(image);
           var reader = new BarcodeReader(null, null, ls => new GlobalHistogramBinarizer(ls)) {
@@ -144,8 +130,8 @@ namespace Authenticator {
           };
           var result = reader.Decode(bitmap);
           if (result != null && !string.IsNullOrEmpty(result.Text)) {
-            if (VerifyAuthenticator(result.Text, true))
-              secretCodeField.Text = HttpUtility.UrlDecode(result.Text);
+            secretCodeField.Text = result.Text;
+            VerifyAuthenticator(true);
           }
           else {
             MainForm.ErrorDialog(Owner, "Unable to decode QR code from captured image");
@@ -175,7 +161,15 @@ namespace Authenticator {
       }
     }
 
-    private bool VerifyAuthenticator(string privateKey, bool updateNameField) {
+    private bool VerifyAuthenticator(bool updateNameField) {
+
+      var privateKey = secretCodeField.Text.Trim();
+
+      if (privateKey.Length == 0) {
+        MainForm.ErrorDialog(Owner, "Please enter the Secret Code");
+        return false;
+      }
+
       if (string.IsNullOrEmpty(privateKey))
         return false;
 
@@ -194,6 +188,36 @@ namespace Authenticator {
       }
 
       long counter = 0;
+      string issuer = null;
+      string serial = null;
+
+      //google migration support
+      if (privateKey.StartsWith(GoogleMigration)) {
+        var szData = HttpUtility.UrlDecode(privateKey.Substring(GoogleMigration.Length));
+        var arrByte = Convert.FromBase64String(szData);
+        Payload item = Payload.Parser.ParseFrom(arrByte);
+        var arr = item.OtpParameters;
+
+        for (var i = 0; i < arr.Count; ++i) {
+          serial = Base32.GetInstance().Encode(arr[i].Secret.ToByteArray());
+          authType = arr[i].Type.ToString().ToUpper();
+          if (arr[i].HasIssuer)
+            issuer = arr[i].Issuer;
+          if (arr[i].HasDigits) {
+            switch (arr[i].Digits) {
+              case Payload.Types.DigitCount.Six:
+                digits = 6;
+                break;
+              case Payload.Types.DigitCount.Eight:
+                digits = 8;
+                break;
+            }
+          }
+          var label = arr[i].HasIssuer ? $"{arr[i].Issuer} ({arr[i].Name})" : arr[i].Name;
+          secretCodeField.Text = privateKey = $"otpauth://{authType}/{label}?secret={serial}";
+          break; //todo: process only the first one
+        }
+      }
 
       // if this is a URL, pull it down
       Match match;
@@ -252,9 +276,6 @@ namespace Authenticator {
         }
       }
 
-      string issuer = null;
-      string serial = null;
-
       // check for otpauth://, e.g. "otpauth://totp/dc3bf64c-2fd4-40fe-a8cf-83315945f08b@blockchain.info?secret=IHZJDKAEEC774BMUK3GX6SA"
       match = Regex.Match(privateKey, @"otpauth://([^/]+)/([^?]+)\?(.*)", RegexOptions.IgnoreCase);
       if (match.Success) {
@@ -287,8 +308,8 @@ namespace Authenticator {
           counterField.Text = counter.ToString();
         }
 
-        issuer = qs["issuer"];
-        if (!string.IsNullOrEmpty(issuer)) {
+        if (!string.IsNullOrEmpty(qs["issuer"])) {
+          issuer = qs["issuer"];
           label = issuer + (string.IsNullOrEmpty(label) == false ? " (" + label + ")" : string.Empty);
         }
         if (!string.IsNullOrEmpty(label) && updateNameField) {
@@ -401,6 +422,7 @@ namespace Authenticator {
         return false;
       }
 
+      //secretCodeField.Text = HttpUtility.UrlDecode(result.Text);
       return true;
     }
 
