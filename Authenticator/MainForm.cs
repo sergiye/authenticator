@@ -42,7 +42,13 @@ namespace Authenticator {
       MinimumSize = new Size(200, mainMenu.Height + Height - ClientRectangle.Height + authenticatorList.ItemHeight);
 
       //will display prompt only if update available & when main form displayed
-      Task.Delay(500).ContinueWith(_ => Updater.CheckForUpdates(true));
+      var timer = new Timer();
+      timer.Interval = 1000;
+      timer.Tick += (s, eArgs) => {
+        timer.Enabled = false;
+        timer.Enabled = !Updater.CheckForUpdates(true);
+      };
+      timer.Enabled = true; 
 
       // get any command arguments
       string password = null;
