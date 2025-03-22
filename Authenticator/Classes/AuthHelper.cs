@@ -53,7 +53,6 @@ namespace Authenticator {
         {"Windows 7", "Windows7Icon.png"},
         {"s2", string.Empty},
         {"Apple", "Apple.svg"},
-        {"Apple (Gray)", "AppleIcon.png"},
         {"Apple (Black)", "AppleWhiteIcon.png"},
         {"Apple (Color)", "AppleColorIcon.png"},
         {"Apple Mac", "AppleMacIcon.png"},
@@ -144,9 +143,13 @@ namespace Authenticator {
       if (string.IsNullOrEmpty(issuer))
         return null;
       var detectedIssuer = AuthenticatorIcons.FirstOrDefault(i => i.Key.Equals(issuer, StringComparison.OrdinalIgnoreCase));
-      if (detectedIssuer.Value == null && issuer.Contains('.')) {
-        var issuerPart = issuer.Split(new[] { '.', '(' }).First().Trim();
-        detectedIssuer = AuthenticatorIcons.FirstOrDefault(i => i.Key.Equals(issuerPart, StringComparison.OrdinalIgnoreCase));
+      if (detectedIssuer.Value == null) {
+        issuer = issuer.Split(new[] { '.', '(' }).First().Trim();
+        detectedIssuer = AuthenticatorIcons.FirstOrDefault(i => i.Key.StartsWith(issuer, StringComparison.OrdinalIgnoreCase));
+      }
+      if (detectedIssuer.Value == null) {
+        issuer = issuer.Split(' ').First().Trim();
+        detectedIssuer = AuthenticatorIcons.FirstOrDefault(i => i.Key.StartsWith(issuer, StringComparison.OrdinalIgnoreCase));
       }
       return detectedIssuer.Value;
     }
@@ -955,7 +958,7 @@ namespace Authenticator {
 
     #endregion
 
-    public static Bitmap GetIconBitmap(string iconFile, int width = 256, int height = 256) {
+    public static Bitmap GetIconBitmap(string iconFile, int width = 64, int height = 64) {
       using (var iconStream = assembly.GetManifestResourceStream(ResourceNamePrefix + iconFile)) {
         if (iconStream == null) return null;
         if (iconFile.EndsWith(".png"))
