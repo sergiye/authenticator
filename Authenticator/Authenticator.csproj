@@ -260,102 +260,10 @@
     <None Include="Properties\app.manifest" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Resources\ngrokIcon.png" />
-    <EmbeddedResource Include="Resources\ngrokBlackIcon.png" />
-    <EmbeddedResource Include="Resources\ngrokCoralIcon.png" />
-    <EmbeddedResource Include="Resources\ngrokBlueIcon.png" />
-    <EmbeddedResource Include="Resources\SkyviaIcon.png" />
-    <EmbeddedResource Include="Resources\XeroIcon.png" />
-    <EmbeddedResource Include="Resources\ZohoIcon.png" />
+    <EmbeddedResource Include="Resources\*.svg" />
+    <EmbeddedResource Include="Resources\*.png" />
     <EmbeddedResource Include="LICENSE" />
-    <EmbeddedResource Include="Resources\BattleNetAuthenticatorIcon.png" />
-    <EmbeddedResource Include="Resources\GoogleAuthenticatorIcon.png" />
-    <EmbeddedResource Include="Resources\GuildWarsAuthenticatorIcon.png" />
-    <EmbeddedResource Include="Resources\RefreshIcon.png" />
-    <EmbeddedResource Include="Resources\MicrosoftAuthenticatorIcon.png" />
-    <EmbeddedResource Include="Resources\TrionAuthenticatorIcon.png" />
-    <EmbeddedResource Include="Resources\RiftIcon.png" />
-    <None Include="Resources\trion.png" />
-    <None Include="Resources\battlenet.png" />
-    <EmbeddedResource Include="Resources\DiabloIcon.png" />
-    <EmbeddedResource Include="Resources\DefianceIcon.png" />
-    <EmbeddedResource Include="Resources\WarcraftIcon.png" />
-    <EmbeddedResource Include="Resources\GoogleIcon.png" />
-    <EmbeddedResource Include="Resources\ArenaNetIcon.png" />
-    <EmbeddedResource Include="Resources\Windows8Icon.png" />
-    <EmbeddedResource Include="Resources\Windows7Icon.png" />
-    <None Include="Resources\padlock-open.png" />
-    <None Include="Resources\padlock-closed.png" />
-    <None Include="Resources\BluePixel.png" />
-    <EmbeddedResource Include="Resources\RefreshIconWithLock.png" />
-    <EmbeddedResource Include="Resources\AppIcon.png" />
-    <EmbeddedResource Include="Resources\BitcoinIcon.png" />
-    <EmbeddedResource Include="Resources\BitcoinGoldIcon.png" />
-    <EmbeddedResource Include="Resources\LitecoinIcon.png" />
-    <EmbeddedResource Include="Resources\BitcoinEuroIcon.png" />
-    <EmbeddedResource Include="Resources\AndroidIcon.png" />
-    <EmbeddedResource Include="Resources\AppleIcon.png" />
-    <EmbeddedResource Include="Resources\DropboxIcon.png" />
-    <EmbeddedResource Include="Resources\FacebookIcon.png" />
-    <EmbeddedResource Include="Resources\FlickrIcon.png" />
-    <EmbeddedResource Include="Resources\GitIcon.png" />
-    <EmbeddedResource Include="Resources\Google2Icon.png" />
-    <EmbeddedResource Include="Resources\InstagramIcon.png" />
-    <EmbeddedResource Include="Resources\LinkedinIcon.png" />
-    <EmbeddedResource Include="Resources\MacIcon.png" />
-    <EmbeddedResource Include="Resources\TwitterIcon.png" />
-    <EmbeddedResource Include="Resources\WordpressIcon.png" />
-    <EmbeddedResource Include="Resources\YahooIcon.png" />
-    <EmbeddedResource Include="Resources\DogeIcon.png" />
-    <EmbeddedResource Include="Resources\WindowsPhoneIcon.png" />
-    <EmbeddedResource Include="Resources\AppleWhiteIcon.png" />
-    <EmbeddedResource Include="Resources\AppleColorIcon.png" />
-    <EmbeddedResource Include="Resources\GitHubIcon.png" />
-    <EmbeddedResource Include="Resources\WildstarIcon.png" />
-    <EmbeddedResource Include="Resources\FirefallIcon.png" />
-    <EmbeddedResource Include="Resources\AmazonAWSIcon.png" />
-    <EmbeddedResource Include="Resources\AmazonIcon.png" />
-    <EmbeddedResource Include="Resources\RuneScapeIcon.png" />
-    <EmbeddedResource Include="Resources\EvernoteIcon.png" />
-    <EmbeddedResource Include="Resources\TeamviewerIcon.png" />
-    <EmbeddedResource Include="Resources\LastPassIcon.png" />
-    <EmbeddedResource Include="Resources\ArcheAgeIcon.png" />
-    <EmbeddedResource Include="Resources\GlyphIcon.png" />
-    <EmbeddedResource Include="Resources\SteamAuthenticatorIcon.png" />
-    <EmbeddedResource Include="Resources\SteamIcon.png" />
-    <EmbeddedResource Include="Resources\Swtor.png" />
-    <EmbeddedResource Include="Resources\SwtorEmpire.png" />
-    <EmbeddedResource Include="Resources\SwtorRepublic.png" />
-    <EmbeddedResource Include="Resources\GoogleAuthenticator2Icon.png" />
-    <EmbeddedResource Include="Resources\BitBucketIcon.png" />
-    <EmbeddedResource Include="Resources\DigitalOceanIcon.png" />
-    <EmbeddedResource Include="Resources\DreamhostIcon.png" />
-    <EmbeddedResource Include="Resources\DropboxWhiteIcon.png" />
-    <EmbeddedResource Include="Resources\EA2Icon.png" />
-    <EmbeddedResource Include="Resources\EA3Icon.png" />
-    <EmbeddedResource Include="Resources\EAIcon.png" />
-    <EmbeddedResource Include="Resources\eBayIcon.png" />
-    <EmbeddedResource Include="Resources\GitHub2Icon.png" />
-    <EmbeddedResource Include="Resources\GitLabIcon.png" />
-    <EmbeddedResource Include="Resources\GMailIcon.png" />
-    <EmbeddedResource Include="Resources\IFTTT2Icon.png" />
-    <EmbeddedResource Include="Resources\IFTTT3Icon.png" />
-    <EmbeddedResource Include="Resources\IFTTTIcon.png" />
-    <EmbeddedResource Include="Resources\ItchIcon.png" />
-    <EmbeddedResource Include="Resources\KickStarterIcon.png" />
-    <EmbeddedResource Include="Resources\NameIcon.png" />
-    <EmbeddedResource Include="Resources\OriginIcon.png" />
-    <EmbeddedResource Include="Resources\PayPalIcon.png" />
-    <EmbeddedResource Include="Resources\Tumblr2Icon.png" />
-    <EmbeddedResource Include="Resources\Tumblr3Icon.png" />
-    <EmbeddedResource Include="Resources\TumblrIcon.png" />
-    <EmbeddedResource Include="Resources\WordpressWhiteIcon.png" />
-    <EmbeddedResource Include="Resources\ChromeIcon.png" />
-    <EmbeddedResource Include="Resources\OktaVerifyAuthenticatorIcon.png" />
     <Content Include="app.ico" />
-    <EmbeddedResource Include="Resources\keeperIcon.png" />
-    <EmbeddedResource Include="Resources\keeperYellowIcon.png" />
-    <EmbeddedResource Include="Resources\HubspotIcon.png" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="BouncyCastle">
@@ -374,6 +282,9 @@
     </PackageReference>
     <PackageReference Include="SharpZipLib">
       <Version>1.3.3</Version>
+    </PackageReference>
+    <PackageReference Include="Svg">
+      <Version>3.4.7</Version>
     </PackageReference>
     <PackageReference Include="ZXing.Net">
       <Version>0.14.0.1</Version>

@@ -3,7 +3,6 @@ using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Net;
-using System.Text;
 using System.Text.RegularExpressions;
 using System.Web;
 using System.Windows.Forms;
@@ -387,16 +386,8 @@ namespace Authenticator {
         auth.Period = period;
         Authenticator.AuthenticatorData = auth;
 
-        if (!string.IsNullOrEmpty(issuer)) {
-          var detectedIssuer =
-            AuthHelper.AuthenticatorIcons.FirstOrDefault(i => i.Key.Equals(issuer, StringComparison.OrdinalIgnoreCase));
-          if (detectedIssuer.Value == null && issuer.Contains('.')) {
-            var issuerPart = issuer.Split('.').First(); 
-            detectedIssuer =
-              AuthHelper.AuthenticatorIcons.FirstOrDefault(i => i.Key.Equals(issuerPart, StringComparison.OrdinalIgnoreCase));
-          }
-          Authenticator.Skin = detectedIssuer.Value;
-        }
+        if (!string.IsNullOrEmpty(issuer))
+          Authenticator.Skin = AuthHelper.DetectIconByIssuer(issuer);
 
         if (digits > 5) {
           codeField.SpaceOut = digits / 2;

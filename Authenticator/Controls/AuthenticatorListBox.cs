@@ -653,8 +653,8 @@ namespace Authenticator {
           parentItem.DropDownItems.Add(new ToolStripSeparator());
         }
         else if (icon.StartsWith("+")) {
-          if (parentItem.Tag is ToolStripMenuItem) {
-            parentItem = parentItem.Tag as ToolStripMenuItem;
+          if (parentItem.Tag is ToolStripMenuItem parentMenu) {
+            parentItem = parentMenu;
           }
           parentItem = AuthHelper.AddMenuItem(parentItem.DropDownItems, icon.Substring(1), null, ContextMenu_Click, Keys.None, parentItem, AuthHelper.GetIconBitmap(iconFile));
         }
@@ -1050,7 +1050,15 @@ namespace Authenticator {
               } while (true);
             }
             else {
-              auth.Skin = ((string)menuitem.Tag).Length != 0 ? (string)menuitem.Tag : null;
+              var tagValue = menuitem.Tag as string;
+              if (string.IsNullOrEmpty(tagValue)) {
+                var issuer = auth.AuthenticatorData?.Issuer ?? auth.Name;
+                if (issuer != null)
+                  auth.Skin = AuthHelper.DetectIconByIssuer(issuer);
+              }
+              else {
+                auth.Skin = tagValue.Length != 0 ? tagValue : null;
+              }
               RefreshCurrentItem();
             }
           }

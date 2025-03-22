@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
-using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Linq;
@@ -21,10 +20,13 @@ using Org.BouncyCastle.Crypto.Generators;
 using Org.BouncyCastle.Crypto.Parameters;
 using Org.BouncyCastle.Math;
 using Org.BouncyCastle.Security;
+using Svg;
 
 namespace Authenticator {
   class AuthHelper {
     private const string RUNKEY = @"Software\Microsoft\Windows\CurrentVersion\Run";
+    private const string ResourceNamePrefix = "Authenticator.Resources.";
+    private static readonly Assembly assembly = Assembly.GetExecutingAssembly();
 
     public const string DEFAULT_AUTHENTICATOR_FILE_NAME = "Authenticator.config";
 
@@ -33,130 +35,72 @@ namespace Authenticator {
 
     #region Config
 
-    public static Dictionary<string, string> AuthenticatorIcons = new Dictionary<string, string> {
-      {"Default", "AppIcon.png"},
+    static AuthHelper() {
 
-      {"+Social", "FacebookIcon.png"},
-      {"Facebook", "FacebookIcon.png"},
-      {"Instagram", "InstagramIcon.png"},
-      {"Twitter", "TwitterIcon.png"},
-      {"LinkedIn", "LinkedinIcon.png"},
-      {"Flickr", "FlickrIcon.png"},
-      {"Tumblr", "TumblrIcon.png"},
-      {"Tumblr (Flat)", "Tumblr2Icon.png"},
-      {"Wordpress", "WordpressIcon.png"},
-      {"Wordpress (B&W)", "WordpressWhiteIcon.png"},
-      {"Okta", "OktaVerifyAuthenticatorIcon.png"},
-      {"Yahoo", "YahooIcon.png"},
-      {"eBay", "eBayIcon.png"},
+      AuthenticatorIcons = new Dictionary<string, string> {
+        {"Default", "AppIcon.png"},
 
-      {"+Software", "MicrosoftAuthenticatorIcon.png"},
-      {"Microsoft", "MicrosoftAuthenticatorIcon.png"},
-      {"Windows 8", "Windows8Icon.png"},
-      {"Windows 7", "Windows7Icon.png"},
-      {"Windows Phone", "WindowsPhoneIcon.png"},
+        {"+General", "GoogleIcon.png"},
+        {"Google", "GoogleIcon.png"},
+        {"Google (Blue)", "Google.svg"},
+        {"Google (Small)", "Google2Icon.png"},
+        {"Chrome", "ChromeIcon.png"},
+        {"GMail", "GMailIcon.png"},
+        {"Authenticator", "GoogleAuthenticatorIcon.png"},
+        {"s1", string.Empty},
+        {"Microsoft", "MicrosoftAuthenticatorIcon.png"},
+        {"Windows 8", "Windows8Icon.png"},
+        {"Windows 7", "Windows7Icon.png"},
+        {"s2", string.Empty},
+        {"Apple", "Apple.svg"},
+        {"Apple (Gray)", "AppleIcon.png"},
+        {"Apple (Black)", "AppleWhiteIcon.png"},
+        {"Apple (Color)", "AppleColorIcon.png"},
+        {"Apple Mac", "AppleMacIcon.png"},
 
-      {"s1", string.Empty},
-      {"Android", "AndroidIcon.png"},
-      {"s2", string.Empty},
-      {"Apple", "AppleIcon.png"},
-      {"Apple (Black)", "AppleWhiteIcon.png"},
-      {"Apple (Color)", "AppleColorIcon.png"},
-      {"Mac", "MacIcon.png"},
+        {"+Games", "BattleNetAuthenticatorIcon.png"},
+        {"ArcheAge", "ArcheAgeIcon.png"},
+        {"ArenaNet", "ArenaNetIcon.png"},
+        {"Battle.Net", "BattleNetAuthenticatorIcon.png"},
+        {"Diablo III", "DiabloIcon.png"},
+        {"Glyph", "GlyphIcon.png"},
+        {"Guild Wars 2", "GuildWarsAuthenticatorIcon.png"},
+        {"Rift", "RiftIcon.png"},
+        {"Trion", "TrionAuthenticatorIcon.png"},
+        {"World of Warcraft", "WarcraftIcon.png"},
+      };
 
-      {"s3", string.Empty},
-      {"Amazon", "AmazonIcon.png"},
-      {"Amazon AWS", "AmazonAWSIcon.png"},
+      string currentLetter = null;
+      var prefixLength = ResourceNamePrefix.Length;
+      foreach(var resName in assembly.GetManifestResourceNames().OrderBy(n => n)) {
+        if (!resName.StartsWith(ResourceNamePrefix))
+          continue;
 
-      {"s4", string.Empty},
-      {"PayPal", "PayPalIcon.png"},
+        var name = resName.Substring(prefixLength);
+        string title = null;
+        if (name.EndsWith("Icon.png")) {
+          title = name.Substring(0, name.Length - 8);
+        }
+        else if (name.EndsWith(".svg")) {
+          title = name.Substring(0, name.Length - 4);
+        }
+        else
+          continue;
 
-      {"s5", string.Empty},
-      {"Git", "GitIcon.png"},
-      {"GitHub", "GitHubIcon.png"},
-      {"GitHub (White)", "GitHub2Icon.png"},
-      {"GitLab", "GitLabIcon.png"},
-      {"BitBucket", "BitBucketIcon.png"},
-      {"DigitalOcean", "DigitalOceanIcon.png"},
-      {"Dreamhost", "DreamhostIcon.png"},
-      {"DropBox", "DropboxIcon.png"},
-      {"DropBox (White)", "DropboxWhiteIcon.png"},
-      {"Evernote", "EvernoteIcon.png"},
-      {"IFTTT", "IFTTTIcon.png"},
-      {"Itch.io", "ItchIcon.png"},
-      {"KickStarter", "KickStarterIcon.png"},
-      {"LastPass", "LastPassIcon.png"},
-      {"Name.com", "NameIcon.png"},
-      {"Teamviewer", "TeamviewerIcon.png"},
-      {"Skyvia", "SkyviaIcon.png"},
-      {"Xero", "XeroIcon.png"},
-      {"Zoho", "ZohoIcon.png"},
-      {"ngrok", "ngrokIcon.png"},
-      {"ngrok (blue)", "ngrokBlueIcon.png"},
-      {"ngrok (black)", "ngrokBlackIcon.png"},
-      {"ngrok (coral)", "ngrokCoralIcon.png"},
-      {"keeper", "keeperIcon.png"},
-      {"keeper (yellow)", "keeperYellowIcon.png"},
-      {"Hubspot", "HubspotIcon.png"},
+        if (AuthenticatorIcons.ContainsKey(title) || AuthenticatorIcons.ContainsValue(name))
+          continue;
 
-      {"+Google", "GoogleIcon.png"},
-      {"Authenticator", "GoogleAuthenticatorIcon.png"},
-      {"Google", "GoogleIcon.png"},
-      {"Chrome", "ChromeIcon.png"},
-      {"Google (Blue)", "Google2Icon.png"},
-      {"GMail", "GMailIcon.png"},
+        var firstLetter = name.Substring(0, 1).ToUpper();
+        if (!string.Equals(currentLetter, firstLetter, StringComparison.InvariantCultureIgnoreCase)) {
+          currentLetter = firstLetter;
+          AuthenticatorIcons.Add("+" + currentLetter, name); //"Auth0.svg"
+        }
 
+        AuthenticatorIcons.Add(title, name);
+      }
+    }
 
-      {"+Crypto", "BitcoinIcon.png"},
-      {"Bitcoin", "BitcoinIcon.png"},
-      {"Bitcoin Gold", "BitcoinGoldIcon.png"},
-      {"Bitcoin Euro", "BitcoinEuroIcon.png"},
-      {"Litecoin", "LitecoinIcon.png"},
-      {"Dogecoin", "DogeIcon.png"},
-
-
-      {"+Games", "BattleNetAuthenticatorIcon.png"},
-      {"Steam", "SteamAuthenticatorIcon.png"},
-      {"Steam (Circle)", "SteamIcon.png"},
-      
-      {"s6", string.Empty},
-      {"Battle.Net", "BattleNetAuthenticatorIcon.png"},
-      {"World of Warcraft", "WarcraftIcon.png"},
-      {"Diablo III", "DiabloIcon.png"},
-
-      {"s7", string.Empty},
-      {"EA", "EAIcon.png"},
-      {"EA (White)", "EA2Icon.png"},
-      {"EA (Black)", "EA3Icon.png"},
-      
-      {"s8", string.Empty},
-      {"Origin", "OriginIcon.png"},
-      
-      {"s9", string.Empty},
-      {"ArenaNet", "ArenaNetIcon.png"},
-      {"Guild Wars 2", "GuildWarsAuthenticatorIcon.png"},
-      
-      {"s10", string.Empty},
-      {"Trion", "TrionAuthenticatorIcon.png"},
-      {"Glyph", "GlyphIcon.png"},
-      {"ArcheAge", "ArcheAgeIcon.png"},
-      {"Rift", "RiftIcon.png"},
-      {"Defiance", "DefianceIcon.png"},
-      
-      {"s11", string.Empty},
-      {"WildStar", "WildstarIcon.png"},
-      
-      {"s12", string.Empty},
-      {"Firefall", "FirefallIcon.png"},
-      
-      {"s13", string.Empty},
-      {"RuneScape", "RuneScapeIcon.png"},
-      
-      {"s14", string.Empty},
-      {"SWTOR", "Swtor.png"},
-      {"SWTOR (Empire)", "SwtorEmpire.png"},
-      {"SWTOR (Republic)", "SwtorRepublic.png"},
-    };
+    public static readonly Dictionary<string, string> AuthenticatorIcons;
 
     public static List<RegisteredAuthenticator> RegisteredAuthenticators = new List<RegisteredAuthenticator> {
       new RegisteredAuthenticator {
@@ -195,6 +139,18 @@ namespace Authenticator {
       },
     };
     
+    public static string DetectIconByIssuer(string issuer) {
+      
+      if (string.IsNullOrEmpty(issuer))
+        return null;
+      var detectedIssuer = AuthenticatorIcons.FirstOrDefault(i => i.Key.Equals(issuer, StringComparison.OrdinalIgnoreCase));
+      if (detectedIssuer.Value == null && issuer.Contains('.')) {
+        var issuerPart = issuer.Split(new[] { '.', '(' }).First().Trim();
+        detectedIssuer = AuthenticatorIcons.FirstOrDefault(i => i.Key.Equals(issuerPart, StringComparison.OrdinalIgnoreCase));
+      }
+      return detectedIssuer.Value;
+    }
+
     #endregion
 
     public static AuthConfig LoadConfig(string configFile, string password = null) {
@@ -999,18 +955,17 @@ namespace Authenticator {
 
     #endregion
 
-    public static Bitmap GetIconBitmap(string iconFile, int width = 48, int height = 48) {
-      using (var iconStream = Assembly.GetExecutingAssembly()
-               .GetManifestResourceStream("Authenticator.Resources." + iconFile)) {
+    public static Bitmap GetIconBitmap(string iconFile, int width = 256, int height = 256) {
+      using (var iconStream = assembly.GetManifestResourceStream(ResourceNamePrefix + iconFile)) {
         if (iconStream == null) return null;
-        // if (iconFile.EndsWith(".png"))
+        if (iconFile.EndsWith(".png"))
           return new Bitmap(iconStream);
-        // if (iconFile.EndsWith(".svg")) {
-        //   var svgDoc = SvgDocument.Open<SvgDocument>(iconStream);
-        //   return new Bitmap(svgDoc.Draw(width, height));
-        //   // return new Bitmap(svgDoc.Draw(ICON_WIDTH, ICON_HEIGHT));
-        // }
-        // return null;
+        if (iconFile.EndsWith(".svg")) {
+          var svgDoc = SvgDocument.Open<SvgDocument>(iconStream);
+          return new Bitmap(svgDoc.Draw(width, height));
+          // return new Bitmap(svgDoc.Draw(ICON_WIDTH, ICON_HEIGHT));
+        }
+        return null;
       }
     }
 
