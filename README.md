@@ -9,6 +9,10 @@
 *Authenticator is a portable, open-source Authenticator for Windows that provides counter or time-based RFC 6238 authenticators and common implementations, such as the Google Authenticator.*
 
 ----
+## UI example 
+
+[<img src="https://github.com/sergiye/authenticator/raw/master/preview.png" alt="preview" width="300"/>](https://github.com/sergiye/authenticator/releases)
+
 
 ## Download Latest Version
 
