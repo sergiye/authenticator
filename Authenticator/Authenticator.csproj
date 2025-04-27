@@ -262,7 +262,7 @@
   <ItemGroup>
     <EmbeddedResource Include="Resources\*.svg" />
     <EmbeddedResource Include="Resources\*.png" />
-    <EmbeddedResource Include="LICENSE" />
+    <EmbeddedResource Include="..\LICENSE" />
     <Content Include="app.ico" />
   </ItemGroup>
   <ItemGroup>
