@@ -2,9 +2,9 @@
 *.csproj.user
 *.vcxproj.user
 FodyWeavers.xsd
-*/bin/
-*/obj/
+[Bb]in/
+[Oo]bj/
 /.idea/
 *.DotSettings.user
 *.DotSettings
-/.vs/
+.vs/

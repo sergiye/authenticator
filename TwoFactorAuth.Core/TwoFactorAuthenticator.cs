@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace TwoFactorAuth {
 
@@ -19,7 +18,6 @@ namespace TwoFactorAuth {
 
     public TwoFactorAuthenticator(int userId) {
       DefaultClockDriftTolerance = TimeSpan.FromMinutes(2);
-
       UserId = userId;
     }
 
@@ -51,17 +49,14 @@ namespace TwoFactorAuth {
 
     public static string GetSecretKey(int userId) {
       string tmps = (userId + 10000).ToString() + (userId + 67000).GetHashCode().ToString("X");
-      var accountSecretKeyBytes = Encoding.ASCII.GetBytes(tmps);
-      var accountSecretKey = Base32Encoder.ToBase32(accountSecretKeyBytes);
-      return accountSecretKey;
+      var secretKeyBytes = Encoding.ASCII.GetBytes(tmps);
+      return Base32Encoder.ToBase32(secretKeyBytes);
     }
 
-    public string GenerateHashedCode(long iterationNumber, int digits = 6) {
-      return GenerateHashedCode(
+    public string GenerateHashedCode(long iterationNumber, int digits = 6) => GenerateHashedCode(
         Base32Encoder.FromBase32(secretKey),
         iterationNumber,
         digits);
-    }
 
     private string GenerateHashedCode(byte[] key, long iterationNumber, int digits = 6) {
       var counter = BitConverter.GetBytes(iterationNumber);
@@ -89,9 +84,7 @@ namespace TwoFactorAuth {
     private long GetCurrentCounter(DateTime now, DateTime epoch, int timeStep) =>
       (long)(now - epoch).TotalSeconds / timeStep;
 
-    public bool ValidateTwoFactorPin(string twoFactorCodeFromClient) {
-      return ValidateTwoFactorPin(twoFactorCodeFromClient, DefaultClockDriftTolerance);
-    }
+    public bool ValidateTwoFactorPin(string twoFactorCodeFromClient) => ValidateTwoFactorPin(twoFactorCodeFromClient, DefaultClockDriftTolerance);
 
     public bool ValidateTwoFactorPin(string twoFactorCodeFromClient, TimeSpan timeTolerance) {
       if (!string.IsNullOrEmpty(twoFactorCodeFromClient))
@@ -99,14 +92,11 @@ namespace TwoFactorAuth {
       return GetCurrentPins(timeTolerance).Any(c => c == twoFactorCodeFromClient);
     }
 
-    public string GetCurrentPin() =>
-      GenerateHashedCode(GetCurrentCounter());
+    public string GetCurrentPin() => GenerateHashedCode(GetCurrentCounter());
 
-    public string GetCurrentPin(DateTime now) =>
-      GenerateHashedCode(GetCurrentCounter(now, epoch, 30));
+    public string GetCurrentPin(DateTime now) => GenerateHashedCode(GetCurrentCounter(now, epoch, 30));
 
-    public string[] GetCurrentPins() =>
-      GetCurrentPins(DefaultClockDriftTolerance);
+    public string[] GetCurrentPins() => GetCurrentPins(DefaultClockDriftTolerance);
 
     public string[] GetCurrentPins(TimeSpan timeTolerance) {
       var codes = new List<string>();
@@ -125,14 +115,6 @@ namespace TwoFactorAuth {
       }
 
       return codes.ToArray();
-    }
-
-    public string GenerateQrCode(string issuer, string accountTitle) {
-      return QrGenerator.GenerateQrCode(issuer, accountTitle, secretKey);
-    }
-
-    public Task<byte[]> GenerateQrCodeByGoogle(string issuer, string accountTitle) {
-      return QrGenerator.GenerateQrCodeByGoogle(issuer, accountTitle, secretKey);
     }
   }
 }

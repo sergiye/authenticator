@@ -1,0 +1,66 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Library</OutputType>
+    <TargetFrameworks>net452;netstandard2.0</TargetFrameworks>
+    <AppendTargetFrameworkToOutputPath>true</AppendTargetFrameworkToOutputPath>
+    <OutputPath>..\bin\</OutputPath>
+    <RootNamespace>TwoFactorAuth</RootNamespace>
+    <AssemblyName>TwoFactorAuth.Core</AssemblyName>
+    <Deterministic>false</Deterministic>
+    <GenerateAssemblyInfo>true</GenerateAssemblyInfo>
+  </PropertyGroup>
+  <PropertyGroup>
+    <AssemblyTitle>Two Factor Authenticator Core Lib</AssemblyTitle>
+    <AssemblyProduct>Authenticator</AssemblyProduct>
+    <AssemblyCompany>Sergiy Egoshyn</AssemblyCompany>
+    <AssemblyCopyright>Copyright © 2023 Sergiy Egoshyn</AssemblyCopyright>
+    <Authors>Sergiy Egoshin</Authors>
+    <AssemblyVersion>1.0.9248.2</AssemblyVersion>
+    <Copyright>$(AssemblyCopyright)</Copyright>
+    <Company>$(AssemblyCompany)</Company>
+    <Product>$(AssemblyProduct)</Product>
+    <Version>$(AssemblyVersion)</Version>
+    <SignAssembly>false</SignAssembly>
+    <PackageTags>authenticator, 2fa, two-factor, code</PackageTags>
+    <Description>Library for generating and verifying OTP codes (and recovery codes) with methods to generate QR-codes by google APIs</Description>
+    <RepositoryType>git</RepositoryType>
+    <PackageIcon>packageicon.png</PackageIcon>
+    <RepositoryUrl>https://github.com/sergiye/authenticator</RepositoryUrl>
+    <PackageProjectUrl>https://github.com/sergiye/authenticator</PackageProjectUrl>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <IncludeSymbols>True</IncludeSymbols>
+    <PackageLicenseExpression>GPL-3.0-only</PackageLicenseExpression>
+    <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>none</DebugType>
+    <Optimize>true</Optimize>
+    <DefineConstants>TRACE</DefineConstants>
+  </PropertyGroup>
+  <ItemGroup>
+    <None Include="..\packageicon.png" Pack="true" PackagePath="\" />
+    <None Include="..\README.md" Pack="true" PackagePath="\" />
+  </ItemGroup>
+  <ItemGroup Condition="'$(TargetFramework)' == 'net452'">
+    <Reference Include="PresentationCore" />
+    <Reference Include="PresentationFramework" />
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Xml" />
+    <Reference Include="WindowsBase" />
+  </ItemGroup>
+  <ItemGroup Condition="'$(TargetFramework)' == 'netstandard2.0'">
+  </ItemGroup>
+</Project>

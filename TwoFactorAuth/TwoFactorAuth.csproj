@@ -3,31 +3,31 @@
     <OutputType>Library</OutputType>
     <TargetFrameworks>net452;netstandard2.0</TargetFrameworks>
     <AppendTargetFrameworkToOutputPath>true</AppendTargetFrameworkToOutputPath>
-    <OutputPath>bin\</OutputPath>
+    <OutputPath>..\bin\</OutputPath>
     <RootNamespace>TwoFactorAuth</RootNamespace>
     <AssemblyName>TwoFactorAuth</AssemblyName>
     <Deterministic>false</Deterministic>
     <GenerateAssemblyInfo>true</GenerateAssemblyInfo>
-    <AssemblyTitle>Two Factor Authenticator Lib</AssemblyTitle>
-    <AssemblyCompany>Sergiy Egoshyn</AssemblyCompany>
-    <AssemblyProduct>Authenticator</AssemblyProduct>
-    <AssemblyCopyright>Copyright © 2023 Sergiy Egoshyn</AssemblyCopyright>
-    <AssemblyVersion>1.0.9248</AssemblyVersion>
   </PropertyGroup>
   <PropertyGroup>
+    <AssemblyTitle>Two Factor Authenticator Core Lib</AssemblyTitle>
+    <AssemblyProduct>Authenticator</AssemblyProduct>
+    <AssemblyCompany>Sergiy Egoshyn</AssemblyCompany>
+    <AssemblyCopyright>Copyright © 2023 Sergiy Egoshyn</AssemblyCopyright>
+    <Authors>Sergiy Egoshin</Authors>
+    <AssemblyVersion>1.0.9248.2</AssemblyVersion>
+    <Copyright>$(AssemblyCopyright)</Copyright>
+    <Company>$(AssemblyCompany)</Company>
+    <Product>$(AssemblyProduct)</Product>
+    <Version>$(AssemblyVersion)</Version>
     <SignAssembly>false</SignAssembly>
     <PackageTags>authenticator, 2fa, two-factor, code</PackageTags>
-    <Description>Library for generating and verifying OTP codes (and recovery codes) with methods to generate QR-codes</Description>
-    <Authors>Sergiy Egoshin</Authors>
+    <Description>Library for generating and verifying OTP codes (and recovery codes) with methods to generate QR-codes by QRCoder lib</Description>
     <RepositoryType>git</RepositoryType>
     <PackageIcon>packageicon.png</PackageIcon>
     <RepositoryUrl>https://github.com/sergiye/authenticator</RepositoryUrl>
     <PackageProjectUrl>https://github.com/sergiye/authenticator</PackageProjectUrl>
     <PackageReadmeFile>README.md</PackageReadmeFile>
-    <Version>$(AssemblyVersion)</Version>
-    <Copyright>Copyright © Sergiy Egoshin 2023</Copyright>
-    <Company>Sergiy Egoshyn</Company>
-    <Product>Authenticator</Product>
     <IncludeSymbols>True</IncludeSymbols>
     <PackageLicenseExpression>GPL-3.0-only</PackageLicenseExpression>
     <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
@@ -44,7 +44,7 @@
     <DefineConstants>TRACE</DefineConstants>
   </PropertyGroup>
   <ItemGroup>
-    <None Include="packageicon.png" Pack="true" PackagePath="" />
+    <None Include="..\packageicon.png" Pack="true" PackagePath="\" />
     <None Include="..\README.md" Pack="true" PackagePath="\" />
   </ItemGroup>
   <ItemGroup Condition="'$(TargetFramework)' == 'net452'">
@@ -65,6 +65,7 @@
     <PackageReference Include="System.Drawing.Common" Version="9.0.4" />
   </ItemGroup>
   <ItemGroup>
+    <PackageReference Include="TwoFactorAuth.Core" Version="1.0.9248.2" />
     <PackageReference Include="QRCoder" Version="1.6.0" />
   </ItemGroup>
 </Project>
