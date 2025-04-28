@@ -33,7 +33,7 @@ Features include:
   * Portable mode preventing changes to other files or registry settings
   * Import and export in UriKeyFormat and from Authenticator Plus for Android 
 
-# Build
+## Build
 
 **The recommended way to get the program is BUILD from source**
 - Install git, Visual Studio 2019 (or higher)
@@ -41,7 +41,7 @@ Features include:
 - build
 
 
-### How To Use
+## How To Use
 
 To use:
   * Download the latest version from releases
@@ -50,6 +50,38 @@ To use:
   * Right-click any authenticator to bring up context menu
   * Click the icon on the right to show the current code, if auto-refresh is not enabled
   * Use options menu for program options
+
+## Developer information
+**Integrate the library in own application**
+1. Add the [TwoFactorAuth](https://www.nuget.org/packages/TwoFactorAuth/) NuGet package to your application.
+2. Use the sample code below
+
+**Sample code**
+```c#
+//generate secret key
+var accountId = 12345;
+var accountName = "user@mail.org";
+var applicationName = "Your Application Name";
+var tfa = new TwoFactorAuthenticator(accountId);
+var secretKey = tfa.ManualSecretKey;
+
+//generate QR code image by google api
+var qrCodeImageLink = QrGenerator.GetQrCodeLink(applicationName, $"{applicationName} - {accountName}", secretKey);
+var qrCodeImageBytes = QrGenerator.GenerateQrCodeByGoogle(applicationName, $"{applicationName} - {accountName}", secretKey);
+
+//base64 image string to use on web page (<img src="data:image/png;base64, ...) - no internet required
+var qrCodeImageString = QrGeneratorEx.GenerateQrCode(applicationName, $"{applicationName} - {accountName}", secretKey);
+
+//generate recovery codes
+const int codesCount = 10;
+var recoveryCodes = new string[codesCount];
+for (var i = 0; i < codesCount; i++)
+  recoveryCodes[i] = tfa.GenerateHashedCode(Environment.TickCount + i, 10);
+
+//generate and validate PIN
+var currentPin = tfa.GetCurrentPin();
+var isValid = tfa.ValidateTwoFactorPin(currentPin);
+```
 
 ----
 
