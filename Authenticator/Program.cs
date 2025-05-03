@@ -2,6 +2,7 @@
 using System.Diagnostics;
 using System.Net;
 using System.Windows.Forms;
+using sergiye.Common;
 
 namespace Authenticator {
   static class Program {

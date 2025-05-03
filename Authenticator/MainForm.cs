@@ -8,6 +8,7 @@ using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using sergiye.Common;
 
 namespace Authenticator {
   public partial class MainForm : Form {
@@ -43,10 +44,10 @@ namespace Authenticator {
 
       //will display prompt only if update available & when main form displayed
       var timer = new Timer();
-      timer.Interval = 1000;
-      timer.Tick += (s, eArgs) => {
+      timer.Interval = 3000;
+      timer.Tick += async (s, eArgs) => {
         timer.Enabled = false;
-        timer.Enabled = !Updater.CheckForUpdates(true);
+        timer.Enabled = ! await Updater.CheckForUpdatesAsync(true).ConfigureAwait(false);
       };
       timer.Enabled = true; 
 

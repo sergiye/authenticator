@@ -62,11 +62,12 @@
     <Compile Include="Classes\GoogleAuthenticator.cs" />
     <Compile Include="Classes\HOTPAuthenticator.cs" />
     <Compile Include="Classes\OtpauthMigration.cs" />
-    <Compile Include="Classes\RegionHelper.cs" />
     <Compile Include="Classes\RegisteredAuthenticator.cs" />
+    <Compile Include="Classes\SerializerHelper.cs" />
     <Compile Include="Classes\SingleGlobalInstance.cs" />
     <Compile Include="Classes\TrionAuthenticator.cs" />
     <Compile Include="Classes\Updater.cs" />
+    <Compile Include="Classes\VersionCompatibitity.cs" />
     <Compile Include="Classes\WinAPI.cs" />
     <Compile Include="Controls\AuthenticatorListBox.cs">
       <SubType>Component</SubType>

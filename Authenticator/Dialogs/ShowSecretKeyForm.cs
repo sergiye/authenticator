@@ -2,6 +2,7 @@ using System;
 using System.Drawing;
 using System.Text.RegularExpressions;
 using System.Windows.Forms;
+using sergiye.Common;
 using ZXing;
 
 namespace Authenticator {
