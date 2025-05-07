@@ -55,6 +55,7 @@ namespace Authenticator {
 
     public new event EventHandler<AuthAuthenticator> DoubleClick;
 
+    private readonly Brush selectedBrush = new SolidBrush(Color.CornflowerBlue);
     private TextBox renameTextbox;
     private ListItem currentItem;
     private Point mouseDownLocation = Point.Empty;
@@ -1170,6 +1171,9 @@ namespace Authenticator {
         var showCode = auth.AutoRefresh || item.DisplayUntil > DateTime.Now;
 
         e.Graphics.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
+        
+        if (e.State == DrawItemState.Selected)
+          e.Graphics.FillRectangle(selectedBrush, e.Bounds);
 
         var rect = new Rectangle(e.Bounds.X + MARGIN_LEFT, e.Bounds.Y + MARGIN_TOP, ICON_WIDTH, ICON_HEIGHT);
         if (clipRect.IntersectsWith(rect) && auth.Icon != null) {

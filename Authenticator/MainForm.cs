@@ -40,6 +40,9 @@ namespace Authenticator {
       //Text = $"Authenticator {(Environment.Is64BitProcess ? "x64" : "x32")} - {Updater.CurrentVersion}";
       Icon = Icon.ExtractAssociatedIcon(Updater.CurrentFileLocation);
       authenticatorList.ItemHeight = 50;
+      authenticatorList.SelectionMode = SelectionMode.One;
+      authenticatorList.SelectedIndexChanged += (s, ev) => { authenticatorList.Refresh(); };
+
       MinimumSize = new Size(200, mainMenu.Height + Height - ClientRectangle.Height + authenticatorList.ItemHeight);
 
       //will display prompt only if update available & when main form displayed
