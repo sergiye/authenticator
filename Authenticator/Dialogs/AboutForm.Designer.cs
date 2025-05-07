@@ -78,7 +78,6 @@ namespace Authenticator {
       this.siteLink.Size = new System.Drawing.Size(581, 23);
       this.siteLink.TabIndex = 9;
       this.siteLink.TabStop = true;
-      this.siteLink.Text = "https://github.com/sergiye/authenticator";
       this.siteLink.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.siteLink_LinkClicked);
       // 
       // AboutForm

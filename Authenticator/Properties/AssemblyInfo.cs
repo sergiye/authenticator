@@ -5,7 +5,7 @@ using System.Resources;
 [assembly: AssemblyTitle("Authenticator")]
 [assembly: AssemblyDescription("Authenticator - The Windows Authenticator")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
+[assembly: AssemblyCompany("sergiye")]
 [assembly: AssemblyProduct("Authenticator")]
 [assembly: AssemblyCopyright("Copyright © 2023. Sergiy Egoshin. All rights reserved.")]
 [assembly: AssemblyTrademark("")]

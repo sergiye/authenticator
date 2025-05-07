@@ -12,7 +12,7 @@
   <PropertyGroup>
     <AssemblyTitle>Two Factor Authenticator Core Lib</AssemblyTitle>
     <AssemblyProduct>Authenticator</AssemblyProduct>
-    <AssemblyCompany>Sergiy Egoshyn</AssemblyCompany>
+    <AssemblyCompany>sergiye</AssemblyCompany>
     <AssemblyCopyright>Copyright © 2023 Sergiy Egoshyn</AssemblyCopyright>
     <Authors>Sergiy Egoshin</Authors>
     <AssemblyVersion>1.0.9248.2</AssemblyVersion>
@@ -25,8 +25,8 @@
     <Description>Library for generating and verifying OTP codes (and recovery codes) with methods to generate QR-codes by google APIs</Description>
     <RepositoryType>git</RepositoryType>
     <PackageIcon>packageicon.png</PackageIcon>
-    <RepositoryUrl>https://github.com/sergiye/authenticator</RepositoryUrl>
-    <PackageProjectUrl>https://github.com/sergiye/authenticator</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/$(AssemblyCompany)/$(AssemblyProduct)</RepositoryUrl>
+    <PackageProjectUrl>https://github.com/$(AssemblyCompany)/$(AssemblyProduct)</PackageProjectUrl>
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <IncludeSymbols>True</IncludeSymbols>
     <PackageLicenseExpression>GPL-3.0-only</PackageLicenseExpression>

@@ -13,6 +13,7 @@ namespace Authenticator {
     public AboutForm() {
       InitializeComponent();
       Icon = Icon.ExtractAssociatedIcon(Updater.CurrentFileLocation);
+      siteLink.Text = $"https://github.com/{Updater.ApplicationCompany}/{Updater.ApplicationName}";
 
       using (var stream = Assembly.GetExecutingAssembly().GetManifestResourceStream("Authenticator.LICENSE")) {
         if (stream == null) return;
