@@ -41,7 +41,6 @@ namespace Authenticator {
       Icon = Icon.ExtractAssociatedIcon(Updater.CurrentFileLocation);
       authenticatorList.ItemHeight = 50;
       authenticatorList.SelectionMode = SelectionMode.One;
-      authenticatorList.SelectedIndexChanged += (s, ev) => { authenticatorList.Refresh(); };
 
       MinimumSize = new Size(200, mainMenu.Height + Height - ClientRectangle.Height + authenticatorList.ItemHeight);
 

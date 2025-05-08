@@ -55,7 +55,7 @@ namespace Authenticator {
 
     public new event EventHandler<AuthAuthenticator> DoubleClick;
 
-    private readonly Brush selectedBrush = new SolidBrush(Color.CornflowerBlue);
+    private readonly Brush selectedBrush = new SolidBrush(Color.SteelBlue);
     private TextBox renameTextbox;
     private ListItem currentItem;
     private Point mouseDownLocation = Point.Empty;
@@ -521,7 +521,10 @@ namespace Authenticator {
 
         return currentItem;
       }
-      set { currentItem = value; }
+      set { 
+        currentItem = value;
+        SelectedItem = value;
+      }
     }
 
     #endregion
@@ -943,7 +946,7 @@ namespace Authenticator {
           }
 
         case "deleteMenuItem": {
-            if (MainForm.ConfirmDialog(Parent as Form, "Are you sure you want to delete this authenticator?\nThis will permanently remove it and you may no longer be able to access you account.", MessageBoxButtons.YesNo,
+            if (MainForm.ConfirmDialog(Parent as Form, $"Are you sure you want to delete '{auth.Name}' authenticator?\nThis will permanently remove it and you may no longer be able to access you account.", MessageBoxButtons.YesNo,
                   MessageBoxIcon.Exclamation, MessageBoxDefaultButton.Button2) == DialogResult.Yes) {
               var index = item.Index;
               Items.Remove(item);
@@ -1323,5 +1326,15 @@ namespace Authenticator {
     }
 
     #endregion
+
+    //protected override void OnSelectedIndexChanged(EventArgs e) {
+    //  base.OnSelectedIndexChanged(e);
+    //  Invalidate();
+    //}
+
+    protected override void OnSelectedValueChanged(EventArgs e) {
+      base.OnSelectedValueChanged(e);
+      Invalidate();
+    }
   }
 }
