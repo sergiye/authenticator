@@ -20,6 +20,7 @@ using Org.BouncyCastle.Crypto.Generators;
 using Org.BouncyCastle.Crypto.Parameters;
 using Org.BouncyCastle.Math;
 using Org.BouncyCastle.Security;
+using sergiye.Common;
 using Svg;
 
 namespace Authenticator {
@@ -29,9 +30,6 @@ namespace Authenticator {
     private static readonly Assembly assembly = Assembly.GetExecutingAssembly();
 
     public const string DEFAULT_AUTHENTICATOR_FILE_NAME = "Authenticator.config";
-
-    public const string APPLICATION_NAME = "Authenticator";
-    public const string APPLICATION_TITLE = "Authenticator";
 
     #region Config
 
@@ -181,7 +179,7 @@ namespace Authenticator {
       if (string.IsNullOrEmpty(configFile)) {
         // do we have a file specific in the registry?
         var configDirectory = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
-          APPLICATION_NAME);
+          Updater.ApplicationName);
         // check for default authenticator
         configFile = Path.Combine(configDirectory, DEFAULT_AUTHENTICATOR_FILE_NAME);
         // if no config file, just return a blank config
@@ -270,7 +268,7 @@ namespace Authenticator {
         // if no config file yet, use default
         if (string.IsNullOrEmpty(config.Filename)) {
           var configDirectory = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
-            APPLICATION_NAME);
+            Updater.ApplicationName);
           Directory.CreateDirectory(configDirectory);
           config.Filename = Path.Combine(configDirectory, DEFAULT_AUTHENTICATOR_FILE_NAME);
         }
@@ -321,10 +319,10 @@ namespace Authenticator {
     public static void SetStartWithWindows(bool enabled) {
       if (enabled) {
         // get path of exe and minimize flag
-        WriteRegistryValue(RUNKEY + "\\" + APPLICATION_NAME, Application.ExecutablePath + " -min");
+        WriteRegistryValue(RUNKEY + "\\" + Updater.ApplicationName, Application.ExecutablePath + " -min");
       }
       else {
-        DeleteRegistryKey(RUNKEY + "\\" + APPLICATION_NAME);
+        DeleteRegistryKey(RUNKEY + "\\" + Updater.ApplicationName);
       }
     }
 

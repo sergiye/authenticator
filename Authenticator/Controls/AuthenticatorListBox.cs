@@ -1,4 +1,5 @@
-﻿using System;
+﻿using sergiye.Common;
+using System;
 using System.ComponentModel;
 using System.Drawing;
 using System.IO;
@@ -457,7 +458,7 @@ namespace Authenticator {
           renameTextbox.TabIndex = 0;
           renameTextbox.Visible = false;
           renameTextbox.Leave += RenameTextbox_Leave;
-          renameTextbox.KeyPress += _renameTextbox_KeyPress;
+          renameTextbox.KeyPress += RenameTextbox_KeyPress;
 
           Controls.Add(renameTextbox);
         }
@@ -481,7 +482,7 @@ namespace Authenticator {
       RenameTextbox.Visible = false;
     }
 
-    void _renameTextbox_KeyPress(object sender, KeyPressEventArgs e) {
+    void RenameTextbox_KeyPress(object sender, KeyPressEventArgs e) {
       if (e.KeyChar == 27) {
         RenameTextbox.Tag = null;
         RenameTextbox.Visible = false;
@@ -865,7 +866,7 @@ namespace Authenticator {
                 }
               }
 
-              // show the serial and restore code for Battle.net authenticator				
+              // show the serial and restore code for Battle.net authenticator
               var form = new ShowRestoreCodeForm();
               form.CurrentAuthenticator = auth;
               form.ShowDialog(Parent as Form);
@@ -909,7 +910,7 @@ namespace Authenticator {
                 }
               }
 
-              // show the secret key for Google authenticator				
+              // show the secret key for Google authenticator
               var form = new ShowSecretKeyForm();
               form.CurrentAuthenticator = auth;
               form.ShowDialog(Parent as Form);
@@ -931,7 +932,7 @@ namespace Authenticator {
             }
 
             try {
-              // show the secret key for Trion authenticator				
+              // show the secret key for Trion authenticator
               var form = new ShowTrionSecretForm();
               form.CurrentAuthenticator = auth;
               form.ShowDialog(Parent as Form);
@@ -1003,16 +1004,17 @@ namespace Authenticator {
             if (menuitem.Tag is string tag && "OTHER".Equals(tag)) {
               do {
                 // other..choose an image file
-                var ofd = new OpenFileDialog();
-                ofd.AddExtension = true;
-                ofd.CheckFileExists = true;
-                ofd.DefaultExt = "png";
-                ofd.InitialDirectory = Directory.GetCurrentDirectory();
-                ofd.FileName = string.Empty;
-                ofd.Filter = "PNG Image Files (*.png)|*.png|GIF Image Files (*.gif)|*.gif|All Files (*.*)|*.*";
-                ofd.RestoreDirectory = true;
-                ofd.ShowReadOnly = false;
-                ofd.Title = "Load Icon Image (png or gif @ 48x48)";
+                var ofd = new OpenFileDialog {
+                  AddExtension = true,
+                  CheckFileExists = true,
+                  DefaultExt = "png",
+                  InitialDirectory = Directory.GetCurrentDirectory(),
+                  FileName = string.Empty,
+                  Filter = "PNG Image Files (*.png)|*.png|GIF Image Files (*.gif)|*.gif|All Files (*.*)|*.*",
+                  RestoreDirectory = true,
+                  ShowReadOnly = false,
+                  Title = "Load Icon Image (png or gif @ 48x48)"
+                };
                 var result = ofd.ShowDialog(this);
                 if (result != DialogResult.OK) {
                   return;
@@ -1043,7 +1045,7 @@ namespace Authenticator {
                 catch (Exception ex) {
                   if (MessageBox.Show(Parent as Form,
                         $"Error loading image file: {ex.Message}\nDo you want to try again?",
-                        AuthHelper.APPLICATION_NAME,
+                        Updater.ApplicationName,
                         MessageBoxButtons.YesNo, MessageBoxIcon.Warning, MessageBoxDefaultButton.Button2) ==
                       DialogResult.Yes) {
                     continue;

@@ -127,7 +127,7 @@ namespace Authenticator {
         var ex = configTask.Result.Item2;
         switch (ex) {
           case AuthInvalidNewerConfigException _:
-            MessageBox.Show(this, ex.Message, AuthHelper.APPLICATION_TITLE, MessageBoxButtons.OK, MessageBoxIcon.Error);
+            MessageBox.Show(this, ex.Message, Updater.ApplicationName, MessageBoxButtons.OK, MessageBoxIcon.Error);
             System.Diagnostics.Process.GetCurrentProcess().Kill();
             return;
           case EncryptedSecretDataException _:
@@ -377,7 +377,7 @@ namespace Authenticator {
       notifyIcon.Visible = Config.UseTrayIcon;
 
       // set title
-      notifyIcon.Text = Text = AuthHelper.APPLICATION_TITLE;
+      notifyIcon.Text = Text = Updater.ApplicationTitle;
 
       loadingPanel.Visible = false;
       passwordPanel.Visible = false;
@@ -486,13 +486,13 @@ namespace Authenticator {
       }
 #endif
 
-      return MessageBox.Show(form, message, AuthHelper.APPLICATION_TITLE, buttons, MessageBoxIcon.Exclamation);
+      return MessageBox.Show(form, message, Updater.ApplicationName, buttons, MessageBoxIcon.Exclamation);
     }
 
     public static DialogResult ConfirmDialog(Form form, string message,
       MessageBoxButtons buttons = MessageBoxButtons.YesNo, MessageBoxIcon icon = MessageBoxIcon.Question,
       MessageBoxDefaultButton defaultButton = MessageBoxDefaultButton.Button1) {
-      return MessageBox.Show(form, message, AuthHelper.APPLICATION_TITLE, buttons, icon, defaultButton);
+      return MessageBox.Show(form, message, Updater.ApplicationName, buttons, icon, defaultButton);
     }
 
     protected override void WndProc(ref Message m) {
@@ -778,7 +778,7 @@ namespace Authenticator {
 
       ofd.Filter = "Authenticator Files (*.config)|*.config|Text Files (*.txt)|*.txt|Zip Files (*.zip)|*.zip|PGP Files (*.pgp)|*.pgp|All Files (*.*)|*.*";
       ofd.RestoreDirectory = true;
-      ofd.Title = AuthHelper.APPLICATION_TITLE;
+      ofd.Title = Updater.ApplicationTitle;
       if (ofd.ShowDialog(this) == DialogResult.OK) {
         ImportAuthenticator(ofd.FileName);
       }

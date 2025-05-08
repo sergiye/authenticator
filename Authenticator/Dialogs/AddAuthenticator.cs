@@ -405,7 +405,7 @@ namespace Authenticator {
           syncErrorWarned = true;
           MessageBox.Show(this,
             "Warning: unable to connect to Google to set time correctly.\nYour code may not be correct",
-            AuthHelper.APPLICATION_TITLE, MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            Updater.ApplicationName, MessageBoxButtons.OK, MessageBoxIcon.Warning);
         }
       }
       catch (Exception ex) {

@@ -38,12 +38,12 @@ namespace Authenticator {
       catch (TimeoutException) {
         // find the window or notify window
         foreach (var process in Process.GetProcesses()) {
-          if (process.ProcessName != AuthHelper.APPLICATION_NAME) continue;
+          if (process.ProcessName != Updater.ApplicationName) continue;
           process.Refresh();
 
           var hwnd = process.MainWindowHandle;
           if (hwnd == (IntPtr) 0) {
-            hwnd = WinApi.FindWindow(null, AuthHelper.APPLICATION_TITLE);
+            hwnd = WinApi.FindWindow(null, Updater.ApplicationTitle);
           }
 
           // send it the open message
@@ -52,7 +52,7 @@ namespace Authenticator {
         }
 
         // fallback
-        MessageBox.Show($"{AuthHelper.APPLICATION_NAME} is already running.", AuthHelper.APPLICATION_TITLE,
+        MessageBox.Show($"{Updater.ApplicationName} is already running.", Updater.ApplicationName,
           MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
       }
     }

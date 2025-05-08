@@ -34,7 +34,7 @@ namespace Authenticator {
     void VerifyRestoreCodeCompleted(object sender, RunWorkerCompletedEventArgs e) {
       var message = e.Result as string;
       if (string.IsNullOrEmpty(message) == false) {
-        MessageBox.Show(this, message, AuthHelper.APPLICATION_NAME, MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+        MessageBox.Show(this, message, Updater.ApplicationName, MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
       }
     }
 

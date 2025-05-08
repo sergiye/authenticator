@@ -1,4 +1,5 @@
-﻿using System;
+﻿using sergiye.Common;
+using System;
 using System.Drawing;
 using System.IO;
 using System.Reflection;
@@ -148,10 +149,7 @@ namespace Authenticator {
         var code = AuthenticatorData.CurrentCode;
 
         if (AuthenticatorData is HotpAuthenticator) {
-          if (OnAuthAuthenticatorChanged != null) {
-            OnAuthAuthenticatorChanged(this,
-              new AuthAuthenticatorChangedEventArgs("HOTP", AuthenticatorData));
-          }
+          OnAuthAuthenticatorChanged?.Invoke(this, new AuthAuthenticatorChangedEventArgs("HOTP", AuthenticatorData));
         }
 
         return code;
@@ -210,7 +208,7 @@ namespace Authenticator {
           // only show an error the first time
           clipRetry = (MessageBox.Show(form,
             "Unable to copy to the clipboard. Another application is probably using it.\nTry again?",
-            AuthHelper.APPLICATION_NAME, MessageBoxButtons.YesNo, MessageBoxIcon.Warning,
+            Updater.ApplicationName, MessageBoxButtons.YesNo, MessageBoxIcon.Warning,
             MessageBoxDefaultButton.Button2) == DialogResult.Yes);
         }
       } while (clipRetry);
@@ -409,13 +407,13 @@ namespace Authenticator {
         extraparams += "&algorithm=" + AuthenticatorData.HmacType;
       }
 
-      if (AuthenticatorData is BattleNetAuthenticator) {
+      if (AuthenticatorData is BattleNetAuthenticator battleNetAuthenticator) {
         extraparams += "&serial=" +
-                       HttpUtility.UrlEncode(((BattleNetAuthenticator) AuthenticatorData).Serial.Replace("-", ""));
+                       HttpUtility.UrlEncode(battleNetAuthenticator.Serial.Replace("-", ""));
       }
-      else if (AuthenticatorData is HotpAuthenticator) {
+      else if (AuthenticatorData is HotpAuthenticator hotpAuthenticator) {
         type = "hotp";
-        extraparams += "&counter=" + ((HotpAuthenticator) AuthenticatorData).Counter;
+        extraparams += "&counter=" + hotpAuthenticator.Counter;
       }
 
       var secret = HttpUtility.UrlEncode(Base32.GetInstance().Encode(AuthenticatorData.SecretKey));
