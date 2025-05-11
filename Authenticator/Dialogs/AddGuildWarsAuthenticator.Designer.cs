@@ -26,8 +26,8 @@ namespace Authenticator {
       this.step1Label = new System.Windows.Forms.Label();
       this.okButton = new System.Windows.Forms.Button();
       this.cancelButton = new System.Windows.Forms.Button();
-      this.icon2RadioButton = new GroupMetroRadioButton();
-      this.icon1RadioButton = new GroupMetroRadioButton();
+      this.icon2RadioButton = new RadioButton();
+      this.icon1RadioButton = new RadioButton();
       this.icon2 = new System.Windows.Forms.PictureBox();
       this.icon1 = new System.Windows.Forms.PictureBox();
       this.iconLabel = new System.Windows.Forms.Label();
@@ -140,7 +140,6 @@ namespace Authenticator {
       // 
       // icon2RadioButton
       // 
-      this.icon2RadioButton.Group = "ICON";
       this.icon2RadioButton.Location = new System.Drawing.Point(148, 79);
       this.icon2RadioButton.Name = "icon2RadioButton";
       this.icon2RadioButton.Size = new System.Drawing.Size(14, 13);
@@ -151,7 +150,6 @@ namespace Authenticator {
       // icon1RadioButton
       // 
       this.icon1RadioButton.Checked = true;
-      this.icon1RadioButton.Group = "ICON";
       this.icon1RadioButton.Location = new System.Drawing.Point(72, 79);
       this.icon1RadioButton.Name = "icon1RadioButton";
       this.icon1RadioButton.Size = new System.Drawing.Size(14, 13);
@@ -266,8 +264,8 @@ namespace Authenticator {
     private Button okButton;
     private Button cancelButton;
     private TextBox secretCodeField;
-    private GroupMetroRadioButton icon2RadioButton;
-    private GroupMetroRadioButton icon1RadioButton;
+    private RadioButton icon2RadioButton;
+    private RadioButton icon1RadioButton;
     private System.Windows.Forms.PictureBox icon2;
     private System.Windows.Forms.PictureBox icon1;
     private Label iconLabel;

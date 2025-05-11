@@ -12,7 +12,7 @@
   <PropertyGroup>
     <AssemblyTitle>Two Factor Authenticator Core Lib</AssemblyTitle>
     <AssemblyProduct>Authenticator</AssemblyProduct>
-    <AssemblyCompany>sergiye</AssemblyCompany>
+    <AssemblyCompany>SergiyE</AssemblyCompany>
     <AssemblyCopyright>Copyright © 2023 Sergiy Egoshyn</AssemblyCopyright>
     <Authors>Sergiy Egoshin</Authors>
     <AssemblyVersion>1.0.9248.2</AssemblyVersion>

@@ -23,7 +23,7 @@ namespace Authenticator {
       this.setupLabel = new System.Windows.Forms.Label();
       this.okButton = new System.Windows.Forms.Button();
       this.cancelButton = new System.Windows.Forms.Button();
-      this.iconRadioButton = new GroupRadioButton();
+      this.iconRadioButton = new RadioButton();
       this.oktaIcon = new System.Windows.Forms.PictureBox();
       this.iconLabel = new System.Windows.Forms.Label();
       this.nameLabel = new System.Windows.Forms.Label();
@@ -113,7 +113,6 @@ namespace Authenticator {
       // 
       this.iconRadioButton.AutoSize = true;
       this.iconRadioButton.Checked = true;
-      this.iconRadioButton.Group = "ICON";
       this.iconRadioButton.Location = new System.Drawing.Point(67, 74);
       this.iconRadioButton.Name = "iconRadioButton";
       this.iconRadioButton.Size = new System.Drawing.Size(14, 13);
@@ -244,7 +243,7 @@ namespace Authenticator {
     private System.Windows.Forms.ProgressBar newAuthenticatorProgress;
     private SecretTextBox codeField;
     private System.Windows.Forms.Timer newAuthenticatorTimer;
-    private GroupRadioButton iconRadioButton;
+    private RadioButton iconRadioButton;
     private Label step8Label;
     private Label step9Label;
     private System.Windows.Forms.LinkLabel linkLabel1;

@@ -53,6 +53,15 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\..\common\OperatingSystemHelper.cs">
+      <Link>Common\OperatingSystemHelper.cs</Link>
+    </Compile>
+    <Compile Include="..\..\common\SerializerHelper.cs">
+      <Link>Common\SerializerHelper.cs</Link>
+    </Compile>
+    <Compile Include="..\..\common\Updater.cs">
+      <Link>Common\Updater.cs</Link>
+    </Compile>
     <Compile Include="Classes\AuthAuthenticator.cs" />
     <Compile Include="Classes\AuthConfig.cs" />
     <Compile Include="Classes\Authenticator.cs" />
@@ -64,16 +73,10 @@
     <Compile Include="Classes\HOTPAuthenticator.cs" />
     <Compile Include="Classes\OtpauthMigration.cs" />
     <Compile Include="Classes\RegisteredAuthenticator.cs" />
-    <Compile Include="Classes\SerializerHelper.cs" />
     <Compile Include="Classes\SingleGlobalInstance.cs" />
     <Compile Include="Classes\TrionAuthenticator.cs" />
-    <Compile Include="Classes\Updater.cs" />
-    <Compile Include="Classes\VersionCompatibitity.cs" />
     <Compile Include="Classes\WinAPI.cs" />
     <Compile Include="Controls\AuthenticatorListBox.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="Controls\GroupRadioButton.cs">
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="Controls\SecretTextBox.cs">

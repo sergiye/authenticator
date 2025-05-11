@@ -42,9 +42,9 @@ namespace Authenticator
       this.label2 = new System.Windows.Forms.Label();
       this.okButton = new System.Windows.Forms.Button();
       this.cancelButton = new System.Windows.Forms.Button();
-      this.icon3RadioButton = new GroupRadioButton();
-      this.icon2RadioButton = new GroupRadioButton();
-      this.icon1RadioButton = new GroupRadioButton();
+      this.icon3RadioButton = new RadioButton();
+      this.icon2RadioButton = new RadioButton();
+      this.icon1RadioButton = new RadioButton();
       this.icon3 = new System.Windows.Forms.PictureBox();
       this.icon2 = new System.Windows.Forms.PictureBox();
       this.icon1 = new System.Windows.Forms.PictureBox();
@@ -159,7 +159,6 @@ namespace Authenticator
       // icon3RadioButton
       // 
       this.icon3RadioButton.AutoSize = true;
-      this.icon3RadioButton.Group = "ICON";
       this.icon3RadioButton.Location = new System.Drawing.Point(216, 71);
       this.icon3RadioButton.Name = "icon3RadioButton";
       this.icon3RadioButton.Size = new System.Drawing.Size(14, 13);
@@ -170,7 +169,6 @@ namespace Authenticator
       // icon2RadioButton
       // 
       this.icon2RadioButton.AutoSize = true;
-      this.icon2RadioButton.Group = "ICON";
       this.icon2RadioButton.Location = new System.Drawing.Point(143, 71);
       this.icon2RadioButton.Name = "icon2RadioButton";
       this.icon2RadioButton.Size = new System.Drawing.Size(14, 13);
@@ -182,7 +180,6 @@ namespace Authenticator
       // 
       this.icon1RadioButton.AutoSize = true;
       this.icon1RadioButton.Checked = true;
-      this.icon1RadioButton.Group = "ICON";
       this.icon1RadioButton.Location = new System.Drawing.Point(67, 71);
       this.icon1RadioButton.Name = "icon1RadioButton";
       this.icon1RadioButton.Size = new System.Drawing.Size(14, 13);
@@ -324,9 +321,9 @@ namespace Authenticator
 		private Label label3;
 		private System.Windows.Forms.Timer newAuthenticatorTimer;
 		private System.Windows.Forms.PictureBox icon3;
-		private GroupRadioButton icon2RadioButton;
-		private GroupRadioButton icon1RadioButton;
-		private GroupRadioButton icon3RadioButton;
+		private RadioButton icon2RadioButton;
+		private RadioButton icon1RadioButton;
+		private RadioButton icon3RadioButton;
 		private Label step8Label;
 	}
 }

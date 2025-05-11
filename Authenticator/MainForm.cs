@@ -45,11 +45,17 @@ namespace Authenticator {
       MinimumSize = new Size(200, mainMenu.Height + Height - ClientRectangle.Height + authenticatorList.ItemHeight);
 
       //will display prompt only if update available & when main form displayed
+      Updater.Subscribe(
+        (message, isError) => { MessageBox.Show(message, Updater.ApplicationName, MessageBoxButtons.OK, isError ? MessageBoxIcon.Warning : MessageBoxIcon.Information); },
+        (message) => { return MessageBox.Show(message, Updater.ApplicationName, MessageBoxButtons.OKCancel, MessageBoxIcon.Question) == DialogResult.OK; },
+        Application.Exit
+      );
+
       var timer = new Timer();
       timer.Interval = 3000;
       timer.Tick += async (s, eArgs) => {
         timer.Enabled = false;
-        timer.Enabled = ! await Updater.CheckForUpdatesAsync(true).ConfigureAwait(false);
+        timer.Enabled = ! await Updater.CheckForUpdatesAsync(true);
       };
       timer.Enabled = true; 
 

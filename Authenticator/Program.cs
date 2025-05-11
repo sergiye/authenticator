@@ -9,7 +9,7 @@ namespace Authenticator {
     [STAThread]
     static void Main() {
 
-      if (!VersionCompatibility.IsCompatible()) {
+      if (!OperatingSystemHelper.IsCompatible()) {
         MessageBox.Show("The application is not compatible with your region.", Application.ProductName, MessageBoxButtons.OK, MessageBoxIcon.Warning);
         Environment.Exit(0);
       }

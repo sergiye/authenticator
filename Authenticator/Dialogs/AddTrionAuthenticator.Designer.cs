@@ -39,9 +39,9 @@ namespace Authenticator {
       this.okButton = new System.Windows.Forms.Button();
       this.cancelButton = new System.Windows.Forms.Button();
       this.newAuthenticatorTimer = new System.Windows.Forms.Timer(this.components);
-      this.archeageIconRadioButton = new GroupMetroRadioButton();
-      this.riftIconRadioButton = new GroupMetroRadioButton();
-      this.glyphIconRadioButton = new GroupMetroRadioButton();
+      this.archeageIconRadioButton = new RadioButton();
+      this.riftIconRadioButton = new RadioButton();
+      this.glyphIconRadioButton = new RadioButton();
       this.label10 = new System.Windows.Forms.Label();
       this.label6 = new System.Windows.Forms.Label();
       this.nameField = new System.Windows.Forms.TextBox();
@@ -51,7 +51,7 @@ namespace Authenticator {
       this.newLoginCodeField = new SecretTextBox();
       this.newSerialNumberField = new SecretTextBox();
       this.recoverAuthenticatorTab = new System.Windows.Forms.TabPage();
-      this.trionAuthenticatorRadioButton = new GroupMetroRadioButton();
+      this.trionAuthenticatorRadioButton = new RadioButton();
       this.iconTrion = new System.Windows.Forms.PictureBox();
       this.archeageIcon = new System.Windows.Forms.PictureBox();
       this.iconRift = new System.Windows.Forms.PictureBox();
@@ -264,7 +264,6 @@ namespace Authenticator {
       // 
       // archeageIconRadioButton
       // 
-      this.archeageIconRadioButton.Group = "ICON";
       this.archeageIconRadioButton.Location = new System.Drawing.Point(221, 78);
       this.archeageIconRadioButton.Name = "archeageIconRadioButton";
       this.archeageIconRadioButton.Size = new System.Drawing.Size(14, 13);
@@ -274,7 +273,6 @@ namespace Authenticator {
       // 
       // riftIconRadioButton
       // 
-      this.riftIconRadioButton.Group = "ICON";
       this.riftIconRadioButton.Location = new System.Drawing.Point(145, 78);
       this.riftIconRadioButton.Name = "riftIconRadioButton";
       this.riftIconRadioButton.Size = new System.Drawing.Size(14, 13);
@@ -285,7 +283,6 @@ namespace Authenticator {
       // glyphIconRadioButton
       // 
       this.glyphIconRadioButton.Checked = true;
-      this.glyphIconRadioButton.Group = "ICON";
       this.glyphIconRadioButton.Location = new System.Drawing.Point(69, 78);
       this.glyphIconRadioButton.Name = "glyphIconRadioButton";
       this.glyphIconRadioButton.Size = new System.Drawing.Size(14, 13);
@@ -411,7 +408,6 @@ namespace Authenticator {
       // 
       // trionAuthenticatorRadioButton
       // 
-      this.trionAuthenticatorRadioButton.Group = "ICON";
       this.trionAuthenticatorRadioButton.Location = new System.Drawing.Point(293, 78);
       this.trionAuthenticatorRadioButton.Name = "trionAuthenticatorRadioButton";
       this.trionAuthenticatorRadioButton.Size = new System.Drawing.Size(14, 13);
@@ -535,9 +531,9 @@ namespace Authenticator {
     private Label label8;
     private Label label5;
     private Label label4;
-    private GroupMetroRadioButton archeageIconRadioButton;
-    private GroupMetroRadioButton riftIconRadioButton;
-    private GroupMetroRadioButton glyphIconRadioButton;
+    private RadioButton archeageIconRadioButton;
+    private RadioButton riftIconRadioButton;
+    private RadioButton glyphIconRadioButton;
     private System.Windows.Forms.PictureBox archeageIcon;
     private System.Windows.Forms.PictureBox iconRift;
     private System.Windows.Forms.PictureBox iconGlyph;
@@ -548,6 +544,6 @@ namespace Authenticator {
     private TabPage newAuthenticatorTab;
     private TabPage recoverAuthenticatorTab;
     private System.Windows.Forms.PictureBox iconTrion;
-    private GroupMetroRadioButton trionAuthenticatorRadioButton;
+    private RadioButton trionAuthenticatorRadioButton;
   }
 }
