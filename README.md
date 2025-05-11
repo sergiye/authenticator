@@ -3,10 +3,18 @@
 [![Release (latest)](https://img.shields.io/github/v/release/sergiye/authenticator?style=for-the-badge)](https://github.com/sergiye/authenticator/releases/latest)
 ![Downloads](https://img.shields.io/github/downloads/sergiye/authenticator/total?style=for-the-badge&color=ff4f42)
 ![GitHub last commit](https://img.shields.io/github/last-commit/sergiye/authenticator?style=for-the-badge&color=00AD00)
-[![Stars](https://img.shields.io/github/stars/sergiye/authenticator?style=for-the-badge)](https://github.com/sergiye/authenticator/stargazers)
-[![Forks](https://img.shields.io/github/forks/sergiye/authenticator?style=for-the-badge)](https://github.com/sergiye/authenticator/forks)
 
-*Authenticator is a portable, open-source Authenticator for Windows that provides counter or time-based RFC 6238 authenticators and common implementations, such as the Google Authenticator.*
+[![Nuget](https://img.shields.io/nuget/v/TwoFactorAuth?style=for-the-badge)](https://www.nuget.org/packages/TwoFactorAuth/)
+[![Nuget](https://img.shields.io/nuget/dt/TwoFactorAuth?label=nuget-downloads&style=for-the-badge)](https://www.nuget.org/packages/TwoFactorAuth/)
+
+[![Nuget](https://img.shields.io/nuget/v/TwoFactorAuth.Core?style=for-the-badge)](https://www.nuget.org/packages/TwoFactorAuth.Core/)
+[![Nuget](https://img.shields.io/nuget/dt/TwoFactorAuth.Core?label=nuget-downloads&style=for-the-badge)](https://www.nuget.org/packages/TwoFactorAuth.Core/)
+
+*Authenticator is a portable OTP/Two-Factor Authentication tool for Windows that provides a user-friendly interface and allows you to copy the login code instead of manually entering it from your phone.*
+
+Authenticator provides an alternative solution to combine various two-factor authenticator services in one convenient place.
+
+It works with counter or time-based RFC 6238 authenticators and common implementations, such as the Google Authenticator.
 
 ----
 ## UI example 
@@ -16,9 +24,7 @@
 
 ## Download Latest Version
 
-Authenticator provides an alternative solution to combine various two-factor authenticator services in one convenient place.
-
-This is the latest stable version and can be downloaded from the [releases](https://github.com/sergiye/authenticator/releases) page, or get the newer one directly from:
+The published version can be obtained from [releases](https://github.com/sergiye/authenticator/releases) page, or get the newer one directly from:
 [Latest Version](https://github.com/sergiye/authenticator/releases/latest)
 
 Features include:
@@ -33,13 +39,6 @@ Features include:
   * Portable mode preventing changes to other files or registry settings
   * Import and export in UriKeyFormat and from Authenticator Plus for Android 
 
-## Build
-
-**The recommended way to get the program is BUILD from source**
-- Install git, Visual Studio 2019 (or higher)
-- `git clone https://github.com/sergiye/authenticator.git`
-- build
-
 
 ## How To Use
 
@@ -52,7 +51,7 @@ To use:
   * Use options menu for program options
 
 ## Developer information
-**Integrate the library in own application**
+**Integrate the TwoFactorAuth/TwoFactorAuth.Core library in own application**
 1. Add the [TwoFactorAuth](https://www.nuget.org/packages/TwoFactorAuth/) NuGet package to your application.
 2. Use the sample code below
 
