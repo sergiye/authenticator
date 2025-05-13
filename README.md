@@ -118,7 +118,7 @@ Unlike some other authenticator applications, Authenticator does not store/send 
 
 ## Thanks
 
-Authenticator is based on open source WinAuth application written by Colin Mackie.
+Authenticator is inspired by on open source [WinAuth](https://github.com/winauth/winauth) application written by Colin Mackie.
 
 ----
 
