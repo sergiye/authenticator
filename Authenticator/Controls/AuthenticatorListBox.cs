@@ -636,13 +636,13 @@ namespace Authenticator {
       ContextMenuStrip.Items.Add(label);
 
       AuthHelper.AddMenuItem(ContextMenuStrip.Items);
-      AuthHelper.AddMenuItem(ContextMenuStrip.Items, "Show Code", "showCodeMenuItem", ContextMenu_Click);
-      AuthHelper.AddMenuItem(ContextMenuStrip.Items, "Copy Code", "copyCodeMenuItem", ContextMenu_Click);
+      AuthHelper.AddMenuItem(ContextMenuStrip.Items, "Show Code", "showCodeMenuItem", ContextMenu_Click, Keys.Control | Keys.Space);
+      AuthHelper.AddMenuItem(ContextMenuStrip.Items, "Copy Code", "copyCodeMenuItem", ContextMenu_Click, Keys.Control | Keys.C);
       AuthHelper.AddMenuItem(ContextMenuStrip.Items, "Show Serial && Restore Code...", "showRestoreCodeMenuItem", ContextMenu_Click);
-      AuthHelper.AddMenuItem(ContextMenuStrip.Items, "Show Secret Key...", "showGoogleSecretMenuItem", ContextMenu_Click);
+      AuthHelper.AddMenuItem(ContextMenuStrip.Items, "Show Secret Key...", "showGoogleSecretMenuItem", ContextMenu_Click, Keys.Control | Keys.V);
       AuthHelper.AddMenuItem(ContextMenuStrip.Items, "Show Serial Key and Device ID...", "showTrionSecretMenuItem", ContextMenu_Click);
       AuthHelper.AddMenuItem(ContextMenuStrip.Items);
-      AuthHelper.AddMenuItem(ContextMenuStrip.Items, "Auto Refresh", "autoRefreshMenuItem", ContextMenu_Click);
+      AuthHelper.AddMenuItem(ContextMenuStrip.Items, "Auto Refresh", "autoRefreshMenuItem", ContextMenu_Click, Keys.Control | Keys.A);
       AuthHelper.AddMenuItem(ContextMenuStrip.Items, "Copy on New Code", "copyOnCodeMenuItem", ContextMenu_Click);
       AuthHelper.AddMenuItem(ContextMenuStrip.Items);
 
@@ -670,9 +670,9 @@ namespace Authenticator {
       AuthHelper.AddMenuItem(menuItem.DropDownItems);
       AuthHelper.AddMenuItem(menuItem.DropDownItems, "Other...", "iconMenuItem_0", ContextMenu_Click, tag: "OTHER");
 
-      AuthHelper.AddMenuItem(ContextMenuStrip.Items, "Rename", "renameMenuItem", ContextMenu_Click);
-      AuthHelper.AddMenuItem(ContextMenuStrip.Items, "Set Password...", "setPasswordMenuItem", ContextMenu_Click);
-      AuthHelper.AddMenuItem(ContextMenuStrip.Items, "Sync Time", "syncMenuItem", ContextMenu_Click);
+      AuthHelper.AddMenuItem(ContextMenuStrip.Items, "Rename", "renameMenuItem", ContextMenu_Click, Keys.F2);
+      AuthHelper.AddMenuItem(ContextMenuStrip.Items, "Set Password...", "setPasswordMenuItem", ContextMenu_Click, Keys.Control | Keys.P);
+      AuthHelper.AddMenuItem(ContextMenuStrip.Items, "Sync Time", "syncMenuItem", ContextMenu_Click, Keys.Control | Keys.R);
       AuthHelper.AddMenuItem(ContextMenuStrip.Items, "Delete", "deleteMenuItem", ContextMenu_Click);
     }
 
@@ -967,8 +967,9 @@ namespace Authenticator {
           }
 
         case "renameMenuItem": {
-            var y = ItemHeight * item.Index - TopIndex * ItemHeight + 8;
-            RenameTextbox.Location = new Point(64, y);
+            var x = MARGIN_LEFT + ICON_WIDTH + ICON_MARGIN_RIGHT;
+            var y = ItemHeight * item.Index - TopIndex * ItemHeight + LABEL_MARGIN_TOP;
+            RenameTextbox.Location = new Point(x, y);
             RenameTextbox.Text = auth.Name;
             RenameTextbox.Tag = item;
             RenameTextbox.Visible = true;
@@ -1336,6 +1337,9 @@ namespace Authenticator {
 
     protected override void OnSelectedValueChanged(EventArgs e) {
       base.OnSelectedValueChanged(e);
+      CurrentItem = Items.Count > 0 && SelectedIndex >=0 && SelectedIndex < Items.Count 
+        ? Items[SelectedIndex] as ListItem 
+        : null;
       Invalidate();
     }
   }

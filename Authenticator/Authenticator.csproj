@@ -53,13 +53,13 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="..\..\common\OperatingSystemHelper.cs">
+    <Compile Include="..\..\common\sergiye.Common\OperatingSystemHelper.cs">
       <Link>Common\OperatingSystemHelper.cs</Link>
     </Compile>
-    <Compile Include="..\..\common\SerializerHelper.cs">
+    <Compile Include="..\..\common\sergiye.Common\SerializerHelper.cs">
       <Link>Common\SerializerHelper.cs</Link>
     </Compile>
-    <Compile Include="..\..\common\Updater.cs">
+    <Compile Include="..\..\common\sergiye.Common\Updater.cs">
       <Link>Common\Updater.cs</Link>
     </Compile>
     <Compile Include="Classes\AuthAuthenticator.cs" />
