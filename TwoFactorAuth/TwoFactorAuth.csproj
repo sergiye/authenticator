@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <OutputType>Library</OutputType>
-    <TargetFrameworks>net452;netstandard2.0</TargetFrameworks>
+    <TargetFrameworks>net452;netstandard2.0;netstandard2.1</TargetFrameworks>
     <AppendTargetFrameworkToOutputPath>true</AppendTargetFrameworkToOutputPath>
     <OutputPath>..\bin\</OutputPath>
     <RootNamespace>TwoFactorAuth</RootNamespace>
@@ -15,7 +15,7 @@
     <AssemblyCompany>SergiyE</AssemblyCompany>
     <AssemblyCopyright>Copyright © 2023 Sergiy Egoshyn</AssemblyCopyright>
     <Authors>Sergiy Egoshin</Authors>
-    <AssemblyVersion>1.0.9248.2</AssemblyVersion>
+    <AssemblyVersion>1.0.9285</AssemblyVersion>
     <Copyright>$(AssemblyCopyright)</Copyright>
     <Company>$(AssemblyCompany)</Company>
     <Product>$(AssemblyProduct)</Product>
@@ -61,7 +61,7 @@
     <Reference Include="System.Xml" />
     <Reference Include="WindowsBase" />
   </ItemGroup>
-  <ItemGroup Condition="'$(TargetFramework)' == 'netstandard2.0'">
+  <ItemGroup Condition="'$(TargetFramework)' != 'net452'">
     <PackageReference Include="System.Drawing.Common" Version="9.0.4" />
   </ItemGroup>
   <ItemGroup>
