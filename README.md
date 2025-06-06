@@ -1,14 +1,14 @@
 # Authenticator
 
-[![Release (latest)](https://img.shields.io/github/v/release/sergiye/authenticator?style=for-the-badge)](https://github.com/sergiye/authenticator/releases/latest)
-![Downloads](https://img.shields.io/github/downloads/sergiye/authenticator/total?style=for-the-badge&color=ff4f42)
-![GitHub last commit](https://img.shields.io/github/last-commit/sergiye/authenticator?style=for-the-badge&color=00AD00)
+[![Release (latest)](https://img.shields.io/github/v/release/sergiye/authenticator)](https://github.com/sergiye/authenticator/releases/latest)
+![Downloads](https://img.shields.io/github/downloads/sergiye/authenticator/total?color=ff4f42)
+![GitHub last commit](https://img.shields.io/github/last-commit/sergiye/authenticator?color=00AD00)
 
-[![Nuget](https://img.shields.io/nuget/v/TwoFactorAuth?style=for-the-badge)](https://www.nuget.org/packages/TwoFactorAuth/)
-[![Nuget](https://img.shields.io/nuget/dt/TwoFactorAuth?label=nuget-downloads&style=for-the-badge)](https://www.nuget.org/packages/TwoFactorAuth/)
+[![Nuget](https://img.shields.io/nuget/v/TwoFactorAuth)](https://www.nuget.org/packages/TwoFactorAuth/)
+[![Nuget](https://img.shields.io/nuget/dt/TwoFactorAuth?label=nuget-downloads)](https://www.nuget.org/packages/TwoFactorAuth/)
 
-[![Nuget](https://img.shields.io/nuget/v/TwoFactorAuth.Core?style=for-the-badge)](https://www.nuget.org/packages/TwoFactorAuth.Core/)
-[![Nuget](https://img.shields.io/nuget/dt/TwoFactorAuth.Core?label=nuget-downloads&style=for-the-badge)](https://www.nuget.org/packages/TwoFactorAuth.Core/)
+[![Nuget](https://img.shields.io/nuget/v/TwoFactorAuth.Core)](https://www.nuget.org/packages/TwoFactorAuth.Core/)
+[![Nuget](https://img.shields.io/nuget/dt/TwoFactorAuth.Core?label=nuget-downloads)](https://www.nuget.org/packages/TwoFactorAuth.Core/)
 
 *Authenticator is a portable OTP/Two-Factor Authentication tool for Windows that provides a user-friendly interface and allows you to copy the login code instead of manually entering it from your phone.*
 
