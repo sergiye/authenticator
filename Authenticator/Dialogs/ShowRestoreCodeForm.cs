@@ -11,6 +11,7 @@ namespace Authenticator {
     public ShowRestoreCodeForm() {
       InitializeComponent();
       Icon = Icon.ExtractAssociatedIcon(Updater.CurrentFileLocation);
+      Theme.Current.Apply(this);
     }
 
     private void ShowRestoreCodeForm_Load(object sender, EventArgs e) {

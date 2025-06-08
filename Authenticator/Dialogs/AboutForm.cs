@@ -21,6 +21,7 @@ namespace Authenticator {
           richTextBox1.Text = s.ReadToEnd();
         }
       }
+      Theme.Current.Apply(this);
     }
 
     private void AboutForm_Load(object sender, EventArgs e) {

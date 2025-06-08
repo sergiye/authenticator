@@ -12,6 +12,7 @@ namespace Authenticator {
     public ShowSecretKeyForm() {
       InitializeComponent();
       Icon = Icon.ExtractAssociatedIcon(Updater.CurrentFileLocation);
+      Theme.Current.Apply(this);
     }
 
     private void ShowSecretKeyForm_Load(object sender, EventArgs e) {

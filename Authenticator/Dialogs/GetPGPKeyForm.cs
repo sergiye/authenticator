@@ -1,4 +1,5 @@
-﻿using System;
+﻿using sergiye.Common;
+using System;
 using System.IO;
 using System.Windows.Forms;
 
@@ -7,6 +8,7 @@ namespace Authenticator {
 
     public GetPgpKeyForm() {
       InitializeComponent();
+      Theme.Current.Apply(this);
     }
 
     public string PgpKey { get; private set; }

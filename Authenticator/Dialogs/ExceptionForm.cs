@@ -1,3 +1,4 @@
+using sergiye.Common;
 using System;
 using System.Diagnostics;
 using System.Drawing;
@@ -11,6 +12,7 @@ namespace Authenticator {
       InitializeComponent();
       Error = error;
       TopMost = true;
+      Theme.Current.Apply(this);
     }
 
     private void ExceptionForm_Load(object sender, EventArgs e) {

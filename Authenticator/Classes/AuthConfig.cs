@@ -60,6 +60,8 @@ namespace Authenticator {
     private int width;
 
     private int height;
+    
+    private string theme;
 
     private bool readOnly;
 
@@ -156,6 +158,18 @@ namespace Authenticator {
           height = value;
           if (OnConfigChanged != null) {
             OnConfigChanged(this, new ConfigChangedEventArgs("Height"));
+          }
+        }
+      }
+    }
+
+    public string Theme {
+      get => theme;
+      set {
+        if (theme != value) {
+          theme = value;
+          if (OnConfigChanged != null) {
+            OnConfigChanged(this, new ConfigChangedEventArgs("Theme"));
           }
         }
       }
@@ -277,6 +291,7 @@ namespace Authenticator {
     public AuthConfig() {
       Version = CurrentVersion;
       AutoSize = true;
+      Theme = "Auto";
       NotifyAction = NotifyActions.Notification;
     }
 
@@ -465,6 +480,10 @@ namespace Authenticator {
               height = reader.ReadElementContentAsInt();
               break;
 
+            case "theme":
+              theme = reader.ReadElementContentAsString();
+              break;
+
             case "pgpkey":
               PgpKey = reader.ReadElementContentAsString();
               break;
@@ -571,6 +590,10 @@ namespace Authenticator {
       //
       writer.WriteStartElement("height");
       writer.WriteValue(Height);
+      writer.WriteEndElement();
+      //
+      writer.WriteStartElement("theme");
+      writer.WriteValue(Theme);
       writer.WriteEndElement();
       //
       if (string.IsNullOrEmpty(PgpKey) == false) {

@@ -58,7 +58,8 @@ namespace Authenticator {
 
     private Brush backColorBrush;
     private Brush foreColorBrush;
-    private Brush selectedBrush;
+    private Brush selectedBackBrush;
+    private Brush selectedForeBrush;
     private Brush pieBrush;
     private Pen piePen;
     private Pen linePen;
@@ -418,11 +419,11 @@ namespace Authenticator {
 
           if (msg.WParam.ToInt32() == WinApi.SB_ENDSCROLL) {
             var sargs = new ScrollEventArgs(ScrollEventType.EndScroll, si.NPos);
-            Scrolled(this, sargs);
+            Scrolled?.Invoke(this, sargs);
           }
           else if (msg.WParam.ToInt32() == WinApi.SB_THUMBTRACK) {
             var sargs = new ScrollEventArgs(ScrollEventType.ThumbTrack, si.NPos);
-            Scrolled(this, sargs);
+            Scrolled?.Invoke(this, sargs);
           }
         }
       }
@@ -645,12 +646,12 @@ namespace Authenticator {
 
       AuthHelper.AddMenuItem(ContextMenuStrip.Items);
       AuthHelper.AddMenuItem(ContextMenuStrip.Items, "Show Code", "showCodeMenuItem", ContextMenu_Click, Keys.Control | Keys.Space);
-      AuthHelper.AddMenuItem(ContextMenuStrip.Items, "Copy Code", "copyCodeMenuItem", ContextMenu_Click, Keys.Control | Keys.C);
+      AuthHelper.AddMenuItem(ContextMenuStrip.Items, "Copy Code", "copyCodeMenuItem", ContextMenu_Click, Keys.Control| Keys.Shift| Keys.C);
       AuthHelper.AddMenuItem(ContextMenuStrip.Items, "Show Serial && Restore Code...", "showRestoreCodeMenuItem", ContextMenu_Click);
-      AuthHelper.AddMenuItem(ContextMenuStrip.Items, "Show Secret Key...", "showGoogleSecretMenuItem", ContextMenu_Click, Keys.Control | Keys.V);
+      AuthHelper.AddMenuItem(ContextMenuStrip.Items, "Show Secret Key...", "showGoogleSecretMenuItem", ContextMenu_Click, Keys.Control | Keys.Shift | Keys.V);
       AuthHelper.AddMenuItem(ContextMenuStrip.Items, "Show Serial Key and Device ID...", "showTrionSecretMenuItem", ContextMenu_Click);
       AuthHelper.AddMenuItem(ContextMenuStrip.Items);
-      AuthHelper.AddMenuItem(ContextMenuStrip.Items, "Auto Refresh", "autoRefreshMenuItem", ContextMenu_Click, Keys.Control | Keys.A);
+      AuthHelper.AddMenuItem(ContextMenuStrip.Items, "Auto Refresh", "autoRefreshMenuItem", ContextMenu_Click, Keys.Control | Keys.Shift | Keys.A);
       AuthHelper.AddMenuItem(ContextMenuStrip.Items, "Copy on New Code", "copyOnCodeMenuItem", ContextMenu_Click);
       AuthHelper.AddMenuItem(ContextMenuStrip.Items);
 
@@ -1135,7 +1136,7 @@ namespace Authenticator {
       get => base.BackColor;
       set {
         if (BackColor != value)
-          ApplyColors();
+          backColorBrush = new SolidBrush(value);
         base.BackColor = value;
       }
     }
@@ -1144,25 +1145,36 @@ namespace Authenticator {
       get => base.ForeColor;
       set {
         if (ForeColor != value)
-          ApplyColors();
+          foreColorBrush = new SolidBrush(value);
         base.ForeColor = value;
       }
     }
 
-    public Color SelectedColor {
-      get => selectedColor;
+    public Color SelectedBackColor {
+      get => selectedBackColor;
       set {
-        if (selectedColor != value)
-          ApplyColors();
-        selectedColor = value;
+        if (selectedBackColor != value)
+          selectedBackBrush = new SolidBrush(value);
+        selectedBackColor = value;
+      }
+    }
+
+    public Color SelectedForeColor {
+      get => selectedForeColor;
+      set {
+        if (selectedForeColor != value)
+          selectedForeBrush = new SolidBrush(value);
+        selectedForeColor = value;
       }
     }
 
     public Color PieColor {
       get => pieColor;
       set {
-        if (pieColor != value)
-          ApplyColors();
+        if (pieColor != value) {
+          pieBrush = new SolidBrush(value);
+          piePen = new Pen(value);
+        }
         pieColor = value;
       }
     }
@@ -1171,19 +1183,21 @@ namespace Authenticator {
       get => lineColor;
       set {
         if (lineColor != value)
-          ApplyColors();
+          linePen = new Pen(value);
         lineColor = value;
       }
     }
 
-    private Color selectedColor = Color.LightSteelBlue;
+    private Color selectedBackColor = Color.LightSteelBlue;
+    private Color selectedForeColor = Color.LightSteelBlue;
     private Color pieColor = SystemColors.ActiveCaption;
     private Color lineColor = SystemColors.Control;
 
     private void ApplyColors() {
       backColorBrush = new SolidBrush(BackColor);
       foreColorBrush = new SolidBrush(ForeColor);
-      selectedBrush = new SolidBrush(selectedColor);
+      selectedBackBrush = new SolidBrush(selectedBackColor);
+      selectedForeBrush = new SolidBrush(selectedForeColor);
       pieBrush = new SolidBrush(pieColor);
       piePen = new Pen(pieColor);
       linePen = new Pen(lineColor);
@@ -1240,7 +1254,7 @@ namespace Authenticator {
       e.Graphics.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
         
       if (e.State == DrawItemState.Selected)
-        e.Graphics.FillRectangle(selectedBrush, e.Bounds);
+        e.Graphics.FillRectangle(selectedBackBrush, e.Bounds);
 
       var rect = new Rectangle(e.Bounds.X + MARGIN_LEFT, e.Bounds.Y + MARGIN_TOP, ICON_WIDTH, ICON_HEIGHT);
       if (clipRect.IntersectsWith(rect) && auth.Icon != null) {
@@ -1263,7 +1277,10 @@ namespace Authenticator {
         rect = new Rectangle(e.Bounds.X + MARGIN_LEFT + ICON_WIDTH + ICON_MARGIN_RIGHT, e.Bounds.Y + LABEL_MARGIN_TOP,
           labelMaxWidth, (int)labelSize.Height);
         if (clipRect.IntersectsWith(rect)) {
-          e.Graphics.DrawString(label, font, foreColorBrush, rect);
+          if (e.State == DrawItemState.Selected)
+            e.Graphics.DrawString(label, font, selectedForeBrush, rect);
+          else
+            e.Graphics.DrawString(label, font, foreColorBrush, rect);
         }
 
         string code;

@@ -7,6 +7,7 @@ namespace Authenticator {
   public partial class GetPasswordForm : Form {
     public GetPasswordForm() {
       InitializeComponent();
+      Theme.Current.Apply(this);
     }
 
     public string Password { get; private set; }

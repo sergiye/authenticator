@@ -8,6 +8,7 @@ namespace Authenticator {
     public UnprotectPasswordForm() {
       InitializeComponent();
       Icon = Icon.ExtractAssociatedIcon(Updater.CurrentFileLocation);
+      Theme.Current.Apply(this);
     }
 
     public AuthAuthenticator Authenticator { get; set; }

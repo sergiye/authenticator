@@ -15,6 +15,7 @@
     <StartupObject>Authenticator.Program</StartupObject>
     <ApplicationIcon>app.ico</ApplicationIcon>
     <ApplicationManifest>Properties\app.manifest</ApplicationManifest>
+    <LangVersion>latest</LangVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -53,15 +54,18 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="..\..\common\sergiye.Common\OperatingSystemHelper.cs">
-      <Link>Common\OperatingSystemHelper.cs</Link>
-    </Compile>
-    <Compile Include="..\..\common\sergiye.Common\SerializerHelper.cs">
-      <Link>Common\SerializerHelper.cs</Link>
-    </Compile>
-    <Compile Include="..\..\common\sergiye.Common\Updater.cs">
-      <Link>Common\Updater.cs</Link>
-    </Compile>
+    <EmbeddedResource Include="..\themes\*.json" Link="themes\%(Filename)%(Extension)" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="..\..\common\sergiye.Common.UI\Themes\CustomTheme.cs" Link="Common\Themes\CustomTheme.cs" />
+    <Compile Include="..\..\common\sergiye.Common.UI\Themes\DarkTheme.cs" Link="Common\Themes\DarkTheme.cs" />
+    <Compile Include="..\..\common\sergiye.Common.UI\Themes\LightTheme.cs" Link="Common\Themes\LightTheme.cs" />
+    <Compile Include="..\..\common\sergiye.Common.UI\Themes\Theme.cs" Link="Common\Themes\Theme.cs" />
+    <Compile Include="..\..\common\sergiye.Common.UI\Themes\ThemedToolStripRenderer.cs" Link="Common\Themes\ThemedToolStripRenderer.cs" />
+    <Compile Include="..\..\common\sergiye.Common.UI\ToolStripRadioButtonMenuItem.cs" Link="Common\ToolStripRadioButtonMenuItem.cs" />
+    <Compile Include="..\..\common\sergiye.Common\OperatingSystemHelper.cs" Link="Common\OperatingSystemHelper.cs" />
+    <Compile Include="..\..\common\sergiye.Common\SerializerHelper.cs" Link="Common\SerializerHelper.cs" />
+    <Compile Include="..\..\common\sergiye.Common\Updater.cs" Link="Common\Updater.cs" />
     <Compile Include="Classes\AuthAuthenticator.cs" />
     <Compile Include="Classes\AuthConfig.cs" />
     <Compile Include="Classes\Authenticator.cs" />

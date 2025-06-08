@@ -19,6 +19,7 @@ namespace Authenticator {
       InitializeComponent();
       Icon = Icon.ExtractAssociatedIcon(Updater.CurrentFileLocation);
       Authenticator = authenticator;
+      Theme.Current.Apply(this);
     }
 
     protected override void OnLoad(EventArgs e) {

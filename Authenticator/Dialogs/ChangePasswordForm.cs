@@ -10,6 +10,7 @@ namespace Authenticator {
     public ChangePasswordForm() {
       InitializeComponent();
       Icon = Icon.ExtractAssociatedIcon(Updater.CurrentFileLocation);
+      Theme.Current.Apply(this);
     }
 
     public Authenticator.PasswordTypes PasswordType { get; set; }

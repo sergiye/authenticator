@@ -1,3 +1,4 @@
+using sergiye.Common;
 using System;
 using System.Windows.Forms;
 
@@ -7,6 +8,7 @@ namespace Authenticator {
 
     public ShowTrionSecretForm() {
       InitializeComponent();
+      Theme.Current.Apply(this);
     }
 
     private void ShowTrionSecretForm_Load(object sender, EventArgs e) {

@@ -16,27 +16,21 @@ namespace Authenticator {
     private NotifyIcon notifyIcon;
     private ContextMenuStrip notifyMenu;
 
-    public MainForm() {
-      InitializeComponent();
-    }
-
     #region Properties
 
     public AuthConfig Config { get; set; }
 
+    private ToolStripMenuItem themeMenuItem;
     private DateTime? saveConfigTime;
-
     private bool mExplicitClose;
-
     private bool initiallyMinimised;
-
     private string startupConfigFile;
-
-    private bool mInitOnce;
 
     #endregion
 
-    private void MainForm_Load(object sender, EventArgs e) {
+    public MainForm() {
+      InitializeComponent();
+
       //Text = $"Authenticator {(Environment.Is64BitProcess ? "x64" : "x32")} - {Updater.CurrentVersion}";
       Icon = Icon.ExtractAssociatedIcon(Updater.CurrentFileLocation);
       authenticatorList.ItemHeight = 50;
@@ -55,11 +49,15 @@ namespace Authenticator {
       timer.Interval = 3000;
       timer.Tick += async (s, eArgs) => {
         timer.Enabled = false;
-        timer.Enabled = ! await Updater.CheckForUpdatesAsync(true);
+        timer.Enabled = !await Updater.CheckForUpdatesAsync(true);
       };
-      timer.Enabled = true; 
+      timer.Enabled = true;
 
-      // get any command arguments
+      // hook into System time change event
+      Microsoft.Win32.SystemEvents.TimeChanged += SystemEvents_TimeChanged;
+      // redirect mouse wheel events
+      new WinApi.MessageForwarder(authenticatorList, WinApi.WM_MOUSEWHEEL);
+
       string password = null;
       string proxy = null;
       var args = Environment.GetCommandLineArgs();
@@ -109,28 +107,97 @@ namespace Authenticator {
         }
       }
 
-      InitializeOnce();
-
       LoadConfig(password);
+      InitializeTheme();
     }
+
+    #region themes
+
+    private void InitializeTheme() {
+
+      mainMenu.Renderer = new ThemedToolStripRenderer();
+      notifyMenu.Renderer = new ThemedToolStripRenderer();
+      authenticatorList.ContextMenuStrip.Renderer = new ThemedToolStripRenderer();
+      Theme.OnCurrentChecnged += () => {
+        //authenticatorList.ForeColor = Theme.Current.ForegroundColor;
+        //authenticatorList.BackColor = Theme.Current.BackgroundColor;
+        authenticatorList.SelectedBackColor = Theme.Current.SelectedBackgroundColor;
+        authenticatorList.SelectedForeColor = Theme.Current.SelectedForegroundColor;
+        authenticatorList.PieColor = Theme.Current.StatusErrorColor;
+        authenticatorList.LineColor = Theme.Current.LineColor;
+        authenticatorList.Invalidate();
+      };
+
+      if (Theme.SupportsAutoThemeSwitching()) {
+        var autoThemeMenuItem = new ToolStripRadioButtonMenuItem("Auto");
+        autoThemeMenuItem.Click += (o, e) => {
+          autoThemeMenuItem.Checked = true;
+          Theme.SetAutoTheme();
+          Config.Theme = "auto";
+        };
+        themeMenuItem.DropDownItems.Add(autoThemeMenuItem);
+      }
+
+      var allThemes = CustomTheme.GetAllThemes("themes", "Authenticator.themes").OrderBy(x => x.DisplayName).ToList();
+
+      var setTheme = allThemes.FirstOrDefault(theme => Config.Theme == theme.Id);
+      if (setTheme != null) {
+        Theme.Current = setTheme;
+      }
+
+      AddThemeMenuItems(allThemes.Where(t => t is not CustomTheme));
+      var customThemes = allThemes.Where(t => t is CustomTheme).ToList();
+      if (customThemes.Count > 0) {
+        themeMenuItem.DropDownItems.Add("-");
+        AddThemeMenuItems(customThemes);
+      }
+
+      if (setTheme == null && themeMenuItem.DropDownItems.Count > 0)
+        themeMenuItem.DropDownItems[0].PerformClick();
+
+      Theme.Current.Apply(this);
+    }
+
+    private void AddThemeMenuItems(IEnumerable<Theme> themes) {
+      foreach (var theme in themes) {
+        var item = new ToolStripRadioButtonMenuItem(theme.DisplayName);
+        item.Click += OnThemeMenuItemClick;
+        item.Tag = theme;
+        themeMenuItem.DropDownItems.Add(item);
+        if (Theme.Current != null && Theme.Current.Id == theme.Id) {
+          item.Checked = true;
+        }
+      }
+    }
+
+    private void OnThemeMenuItemClick(object sender, EventArgs e) {
+      if (sender is not ToolStripRadioButtonMenuItem item || item.Tag is not Theme theme)
+        return;
+      item.Checked = true;
+      Theme.Current = theme;
+      Config.Theme = theme.Id;
+    }
+
+    #endregion
 
     #region Private Methods
 
     private void LoadConfig(string password) {
       loadingPanel.Visible = true;
       passwordPanel.Visible = false;
+      AuthConfig config = null;
 
-      Task.Factory.StartNew(() => {
-        try {
-          // use previous config if we have one
-          var config = AuthHelper.LoadConfig(startupConfigFile, password);
-          return new Tuple<AuthConfig, Exception>(config, null);
-        }
-        catch (Exception ex) {
-          return new Tuple<AuthConfig, Exception>(null, ex);
-        }
-      }).ContinueWith((configTask) => {
-        var ex = configTask.Result.Item2;
+      //Task.Factory.StartNew(() => {
+      try {
+        // use previous config if we have one
+        config = AuthHelper.LoadConfig(startupConfigFile, password);
+        //return new Tuple<AuthConfig, Exception>(config, null);
+      }
+      catch (Exception ex) {
+        //  return new Tuple<AuthConfig, Exception>(null, ex);
+        //}
+        //}).ContinueWith((configTask) => {
+        //var ex = configTask.Result.Item2;
         switch (ex) {
           case AuthInvalidNewerConfigException _:
             MessageBox.Show(this, ex.Message, Updater.ApplicationName, MessageBoxButtons.OK, MessageBoxIcon.Error);
@@ -150,7 +217,7 @@ namespace Authenticator {
             passwordErrorLabel.Text = "Invalid password";
             passwordErrorLabel.Tag = DateTime.Now.AddSeconds(3);
             // oddity with MetroFrame controls in have to set focus away and back to field to make it stick
-            Invoke((MethodInvoker) delegate {
+            Invoke((MethodInvoker)delegate {
               passwordButton.Focus();
               passwordField.Focus();
             });
@@ -159,8 +226,7 @@ namespace Authenticator {
         }
 
         if (ex != null) {
-          if (ErrorDialog(this, "An unknown error occured: " + ex.Message, ex, MessageBoxButtons.RetryCancel) ==
-              DialogResult.Cancel) {
+          if (ErrorDialog(this, "An unknown error occured: " + ex.Message, ex, MessageBoxButtons.RetryCancel) == DialogResult.Cancel) {
             Close();
             return;
           }
@@ -168,8 +234,8 @@ namespace Authenticator {
           LoadConfig(password);
           return;
         }
-
-        var config = configTask.Result.Item1;
+      }
+        //var config = configTask.Result.Item1;
         if (config == null) {
           System.Diagnostics.Process.GetCurrentProcess().Kill();
           return;
@@ -185,7 +251,8 @@ namespace Authenticator {
         }
 
         InitializeForm();
-      }, TaskScheduler.FromCurrentSynchronizationContext());
+
+      //}, TaskScheduler.FromCurrentSynchronizationContext());
     }
 
     private void ImportAuthenticator(string authenticatorFile) {
@@ -348,17 +415,6 @@ namespace Authenticator {
       } while (retry);
     }
 
-    private void InitializeOnce() {
-      if (mInitOnce) return;
-      // hook into System time change event
-      Microsoft.Win32.SystemEvents.TimeChanged += SystemEvents_TimeChanged;
-
-      // redirect mouse wheel events
-      new WinApi.MessageForwarder(authenticatorList, WinApi.WM_MOUSEWHEEL);
-
-      mInitOnce = true;
-    }
-
     private void InitializeForm() {
       // set up list
       LoadAuthenticatorList();
@@ -377,8 +433,8 @@ namespace Authenticator {
       LoadNotifyMenu(notifyMenu.Items);
 
       notifyIcon = new NotifyIcon(components);
-      notifyIcon.Icon = Icon.ExtractAssociatedIcon(Updater.CurrentFileLocation);
       notifyIcon.DoubleClick += ShowHideMenuItem_Click;
+      notifyIcon.Icon = Icon.ExtractAssociatedIcon(Updater.CurrentFileLocation);
       notifyIcon.ContextMenuStrip = notifyMenu;
       notifyIcon.Visible = Config.UseTrayIcon;
 
@@ -947,6 +1003,7 @@ namespace Authenticator {
       AuthHelper.AddMenuItem(optionsToolStripMenuItem.DropDownItems, "Always on Top", "alwaysOnTopOptionsMenuItem", alwaysOnTopOptionsMenuItem_Click, Keys.Control | Keys.T);
       AuthHelper.AddMenuItem(optionsToolStripMenuItem.DropDownItems, "Use System Tray Icon", "useSystemTrayIconOptionsMenuItem", useSystemTrayIconOptionsMenuItem_Click);
       AuthHelper.AddMenuItem(optionsToolStripMenuItem.DropDownItems, "Auto Size", "autoSizeOptionsMenuItem", autoSizeOptionsMenuItem_Click, Keys.Control | Keys.S);
+      themeMenuItem = AuthHelper.AddMenuItem(optionsToolStripMenuItem.DropDownItems, "Themes", "themeMenuItem");
       AuthHelper.AddMenuItem(optionsToolStripMenuItem.DropDownItems);
 
       if (Config == null || Config.IsReadOnly == false) {

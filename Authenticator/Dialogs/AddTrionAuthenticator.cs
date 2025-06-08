@@ -1,3 +1,4 @@
+using sergiye.Common;
 using System;
 using System.Drawing;
 using System.Windows.Forms;
@@ -8,6 +9,7 @@ namespace Authenticator {
       InitializeComponent();
       BackColor = SystemColors.Window;
       StartPosition = FormStartPosition.CenterScreen;
+      Theme.Current.Apply(this);
     }
 
     public AuthAuthenticator Authenticator { get; set; }
