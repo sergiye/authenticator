@@ -6,25 +6,27 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 using sergiye.Common;
 
 namespace Authenticator {
   public partial class MainForm : Form {
     
-    private NotifyIcon notifyIcon;
-    private ContextMenuStrip notifyMenu;
+    private readonly NotifyIcon notifyIcon;
+    private readonly ContextMenuStrip notifyMenu;
 
     #region Properties
 
     public AuthConfig Config { get; set; }
 
     private ToolStripMenuItem themeMenuItem;
+    private ToolStripMenuItem importMenuItem;
+    private readonly Timer passwordTimer;
+
     private DateTime? saveConfigTime;
     private bool mExplicitClose;
-    private bool initiallyMinimised;
-    private string startupConfigFile;
+    private readonly bool initiallyMinimised;
+    private readonly string startupConfigFile;
 
     #endregion
 
@@ -45,12 +47,33 @@ namespace Authenticator {
         Application.Exit
       );
 
+      // initialize UI
+      notifyMenu = new ContextMenuStrip(components);
+      
+      LoadMainMenu();
+
+      notifyIcon = new NotifyIcon(components);
+      notifyIcon.DoubleClick += ShowHideMenuItem_Click;
+      notifyIcon.Icon = Icon.ExtractAssociatedIcon(Updater.CurrentFileLocation);
+      notifyIcon.ContextMenuStrip = notifyMenu;
+      notifyIcon.Text = Text = Updater.ApplicationTitle;
+
+      passwordTimer = new Timer(components);
+      passwordTimer.Tick += (s, e) => {
+        if (passwordErrorLabel.Tag == null || (DateTime)passwordErrorLabel.Tag > DateTime.Now)
+          return;
+        passwordTimer.Enabled = false;
+        passwordErrorLabel.Tag = null;
+        passwordErrorLabel.Text = string.Empty;
+      };
+      passwordTimer.Interval = 500;
+
       var timer = new Timer();
-      timer.Interval = 3000;
       timer.Tick += async (s, eArgs) => {
         timer.Enabled = false;
         timer.Enabled = !await Updater.CheckForUpdatesAsync(true);
       };
+      timer.Interval = 3000;
       timer.Enabled = true;
 
       // hook into System time change event
@@ -133,14 +156,14 @@ namespace Authenticator {
         autoThemeMenuItem.Click += (o, e) => {
           autoThemeMenuItem.Checked = true;
           Theme.SetAutoTheme();
-          Config.Theme = "auto";
+          AuthConfig.Theme = "auto";
         };
         themeMenuItem.DropDownItems.Add(autoThemeMenuItem);
       }
 
       var allThemes = CustomTheme.GetAllThemes("themes", "Authenticator.themes").OrderBy(x => x.DisplayName).ToList();
 
-      var setTheme = allThemes.FirstOrDefault(theme => Config.Theme == theme.Id);
+      var setTheme = allThemes.FirstOrDefault(theme => AuthConfig.Theme == theme.Id);
       if (setTheme != null) {
         Theme.Current = setTheme;
       }
@@ -175,7 +198,7 @@ namespace Authenticator {
         return;
       item.Checked = true;
       Theme.Current = theme;
-      Config.Theme = theme.Id;
+      AuthConfig.Theme = theme.Id;
     }
 
     #endregion
@@ -185,74 +208,70 @@ namespace Authenticator {
     private void LoadConfig(string password) {
       loadingPanel.Visible = true;
       passwordPanel.Visible = false;
+      mainMenu.Visible = false;
       AuthConfig config = null;
-
-      //Task.Factory.StartNew(() => {
       try {
-        // use previous config if we have one
         config = AuthHelper.LoadConfig(startupConfigFile, password);
-        //return new Tuple<AuthConfig, Exception>(config, null);
+      }
+      catch (AuthInvalidNewerConfigException ex) {
+        MessageBox.Show(this, ex.Message, Updater.ApplicationName, MessageBoxButtons.OK, MessageBoxIcon.Error);
+        System.Diagnostics.Process.GetCurrentProcess().Kill();
+        return;
+      }
+      catch (BadPasswordException) {
+        loadingPanel.Visible = false;
+        passwordPanel.Visible = true;
+        mainMenu.Visible = false;
+
+        passwordErrorLabel.Text = "Invalid password";
+        passwordErrorLabel.Tag = DateTime.Now.AddSeconds(3);
+        // oddity with MetroFrame controls in have to set focus away and back to field to make it stick
+        Invoke((MethodInvoker)delegate {
+          passwordButton.Focus();
+          passwordField.Focus();
+        });
+        passwordTimer.Enabled = true;
+        return;
       }
       catch (Exception ex) {
-        //  return new Tuple<AuthConfig, Exception>(null, ex);
-        //}
-        //}).ContinueWith((configTask) => {
-        //var ex = configTask.Result.Item2;
-        switch (ex) {
-          case AuthInvalidNewerConfigException _:
-            MessageBox.Show(this, ex.Message, Updater.ApplicationName, MessageBoxButtons.OK, MessageBoxIcon.Error);
-            System.Diagnostics.Process.GetCurrentProcess().Kill();
-            return;
-          case EncryptedSecretDataException _:
-            loadingPanel.Visible = false;
-            passwordPanel.Visible = true;
-
-            passwordButton.Focus();
-            passwordField.Focus();
-
-            return;
-          case BadPasswordException _:
-            loadingPanel.Visible = false;
-            passwordPanel.Visible = true;
-            passwordErrorLabel.Text = "Invalid password";
-            passwordErrorLabel.Tag = DateTime.Now.AddSeconds(3);
-            // oddity with MetroFrame controls in have to set focus away and back to field to make it stick
-            Invoke((MethodInvoker)delegate {
-              passwordButton.Focus();
-              passwordField.Focus();
-            });
-            passwordTimer.Enabled = true;
-            return;
-        }
-
-        if (ex != null) {
-          if (ErrorDialog(this, "An unknown error occured: " + ex.Message, ex, MessageBoxButtons.RetryCancel) == DialogResult.Cancel) {
-            Close();
-            return;
-          }
-
-          LoadConfig(password);
+        if (ex is AuthInvalidNewerConfigException || ex is EncryptedSecretDataException) {
+          loadingPanel.Visible = false;
+          passwordPanel.Visible = true;
+          mainMenu.Visible = false;
+          passwordButton.Focus();
+          passwordField.Focus();
           return;
         }
+
+        ErrorDialog(this, "An unknown error occured: " + ex.Message, ex, MessageBoxButtons.OK);
+        Close();
+        return;
       }
-        //var config = configTask.Result.Item1;
-        if (config == null) {
-          System.Diagnostics.Process.GetCurrentProcess().Kill();
-          return;
-        }
 
-        Config = config;
-        Config.OnConfigChanged += OnConfigChanged;
+      if (config == null) {
+        System.Diagnostics.Process.GetCurrentProcess().Kill();
+        return;
+      }
 
-        if (config.Upgraded) {
-          SaveConfig(true);
-          // display warning
-          ErrorDialog(this, string.Format("Authenticator has upgraded your authenticators to version {0}.\nDo NOT run an older version of Authenticator as this could overwrite them.\nNow is a good time to make a backup. Click the Options icon and choose Export.", AuthConfig.CurrentVersion));
-        }
+      Config = config;
+      AuthConfig.OnConfigChanged += OnConfigChanged;
 
-        InitializeForm();
+      if (Config.Upgraded) {
+        SaveConfig(true);
+        // display warning
+        ErrorDialog(this, string.Format("Authenticator has upgraded your authenticators to version {0}.\nDo NOT run an older version of Authenticator as this could overwrite them.\nNow is a good time to make a backup. Click the Options icon and choose Export.", AuthConfig.CurrentVersion));
+      }
 
-      //}, TaskScheduler.FromCurrentSynchronizationContext());
+      InitializeForm();
+
+      if (Config.IsPortable == false) {
+        AuthHelper.AddMenuItem(optionsToolStripMenuItem.DropDownItems, "Start With Windows", "startWithWindowsOptionsMenuItem", startWithWindowsOptionsMenuItem_Click);
+      }
+      if (Config.IsReadOnly == false) {
+        AuthHelper.AddMenuItem(optionsToolStripMenuItem.DropDownItems, "Change Protection", "changePasswordOptionsMenuItem", changePasswordOptionsMenuItem_Click);
+      }
+      importMenuItem.Enabled = !Config.IsReadOnly;
+      notifyIcon.Visible = AuthConfig.UseTrayIcon;
     }
 
     private void ImportAuthenticator(string authenticatorFile) {
@@ -351,10 +370,6 @@ namespace Authenticator {
 
           // first time we prompt for protection and set out main settings from imported config
           if (Config.Count == 0) {
-            Config.StartWithWindows = config.StartWithWindows;
-            Config.UseTrayIcon = config.UseTrayIcon;
-            Config.AlwaysOnTop = config.AlwaysOnTop;
-
             var form = new ChangePasswordForm {
               PasswordType = Authenticator.PasswordTypes.Explicit
             };
@@ -420,42 +435,31 @@ namespace Authenticator {
       LoadAuthenticatorList();
 
       // set always on top
-      TopMost = Config.AlwaysOnTop;
+      TopMost = AuthConfig.AlwaysOnTop;
 
       // size the form based on the authenticators
       SetAutoSize();
 
-      // initialize UI
-      LoadMainMenu();
-      
-      notifyMenu = new ContextMenuStrip(components);
       notifyMenu.Opening += (s, e) => OpeningNotifyMenu(notifyMenu, e);
       LoadNotifyMenu(notifyMenu.Items);
 
-      notifyIcon = new NotifyIcon(components);
-      notifyIcon.DoubleClick += ShowHideMenuItem_Click;
-      notifyIcon.Icon = Icon.ExtractAssociatedIcon(Updater.CurrentFileLocation);
-      notifyIcon.ContextMenuStrip = notifyMenu;
-      notifyIcon.Visible = Config.UseTrayIcon;
-
-      // set title
-      notifyIcon.Text = Text = Updater.ApplicationTitle;
-
       loadingPanel.Visible = false;
       passwordPanel.Visible = false;
+      mainMenu.Visible = true;
+
       addToolStripMenuItem.Enabled = !Config.IsReadOnly;
       authenticatorList.Focus();
 
       // set positions
-      if (Config.Position.IsEmpty == false) {
+      if (AuthConfig.Position.IsEmpty == false) {
         // check we aren't out of bounds in case of multi-monitor change
         var v = SystemInformation.VirtualScreen;
-        if ((Config.Position.X + Width) >= v.Left && Config.Position.X < v.Width &&
-            Config.Position.Y > v.Top) {
+        if ((AuthConfig.Position.X + Width) >= v.Left && AuthConfig.Position.X < v.Width &&
+            AuthConfig.Position.Y > v.Top) {
           try {
             StartPosition = FormStartPosition.Manual;
-            Left = Config.Position.X;
-            Top = Config.Position.Y;
+            Left = AuthConfig.Position.X;
+            Top = AuthConfig.Position.Y;
           }
           catch (Exception) {
             // ignored
@@ -473,7 +477,7 @@ namespace Authenticator {
           }
         }
       }
-      else if (Config.AutoSize) {
+      else if (AuthConfig.AutoSize) {
         CenterToScreen();
       }
 
@@ -483,7 +487,7 @@ namespace Authenticator {
         ShowInTaskbar = true;
       }
 
-      if (Config.UseTrayIcon) {
+      if (AuthConfig.UseTrayIcon) {
         // if initially minimized, we need to hide
         if (WindowState == FormWindowState.Minimized) {
           Hide();
@@ -618,7 +622,7 @@ namespace Authenticator {
     }
 
     private void SetAutoSize() {
-      if (Config.AutoSize) {
+      if (AuthConfig.AutoSize) {
         if (Config.Count != 0) {
           Width = Math.Max(this.MinimumSize.Width,
             authenticatorList.Margin.Horizontal + authenticatorList.GetMaxItemWidth() +
@@ -638,15 +642,15 @@ namespace Authenticator {
       }
       else {
         FormBorderStyle = FormBorderStyle.Sizable;
-        if (Config.Width != 0) {
-          Width = Config.Width;
+        if (AuthConfig.Width != 0) {
+          Width = AuthConfig.Width;
         }
 
-        if (Config.Height != 0) {
-          Height = Config.Height;
+        if (AuthConfig.Height != 0) {
+          Height = AuthConfig.Height;
         }
       }
-      introLabel.Visible = (Config.Count == 0);
+      introLabel.Visible = Config.Count == 0;
     }
 
     private void EndRenaming() {
@@ -658,17 +662,20 @@ namespace Authenticator {
 
     private void MainForm_Shown(object sender, EventArgs e) {
       // if we use tray icon make sure it is set
-      if (Config != null && Config.UseTrayIcon) {
+      if (AuthConfig.UseTrayIcon) {
         // if initially minizied, we need to hide
         if (WindowState == FormWindowState.Minimized) {
           Hide();
         }
       }
+      else {
+        Activate();
+      }
     }
 
     private void MainForm_FormClosing(object sender, FormClosingEventArgs e) {
       // keep in the tray when closing Form 
-      if (Config != null && Config.UseTrayIcon && Visible && mExplicitClose == false) {
+      if (AuthConfig.UseTrayIcon && Visible && mExplicitClose == false) {
         e.Cancel = true;
         Hide();
         return;
@@ -678,14 +685,12 @@ namespace Authenticator {
       notifyIcon.Visible = false;
 
       // save size if we are not autoresize
-      if (Config != null && Config.AutoSize == false &&
-          (Config.Width != Width || Config.Height != Height)) {
-        Config.Width = Width;
-        Config.Height = Height;
-      }
-
-      if (Config != null /* && this.Config.Position.IsEmpty == false */) {
-        Config.Position = new Point(Left, Top);
+      if (Config != null) {
+        if (!AuthConfig.AutoSize && (AuthConfig.Width != Width || AuthConfig.Height != Height)) {
+          AuthConfig.Width = Width;
+          AuthConfig.Height = Height;
+        }
+        AuthConfig.Position = new Point(Left, Top);
       }
 
       // perform save if we have one pending
@@ -907,9 +912,9 @@ namespace Authenticator {
     }
 
     private void MainForm_ResizeEnd(object sender, EventArgs e) {
-      if (Config != null && Config.AutoSize == false) {
-        Config.Width = Width;
-        Config.Height = Height;
+      if (Config != null && AuthConfig.AutoSize == false) {
+        AuthConfig.Width = Width;
+        AuthConfig.Height = Height;
       }
     }
 
@@ -923,14 +928,6 @@ namespace Authenticator {
 
       LoadConfig(passwordField.Text);
       passwordField.Text = string.Empty;
-    }
-
-    private void passwordTimer_Tick(object sender, EventArgs e) {
-      if (passwordErrorLabel.Tag != null && (DateTime) passwordErrorLabel.Tag <= DateTime.Now) {
-        passwordTimer.Enabled = false;
-        passwordErrorLabel.Tag = null;
-        passwordErrorLabel.Text = string.Empty;
-      }
     }
 
     private void passwordField_KeyPress(object sender, KeyPressEventArgs e) {
@@ -972,8 +969,7 @@ namespace Authenticator {
 
       //File section
       AuthHelper.AddMenuItem(fileToolStripMenuItem.DropDownItems, "Export", "exportOptionsMenuItem", exportOptionsMenuItem_Click, Keys.Control | Keys.E);
-      var importMenuItem = AuthHelper.AddMenuItem(fileToolStripMenuItem.DropDownItems, "Import", onClick: importTextMenu_Click, shortcut: Keys.Control | Keys.I);
-      importMenuItem.Enabled = !Config.IsReadOnly;
+      importMenuItem = AuthHelper.AddMenuItem(fileToolStripMenuItem.DropDownItems, "Import", onClick: importTextMenu_Click, shortcut: Keys.Control | Keys.I);
 
       AuthHelper.AddMenuItem(fileToolStripMenuItem.DropDownItems);
       AuthHelper.AddMenuItem(fileToolStripMenuItem.DropDownItems, "Exit", "exitOptionsMenuItem", exitOptionMenuItem_Click, Keys.Control | Keys.W);
@@ -996,19 +992,11 @@ namespace Authenticator {
       //Options section
       optionsToolStripMenuItem.DropDownOpening += OpeningOptionsMenu;
 
-      if (Config != null && Config.IsPortable == false) {
-        AuthHelper.AddMenuItem(optionsToolStripMenuItem.DropDownItems, "Start With Windows", "startWithWindowsOptionsMenuItem", startWithWindowsOptionsMenuItem_Click);
-      }
-
       AuthHelper.AddMenuItem(optionsToolStripMenuItem.DropDownItems, "Always on Top", "alwaysOnTopOptionsMenuItem", alwaysOnTopOptionsMenuItem_Click, Keys.Control | Keys.T);
       AuthHelper.AddMenuItem(optionsToolStripMenuItem.DropDownItems, "Use System Tray Icon", "useSystemTrayIconOptionsMenuItem", useSystemTrayIconOptionsMenuItem_Click);
       AuthHelper.AddMenuItem(optionsToolStripMenuItem.DropDownItems, "Auto Size", "autoSizeOptionsMenuItem", autoSizeOptionsMenuItem_Click, Keys.Control | Keys.S);
       themeMenuItem = AuthHelper.AddMenuItem(optionsToolStripMenuItem.DropDownItems, "Themes", "themeMenuItem");
       AuthHelper.AddMenuItem(optionsToolStripMenuItem.DropDownItems);
-
-      if (Config == null || Config.IsReadOnly == false) {
-        AuthHelper.AddMenuItem(optionsToolStripMenuItem.DropDownItems, "Change Protection", "changePasswordOptionsMenuItem", changePasswordOptionsMenuItem_Click);
-      }
 
       //Help section
       AuthHelper.AddMenuItem(helpToolStripMenuItem.DropDownItems, "Check for updates", "checkUpdatesMenuItem", (s, e) => Updater.CheckForUpdates(false));
@@ -1062,16 +1050,16 @@ namespace Authenticator {
         return;
 
       if (menuItems.Find("changePasswordOptionsMenuItem", false).FirstOrDefault() is ToolStripMenuItem changeProtection)
-        changeProtection.Enabled = Config != null && Config.Count != 0;
+        changeProtection.Enabled = Config.Count != 0;
 
       if (menuItems.Find("startWithWindowsOptionsMenuItem", false).FirstOrDefault() is ToolStripMenuItem startWithWin)
-        startWithWin.Checked = Config.StartWithWindows;
+        startWithWin.Checked = AuthConfig.StartWithWindows;
       if (menuItems.Find("alwaysOnTopOptionsMenuItem", false).FirstOrDefault() is ToolStripMenuItem alwaysOnTop)
-        alwaysOnTop.Checked = Config.AlwaysOnTop;
+        alwaysOnTop.Checked = AuthConfig.AlwaysOnTop;
       if (menuItems.Find("useSystemTrayIconOptionsMenuItem", false).FirstOrDefault() is ToolStripMenuItem useTray)
-        useTray.Checked = Config.UseTrayIcon;
+        useTray.Checked = AuthConfig.UseTrayIcon;
       if (menuItems.Find("autoSizeOptionsMenuItem", false).FirstOrDefault() is ToolStripMenuItem autoSize)
-        autoSize.Checked = Config.AutoSize;
+        autoSize.Checked = AuthConfig.AutoSize;
     }
 
     private void OpeningNotifyMenu(ToolStrip menu, CancelEventArgs e) {
@@ -1080,7 +1068,7 @@ namespace Authenticator {
       }
 
       if (menu.Items.Cast<ToolStripItem>().FirstOrDefault(t => t.Name == "changePasswordOptionsMenuItem") is ToolStripMenuItem menuItem) {
-        menuItem.Enabled = Config != null && Config.Count != 0;
+        menuItem.Enabled = Config.Count != 0;
       }
 
       menuItem = menu.Items.Cast<ToolStripItem>().FirstOrDefault(t => t.Name == "defaultActionOptionsMenuItem") as
@@ -1088,11 +1076,11 @@ namespace Authenticator {
       if (menuItem != null) {
         var subItem = menuItem.DropDownItems.Cast<ToolStripItem>()
             .FirstOrDefault(t => t.Name == "defaultActionNotificationOptionsMenuItem") as ToolStripMenuItem;
-        subItem.Checked = (Config.NotifyAction == AuthConfig.NotifyActions.Notification);
+        subItem.Checked = AuthConfig.NotifyAction == AuthConfig.NotifyActions.Notification;
 
         subItem = menuItem.DropDownItems.Cast<ToolStripItem>()
           .FirstOrDefault(t => t.Name == "defaultActionCopyToClipboardOptionsMenuItem") as ToolStripMenuItem;
-        subItem.Checked = (Config.NotifyAction == AuthConfig.NotifyActions.CopyToClipboard);
+        subItem.Checked = AuthConfig.NotifyAction == AuthConfig.NotifyActions.CopyToClipboard;
       }
 
       //menuitem = menu.Items.Cast<ToolStripItem>().Where(t => t.Name == "useSystemTrayIconOptionsMenuItem").FirstOrDefault() as ToolStripMenuItem;
@@ -1125,7 +1113,7 @@ namespace Authenticator {
 
       var form = new ChangePasswordForm {
         PasswordType = Config.PasswordType,
-        HasPassword = ((Config.PasswordType & Authenticator.PasswordTypes.Explicit) != 0)
+        HasPassword = (Config.PasswordType & Authenticator.PasswordTypes.Explicit) != 0
       };
       if (form.ShowDialog(this) == DialogResult.OK) {
         bool retry;
@@ -1170,32 +1158,32 @@ namespace Authenticator {
       var auth = menuitem.Tag as AuthAuthenticator;
       var item = authenticatorList.Items.Cast<AuthenticatorListBox.ListItem>().FirstOrDefault(i => i.Authenticator == auth);
       if (item != null) {
-        RunAction(auth, Config.NotifyAction);
+        RunAction(auth, AuthConfig.NotifyAction);
       }
     }
 
     private void startWithWindowsOptionsMenuItem_Click(object sender, EventArgs e) {
-      Config.StartWithWindows = !Config.StartWithWindows;
+      AuthConfig.StartWithWindows = !AuthConfig.StartWithWindows;
     }
 
     private void alwaysOnTopOptionsMenuItem_Click(object sender, EventArgs e) {
-      Config.AlwaysOnTop = !Config.AlwaysOnTop;
+      AuthConfig.AlwaysOnTop = !AuthConfig.AlwaysOnTop;
     }
 
     private void useSystemTrayIconOptionsMenuItem_Click(object sender, EventArgs e) {
-      Config.UseTrayIcon = !Config.UseTrayIcon;
+      AuthConfig.UseTrayIcon = !AuthConfig.UseTrayIcon;
     }
 
     private void defaultActionNotificationOptionsMenuItem_Click(object sender, EventArgs e) {
-      Config.NotifyAction = AuthConfig.NotifyActions.Notification;
+      AuthConfig.NotifyAction = AuthConfig.NotifyActions.Notification;
     }
 
     private void defaultActionCopyToClipboardOptionsMenuItem_Click(object sender, EventArgs e) {
-      Config.NotifyAction = AuthConfig.NotifyActions.CopyToClipboard;
+      AuthConfig.NotifyAction = AuthConfig.NotifyActions.CopyToClipboard;
     }
 
     private void autoSizeOptionsMenuItem_Click(object sender, EventArgs e) {
-      Config.AutoSize = !Config.AutoSize;
+      AuthConfig.AutoSize = !AuthConfig.AutoSize;
     }
 
     private void exportOptionsMenuItem_Click(object sender, EventArgs e) {
@@ -1227,10 +1215,8 @@ namespace Authenticator {
     }
 
     private void aboutOptionMenuItem_Click(object sender, EventArgs e) {
-      var form = new AboutForm {
-        Config = Config
-      };
-      form.ShowDialog(this);
+      using (var form = new AboutForm())
+        form.ShowDialog(this);
     }
 
     private void exitOptionMenuItem_Click(object sender, EventArgs e) {
@@ -1242,13 +1228,13 @@ namespace Authenticator {
 
     #region Custom Events
 
-    private void OnConfigChanged(object source, ConfigChangedEventArgs args) {
+    private void OnConfigChanged(ConfigChangedEventArgs args) {
       switch (args.PropertyName) {
         case "AlwaysOnTop":
-          TopMost = Config.AlwaysOnTop;
+          TopMost = AuthConfig.AlwaysOnTop;
           break;
         case "UseTrayIcon": {
-          var useTrayIcon = Config.UseTrayIcon;
+          var useTrayIcon = AuthConfig.UseTrayIcon;
           if (useTrayIcon == false && Visible == false) {
             BringToFront();
             Show();
@@ -1265,7 +1251,7 @@ namespace Authenticator {
           break;
         case "StartWithWindows": {
           if (Config.IsPortable == false) {
-            AuthHelper.SetStartWithWindows(Config.StartWithWindows);
+            AuthHelper.SetStartWithWindows(AuthConfig.StartWithWindows);
           }
           break;
         }

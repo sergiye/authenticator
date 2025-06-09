@@ -23,7 +23,6 @@ namespace Authenticator {
       this.mainTimer = new System.Windows.Forms.Timer(this.components);
       this.authenticatorMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
       this.testToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-      this.passwordTimer = new System.Windows.Forms.Timer(this.components);
       this.passwordPanel = new System.Windows.Forms.Panel();
       this.passwordButton = new System.Windows.Forms.Button();
       this.passwordErrorLabel = new System.Windows.Forms.Label();
@@ -64,11 +63,6 @@ namespace Authenticator {
       this.testToolStripMenuItem.Name = "testToolStripMenuItem";
       this.testToolStripMenuItem.Size = new System.Drawing.Size(94, 22);
       this.testToolStripMenuItem.Text = "Test";
-      // 
-      // passwordTimer
-      // 
-      this.passwordTimer.Interval = 500;
-      this.passwordTimer.Tick += new System.EventHandler(this.passwordTimer_Tick);
       // 
       // passwordPanel
       // 
@@ -264,7 +258,6 @@ namespace Authenticator {
     private TextBox passwordField;
     private Button passwordButton;
     private Label passwordErrorLabel;
-    private System.Windows.Forms.Timer passwordTimer;
     private System.Windows.Forms.Label passwordLabel;
     private System.Windows.Forms.Panel loadingPanel;
     private System.Windows.Forms.PictureBox pictureBox1;

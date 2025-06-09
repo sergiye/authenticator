@@ -20,7 +20,7 @@ namespace Authenticator {
       CopyToClipboard = 1,
     }
 
-    public event EventHandler<ConfigChangedEventArgs> OnConfigChanged;
+    public static event Action<ConfigChangedEventArgs> OnConfigChanged;
 
     public decimal Version { get; private set; }
 
@@ -45,23 +45,19 @@ namespace Authenticator {
 
     private AuthAuthenticator authenticator;
 
-    private bool alwaysOnTop;
+    #region static settings
 
-    private bool useTrayIcon;
+    private static bool alwaysOnTop;
+    private static bool useTrayIcon;
+    private static NotifyActions notifyAction;
+    private static bool startWithWindows;
+    private static bool autoSize;
+    private static Point position = Point.Empty;
+    private static int width;
+    private static int height;
+    private static string theme;
 
-    private NotifyActions notifyAction;
-
-    private bool startWithWindows;
-
-    private bool autoSize;
-
-    private Point position = Point.Empty;
-
-    private int width;
-
-    private int height;
-    
-    private string theme;
+    #endregion
 
     private bool readOnly;
 
@@ -77,99 +73,99 @@ namespace Authenticator {
 
     public string Filename { get; set; }
 
-    public bool AlwaysOnTop {
+    public static bool AlwaysOnTop {
       get => alwaysOnTop;
       set {
         alwaysOnTop = value;
         if (OnConfigChanged != null) {
-          OnConfigChanged(this, new ConfigChangedEventArgs("AlwaysOnTop"));
+          OnConfigChanged(new ConfigChangedEventArgs("AlwaysOnTop"));
         }
       }
     }
 
-    public bool UseTrayIcon {
+    public static bool UseTrayIcon {
       get => useTrayIcon;
       set {
         useTrayIcon = value;
         if (OnConfigChanged != null) {
-          OnConfigChanged(this, new ConfigChangedEventArgs("UseTrayIcon"));
+          OnConfigChanged(new ConfigChangedEventArgs("UseTrayIcon"));
         }
       }
     }
 
-    public NotifyActions NotifyAction {
+    public static NotifyActions NotifyAction {
       get => notifyAction;
       set {
         notifyAction = value;
         if (OnConfigChanged != null) {
-          OnConfigChanged(this, new ConfigChangedEventArgs("NotifyAction"));
+          OnConfigChanged(new ConfigChangedEventArgs("NotifyAction"));
         }
       }
     }
 
-    public bool StartWithWindows {
+    public static bool StartWithWindows {
       get => startWithWindows;
       set {
         startWithWindows = value;
         if (OnConfigChanged != null) {
-          OnConfigChanged(this, new ConfigChangedEventArgs("StartWithWindows"));
+          OnConfigChanged(new ConfigChangedEventArgs("StartWithWindows"));
         }
       }
     }
 
-    public bool AutoSize {
+    public static bool AutoSize {
       get => autoSize;
       set {
         autoSize = value;
         if (OnConfigChanged != null) {
-          OnConfigChanged(this, new ConfigChangedEventArgs("AutoSize"));
+          OnConfigChanged(new ConfigChangedEventArgs("AutoSize"));
         }
       }
     }
 
-    public Point Position {
+    public static Point Position {
       get => position;
       set {
         if (position != value) {
           position = value;
           if (OnConfigChanged != null) {
-            OnConfigChanged(this, new ConfigChangedEventArgs("Position"));
+            OnConfigChanged(new ConfigChangedEventArgs("Position"));
           }
         }
       }
     }
 
-    public int Width {
+    public static int Width {
       get => width;
       set {
         if (width != value) {
           width = value;
           if (OnConfigChanged != null) {
-            OnConfigChanged(this, new ConfigChangedEventArgs("Width"));
+            OnConfigChanged(new ConfigChangedEventArgs("Width"));
           }
         }
       }
     }
 
-    public int Height {
+    public static int Height {
       get => height;
       set {
         if (height != value) {
           height = value;
           if (OnConfigChanged != null) {
-            OnConfigChanged(this, new ConfigChangedEventArgs("Height"));
+            OnConfigChanged(new ConfigChangedEventArgs("Height"));
           }
         }
       }
     }
 
-    public string Theme {
+    public static string Theme {
       get => theme;
       set {
         if (theme != value) {
           theme = value;
           if (OnConfigChanged != null) {
-            OnConfigChanged(this, new ConfigChangedEventArgs("Theme"));
+            OnConfigChanged(new ConfigChangedEventArgs("Theme"));
           }
         }
       }
@@ -288,16 +284,19 @@ namespace Authenticator {
 
     #endregion
 
-    public AuthConfig() {
-      Version = CurrentVersion;
+    static AuthConfig() {
       AutoSize = true;
       Theme = "Auto";
       NotifyAction = NotifyActions.Notification;
     }
 
+    public AuthConfig() {
+      Version = CurrentVersion;
+    }
+
     public void OnAuthAuthenticatorChanged(AuthAuthenticator sender, AuthAuthenticatorChangedEventArgs e) {
       if (OnConfigChanged != null) {
-        OnConfigChanged(this, new ConfigChangedEventArgs("Authenticator", sender, e));
+        OnConfigChanged(new ConfigChangedEventArgs("Authenticator", sender, e));
       }
     }
 
@@ -306,7 +305,7 @@ namespace Authenticator {
     public object Clone() {
       var clone = (AuthConfig) MemberwiseClone();
       // close the internal authenticator so the data is kept separate
-      clone.OnConfigChanged = null;
+      //clone.OnConfigChanged = null;
       clone.authenticators = new List<AuthAuthenticator>();
       foreach (var wa in authenticators) {
         clone.authenticators.Add(wa.Clone() as AuthAuthenticator);

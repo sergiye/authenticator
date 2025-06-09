@@ -8,7 +8,6 @@ using sergiye.Common;
 
 namespace Authenticator {
   public partial class AboutForm : Form {
-    public AuthConfig Config { get; set; }
 
     public AboutForm() {
       InitializeComponent();
