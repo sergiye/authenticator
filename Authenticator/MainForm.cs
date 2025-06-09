@@ -142,10 +142,10 @@ namespace Authenticator {
       notifyMenu.Renderer = new ThemedToolStripRenderer();
       authenticatorList.ContextMenuStrip.Renderer = new ThemedToolStripRenderer();
       Theme.OnCurrentChecnged += () => {
-        //authenticatorList.ForeColor = Theme.Current.ForegroundColor;
-        //authenticatorList.BackColor = Theme.Current.BackgroundColor;
         authenticatorList.SelectedBackColor = Theme.Current.SelectedBackgroundColor;
         authenticatorList.SelectedForeColor = Theme.Current.SelectedForegroundColor;
+        authenticatorList.CodeColor = Theme.Current.HyperlinkColor;
+        authenticatorList.SelectedCodeColor = Theme.Current.SelectedForegroundColor;
         authenticatorList.PieColor = Theme.Current.StatusErrorColor;
         authenticatorList.LineColor = Theme.Current.LineColor;
         authenticatorList.Invalidate();

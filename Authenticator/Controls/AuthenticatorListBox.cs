@@ -58,6 +58,8 @@ namespace Authenticator {
 
     private Brush backColorBrush;
     private Brush foreColorBrush;
+    private Brush codeBrush;
+    private Brush selectedCodeBrush;
     private Brush selectedBackBrush;
     private Brush selectedForeBrush;
     private Brush pieBrush;
@@ -1150,6 +1152,24 @@ namespace Authenticator {
       }
     }
 
+    public Color CodeColor {
+      get => codeColor;
+      set {
+        if (codeColor != value)
+          codeBrush = new SolidBrush(value);
+        codeColor = value;
+      }
+    }
+
+    public Color SelectedCodeColor {
+      get => selectedCodeColor;
+      set {
+        if (selectedCodeColor != value)
+          selectedCodeBrush = new SolidBrush(value);
+        selectedCodeColor = value;
+      }
+    }
+
     public Color SelectedBackColor {
       get => selectedBackColor;
       set {
@@ -1188,6 +1208,8 @@ namespace Authenticator {
       }
     }
 
+    private Color codeColor = Color.Black;
+    private Color selectedCodeColor = Color.Black;
     private Color selectedBackColor = Color.LightSteelBlue;
     private Color selectedForeColor = Color.LightSteelBlue;
     private Color pieColor = SystemColors.ActiveCaption;
@@ -1198,6 +1220,8 @@ namespace Authenticator {
       foreColorBrush = new SolidBrush(ForeColor);
       selectedBackBrush = new SolidBrush(selectedBackColor);
       selectedForeBrush = new SolidBrush(selectedForeColor);
+      codeBrush = new SolidBrush(codeColor);
+      selectedCodeBrush = new SolidBrush(selectedCodeColor);
       pieBrush = new SolidBrush(pieColor);
       piePen = new Pen(pieColor);
       linePen = new Pen(lineColor);
@@ -1317,7 +1341,10 @@ namespace Authenticator {
           e.Bounds.Y + codeVertShift, 
           (int)codeSize.Width, (int)codeSize.Height);
         if (clipRect.IntersectsWith(rect)) {
-          e.Graphics.DrawString(code, e.Font, foreColorBrush, rect.Location);
+          if (e.State == DrawItemState.Selected)
+            e.Graphics.DrawString(code, e.Font, selectedCodeBrush, rect.Location);
+          else
+            e.Graphics.DrawString(code, e.Font, codeBrush, rect.Location);
         }
       }
 
