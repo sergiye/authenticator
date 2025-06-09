@@ -18,16 +18,6 @@ namespace Authenticator {
 
     private void AddTrionAuthenticator_Load(object sender, EventArgs e) {
       nameField.Text = Authenticator.Name;
-
-      newSerialNumberField.SecretMode = true;
-      newLoginCodeField.SecretMode = true;
-      newRestoreCodeField.SecretMode = true;
-    }
-
-    private void allowCopyNewButton_CheckedChanged(object sender, EventArgs e) {
-      newSerialNumberField.SecretMode = !allowCopyNewButton.Checked;
-      //newLoginCodeField.SecretMode = !allowCopyNewButton.Checked;
-      newRestoreCodeField.SecretMode = !allowCopyNewButton.Checked;
     }
 
     private void newAuthenticatorTimer_Tick(object sender, EventArgs e) {
@@ -175,12 +165,8 @@ namespace Authenticator {
       }
 
       newSerialNumberField.Text = string.Empty;
-      newSerialNumberField.SecretMode = true;
       newLoginCodeField.Text = string.Empty;
-      newLoginCodeField.SecretMode = true;
       newRestoreCodeField.Text = string.Empty;
-      newRestoreCodeField.SecretMode = true;
-      allowCopyNewButton.Checked = false;
 
       restoreEmailField.Text = string.Empty;
       restorePasswordField.Text = string.Empty;

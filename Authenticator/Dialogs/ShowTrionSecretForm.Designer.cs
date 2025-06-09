@@ -19,34 +19,20 @@ namespace Authenticator {
     /// </summary>
     private void InitializeComponent() {
       System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(ShowTrionSecretForm));
-      this.allowCopyCheckBox = new System.Windows.Forms.CheckBox();
-      this.serialNumberField = new SecretTextBox();
+      this.serialNumberField = new VCenteredTextBox();
       this.label1 = new System.Windows.Forms.Label();
-      this.deviceIdField = new SecretTextBox();
+      this.deviceIdField = new VCenteredTextBox();
       this.label2 = new System.Windows.Forms.Label();
       this.label4 = new System.Windows.Forms.Label();
       this.btnClose = new System.Windows.Forms.Button();
       this.SuspendLayout();
-      // 
-      // allowCopyCheckBox
-      // 
-      this.allowCopyCheckBox.AutoSize = true;
-      this.allowCopyCheckBox.Location = new System.Drawing.Point(218, 335);
-      this.allowCopyCheckBox.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
-      this.allowCopyCheckBox.Name = "allowCopyCheckBox";
-      this.allowCopyCheckBox.Size = new System.Drawing.Size(109, 24);
-      this.allowCopyCheckBox.TabIndex = 4;
-      this.allowCopyCheckBox.Text = "Allow copy";
-      this.allowCopyCheckBox.CheckedChanged += new System.EventHandler(this.allowCopyCheckBox_CheckedChanged);
       // 
       // serialNumberField
       // 
       this.serialNumberField.Font = new System.Drawing.Font("Microsoft Sans Serif", 11.25F);
       this.serialNumberField.Location = new System.Drawing.Point(218, 225);
       this.serialNumberField.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
-      this.serialNumberField.Multiline = true;
       this.serialNumberField.Name = "serialNumberField";
-      this.serialNumberField.SecretMode = false;
       this.serialNumberField.Size = new System.Drawing.Size(487, 44);
       this.serialNumberField.SpaceOut = 0;
       this.serialNumberField.TabIndex = 2;
@@ -65,9 +51,7 @@ namespace Authenticator {
       this.deviceIdField.Font = new System.Drawing.Font("Microsoft Sans Serif", 11.25F);
       this.deviceIdField.Location = new System.Drawing.Point(218, 280);
       this.deviceIdField.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
-      this.deviceIdField.Multiline = true;
       this.deviceIdField.Name = "deviceIdField";
-      this.deviceIdField.SecretMode = false;
       this.deviceIdField.Size = new System.Drawing.Size(487, 44);
       this.deviceIdField.SpaceOut = 0;
       this.deviceIdField.TabIndex = 2;
@@ -109,7 +93,6 @@ namespace Authenticator {
       this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
       this.CancelButton = this.btnClose;
       this.ClientSize = new System.Drawing.Size(723, 438);
-      this.Controls.Add(this.allowCopyCheckBox);
       this.Controls.Add(this.btnClose);
       this.Controls.Add(this.serialNumberField);
       this.Controls.Add(this.label1);
@@ -134,10 +117,9 @@ namespace Authenticator {
 
     private Button btnClose;
     private Label label4;
-    private SecretTextBox deviceIdField;
+    private VCenteredTextBox deviceIdField;
     private Label label2;
-    private SecretTextBox serialNumberField;
+    private VCenteredTextBox serialNumberField;
     private Label label1;
-    private CheckBox allowCopyCheckBox;
   }
 }

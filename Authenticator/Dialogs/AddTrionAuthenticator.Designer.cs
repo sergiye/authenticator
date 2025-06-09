@@ -16,7 +16,6 @@ namespace Authenticator {
     private void InitializeComponent() {
       this.components = new System.ComponentModel.Container();
       System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(AddTrionAuthenticator));
-      this.allowCopyNewButton = new System.Windows.Forms.CheckBox();
       this.enrollAuthenticatorButton = new System.Windows.Forms.Button();
       this.label3 = new System.Windows.Forms.Label();
       this.label8 = new System.Windows.Forms.Label();
@@ -47,9 +46,9 @@ namespace Authenticator {
       this.nameField = new System.Windows.Forms.TextBox();
       this.tabControl1 = new System.Windows.Forms.TabControl();
       this.newAuthenticatorTab = new System.Windows.Forms.TabPage();
-      this.newRestoreCodeField = new SecretTextBox();
-      this.newLoginCodeField = new SecretTextBox();
-      this.newSerialNumberField = new SecretTextBox();
+      this.newRestoreCodeField = new VCenteredTextBox();
+      this.newLoginCodeField = new VCenteredTextBox();
+      this.newSerialNumberField = new VCenteredTextBox();
       this.recoverAuthenticatorTab = new System.Windows.Forms.TabPage();
       this.trionAuthenticatorRadioButton = new RadioButton();
       this.iconTrion = new System.Windows.Forms.PictureBox();
@@ -64,16 +63,6 @@ namespace Authenticator {
       ((System.ComponentModel.ISupportInitialize)(this.iconRift)).BeginInit();
       ((System.ComponentModel.ISupportInitialize)(this.iconGlyph)).BeginInit();
       this.SuspendLayout();
-      // 
-      // allowCopyNewButton
-      // 
-      this.allowCopyNewButton.AutoSize = true;
-      this.allowCopyNewButton.Location = new System.Drawing.Point(351, 141);
-      this.allowCopyNewButton.Name = "allowCopyNewButton";
-      this.allowCopyNewButton.Size = new System.Drawing.Size(83, 17);
-      this.allowCopyNewButton.TabIndex = 2;
-      this.allowCopyNewButton.Text = "Allow copy?";
-      this.allowCopyNewButton.CheckedChanged += new System.EventHandler(this.allowCopyNewButton_CheckedChanged);
       // 
       // enrollAuthenticatorButton
       // 
@@ -332,7 +321,6 @@ namespace Authenticator {
       // newAuthenticatorTab
       // 
       this.newAuthenticatorTab.BackColor = System.Drawing.SystemColors.Control;
-      this.newAuthenticatorTab.Controls.Add(this.allowCopyNewButton);
       this.newAuthenticatorTab.Controls.Add(this.enrollAuthenticatorButton);
       this.newAuthenticatorTab.Controls.Add(this.label8);
       this.newAuthenticatorTab.Controls.Add(this.newRestoreCodeField);
@@ -352,9 +340,7 @@ namespace Authenticator {
       // 
       this.newRestoreCodeField.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F);
       this.newRestoreCodeField.Location = new System.Drawing.Point(21, 257);
-      this.newRestoreCodeField.Multiline = true;
       this.newRestoreCodeField.Name = "newRestoreCodeField";
-      this.newRestoreCodeField.SecretMode = false;
       this.newRestoreCodeField.Size = new System.Drawing.Size(324, 26);
       this.newRestoreCodeField.SpaceOut = 0;
       this.newRestoreCodeField.TabIndex = 3;
@@ -363,9 +349,7 @@ namespace Authenticator {
       // 
       this.newLoginCodeField.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F);
       this.newLoginCodeField.Location = new System.Drawing.Point(286, 69);
-      this.newLoginCodeField.Multiline = true;
       this.newLoginCodeField.Name = "newLoginCodeField";
-      this.newLoginCodeField.SecretMode = false;
       this.newLoginCodeField.Size = new System.Drawing.Size(74, 26);
       this.newLoginCodeField.SpaceOut = 4;
       this.newLoginCodeField.TabIndex = 3;
@@ -375,9 +359,7 @@ namespace Authenticator {
       // 
       this.newSerialNumberField.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F);
       this.newSerialNumberField.Location = new System.Drawing.Point(21, 134);
-      this.newSerialNumberField.Multiline = true;
       this.newSerialNumberField.Name = "newSerialNumberField";
-      this.newSerialNumberField.SecretMode = false;
       this.newSerialNumberField.Size = new System.Drawing.Size(324, 26);
       this.newSerialNumberField.SpaceOut = 0;
       this.newSerialNumberField.TabIndex = 1;
@@ -506,13 +488,12 @@ namespace Authenticator {
     #endregion
 
     private Label label1;
-    private SecretTextBox newRestoreCodeField;
-    private SecretTextBox newLoginCodeField;
-    private SecretTextBox newSerialNumberField;
+    private VCenteredTextBox newRestoreCodeField;
+    private VCenteredTextBox newLoginCodeField;
+    private VCenteredTextBox newSerialNumberField;
     private Button enrollAuthenticatorButton;
     private Label label3;
     private Label label2;
-    private CheckBox allowCopyNewButton;
     private Label label7;
     private TextBox restoreDeviceIdField;
     private Label label9;

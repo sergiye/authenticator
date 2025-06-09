@@ -19,8 +19,7 @@ namespace Authenticator {
     /// </summary>
     private void InitializeComponent() {
       System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(ShowSecretKeyForm));
-      this.allowCopyCheckBox = new System.Windows.Forms.CheckBox();
-      this.secretKeyField = new SecretTextBox();
+      this.secretKeyField = new VCenteredTextBox();
       this.qrImage = new System.Windows.Forms.PictureBox();
       this.label4 = new System.Windows.Forms.Label();
       this.btnClose = new System.Windows.Forms.Button();
@@ -28,30 +27,16 @@ namespace Authenticator {
       ((System.ComponentModel.ISupportInitialize) (this.qrImage)).BeginInit();
       this.SuspendLayout();
       // 
-      // allowCopyCheckBox
-      // 
-      this.allowCopyCheckBox.AutoSize = true;
-      this.allowCopyCheckBox.Location = new System.Drawing.Point(18, 272);
-      this.allowCopyCheckBox.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
-      this.allowCopyCheckBox.Name = "allowCopyCheckBox";
-      this.allowCopyCheckBox.Size = new System.Drawing.Size(109, 24);
-      this.allowCopyCheckBox.TabIndex = 5;
-      this.allowCopyCheckBox.Text = "Allow copy";
-      this.allowCopyCheckBox.CheckedChanged += new System.EventHandler(this.allowCopyCheckBox_CheckedChanged);
-      // 
       // secretKeyField
       // 
       this.secretKeyField.Anchor = ((System.Windows.Forms.AnchorStyles) (((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) | System.Windows.Forms.AnchorStyles.Right)));
       this.secretKeyField.Font = new System.Drawing.Font("Microsoft Sans Serif", 11.25F);
       this.secretKeyField.Location = new System.Drawing.Point(18, 186);
       this.secretKeyField.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
-      this.secretKeyField.Multiline = true;
       this.secretKeyField.Name = "secretKeyField";
-      this.secretKeyField.SecretMode = false;
       this.secretKeyField.Size = new System.Drawing.Size(619, 75);
-      this.secretKeyField.SpaceOut = 0;
+      this.secretKeyField.SpaceOut = 4;
       this.secretKeyField.TabIndex = 2;
-      this.secretKeyField.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
       // 
       // qrImage
       // 
@@ -104,7 +89,6 @@ namespace Authenticator {
       this.BackColor = System.Drawing.SystemColors.Window;
       this.CancelButton = this.btnClose;
       this.ClientSize = new System.Drawing.Size(657, 714);
-      this.Controls.Add(this.allowCopyCheckBox);
       this.Controls.Add(this.btnClose);
       this.Controls.Add(this.secretKeyField);
       this.Controls.Add(this.qrImage);
@@ -128,9 +112,8 @@ namespace Authenticator {
 
     private System.Windows.Forms.Button btnClose;
     private Label label4;
-    private SecretTextBox secretKeyField;
+    private VCenteredTextBox secretKeyField;
     private System.Windows.Forms.PictureBox qrImage;
-    private CheckBox allowCopyCheckBox;
     private Label metroLabel1;
   }
 }

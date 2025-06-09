@@ -62,9 +62,9 @@ namespace Authenticator
       this.nameField = new System.Windows.Forms.TextBox();
       this.tabControl1 = new System.Windows.Forms.TabControl();
       this.tabPage1 = new System.Windows.Forms.TabPage();
-      this.newRestoreCodeField = new SecretTextBox();
-      this.newLoginCodeField = new SecretTextBox();
-      this.newSerialNumberField = new SecretTextBox();
+      this.newRestoreCodeField = new VCenteredTextBox();
+      this.newLoginCodeField = new VCenteredTextBox();
+      this.newSerialNumberField = new VCenteredTextBox();
       this.restoreAuthenticatorTab = new System.Windows.Forms.TabPage();
       this.importAuthenticatorTab = new System.Windows.Forms.TabPage();
       this.label13 = new System.Windows.Forms.Label();
@@ -386,9 +386,7 @@ namespace Authenticator
       // 
       this.newRestoreCodeField.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F);
       this.newRestoreCodeField.Location = new System.Drawing.Point(126, 257);
-      this.newRestoreCodeField.Multiline = true;
       this.newRestoreCodeField.Name = "newRestoreCodeField";
-      this.newRestoreCodeField.SecretMode = false;
       this.newRestoreCodeField.Size = new System.Drawing.Size(158, 26);
       this.newRestoreCodeField.SpaceOut = 2;
       this.newRestoreCodeField.TabIndex = 4;
@@ -397,9 +395,7 @@ namespace Authenticator
       // 
       this.newLoginCodeField.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F);
       this.newLoginCodeField.Location = new System.Drawing.Point(126, 218);
-      this.newLoginCodeField.Multiline = true;
       this.newLoginCodeField.Name = "newLoginCodeField";
-      this.newLoginCodeField.SecretMode = false;
       this.newLoginCodeField.Size = new System.Drawing.Size(158, 26);
       this.newLoginCodeField.SpaceOut = 4;
       this.newLoginCodeField.TabIndex = 3;
@@ -408,9 +404,7 @@ namespace Authenticator
       // 
       this.newSerialNumberField.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F);
       this.newSerialNumberField.Location = new System.Drawing.Point(126, 189);
-      this.newSerialNumberField.Multiline = true;
       this.newSerialNumberField.Name = "newSerialNumberField";
-      this.newSerialNumberField.SecretMode = false;
       this.newSerialNumberField.Size = new System.Drawing.Size(158, 26);
       this.newSerialNumberField.SpaceOut = 0;
       this.newSerialNumberField.TabIndex = 1;
@@ -510,10 +504,10 @@ namespace Authenticator
 		#endregion
 
 		private Label newLabel1;
-		private SecretTextBox newRestoreCodeField;
-		private SecretTextBox newLoginCodeField;
+		private VCenteredTextBox newRestoreCodeField;
+		private VCenteredTextBox newLoginCodeField;
 		private Label label6;
-		private SecretTextBox newSerialNumberField;
+		private VCenteredTextBox newSerialNumberField;
 		private Label label5;
 		private Button enrollAuthenticatorButton;
 		private Label label4;

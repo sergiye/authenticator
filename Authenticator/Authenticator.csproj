@@ -80,114 +80,74 @@
     <Compile Include="Classes\SingleGlobalInstance.cs" />
     <Compile Include="Classes\TrionAuthenticator.cs" />
     <Compile Include="Classes\WinAPI.cs" />
-    <Compile Include="Controls\AuthenticatorListBox.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="Controls\SecretTextBox.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="Dialogs\AboutForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
+    <Compile Include="Controls\AuthenticatorListBox.cs" SubType="Component" />
+    <Compile Include="Controls\VCenteredTextBox.cs" SubType="Component" />
+    <Compile Include="Dialogs\AboutForm.cs" SubType="Form" />
     <Compile Include="Dialogs\AboutForm.Designer.cs">
       <DependentUpon>AboutForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="Dialogs\AddAuthenticator.cs">
-      <SubType>Form</SubType>
-    </Compile>
+    <Compile Include="Dialogs\AddAuthenticator.cs" SubType="Form" />
     <Compile Include="Dialogs\AddAuthenticator.designer.cs">
       <DependentUpon>AddAuthenticator.cs</DependentUpon>
     </Compile>
-    <Compile Include="Dialogs\AddBattleNetAuthenticator.cs">
-      <SubType>Form</SubType>
-    </Compile>
+    <Compile Include="Dialogs\AddBattleNetAuthenticator.cs" SubType="Form" />
     <Compile Include="Dialogs\AddBattleNetAuthenticator.Designer.cs">
       <DependentUpon>AddBattleNetAuthenticator.cs</DependentUpon>
     </Compile>
-    <Compile Include="Dialogs\AddGuildWarsAuthenticator.cs">
-      <SubType>Form</SubType>
-    </Compile>
+    <Compile Include="Dialogs\AddGuildWarsAuthenticator.cs" SubType="Form" />
     <Compile Include="Dialogs\AddGuildWarsAuthenticator.designer.cs">
       <DependentUpon>AddGuildWarsAuthenticator.cs</DependentUpon>
     </Compile>
-    <Compile Include="Dialogs\AddMicrosoftAuthenticator.cs">
-      <SubType>Form</SubType>
-    </Compile>
+    <Compile Include="Dialogs\AddMicrosoftAuthenticator.cs" SubType="Form" />
     <Compile Include="Dialogs\AddMicrosoftAuthenticator.designer.cs">
       <DependentUpon>AddMicrosoftAuthenticator.cs</DependentUpon>
     </Compile>
-    <Compile Include="Dialogs\AddOktaVerifyAuthenticator.cs">
-      <SubType>Form</SubType>
-    </Compile>
+    <Compile Include="Dialogs\AddOktaVerifyAuthenticator.cs" SubType="Form" />
     <Compile Include="Dialogs\AddOktaVerifyAuthenticator.Designer.cs">
       <DependentUpon>AddOktaVerifyAuthenticator.cs</DependentUpon>
     </Compile>
-    <Compile Include="Dialogs\AddTrionAuthenticator.cs">
-      <SubType>Form</SubType>
-    </Compile>
+    <Compile Include="Dialogs\AddTrionAuthenticator.cs" SubType="Form" />
     <Compile Include="Dialogs\AddTrionAuthenticator.designer.cs">
       <DependentUpon>AddTrionAuthenticator.cs</DependentUpon>
     </Compile>
-    <Compile Include="Dialogs\ChangePasswordForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
+    <Compile Include="Dialogs\ChangePasswordForm.cs" SubType="Form" />
     <Compile Include="Dialogs\ChangePasswordForm.Designer.cs">
       <DependentUpon>ChangePasswordForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="Dialogs\ExceptionForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
+    <Compile Include="Dialogs\ExceptionForm.cs" SubType="Form" />
     <Compile Include="Dialogs\ExceptionForm.designer.cs">
       <DependentUpon>ExceptionForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="Dialogs\ExportForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
+    <Compile Include="Dialogs\ExportForm.cs" SubType="Form" />
     <Compile Include="Dialogs\ExportForm.Designer.cs">
       <DependentUpon>ExportForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="Dialogs\GetPasswordForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
+    <Compile Include="Dialogs\GetPasswordForm.cs" SubType="Form" />
     <Compile Include="Dialogs\GetPasswordForm.designer.cs">
       <DependentUpon>GetPasswordForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="Dialogs\GetPGPKeyForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
+    <Compile Include="Dialogs\GetPGPKeyForm.cs" SubType="Form" />
     <Compile Include="Dialogs\GetPGPKeyForm.designer.cs">
       <DependentUpon>GetPGPKeyForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="Dialogs\SetPasswordForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
+    <Compile Include="Dialogs\SetPasswordForm.cs" SubType="Form" />
     <Compile Include="Dialogs\SetPasswordForm.Designer.cs">
       <DependentUpon>SetPasswordForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="Dialogs\ShowRestoreCodeForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
+    <Compile Include="Dialogs\ShowRestoreCodeForm.cs" SubType="Form" />
     <Compile Include="Dialogs\ShowRestoreCodeForm.designer.cs">
       <DependentUpon>ShowRestoreCodeForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="Dialogs\ShowSecretKeyForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
+    <Compile Include="Dialogs\ShowSecretKeyForm.cs" SubType="Form" />
     <Compile Include="Dialogs\ShowSecretKeyForm.designer.cs">
       <DependentUpon>ShowSecretKeyForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="Dialogs\ShowTrionSecretForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
+    <Compile Include="Dialogs\ShowTrionSecretForm.cs" SubType="Form" />
     <Compile Include="Dialogs\ShowTrionSecretForm.designer.cs">
       <DependentUpon>ShowTrionSecretForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="Dialogs\SnippingTool.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Dialogs\UnprotectPasswordForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
+    <Compile Include="Dialogs\SnippingTool.cs" SubType="Form" />
+    <Compile Include="Dialogs\UnprotectPasswordForm.cs" SubType="Form" />
     <Compile Include="Dialogs\UnprotectPasswordForm.designer.cs">
       <DependentUpon>UnprotectPasswordForm.cs</DependentUpon>
     </Compile>
@@ -196,9 +156,7 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
-    <Compile Include="MainForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
+    <Compile Include="MainForm.cs" SubType="Form" />
     <Compile Include="MainForm.Designer.cs">
       <DependentUpon>MainForm.cs</DependentUpon>
     </Compile>

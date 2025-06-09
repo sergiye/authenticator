@@ -29,7 +29,7 @@ namespace Authenticator {
       this.step2Label = new System.Windows.Forms.Label();
       this.verifyButton = new System.Windows.Forms.Button();
       this.codeProgress = new System.Windows.Forms.ProgressBar();
-      this.codeField = new SecretTextBox();
+      this.codeField = new VCenteredTextBox();
       this.step4Label = new System.Windows.Forms.Label();
       this.timer = new System.Windows.Forms.Timer(this.components);
       this.step3Label = new System.Windows.Forms.Label();
@@ -45,6 +45,7 @@ namespace Authenticator {
       this.digitsLabel = new System.Windows.Forms.Label();
       this.intervalLabelPost = new System.Windows.Forms.Label();
       this.getFromScreenButton = new System.Windows.Forms.Button();
+      this.btnBrowse = new System.Windows.Forms.Button();
       this.SuspendLayout();
       // 
       // secretCodeField
@@ -54,7 +55,7 @@ namespace Authenticator {
       this.secretCodeField.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
       this.secretCodeField.Location = new System.Drawing.Point(11, 54);
       this.secretCodeField.Name = "secretCodeField";
-      this.secretCodeField.Size = new System.Drawing.Size(417, 26);
+      this.secretCodeField.Size = new System.Drawing.Size(393, 26);
       this.secretCodeField.TabIndex = 1;
       this.secretCodeField.Leave += new System.EventHandler(this.secretCodeField_Leave);
       // 
@@ -140,9 +141,7 @@ namespace Authenticator {
       // 
       this.codeField.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F);
       this.codeField.Location = new System.Drawing.Point(135, 392);
-      this.codeField.Multiline = true;
       this.codeField.Name = "codeField";
-      this.codeField.SecretMode = false;
       this.codeField.Size = new System.Drawing.Size(158, 26);
       this.codeField.SpaceOut = 3;
       this.codeField.TabIndex = 18;
@@ -283,6 +282,15 @@ namespace Authenticator {
       this.getFromScreenButton.Text = "Capture screen area...";
       this.getFromScreenButton.Click += new System.EventHandler(this.getFromScreenButton_Click);
       // 
+      // btnBrowse
+      // 
+      this.btnBrowse.Location = new System.Drawing.Point(404, 54);
+      this.btnBrowse.Name = "btnBrowse";
+      this.btnBrowse.Size = new System.Drawing.Size(24, 23);
+      this.btnBrowse.TabIndex = 2;
+      this.btnBrowse.Text = "...";
+      this.btnBrowse.Click += new System.EventHandler(this.btnBrowse_Click);
+      // 
       // AddAuthenticator
       // 
       this.AcceptButton = this.okButton;
@@ -291,6 +299,7 @@ namespace Authenticator {
       this.BackColor = System.Drawing.SystemColors.Window;
       this.CancelButton = this.cancelButton;
       this.ClientSize = new System.Drawing.Size(441, 523);
+      this.Controls.Add(this.btnBrowse);
       this.Controls.Add(this.getFromScreenButton);
       this.Controls.Add(this.counterField);
       this.Controls.Add(this.hashField);
@@ -334,12 +343,13 @@ namespace Authenticator {
     private System.Windows.Forms.Button okButton;
     private System.Windows.Forms.Button cancelButton;
     private System.Windows.Forms.TextBox secretCodeField;
+    private Button btnBrowse;
     private System.Windows.Forms.Label nameLabel;
     private System.Windows.Forms.TextBox nameField;
     private System.Windows.Forms.Label step2Label;
     private Button verifyButton;
     private System.Windows.Forms.ProgressBar codeProgress;
-    private SecretTextBox codeField;
+    private VCenteredTextBox codeField;
     private System.Windows.Forms.Label step4Label;
     private System.Windows.Forms.Timer timer;
     private Label step3Label;

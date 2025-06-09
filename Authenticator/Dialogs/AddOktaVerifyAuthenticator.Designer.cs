@@ -17,7 +17,7 @@ namespace Authenticator {
       this.components = new System.ComponentModel.Container();
       System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(AddOktaVerifyAuthenticator));
       this.newAuthenticatorProgress = new System.Windows.Forms.ProgressBar();
-      this.codeField = new SecretTextBox();
+      this.codeField = new VCenteredTextBox();
       this.verifyAuthenticatorButton = new System.Windows.Forms.Button();
       this.secretCodeField = new System.Windows.Forms.TextBox();
       this.setupLabel = new System.Windows.Forms.Label();
@@ -52,9 +52,7 @@ namespace Authenticator {
       // 
       this.codeField.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F);
       this.codeField.Location = new System.Drawing.Point(15, 323);
-      this.codeField.Multiline = true;
       this.codeField.Name = "codeField";
-      this.codeField.SecretMode = false;
       this.codeField.Size = new System.Drawing.Size(158, 26);
       this.codeField.SpaceOut = 3;
       this.codeField.TabIndex = 0;
@@ -241,7 +239,7 @@ namespace Authenticator {
     private TextBox nameField;
     private Button verifyAuthenticatorButton;
     private System.Windows.Forms.ProgressBar newAuthenticatorProgress;
-    private SecretTextBox codeField;
+    private VCenteredTextBox codeField;
     private System.Windows.Forms.Timer newAuthenticatorTimer;
     private RadioButton iconRadioButton;
     private Label step8Label;

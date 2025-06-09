@@ -33,8 +33,7 @@ namespace Authenticator
       this.components = new System.ComponentModel.Container();
       System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(AddMicrosoftAuthenticator));
       this.newAuthenticatorProgress = new System.Windows.Forms.ProgressBar();
-      this.allowCopyButton = new System.Windows.Forms.CheckBox();
-      this.codeField = new SecretTextBox();
+      this.codeField = new VCenteredTextBox();
       this.verifyAuthenticatorButton = new System.Windows.Forms.Button();
       this.secretCodeField = new System.Windows.Forms.TextBox();
       this.label3 = new System.Windows.Forms.Label();
@@ -70,23 +69,11 @@ namespace Authenticator
       this.newAuthenticatorProgress.Value = 1;
       this.newAuthenticatorProgress.Visible = false;
       // 
-      // allowCopyButton
-      // 
-      this.allowCopyButton.AutoSize = true;
-      this.allowCopyButton.Location = new System.Drawing.Point(251, 368);
-      this.allowCopyButton.Name = "allowCopyButton";
-      this.allowCopyButton.Size = new System.Drawing.Size(83, 17);
-      this.allowCopyButton.TabIndex = 6;
-      this.allowCopyButton.Text = "Allow copy?";
-      this.allowCopyButton.CheckedChanged += new System.EventHandler(this.allowCopyButton_CheckedChanged);
-      // 
       // codeField
       // 
       this.codeField.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F);
       this.codeField.Location = new System.Drawing.Point(87, 361);
-      this.codeField.Multiline = true;
       this.codeField.Name = "codeField";
-      this.codeField.SecretMode = false;
       this.codeField.Size = new System.Drawing.Size(158, 26);
       this.codeField.SpaceOut = 3;
       this.codeField.TabIndex = 8;
@@ -270,7 +257,6 @@ namespace Authenticator
       this.Controls.Add(this.newAuthenticatorProgress);
       this.Controls.Add(this.icon2RadioButton);
       this.Controls.Add(this.icon1RadioButton);
-      this.Controls.Add(this.allowCopyButton);
       this.Controls.Add(this.icon3);
       this.Controls.Add(this.cancelButton);
       this.Controls.Add(this.icon2);
@@ -316,8 +302,7 @@ namespace Authenticator
 		private Button verifyAuthenticatorButton;
 		private Label step9Label;
 		private System.Windows.Forms.ProgressBar newAuthenticatorProgress;
-		private CheckBox allowCopyButton;
-		private SecretTextBox codeField;
+		private VCenteredTextBox codeField;
 		private Label label3;
 		private System.Windows.Forms.Timer newAuthenticatorTimer;
 		private System.Windows.Forms.PictureBox icon3;

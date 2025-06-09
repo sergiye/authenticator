@@ -17,9 +17,6 @@ namespace Authenticator {
     private void ShowRestoreCodeForm_Load(object sender, EventArgs e) {
       var authenticator = CurrentAuthenticator.AuthenticatorData as BattleNetAuthenticator;
 
-      serialNumberField.SecretMode = true;
-      restoreCodeField.SecretMode = true;
-
       serialNumberField.Text = authenticator.Serial;
       restoreCodeField.Text = authenticator.RestoreCode;
 
@@ -60,11 +57,6 @@ namespace Authenticator {
       catch (Exception ex2) {
         e.Result = "Oops. An error (" + ex2.Message + ") occured while validating your restore code.";
       }
-    }
-
-    private void allowCopyCheckBox_CheckedChanged(object sender, EventArgs e) {
-      serialNumberField.SecretMode = !allowCopyCheckBox.Checked;
-      restoreCodeField.SecretMode = !allowCopyCheckBox.Checked;
     }
   }
 }

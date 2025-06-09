@@ -19,28 +19,19 @@ namespace Authenticator {
 
     private void AddBattleNetAuthenticator_Load(object sender, EventArgs e) {
       nameField.Text = Authenticator.Name;
-
-      newSerialNumberField.SecretMode = true;
-      newLoginCodeField.SecretMode = true;
-      newRestoreCodeField.SecretMode = true;
     }
 
     private void allowCopyNewButton_CheckedChanged(object sender, EventArgs e) {
-      newSerialNumberField.SecretMode = !allowCopyNewButton.Checked;
 
-      if (Authenticator != null && Authenticator.AuthenticatorData != null) {
+      if (Authenticator?.AuthenticatorData is BattleNetAuthenticator battleNetAuthenticator) {
         // Issue#122: remove dashes if copyable so can be pasted into Battle.net form
         if (allowCopyNewButton.Checked) {
-          newSerialNumberField.Text =
-            ((BattleNetAuthenticator) Authenticator.AuthenticatorData).Serial.Replace("-", "");
+          newSerialNumberField.Text = battleNetAuthenticator.Serial.Replace("-", "");
         }
         else {
-          newSerialNumberField.Text = ((BattleNetAuthenticator) Authenticator.AuthenticatorData).Serial;
+          newSerialNumberField.Text = battleNetAuthenticator.Serial;
         }
       }
-
-      newLoginCodeField.SecretMode = !allowCopyNewButton.Checked;
-      newRestoreCodeField.SecretMode = !allowCopyNewButton.Checked;
     }
 
     private void newAuthenticatorTimer_Tick(object sender, EventArgs e) {
@@ -193,11 +184,8 @@ namespace Authenticator {
       newAuthenticatorProgress.Visible = false;
       newAuthenticatorTimer.Enabled = false;
       newSerialNumberField.Text = string.Empty;
-      newSerialNumberField.SecretMode = true;
       newLoginCodeField.Text = string.Empty;
-      newLoginCodeField.SecretMode = true;
       newRestoreCodeField.Text = string.Empty;
-      newRestoreCodeField.SecretMode = true;
       allowCopyNewButton.Checked = false;
 
       restoreSerialNumberField.Text = string.Empty;

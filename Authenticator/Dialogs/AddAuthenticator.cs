@@ -24,7 +24,7 @@ namespace Authenticator {
 
     protected override void OnLoad(EventArgs e) {
       base.OnLoad(e);
-      getFromScreenButton_Click(this, EventArgs.Empty);
+      //getFromScreenButton_Click(this, EventArgs.Empty);
     }
 
     public AuthAuthenticator Authenticator { get; set; }
@@ -35,7 +35,6 @@ namespace Authenticator {
 
     private void AddAuthenticator_Load(object sender, EventArgs e) {
       nameField.Text = Authenticator.Name;
-      codeField.SecretMode = true;
       hashField.Items.Clear();
       hashField.Items.AddRange(Enum.GetNames(typeof(Authenticator.HmacTypes)));
       hashField.SelectedIndex = 0;
@@ -166,7 +165,7 @@ namespace Authenticator {
       var privateKey = secretCodeField.Text.Trim();
 
       if (privateKey.Length == 0) {
-        MainForm.ErrorDialog(Owner, "Please enter the Secret Code");
+        //MainForm.ErrorDialog(Owner, "Please enter the Secret Code");
         return false;
       }
 
@@ -419,5 +418,23 @@ namespace Authenticator {
     }
 
     #endregion
+
+    private void btnBrowse_Click(object sender, EventArgs e) {
+      var dlg = new OpenFileDialog {
+        AddExtension = true,
+        CheckFileExists = true,
+        DefaultExt = "png",
+        //InitialDirectory = Directory.GetCurrentDirectory(),
+        FileName = string.Empty,
+        Filter = "PNG Image Files (*.png)|*.png|GIF Image Files (*.gif)|*.gif|All Files (*.*)|*.*",
+        RestoreDirectory = true,
+        ShowReadOnly = false,
+        Title = "Load from Image"
+      };
+      if (dlg.ShowDialog(this) != DialogResult.OK)
+        return;
+      secretCodeField.Text = dlg.FileName;
+      VerifyAuthenticator(true);
+    }
   }
 }

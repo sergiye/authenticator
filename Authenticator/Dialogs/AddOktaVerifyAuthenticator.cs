@@ -23,7 +23,6 @@ namespace Authenticator {
 
     private void AddOktaVerifyAuthenticator_Load(object sender, EventArgs e) {
       nameField.Text = Authenticator.Name;
-      codeField.SecretMode = true;
     }
 
     private void newAuthenticatorTimer_Tick(object sender, EventArgs e) {

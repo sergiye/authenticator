@@ -23,7 +23,6 @@ namespace Authenticator {
 
     private void AddMicrosoftAuthenticator_Load(object sender, EventArgs e) {
       nameField.Text = Authenticator.Name;
-      codeField.SecretMode = true;
       Authenticator.Skin = (string) icon1RadioButton.Tag;
     }
 
@@ -35,10 +34,6 @@ namespace Authenticator {
           codeField.Text = Authenticator.AuthenticatorData.CurrentCode;
         }
       }
-    }
-
-    private void allowCopyButton_CheckedChanged(object sender, EventArgs e) {
-      codeField.SecretMode = !allowCopyButton.Checked;
     }
 
     private void verifyAuthenticatorButton_Click(object sender, EventArgs e) {
