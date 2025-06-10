@@ -34,7 +34,6 @@ namespace Authenticator {
       this.pictureBox1 = new System.Windows.Forms.PictureBox();
       this.mainMenu = new System.Windows.Forms.MenuStrip();
       this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-      this.addToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
       this.optionsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
       this.helpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
       this.authenticatorMenu.SuspendLayout();
@@ -181,7 +180,6 @@ namespace Authenticator {
       this.mainMenu.BackColor = System.Drawing.SystemColors.Window;
       this.mainMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.fileToolStripMenuItem,
-            this.addToolStripMenuItem,
             this.optionsToolStripMenuItem,
             this.helpToolStripMenuItem});
       this.mainMenu.Location = new System.Drawing.Point(0, 0);
@@ -195,12 +193,6 @@ namespace Authenticator {
       this.fileToolStripMenuItem.Name = "fileToolStripMenuItem";
       this.fileToolStripMenuItem.Size = new System.Drawing.Size(37, 20);
       this.fileToolStripMenuItem.Text = "File";
-      // 
-      // addToolStripMenuItem
-      // 
-      this.addToolStripMenuItem.Name = "addToolStripMenuItem";
-      this.addToolStripMenuItem.Size = new System.Drawing.Size(41, 20);
-      this.addToolStripMenuItem.Text = "Add";
       // 
       // optionsToolStripMenuItem
       // 
@@ -227,6 +219,7 @@ namespace Authenticator {
       this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
       this.MainMenuStrip = this.mainMenu;
       this.MaximizeBox = false;
+      this.MinimizeBox = false;
       this.Name = "MainForm";
       this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
       this.Text = "Authenticator";
@@ -263,7 +256,6 @@ namespace Authenticator {
     private System.Windows.Forms.PictureBox pictureBox1;
     private MenuStrip mainMenu;
     private ToolStripMenuItem fileToolStripMenuItem;
-    private ToolStripMenuItem addToolStripMenuItem;
     private ToolStripMenuItem optionsToolStripMenuItem;
     private ToolStripMenuItem helpToolStripMenuItem;
   }

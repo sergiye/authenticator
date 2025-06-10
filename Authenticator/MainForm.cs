@@ -19,6 +19,7 @@ namespace Authenticator {
 
     public AuthConfig Config { get; set; }
 
+    private ToolStripMenuItem addToolStripMenuItem;
     private ToolStripMenuItem themeMenuItem;
     private ToolStripMenuItem importMenuItem;
     private readonly Timer passwordTimer;
@@ -968,6 +969,8 @@ namespace Authenticator {
 #endif
 
       //File section
+      addToolStripMenuItem = AuthHelper.AddMenuItem(fileToolStripMenuItem.DropDownItems, "Add");
+      AuthHelper.AddMenuItem(fileToolStripMenuItem.DropDownItems);
       AuthHelper.AddMenuItem(fileToolStripMenuItem.DropDownItems, "Export", "exportOptionsMenuItem", exportOptionsMenuItem_Click, Keys.Control | Keys.E);
       importMenuItem = AuthHelper.AddMenuItem(fileToolStripMenuItem.DropDownItems, "Import", onClick: importTextMenu_Click, shortcut: Keys.Control | Keys.I);
 
