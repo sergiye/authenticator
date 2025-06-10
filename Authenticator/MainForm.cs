@@ -137,20 +137,24 @@ namespace Authenticator {
 
     #region themes
 
+    private void OnThemeCurrentChecnged() {
+      authenticatorList.SelectedBackColor = Theme.Current.SelectedBackgroundColor;
+      authenticatorList.SelectedForeColor = Theme.Current.SelectedForegroundColor;
+      authenticatorList.CodeColor = Theme.Current.HyperlinkColor;
+      authenticatorList.SelectedCodeColor = Theme.Current.SelectedForegroundColor;
+      authenticatorList.PieColor = Theme.Current.WarnColor;
+      authenticatorList.LineColor = Theme.Current.LineColor;
+      authenticatorList.Invalidate();
+    }
+
     private void InitializeTheme() {
 
       mainMenu.Renderer = new ThemedToolStripRenderer();
       notifyMenu.Renderer = new ThemedToolStripRenderer();
       authenticatorList.ContextMenuStrip.Renderer = new ThemedToolStripRenderer();
-      Theme.OnCurrentChecnged += () => {
-        authenticatorList.SelectedBackColor = Theme.Current.SelectedBackgroundColor;
-        authenticatorList.SelectedForeColor = Theme.Current.SelectedForegroundColor;
-        authenticatorList.CodeColor = Theme.Current.HyperlinkColor;
-        authenticatorList.SelectedCodeColor = Theme.Current.SelectedForegroundColor;
-        authenticatorList.PieColor = Theme.Current.StatusErrorColor;
-        authenticatorList.LineColor = Theme.Current.LineColor;
-        authenticatorList.Invalidate();
-      };
+      Theme.OnCurrentChecnged -= OnThemeCurrentChecnged;
+      OnThemeCurrentChecnged(); //apply current theme colors
+      Theme.OnCurrentChecnged += OnThemeCurrentChecnged;
 
       if (Theme.SupportsAutoThemeSwitching()) {
         var autoThemeMenuItem = new ToolStripRadioButtonMenuItem("Auto");
