@@ -19,9 +19,9 @@ namespace Authenticator {
     /// </summary>
     private void InitializeComponent() {
       System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(ShowTrionSecretForm));
-      this.serialNumberField = new VCenteredTextBox();
+      this.serialNumberField = new sergiye.Common.VCenteredTextBox();
       this.label1 = new System.Windows.Forms.Label();
-      this.deviceIdField = new VCenteredTextBox();
+      this.deviceIdField = new sergiye.Common.VCenteredTextBox();
       this.label2 = new System.Windows.Forms.Label();
       this.label4 = new System.Windows.Forms.Label();
       this.btnClose = new System.Windows.Forms.Button();
@@ -117,9 +117,9 @@ namespace Authenticator {
 
     private Button btnClose;
     private Label label4;
-    private VCenteredTextBox deviceIdField;
+    private sergiye.Common.VCenteredTextBox deviceIdField;
     private Label label2;
-    private VCenteredTextBox serialNumberField;
+    private sergiye.Common.VCenteredTextBox serialNumberField;
     private Label label1;
   }
 }

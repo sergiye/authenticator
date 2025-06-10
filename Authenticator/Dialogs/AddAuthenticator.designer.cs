@@ -29,7 +29,7 @@ namespace Authenticator {
       this.step2Label = new System.Windows.Forms.Label();
       this.verifyButton = new System.Windows.Forms.Button();
       this.codeProgress = new System.Windows.Forms.ProgressBar();
-      this.codeField = new VCenteredTextBox();
+      this.codeField = new sergiye.Common.VCenteredTextBox();
       this.step4Label = new System.Windows.Forms.Label();
       this.timer = new System.Windows.Forms.Timer(this.components);
       this.step3Label = new System.Windows.Forms.Label();
@@ -349,7 +349,7 @@ namespace Authenticator {
     private System.Windows.Forms.Label step2Label;
     private Button verifyButton;
     private System.Windows.Forms.ProgressBar codeProgress;
-    private VCenteredTextBox codeField;
+    private sergiye.Common.VCenteredTextBox codeField;
     private System.Windows.Forms.Label step4Label;
     private System.Windows.Forms.Timer timer;
     private Label step3Label;

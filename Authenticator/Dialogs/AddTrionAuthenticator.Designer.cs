@@ -46,9 +46,9 @@ namespace Authenticator {
       this.nameField = new System.Windows.Forms.TextBox();
       this.tabControl1 = new System.Windows.Forms.TabControl();
       this.newAuthenticatorTab = new System.Windows.Forms.TabPage();
-      this.newRestoreCodeField = new VCenteredTextBox();
-      this.newLoginCodeField = new VCenteredTextBox();
-      this.newSerialNumberField = new VCenteredTextBox();
+      this.newRestoreCodeField = new sergiye.Common.VCenteredTextBox();
+      this.newLoginCodeField = new sergiye.Common.VCenteredTextBox();
+      this.newSerialNumberField = new sergiye.Common.VCenteredTextBox();
       this.recoverAuthenticatorTab = new System.Windows.Forms.TabPage();
       this.trionAuthenticatorRadioButton = new RadioButton();
       this.iconTrion = new System.Windows.Forms.PictureBox();
@@ -488,9 +488,9 @@ namespace Authenticator {
     #endregion
 
     private Label label1;
-    private VCenteredTextBox newRestoreCodeField;
-    private VCenteredTextBox newLoginCodeField;
-    private VCenteredTextBox newSerialNumberField;
+    private sergiye.Common.VCenteredTextBox newRestoreCodeField;
+    private sergiye.Common.VCenteredTextBox newLoginCodeField;
+    private sergiye.Common.VCenteredTextBox newSerialNumberField;
     private Button enrollAuthenticatorButton;
     private Label label3;
     private Label label2;

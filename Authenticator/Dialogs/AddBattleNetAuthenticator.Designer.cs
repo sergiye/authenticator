@@ -62,9 +62,9 @@ namespace Authenticator
       this.nameField = new System.Windows.Forms.TextBox();
       this.tabControl1 = new System.Windows.Forms.TabControl();
       this.tabPage1 = new System.Windows.Forms.TabPage();
-      this.newRestoreCodeField = new VCenteredTextBox();
-      this.newLoginCodeField = new VCenteredTextBox();
-      this.newSerialNumberField = new VCenteredTextBox();
+      this.newRestoreCodeField = new sergiye.Common.VCenteredTextBox();
+      this.newLoginCodeField = new sergiye.Common.VCenteredTextBox();
+      this.newSerialNumberField = new sergiye.Common.VCenteredTextBox();
       this.restoreAuthenticatorTab = new System.Windows.Forms.TabPage();
       this.importAuthenticatorTab = new System.Windows.Forms.TabPage();
       this.label13 = new System.Windows.Forms.Label();
@@ -504,10 +504,10 @@ namespace Authenticator
 		#endregion
 
 		private Label newLabel1;
-		private VCenteredTextBox newRestoreCodeField;
-		private VCenteredTextBox newLoginCodeField;
+		private sergiye.Common.VCenteredTextBox newRestoreCodeField;
+		private sergiye.Common.VCenteredTextBox newLoginCodeField;
 		private Label label6;
-		private VCenteredTextBox newSerialNumberField;
+		private sergiye.Common.VCenteredTextBox newSerialNumberField;
 		private Label label5;
 		private Button enrollAuthenticatorButton;
 		private Label label4;

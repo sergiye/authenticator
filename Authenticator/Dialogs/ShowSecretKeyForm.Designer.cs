@@ -19,7 +19,7 @@ namespace Authenticator {
     /// </summary>
     private void InitializeComponent() {
       System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(ShowSecretKeyForm));
-      this.secretKeyField = new VCenteredTextBox();
+      this.secretKeyField = new sergiye.Common.VCenteredTextBox();
       this.qrImage = new System.Windows.Forms.PictureBox();
       this.label4 = new System.Windows.Forms.Label();
       this.btnClose = new System.Windows.Forms.Button();
@@ -112,7 +112,7 @@ namespace Authenticator {
 
     private System.Windows.Forms.Button btnClose;
     private Label label4;
-    private VCenteredTextBox secretKeyField;
+    private sergiye.Common.VCenteredTextBox secretKeyField;
     private System.Windows.Forms.PictureBox qrImage;
     private Label metroLabel1;
   }

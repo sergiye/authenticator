@@ -17,10 +17,19 @@ Authenticator provides an alternative solution to combine various two-factor aut
 It works with counter or time-based RFC 6238 authenticators and common implementations, such as the Google Authenticator.
 
 ----
-## UI example 
+## What does it look like?
 
-[<img src="https://github.com/sergiye/authenticator/raw/master/preview.png" alt="preview" width="300"/>](https://github.com/sergiye/authenticator/releases)
+Here's a preview of the app's UI running on Windows 10:
 
+[<img src="https://github.com/sergiye/authenticator/raw/master/preview.png" alt="preview" width="300"/>](https://github.com/sergiye/authenticator/raw/master/preview.png)
+
+Also there are:
+ - `Auto`/`Light`/`Dark` themes integrated into executable.
+ - Custom `themes` supported from external files
+
+You can find custom theme examples [here](https://github.com/sergiye/authenticator/tree/master/themes)
+To add custom theme to the app, just create a `themes` folder next to the executable file and place all theme files there.
+Don't forget to restart the app to scan for new theme files!
 
 ## Download Latest Version
 
@@ -117,15 +126,26 @@ Unlike some other authenticator applications, Authenticator does not store/send 
 ----
 
 ## Thanks
-
 Authenticator is inspired by on open source [WinAuth](https://github.com/winauth/winauth) application written by Colin Mackie.
 
-----
-
 ## License
-
 This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
 
 This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License  along with this program.  If not, see http://www.gnu.org/licenses/.
+
+## How can I help improve it?
+The authenticator team welcomes feedback and contributions!<br/>
+You can check if it works properly on your PC. If you notice any inaccuracies, please send us a pull request. If you have any suggestions or improvements, don't hesitate to create an issue.
+
+Also, don't forget to star the repository to help other people find it.
+
+[![Star History Chart](https://api.star-history.com/svg?repos=sergiye/authenticator&type=Date)](https://star-history.com/#sergiye/authenticator&Date)
+
+[//]: # ([![Stargazers over time]&#40;https://starchart.cc/sergiye/authenticator.svg?variant=adaptive&#41;]&#40;https://starchart.cc/sergiye/authenticator&#41;)
+
+[![Stargazers repo roster for @sergiye/authenticator](https://reporoster.com/stars/sergiye/authenticator)](https://github.com/sergiye/authenticator/stargazers)
+
+## Donate!
+Every [cup of coffee](https://patreon.com/SergiyE) you donate will help this app become better and let me know that this project is in demand.

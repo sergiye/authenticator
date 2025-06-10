@@ -121,10 +121,10 @@ namespace Authenticator {
           //image = new GaussianBlur(2).ProcessImage(image);
           var reader = new BarcodeReader(null, null, ls => new GlobalHistogramBinarizer(ls)) {
             AutoRotate = false,
-            TryInverted = false,
             Options = new DecodingOptions {
               //PossibleFormats = new BarcodeFormat[] { BarcodeFormat.QR_CODE },
-              TryHarder = true
+              TryHarder = true,
+              TryInverted = false,
             }
           };
           var result = reader.Decode(bitmap);

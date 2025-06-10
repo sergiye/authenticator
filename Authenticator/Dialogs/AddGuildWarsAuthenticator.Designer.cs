@@ -17,7 +17,7 @@ namespace Authenticator {
       this.components = new System.ComponentModel.Container();
       System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(AddGuildWarsAuthenticator));
       this.newAuthenticatorProgress = new System.Windows.Forms.ProgressBar();
-      this.codeField = new VCenteredTextBox();
+      this.codeField = new sergiye.Common.VCenteredTextBox();
       this.verifyAuthenticatorButton = new System.Windows.Forms.Button();
       this.secretCodeField = new System.Windows.Forms.TextBox();
       this.step8Label = new System.Windows.Forms.Label();
@@ -260,7 +260,7 @@ namespace Authenticator {
     private Button verifyAuthenticatorButton;
     private Label step7Label;
     private System.Windows.Forms.ProgressBar newAuthenticatorProgress;
-    private VCenteredTextBox codeField;
+    private sergiye.Common.VCenteredTextBox codeField;
     private Label step8Label;
     private System.Windows.Forms.Timer newAuthenticatorTimer;
     private Label step6Label;

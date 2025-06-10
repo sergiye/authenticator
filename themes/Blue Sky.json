@@ -3,9 +3,9 @@
   "DarkMode": true,
   "BackgroundColor": "#3C3C3C",
   "ForegroundColor": "#E9E9E9",
-  "HyperlinkColor": "#22A5F1",
+  "HyperlinkColor": "#99B4D1",
   "SelectedBackgroundColor": "#2170CF",
   "SelectedForegroundColor": "#E9E9E9",
   "LineColor": "#404040",
-  "StatusErrorColor": "#FF0F64"
+  "StatusErrorColor": "#99B4D1"
 }

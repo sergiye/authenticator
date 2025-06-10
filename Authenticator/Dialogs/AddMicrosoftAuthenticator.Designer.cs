@@ -33,7 +33,7 @@ namespace Authenticator
       this.components = new System.ComponentModel.Container();
       System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(AddMicrosoftAuthenticator));
       this.newAuthenticatorProgress = new System.Windows.Forms.ProgressBar();
-      this.codeField = new VCenteredTextBox();
+      this.codeField = new sergiye.Common.VCenteredTextBox();
       this.verifyAuthenticatorButton = new System.Windows.Forms.Button();
       this.secretCodeField = new System.Windows.Forms.TextBox();
       this.label3 = new System.Windows.Forms.Label();
@@ -302,7 +302,7 @@ namespace Authenticator
 		private Button verifyAuthenticatorButton;
 		private Label step9Label;
 		private System.Windows.Forms.ProgressBar newAuthenticatorProgress;
-		private VCenteredTextBox codeField;
+		private sergiye.Common.VCenteredTextBox codeField;
 		private Label label3;
 		private System.Windows.Forms.Timer newAuthenticatorTimer;
 		private System.Windows.Forms.PictureBox icon3;
