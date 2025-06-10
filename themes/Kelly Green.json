@@ -7,5 +7,5 @@
   "SelectedBackgroundColor": "#4CBB17",
   "SelectedForegroundColor": "#000000",
   "LineColor": "#404040",
-  "StatusErrorColor": "#00D980"
+  "WarnColor": "#00D980"
 }
