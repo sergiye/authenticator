@@ -121,7 +121,7 @@ Authenticator source code is uploaded to GitHub at http://github.com/sergiey/aut
 
 #### Where does Authenticator save my authenticator information?
 
-Unlike some other authenticator applications, Authenticator does not store/send your information to any 3rd party servers. Your authenticator information can be stored near executable file (portable mode), or (by default) is saved in your account roaming profile, i.e. `c:\Users\<username>\AppData\Roaming\Authenticator`. However, this file can be moved anywhere and passed into Authenticator when run.
+Unlike some other authenticator applications, Authenticator does not store/send your information to any 3rd party servers. Your authenticator information can be stored near executable file (portable mode), or (by default) is saved in your account roaming profile, i.e. `%AppData%\Authenticator`. However, this file can be moved anywhere and passed into Authenticator when run.
 
 ----
 
