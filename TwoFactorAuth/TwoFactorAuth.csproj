@@ -62,10 +62,10 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup Condition="'$(TargetFramework)' != 'net452'">
-    <PackageReference Include="System.Drawing.Common" Version="9.0.4" />
+    <PackageReference Include="System.Drawing.Common" Version="9.0.6" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="TwoFactorAuth.Core" Version="1.0.9248.2" />
+    <PackageReference Include="TwoFactorAuth.Core" Version="1.0.9285" />
     <PackageReference Include="QRCoder" Version="1.6.0" />
   </ItemGroup>
 </Project>
