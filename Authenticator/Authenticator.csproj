@@ -68,6 +68,7 @@
     <Compile Include="..\..\common\sergiye.Common\OperatingSystemHelper.cs" Link="Common\OperatingSystemHelper.cs" />
     <Compile Include="..\..\common\sergiye.Common\SerializerHelper.cs" Link="Common\SerializerHelper.cs" />
     <Compile Include="..\..\common\sergiye.Common\Updater.cs" Link="Common\Updater.cs" />
+    <Compile Include="..\..\common\sergiye.Common\WinApiHelper.cs" Link="Common\WinApiHelper.cs" />
     <Compile Include="Classes\AuthAuthenticator.cs" />
     <Compile Include="Classes\AuthConfig.cs" />
     <Compile Include="Classes\Authenticator.cs" />
@@ -79,9 +80,8 @@
     <Compile Include="Classes\HOTPAuthenticator.cs" />
     <Compile Include="Classes\OtpauthMigration.cs" />
     <Compile Include="Classes\RegisteredAuthenticator.cs" />
-    <Compile Include="Classes\SingleGlobalInstance.cs" />
     <Compile Include="Classes\TrionAuthenticator.cs" />
-    <Compile Include="Classes\WinAPI.cs" />
+    <Compile Include="Classes\MessageForwarder.cs" />
     <Compile Include="Controls\AuthenticatorListBox.cs" SubType="Component" />
     <Compile Include="Dialogs\AboutForm.cs" SubType="Form" />
     <Compile Include="Dialogs\AboutForm.Designer.cs">

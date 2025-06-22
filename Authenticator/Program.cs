@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
+using System.IO;
+using System.Linq;
 using System.Net;
 using System.Windows.Forms;
 using sergiye.Common;
@@ -21,46 +23,23 @@ namespace Authenticator {
         Environment.Exit(0);
       }
 
-      if (Debugger.IsAttached) {
-        StartProgram();
+      if (WinApiHelper.CheckRunningInstances(true, true)) {
+        MessageBox.Show($"{Updater.ApplicationName} is already running.", Updater.ApplicationName,
+          MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
         return;
       }
 
+      AppDomain.CurrentDomain.UnhandledException +=
+  (s, e) => AuthHelper.ShowException(e.ExceptionObject as Exception);
+      Application.ThreadException += (s, e) => AuthHelper.ShowException(e.Exception);
+      Application.SetUnhandledExceptionMode(UnhandledExceptionMode.CatchException);
+
       try {
-        using (var instance = new SingleGlobalInstance(2000)) {
-          AppDomain.CurrentDomain.UnhandledException +=
-            (s, e) => AuthHelper.ShowException(e.ExceptionObject as Exception);
-          Application.ThreadException += (s, e) => AuthHelper.ShowException(e.Exception);
-          Application.SetUnhandledExceptionMode(UnhandledExceptionMode.CatchException);
-
-          try {
-            StartProgram();
-          }
-          catch (Exception ex) {
-            AuthHelper.ShowException(ex);
-            throw;
-          }
-        }
+        StartProgram();
       }
-      catch (TimeoutException) {
-        // find the window or notify window
-        foreach (var process in Process.GetProcesses()) {
-          if (process.ProcessName != Updater.ApplicationName) continue;
-          process.Refresh();
-
-          var hwnd = process.MainWindowHandle;
-          if (hwnd == (IntPtr) 0) {
-            hwnd = WinApi.FindWindow(null, Updater.ApplicationTitle);
-          }
-
-          // send it the open message
-          WinApi.SendMessage(hwnd, WinApi.WM_USER + 1, 0, (IntPtr) 0);
-          return;
-        }
-
-        // fallback
-        MessageBox.Show($"{Updater.ApplicationName} is already running.", Updater.ApplicationName,
-          MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+      catch (Exception ex) {
+        AuthHelper.ShowException(ex);
+        throw;
       }
     }
 

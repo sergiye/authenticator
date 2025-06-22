@@ -26,7 +26,7 @@ namespace Authenticator {
 
     private DateTime? saveConfigTime;
     private bool mExplicitClose;
-    private readonly bool initiallyMinimised;
+    private readonly bool initiallyMinimized;
     private readonly string startupConfigFile;
 
     #endregion
@@ -80,7 +80,7 @@ namespace Authenticator {
       // hook into System time change event
       Microsoft.Win32.SystemEvents.TimeChanged += SystemEvents_TimeChanged;
       // redirect mouse wheel events
-      new WinApi.MessageForwarder(authenticatorList, WinApi.WM_MOUSEWHEEL);
+      new MessageForwarder(authenticatorList, WinApiHelper.WM_MOUSEWHEEL);
 
       string password = null;
       string proxy = null;
@@ -92,7 +92,7 @@ namespace Authenticator {
             case "-min":
             case "--minimize":
               // set initial state as minimized
-              initiallyMinimised = true;
+              initiallyMinimized = true;
               break;
             case "-p":
             case "--password":
@@ -137,7 +137,7 @@ namespace Authenticator {
 
     #region themes
 
-    private void OnThemeCurrentChecnged() {
+    private void OnThemeCurrentChanged() {
       authenticatorList.SelectedBackColor = Theme.Current.SelectedBackgroundColor;
       authenticatorList.SelectedForeColor = Theme.Current.SelectedForegroundColor;
       authenticatorList.CodeColor = Theme.Current.HyperlinkColor;
@@ -152,9 +152,9 @@ namespace Authenticator {
       mainMenu.Renderer = new ThemedToolStripRenderer();
       notifyMenu.Renderer = new ThemedToolStripRenderer();
       authenticatorList.ContextMenuStrip.Renderer = new ThemedToolStripRenderer();
-      Theme.OnCurrentChecnged -= OnThemeCurrentChecnged;
-      OnThemeCurrentChecnged(); //apply current theme colors
-      Theme.OnCurrentChecnged += OnThemeCurrentChecnged;
+      Theme.OnCurrentChanged -= OnThemeCurrentChanged;
+      OnThemeCurrentChanged();
+      Theme.OnCurrentChanged += OnThemeCurrentChanged;
 
       if (Theme.SupportsAutoThemeSwitching()) {
         var autoThemeMenuItem = new ToolStripRadioButtonMenuItem("Auto");
@@ -487,7 +487,7 @@ namespace Authenticator {
       }
 
       // if we passed "-min" flag
-      if (initiallyMinimised) {
+      if (initiallyMinimized) {
         WindowState = FormWindowState.Minimized;
         ShowInTaskbar = true;
       }
@@ -568,16 +568,11 @@ namespace Authenticator {
 
     protected override void WndProc(ref Message m) {
       base.WndProc(ref m);
-
-      switch (m.Msg) {
-        // pick up the HotKey message from RegisterHotKey and call hook callback
-        case WinApi.WM_USER + 1:
-          // show the main form
-          BringToFront();
-          Show();
-          WindowState = FormWindowState.Normal;
-          Activate();
-          break;
+      if (m.Msg == WinApiHelper.WM_SHOWME) {
+        Visible = true;
+        BringToFront();
+        WindowState = FormWindowState.Normal;
+        Activate();
       }
     }
 
@@ -592,11 +587,11 @@ namespace Authenticator {
         // with a bit of window jiggling to make sure we get focus and then put it back
 
         // save the current window
-        var foregroundWindow = WinApi.GetForegroundWindow();
+        var foregroundWindow = WinApiHelper.GetForegroundWindow();
         var screen = Screen.FromHandle(foregroundWindow);
         var activeWindow = IntPtr.Zero;
         if (Visible) {
-          activeWindow = WinApi.SetActiveWindow(Handle);
+          activeWindow = WinApiHelper.SetActiveWindow(Handle);
           BringToFront();
         }
 
@@ -605,10 +600,10 @@ namespace Authenticator {
 
         // restore active window
         if (activeWindow != IntPtr.Zero) {
-          WinApi.SetActiveWindow(activeWindow);
+          WinApiHelper.SetActiveWindow(activeWindow);
         }
 
-        WinApi.SetForegroundWindow(foregroundWindow);
+        WinApiHelper.SetForegroundWindow(foregroundWindow);
       }
 
       if (code != null) {
@@ -1006,6 +1001,7 @@ namespace Authenticator {
       AuthHelper.AddMenuItem(optionsToolStripMenuItem.DropDownItems);
 
       //Help section
+      AuthHelper.AddMenuItem(helpToolStripMenuItem.DropDownItems, "Site", "siteMenuItem", (s, e) => Updater.VisitAppSite());
       AuthHelper.AddMenuItem(helpToolStripMenuItem.DropDownItems, "Check for updates", "checkUpdatesMenuItem", (s, e) => Updater.CheckForUpdates(false));
       AuthHelper.AddMenuItem(helpToolStripMenuItem.DropDownItems, "About", "aboutOptionsMenuItem", aboutOptionMenuItem_Click, Keys.F1);
     }
@@ -1043,6 +1039,7 @@ namespace Authenticator {
         AuthHelper.AddMenuItem(menuItems);
       }
 
+      AuthHelper.AddMenuItem(menuItems, "Site", "siteMenuItem", (s, e) => Updater.VisitAppSite());
       AuthHelper.AddMenuItem(menuItems, "Check for updates", "checkUpdatesMenuItem", (s, e) => Updater.CheckForUpdates(false));
       AuthHelper.AddMenuItem(menuItems, "About", "aboutOptionsMenuItem", aboutOptionMenuItem_Click);
       AuthHelper.AddMenuItem(menuItems);

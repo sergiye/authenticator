@@ -366,7 +366,7 @@ namespace Authenticator {
       var item = e.Data.GetData(typeof(ListItem)) as ListItem;
       if (item != null) {
         // stop paiting as we reorder to reduce flicker
-        WinApi.SendMessage(Handle, WinApi.WM_SETREDRAW, 0, IntPtr.Zero);
+        WinApiHelper.SendMessage(Handle, WinApiHelper.WM_SETREDRAW, 0, IntPtr.Zero);
         try {
           // get the new index
           var point = PointToClient(new Point(e.X, e.Y));
@@ -401,7 +401,7 @@ namespace Authenticator {
         }
         finally {
           // resume painting
-          WinApi.SendMessage(Handle, WinApi.WM_SETREDRAW, 1, IntPtr.Zero);
+          WinApiHelper.SendMessage(Handle, WinApiHelper.WM_SETREDRAW, 1, IntPtr.Zero);
         }
 
         Refresh();
@@ -412,18 +412,18 @@ namespace Authenticator {
     }
 
     protected override void WndProc(ref Message msg) {
-      if (msg.Msg == WinApi.WM_VSCROLL) {
+      if (msg.Msg == WinApiHelper.WM_VSCROLL) {
         if (Scrolled != null) {
-          var si = new WinApi.ScrollInfoStruct();
-          si.FMask = WinApi.SIF_ALL;
+          var si = new WinApiHelper.ScrollInfoStruct();
+          si.FMask = WinApiHelper.SIF_ALL;
           si.CbSize = Marshal.SizeOf(si);
-          WinApi.GetScrollInfo(msg.HWnd, 0, ref si);
+          WinApiHelper.GetScrollInfo(msg.HWnd, 0, ref si);
 
-          if (msg.WParam.ToInt32() == WinApi.SB_ENDSCROLL) {
+          if (msg.WParam.ToInt32() == WinApiHelper.SB_ENDSCROLL) {
             var sargs = new ScrollEventArgs(ScrollEventType.EndScroll, si.NPos);
             Scrolled?.Invoke(this, sargs);
           }
-          else if (msg.WParam.ToInt32() == WinApi.SB_THUMBTRACK) {
+          else if (msg.WParam.ToInt32() == WinApiHelper.SB_THUMBTRACK) {
             var sargs = new ScrollEventArgs(ScrollEventType.ThumbTrack, si.NPos);
             Scrolled?.Invoke(this, sargs);
           }

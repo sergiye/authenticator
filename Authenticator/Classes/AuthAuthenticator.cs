@@ -176,15 +176,15 @@ namespace Authenticator {
       do {
         var failed = false;
         // check if the clipboard is locked
-        var hWnd = WinApi.GetOpenClipboardWindow();
+        var hWnd = WinApiHelper.GetOpenClipboardWindow();
         if (hWnd != IntPtr.Zero) {
-          var len = WinApi.GetWindowTextLength(hWnd);
+          var len = WinApiHelper.GetWindowTextLength(hWnd);
           if (len == 0) {
             AuthHelper.ShowException(new ApplicationException("Clipboard in use by another process"));
           }
           else {
             var sb = new StringBuilder(len + 1);
-            WinApi.GetWindowText(hWnd, sb, sb.Capacity);
+            WinApiHelper.GetWindowText(hWnd, sb, sb.Capacity);
             AuthHelper.ShowException(new ApplicationException("Clipboard in use by '" + sb + "'"));
           }
 
