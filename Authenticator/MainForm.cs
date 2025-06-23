@@ -145,6 +145,8 @@ namespace Authenticator {
       authenticatorList.PieColor = Theme.Current.WarnColor;
       authenticatorList.LineColor = Theme.Current.LineColor;
       authenticatorList.Invalidate();
+
+      AuthConfig.Theme = Theme.IsAutoThemeEnabled ? "auto" : Theme.Current.Id;
     }
 
     private void InitializeTheme() {
@@ -152,58 +154,18 @@ namespace Authenticator {
       mainMenu.Renderer = new ThemedToolStripRenderer();
       notifyMenu.Renderer = new ThemedToolStripRenderer();
       authenticatorList.ContextMenuStrip.Renderer = new ThemedToolStripRenderer();
-      Theme.OnCurrentChanged -= OnThemeCurrentChanged;
-      OnThemeCurrentChanged();
-      Theme.OnCurrentChanged += OnThemeCurrentChanged;
 
-      if (Theme.SupportsAutoThemeSwitching()) {
-        var autoThemeMenuItem = new ToolStripRadioButtonMenuItem("Auto");
-        autoThemeMenuItem.Click += (o, e) => {
-          autoThemeMenuItem.Checked = true;
-          Theme.SetAutoTheme();
-          AuthConfig.Theme = "auto";
-        };
-        themeMenuItem.DropDownItems.Add(autoThemeMenuItem);
-      }
-
-      var allThemes = CustomTheme.GetAllThemes("themes", "Authenticator.themes").OrderBy(x => x.DisplayName).ToList();
-
-      var setTheme = allThemes.FirstOrDefault(theme => AuthConfig.Theme == theme.Id);
-      if (setTheme != null) {
-        Theme.Current = setTheme;
-      }
-
-      AddThemeMenuItems(allThemes.Where(t => t is not CustomTheme));
-      var customThemes = allThemes.Where(t => t is CustomTheme).ToList();
-      if (customThemes.Count > 0) {
-        themeMenuItem.DropDownItems.Add("-");
-        AddThemeMenuItems(customThemes);
-      }
-
-      if (setTheme == null && themeMenuItem.DropDownItems.Count > 0)
-        themeMenuItem.DropDownItems[0].PerformClick();
-
-      Theme.Current.Apply(this);
-    }
-
-    private void AddThemeMenuItems(IEnumerable<Theme> themes) {
-      foreach (var theme in themes) {
-        var item = new ToolStripRadioButtonMenuItem(theme.DisplayName);
-        item.Click += OnThemeMenuItemClick;
-        item.Tag = theme;
-        themeMenuItem.DropDownItems.Add(item);
-        if (Theme.Current != null && Theme.Current.Id == theme.Id) {
-          item.Checked = true;
+      var currentItem = CustomTheme.FillThemesMenu((title, theme, onClick) => {
+        if (theme == null && onClick == null) {
+          themeMenuItem.DropDownItems.Add(title);
+          return null;
         }
-      }
-    }
-
-    private void OnThemeMenuItemClick(object sender, EventArgs e) {
-      if (sender is not ToolStripRadioButtonMenuItem item || item.Tag is not Theme theme)
-        return;
-      item.Checked = true;
-      Theme.Current = theme;
-      AuthConfig.Theme = theme.Id;
+        var item = new ToolStripRadioButtonMenuItem(title, null, onClick);
+        themeMenuItem.DropDownItems.Add(item);
+        return item;
+      }, OnThemeCurrentChanged, AuthConfig.Theme, "Authenticator.themes");
+      currentItem?.PerformClick();
+      Theme.Current.Apply(this);
     }
 
     #endregion
