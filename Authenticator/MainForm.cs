@@ -210,7 +210,7 @@ namespace Authenticator {
           return;
         }
 
-        ErrorDialog(this, "An unknown error occured: " + ex.Message, ex, MessageBoxButtons.OK);
+        ErrorDialog(this, "An unknown error occurred: " + ex.Message, ex, MessageBoxButtons.OK);
         Close();
         return;
       }
@@ -372,7 +372,7 @@ namespace Authenticator {
           invalidPassword = true;
         }
         catch (Exception ex) {
-          if (ErrorDialog(this, "An unknown error occured: " + ex.Message, ex, MessageBoxButtons.RetryCancel) ==
+          if (ErrorDialog(this, "An unknown error occurred: " + ex.Message, ex, MessageBoxButtons.RetryCancel) ==
               DialogResult.Cancel) {
             return;
           }
@@ -434,10 +434,10 @@ namespace Authenticator {
         }
 
         // check we aren't below the taskbar
-        var lowesty = Screen.GetWorkingArea(this).Bottom;
+        var lowestY = Screen.GetWorkingArea(this).Bottom;
         var bottom = Top + Height;
-        if (bottom > lowesty) {
-          Top -= (bottom - lowesty);
+        if (bottom > lowestY) {
+          Top -= (bottom - lowestY);
           if (Top < 0) {
             Height += Top;
             Top = 0;
@@ -545,7 +545,7 @@ namespace Authenticator {
         code = auth.CurrentCode;
       }
       catch (EncryptedSecretDataException) {
-        // if the authenticator is current protected we display the password window, get the code, and reprotect it
+        // if the authenticator is current protected we display the password window, get the code, and re-protect it
         // with a bit of window jiggling to make sure we get focus and then put it back
 
         // save the current window
@@ -616,7 +616,7 @@ namespace Authenticator {
     }
 
     private void EndRenaming() {
-      // set focus to form, so that the edit field will disappear if it is visble
+      // set focus to form, so that the edit field will disappear if it is visible
       if (authenticatorList.IsRenaming) {
         authenticatorList.EndRenaming();
       }
@@ -625,7 +625,7 @@ namespace Authenticator {
     private void MainForm_Shown(object sender, EventArgs e) {
       // if we use tray icon make sure it is set
       if (AuthConfig.UseTrayIcon) {
-        // if initially minizied, we need to hide
+        // if initially minimized, we need to hide
         if (WindowState == FormWindowState.Minimized) {
           Hide();
         }
@@ -646,7 +646,7 @@ namespace Authenticator {
       // ensure the notify icon is closed
       notifyIcon.Visible = false;
 
-      // save size if we are not autoresize
+      // save size if we are not auto-resize
       if (Config != null) {
         if (!AuthConfig.AutoSize && (AuthConfig.Width != Width || AuthConfig.Height != Height)) {
           AuthConfig.Width = Width;
@@ -662,139 +662,136 @@ namespace Authenticator {
     }
 
     void addAuthenticatorMenu_Click(object sender, EventArgs e) {
-      var menuitem = (ToolStripItem) sender;
-      var registeredauth = menuitem.Tag as RegisteredAuthenticator;
-      if (registeredauth != null) {
+      if (sender is not ToolStripItem menuItem || menuItem.Tag is not RegisteredAuthenticator registeredAuth) return;
+      // add the new authenticator
+      var authenticator = new AuthAuthenticator();
+      bool added;
+
+      if (registeredAuth.AuthenticatorType == RegisteredAuthenticator.AuthenticatorTypes.BattleNet) {
+        var existing = 0;
+        string name;
+        do {
+          name = "Battle.net" + (existing != 0 ? " (" + existing + ")" : string.Empty);
+          existing++;
+        } while (authenticatorList.Items.Cast<AuthenticatorListBox.ListItem>().Count(a => a.Authenticator.Name == name) != 0);
+
+        authenticator.Name = name;
+        authenticator.AutoRefresh = false;
+
+        // create the Battle.net authenticator
+        var form = new AddBattleNetAuthenticator {
+          Authenticator = authenticator
+        };
+        added = (form.ShowDialog(this) == DialogResult.OK);
+      }
+      else if (registeredAuth.AuthenticatorType == RegisteredAuthenticator.AuthenticatorTypes.Trion) {
+        // create the Trion authenticator
+        var existing = 0;
+        string name;
+        do {
+          name = "Trion" + (existing != 0 ? " (" + existing + ")" : string.Empty);
+          existing++;
+        } while (authenticatorList.Items.Cast<AuthenticatorListBox.ListItem>().Count(a => a.Authenticator.Name == name) != 0);
+
+        authenticator.Name = name;
+        authenticator.AutoRefresh = false;
+
+        var form = new AddTrionAuthenticator {
+          Authenticator = authenticator
+        };
+        added = (form.ShowDialog(this) == DialogResult.OK);
+      }
+      else if (registeredAuth.AuthenticatorType == RegisteredAuthenticator.AuthenticatorTypes.GuildWars) {
+        // create the GW2 authenticator
+        var existing = 0;
+        string name;
+        do {
+          name = "GuildWars" + (existing != 0 ? " (" + existing + ")" : string.Empty);
+          existing++;
+        } while (authenticatorList.Items.Cast<AuthenticatorListBox.ListItem>().Count(a => a.Authenticator.Name == name) != 0);
+
+        authenticator.Name = name;
+        authenticator.AutoRefresh = false;
+
+        var form = new AddGuildWarsAuthenticator {
+          Authenticator = authenticator
+        };
+        added = (form.ShowDialog(this) == DialogResult.OK);
+      }
+      else if (registeredAuth.AuthenticatorType == RegisteredAuthenticator.AuthenticatorTypes.Microsoft) {
+        // create the Microsoft authenticator
+        var existing = 0;
+        string name;
+        do {
+          name = "Microsoft" + (existing != 0 ? " (" + existing + ")" : string.Empty);
+          existing++;
+        } while (authenticatorList.Items.Cast<AuthenticatorListBox.ListItem>().Count(a => a.Authenticator.Name == name) != 0);
+
+        authenticator.Name = name;
+        authenticator.AutoRefresh = false;
+
+        var form = new AddMicrosoftAuthenticator {
+          Authenticator = authenticator
+        };
+        added = (form.ShowDialog(this) == DialogResult.OK);
+      }
+      else if (registeredAuth.AuthenticatorType == RegisteredAuthenticator.AuthenticatorTypes.RFC6238_TIME_COUNTER) {
+        // create the Google authenticator
         // add the new authenticator
-        var authenticator = new AuthAuthenticator();
-        bool added;
+        var existing = 0;
+        string name;
+        do {
+          name = "Authenticator" + (existing != 0 ? " (" + existing + ")" : string.Empty);
+          existing++;
+        } while (authenticatorList.Items.Cast<AuthenticatorListBox.ListItem>().Count(a => a.Authenticator.Name == name) != 0);
+        authenticator.Name = name;
+        authenticator.AutoRefresh = false;
+        authenticator.Skin = "AppIcon.png";
+        added = new AddAuthenticator(authenticator).ShowDialog(this) == DialogResult.OK;
+      }
+      else if (registeredAuth.AuthenticatorType == RegisteredAuthenticator.AuthenticatorTypes.OktaVerify) {
+        // create the Okta Verify authenticator
+        var existing = 0;
+        string name;
+        do {
+          name = "Okta" + (existing != 0 ? " (" + existing + ")" : string.Empty);
+          existing++;
+        } while (authenticatorList.Items.Cast<AuthenticatorListBox.ListItem>().Count(a => a.Authenticator.Name == name) != 0);
 
-        if (registeredauth.AuthenticatorType == RegisteredAuthenticator.AuthenticatorTypes.BattleNet) {
-          var existing = 0;
-          string name;
-          do {
-            name = "Battle.net" + (existing != 0 ? " (" + existing + ")" : string.Empty);
-            existing++;
-          } while (authenticatorList.Items.Cast<AuthenticatorListBox.ListItem>().Count(a => a.Authenticator.Name == name) != 0);
+        authenticator.Name = name;
+        authenticator.AutoRefresh = false;
 
-          authenticator.Name = name;
-          authenticator.AutoRefresh = false;
+        var form = new AddOktaVerifyAuthenticator {
+          Authenticator = authenticator
+        };
+        added = (form.ShowDialog(this) == DialogResult.OK);
+      }
+      else {
+        throw new NotImplementedException("Authenticator not implemented: " +
+                                          registeredAuth.AuthenticatorType);
+      }
 
-          // create the Battle.net authenticator
-          var form = new AddBattleNetAuthenticator {
-            Authenticator = authenticator
+      if (added) {
+        // first time we prompt for protection
+        if (Config.Count == 0) {
+          var form = new ChangePasswordForm {
+            PasswordType = Authenticator.PasswordTypes.Explicit
           };
-          added = (form.ShowDialog(this) == DialogResult.OK);
-        }
-        else if (registeredauth.AuthenticatorType == RegisteredAuthenticator.AuthenticatorTypes.Trion) {
-          // create the Trion authenticator
-          var existing = 0;
-          string name;
-          do {
-            name = "Trion" + (existing != 0 ? " (" + existing + ")" : string.Empty);
-            existing++;
-          } while (authenticatorList.Items.Cast<AuthenticatorListBox.ListItem>().Count(a => a.Authenticator.Name == name) != 0);
-
-          authenticator.Name = name;
-          authenticator.AutoRefresh = false;
-
-          var form = new AddTrionAuthenticator {
-            Authenticator = authenticator
-          };
-          added = (form.ShowDialog(this) == DialogResult.OK);
-        }
-        else if (registeredauth.AuthenticatorType == RegisteredAuthenticator.AuthenticatorTypes.GuildWars) {
-          // create the GW2 authenticator
-          var existing = 0;
-          string name;
-          do {
-            name = "GuildWars" + (existing != 0 ? " (" + existing + ")" : string.Empty);
-            existing++;
-          } while (authenticatorList.Items.Cast<AuthenticatorListBox.ListItem>().Count(a => a.Authenticator.Name == name) != 0);
-
-          authenticator.Name = name;
-          authenticator.AutoRefresh = false;
-
-          var form = new AddGuildWarsAuthenticator {
-            Authenticator = authenticator
-          };
-          added = (form.ShowDialog(this) == DialogResult.OK);
-        }
-        else if (registeredauth.AuthenticatorType == RegisteredAuthenticator.AuthenticatorTypes.Microsoft) {
-          // create the Microsoft authenticator
-          var existing = 0;
-          string name;
-          do {
-            name = "Microsoft" + (existing != 0 ? " (" + existing + ")" : string.Empty);
-            existing++;
-          } while (authenticatorList.Items.Cast<AuthenticatorListBox.ListItem>().Count(a => a.Authenticator.Name == name) != 0);
-
-          authenticator.Name = name;
-          authenticator.AutoRefresh = false;
-
-          var form = new AddMicrosoftAuthenticator {
-            Authenticator = authenticator
-          };
-          added = (form.ShowDialog(this) == DialogResult.OK);
-        }
-        else if (registeredauth.AuthenticatorType == RegisteredAuthenticator.AuthenticatorTypes.RFC6238_TIME_COUNTER) {
-          // create the Google authenticator
-          // add the new authenticator
-          var existing = 0;
-          string name;
-          do {
-            name = "Authenticator" + (existing != 0 ? " (" + existing + ")" : string.Empty);
-            existing++;
-          } while (authenticatorList.Items.Cast<AuthenticatorListBox.ListItem>().Count(a => a.Authenticator.Name == name) != 0);
-          authenticator.Name = name;
-          authenticator.AutoRefresh = false;
-          authenticator.Skin = "AppIcon.png";
-          added = new AddAuthenticator(authenticator).ShowDialog(this) == DialogResult.OK;
-        }
-        else if (registeredauth.AuthenticatorType == RegisteredAuthenticator.AuthenticatorTypes.OktaVerify) {
-          // create the Okta Verify authenticator
-          var existing = 0;
-          string name;
-          do {
-            name = "Okta" + (existing != 0 ? " (" + existing + ")" : string.Empty);
-            existing++;
-          } while (authenticatorList.Items.Cast<AuthenticatorListBox.ListItem>().Count(a => a.Authenticator.Name == name) != 0);
-
-          authenticator.Name = name;
-          authenticator.AutoRefresh = false;
-
-          var form = new AddOktaVerifyAuthenticator {
-            Authenticator = authenticator
-          };
-          added = (form.ShowDialog(this) == DialogResult.OK);
-        }
-        else {
-          throw new NotImplementedException("Authenticator not implemented: " +
-                                            registeredauth.AuthenticatorType);
-        }
-
-        if (added) {
-          // first time we prompt for protection
-          if (Config.Count == 0) {
-            var form = new ChangePasswordForm {
-              PasswordType = Authenticator.PasswordTypes.Explicit
-            };
-            if (form.ShowDialog(this) == DialogResult.OK) {
-              Config.PasswordType = form.PasswordType;
-              if ((Config.PasswordType & Authenticator.PasswordTypes.Explicit) != 0 &&
-                  string.IsNullOrEmpty(form.Password) == false) {
-                Config.Password = form.Password;
-              }
+          if (form.ShowDialog(this) == DialogResult.OK) {
+            Config.PasswordType = form.PasswordType;
+            if ((Config.PasswordType & Authenticator.PasswordTypes.Explicit) != 0 &&
+                string.IsNullOrEmpty(form.Password) == false) {
+              Config.Password = form.Password;
             }
           }
-
-          Config.Add(authenticator);
-          SaveConfig(true);
-          LoadAuthenticatorList(authenticator);
-
-          // reset UI
-          SetAutoSize();
         }
+
+        Config.Add(authenticator);
+        SaveConfig(true);
+        LoadAuthenticatorList(authenticator);
+
+        // reset UI
+        SetAutoSize();
       }
     }
 
@@ -1049,10 +1046,10 @@ namespace Authenticator {
         subItem.Checked = AuthConfig.NotifyAction == AuthConfig.NotifyActions.CopyToClipboard;
       }
 
-      //menuitem = menu.Items.Cast<ToolStripItem>().Where(t => t.Name == "useSystemTrayIconOptionsMenuItem").FirstOrDefault() as ToolStripMenuItem;
-      //if (menuitem != null)
+      //menuItem = menu.Items.Cast<ToolStripItem>().Where(t => t.Name == "useSystemTrayIconOptionsMenuItem").FirstOrDefault() as ToolStripMenuItem;
+      //if (menuItem != null)
       //{
-      //	menuitem.Checked = this.Config.UseTrayIcon;
+      //	menuItem.Checked = this.Config.UseTrayIcon;
       //}
     }
 
@@ -1083,7 +1080,7 @@ namespace Authenticator {
       };
       if (form.ShowDialog(this) == DialogResult.OK) {
         bool retry;
-        var retrypasswordtype = Config.PasswordType;
+        var retryPasswordType = Config.PasswordType;
         do {
           retry = false;
 
@@ -1103,7 +1100,7 @@ namespace Authenticator {
               continue;
             }
 
-            Config.PasswordType = retrypasswordtype;
+            Config.PasswordType = retryPasswordType;
           }
         } while (retry);
       }
@@ -1120,8 +1117,7 @@ namespace Authenticator {
     }
 
     private void authenticatorOptionsMenuItem_Click(object sender, EventArgs e) {
-      var menuitem = (ToolStripMenuItem) sender;
-      var auth = menuitem.Tag as AuthAuthenticator;
+      if (sender is not ToolStripMenuItem menuItem || menuItem.Tag is not AuthAuthenticator auth) return;
       var item = authenticatorList.Items.Cast<AuthenticatorListBox.ListItem>().FirstOrDefault(i => i.Authenticator == auth);
       if (item != null) {
         RunAction(auth, AuthConfig.NotifyAction);
@@ -1157,32 +1153,26 @@ namespace Authenticator {
       if ((Config.PasswordType & Authenticator.PasswordTypes.Explicit) != 0) {
         var invalidPassword = false;
         while (true) {
-          var checkform = new GetPasswordForm {
-            InvalidPassword = invalidPassword
-          };
-          var result = checkform.ShowDialog(this);
-          if (result == DialogResult.Cancel) {
-            return;
+          using(var checkForm = new GetPasswordForm {InvalidPassword = invalidPassword}) {
+            if (checkForm.ShowDialog(this) == DialogResult.Cancel)
+              return;
+            if (Config.IsPassword(checkForm.Password))
+              break;
           }
-
-          if (Config.IsPassword(checkform.Password)) {
-            break;
-          }
-
           invalidPassword = true;
         }
       }
 
-      var exportform = new ExportForm();
-      if (exportform.ShowDialog(this) == DialogResult.OK) {
-        AuthHelper.ExportAuthenticators(this, Config, exportform.ExportFile, exportform.Password,
-          exportform.PgpKey);
+      using (var exportForm = new ExportForm()) {
+        if (exportForm.ShowDialog(this) == DialogResult.OK) {
+          AuthHelper.ExportAuthenticators(this, Config, exportForm.ExportFile, exportForm.Password,
+            exportForm.PgpKey);
+        }
       }
     }
 
     private void aboutOptionMenuItem_Click(object sender, EventArgs e) {
-      using (var form = new AboutForm())
-        form.ShowDialog(this);
+      Updater.ShowAbout();
     }
 
     private void exitOptionMenuItem_Click(object sender, EventArgs e) {

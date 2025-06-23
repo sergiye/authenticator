@@ -78,10 +78,6 @@
     <Compile Include="Classes\TrionAuthenticator.cs" />
     <Compile Include="Classes\MessageForwarder.cs" />
     <Compile Include="Controls\AuthenticatorListBox.cs" SubType="Component" />
-    <Compile Include="Dialogs\AboutForm.cs" SubType="Form" />
-    <Compile Include="Dialogs\AboutForm.Designer.cs">
-      <DependentUpon>AboutForm.cs</DependentUpon>
-    </Compile>
     <Compile Include="Dialogs\AddAuthenticator.cs" SubType="Form" />
     <Compile Include="Dialogs\AddAuthenticator.designer.cs">
       <DependentUpon>AddAuthenticator.cs</DependentUpon>
@@ -158,9 +154,6 @@
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <EmbeddedResource Include="Dialogs\AboutForm.resx">
-      <DependentUpon>AboutForm.cs</DependentUpon>
-    </EmbeddedResource>
     <EmbeddedResource Include="Dialogs\AddAuthenticator.resx">
       <DependentUpon>AddAuthenticator.cs</DependentUpon>
     </EmbeddedResource>
@@ -225,7 +218,6 @@
   <ItemGroup>
     <EmbeddedResource Include="Resources\*.svg" />
     <EmbeddedResource Include="Resources\*.png" />
-    <EmbeddedResource Include="..\LICENSE" />
     <Content Include="app.ico" />
   </ItemGroup>
   <ItemGroup>
