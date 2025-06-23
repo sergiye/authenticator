@@ -55,7 +55,7 @@ namespace Authenticator {
       this.secretCodeField.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
       this.secretCodeField.Location = new System.Drawing.Point(11, 54);
       this.secretCodeField.Name = "secretCodeField";
-      this.secretCodeField.Size = new System.Drawing.Size(393, 26);
+      this.secretCodeField.Size = new System.Drawing.Size(418, 26);
       this.secretCodeField.TabIndex = 1;
       this.secretCodeField.Leave += new System.EventHandler(this.secretCodeField_Leave);
       // 
@@ -145,6 +145,7 @@ namespace Authenticator {
       this.codeField.Size = new System.Drawing.Size(158, 26);
       this.codeField.SpaceOut = 3;
       this.codeField.TabIndex = 18;
+      this.codeField.TabStop = false;
       // 
       // step4Label
       // 
@@ -196,7 +197,7 @@ namespace Authenticator {
       this.counterField.AllowDrop = true;
       this.counterField.CausesValidation = false;
       this.counterField.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-      this.counterField.Location = new System.Drawing.Point(19, 328);
+      this.counterField.Location = new System.Drawing.Point(12, 326);
       this.counterField.Name = "counterField";
       this.counterField.Size = new System.Drawing.Size(110, 26);
       this.counterField.TabIndex = 15;
@@ -205,14 +206,13 @@ namespace Authenticator {
       // hashField
       // 
       this.hashField.FormattingEnabled = true;
-      this.hashField.ItemHeight = 13;
       this.hashField.Items.AddRange(new object[] {
             "HMAC-SHA1",
             "HMAC-SHA256",
             "HMAC-SHA512"});
       this.hashField.Location = new System.Drawing.Point(150, 189);
       this.hashField.Name = "hashField";
-      this.hashField.Size = new System.Drawing.Size(99, 21);
+      this.hashField.Size = new System.Drawing.Size(123, 21);
       this.hashField.TabIndex = 8;
       // 
       // intervalField
@@ -221,7 +221,7 @@ namespace Authenticator {
       this.intervalField.CausesValidation = false;
       this.intervalField.Location = new System.Drawing.Point(150, 216);
       this.intervalField.Name = "intervalField";
-      this.intervalField.Size = new System.Drawing.Size(100, 20);
+      this.intervalField.Size = new System.Drawing.Size(123, 20);
       this.intervalField.TabIndex = 10;
       // 
       // labelTYpe
@@ -254,7 +254,7 @@ namespace Authenticator {
       this.digitsField.CausesValidation = false;
       this.digitsField.Location = new System.Drawing.Point(150, 242);
       this.digitsField.Name = "digitsField";
-      this.digitsField.Size = new System.Drawing.Size(100, 20);
+      this.digitsField.Size = new System.Drawing.Size(123, 20);
       this.digitsField.TabIndex = 13;
       // 
       // digitsLabel
@@ -267,7 +267,7 @@ namespace Authenticator {
       // 
       // intervalLabelPost
       // 
-      this.intervalLabelPost.Location = new System.Drawing.Point(255, 219);
+      this.intervalLabelPost.Location = new System.Drawing.Point(283, 219);
       this.intervalLabelPost.Name = "intervalLabelPost";
       this.intervalLabelPost.Size = new System.Drawing.Size(69, 20);
       this.intervalLabelPost.TabIndex = 11;
@@ -284,11 +284,11 @@ namespace Authenticator {
       // 
       // btnBrowse
       // 
-      this.btnBrowse.Location = new System.Drawing.Point(404, 54);
+      this.btnBrowse.Location = new System.Drawing.Point(107, 86);
       this.btnBrowse.Name = "btnBrowse";
-      this.btnBrowse.Size = new System.Drawing.Size(24, 23);
+      this.btnBrowse.Size = new System.Drawing.Size(158, 23);
       this.btnBrowse.TabIndex = 2;
-      this.btnBrowse.Text = "...";
+      this.btnBrowse.Text = "Browse for saved file";
       this.btnBrowse.Click += new System.EventHandler(this.btnBrowse_Click);
       // 
       // AddAuthenticator
@@ -296,7 +296,6 @@ namespace Authenticator {
       this.AcceptButton = this.okButton;
       this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
       this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-      this.BackColor = System.Drawing.SystemColors.Window;
       this.CancelButton = this.cancelButton;
       this.ClientSize = new System.Drawing.Size(441, 523);
       this.Controls.Add(this.btnBrowse);
@@ -343,16 +342,16 @@ namespace Authenticator {
     private System.Windows.Forms.Button okButton;
     private System.Windows.Forms.Button cancelButton;
     private System.Windows.Forms.TextBox secretCodeField;
-    private Button btnBrowse;
+    private System.Windows.Forms.Button btnBrowse;
     private System.Windows.Forms.Label nameLabel;
     private System.Windows.Forms.TextBox nameField;
     private System.Windows.Forms.Label step2Label;
-    private Button verifyButton;
+    private System.Windows.Forms.Button verifyButton;
     private System.Windows.Forms.ProgressBar codeProgress;
     private sergiye.Common.VCenteredTextBox codeField;
     private System.Windows.Forms.Label step4Label;
     private System.Windows.Forms.Timer timer;
-    private Label step3Label;
+    private System.Windows.Forms.Label step3Label;
     private System.Windows.Forms.RadioButton timeBasedRadio;
     private System.Windows.Forms.RadioButton counterBasedRadio;
     private System.Windows.Forms.TextBox counterField;
@@ -364,6 +363,6 @@ namespace Authenticator {
     private System.Windows.Forms.TextBox digitsField;
     private System.Windows.Forms.Label digitsLabel;
     private System.Windows.Forms.Label intervalLabelPost;
-    private Button getFromScreenButton;
+    private System.Windows.Forms.Button getFromScreenButton;
   }
 }
