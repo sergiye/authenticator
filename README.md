@@ -21,7 +21,7 @@ It works with counter or time-based RFC 6238 authenticators and common implement
 
 Here's a preview of the app's UI running on Windows 10:
 
-[<img src="https://github.com/sergiye/authenticator/raw/master/preview.png" alt="preview" width="300"/>](https://github.com/sergiye/authenticator/raw/master/preview.png)
+[<img src="https://github.com/sergiye/authenticator/raw/master/preview.png" alt="preview"/>](https://github.com/sergiye/authenticator/raw/master/preview.png)
 
 Also there are:
  - `Auto`/`Light`/`Dark` themes integrated into executable.
