@@ -53,17 +53,6 @@
     <EmbeddedResource Include="..\themes\*.json" Link="themes\%(Filename)%(Extension)" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="..\..\common\sergiye.Common.UI\Themes\CustomTheme.cs" Link="Common\Themes\CustomTheme.cs" />
-    <Compile Include="..\..\common\sergiye.Common.UI\Themes\DarkTheme.cs" Link="Common\Themes\DarkTheme.cs" />
-    <Compile Include="..\..\common\sergiye.Common.UI\Themes\LightTheme.cs" Link="Common\Themes\LightTheme.cs" />
-    <Compile Include="..\..\common\sergiye.Common.UI\Themes\Theme.cs" Link="Common\Themes\Theme.cs" />
-    <Compile Include="..\..\common\sergiye.Common.UI\Themes\ThemedToolStripRenderer.cs" Link="Common\Themes\ThemedToolStripRenderer.cs" />
-    <Compile Include="..\..\common\sergiye.Common.UI\ToolStripRadioButtonMenuItem.cs" Link="Common\ToolStripRadioButtonMenuItem.cs" />
-    <Compile Include="..\..\common\sergiye.Common.UI\VCenteredTextBox.cs" Link="Common\VCenteredTextBox.cs" SubType="Component" />
-    <Compile Include="..\..\common\sergiye.Common\OperatingSystemHelper.cs" Link="Common\OperatingSystemHelper.cs" />
-    <Compile Include="..\..\common\sergiye.Common\SerializerHelper.cs" Link="Common\SerializerHelper.cs" />
-    <Compile Include="..\..\common\sergiye.Common\Updater.cs" Link="Common\Updater.cs" />
-    <Compile Include="..\..\common\sergiye.Common\WinApiHelper.cs" Link="Common\WinApiHelper.cs" />
     <Compile Include="Classes\AuthAuthenticator.cs" />
     <Compile Include="Classes\AuthConfig.cs" />
     <Compile Include="Classes\Authenticator.cs" />
@@ -221,6 +210,9 @@
     <Content Include="app.ico" />
   </ItemGroup>
   <ItemGroup>
+    <PackageReference Include="sergiye.Common.UI">
+      <Version>1.*</Version>
+    </PackageReference>
     <PackageReference Include="BouncyCastle">
       <Version>1.8.9</Version>
     </PackageReference>
