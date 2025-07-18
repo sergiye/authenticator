@@ -78,7 +78,7 @@ namespace Authenticator {
     private DateTime lastDragScroll;
 
     public AuthenticatorListBox() {
-      // set owner draw stlying
+      // set owner draw styling
       SetStyle(
         ControlStyles.OptimizedDoubleBuffer | ControlStyles.AllPaintingInWmPaint | ControlStyles.ResizeRedraw |
         ControlStyles.UserPaint, true);
@@ -112,8 +112,8 @@ namespace Authenticator {
       base.OnMouseWheel(e);
 
       var y = e.Delta * ItemHeight + MARGIN_TOP;
-      var sargs = new ScrollEventArgs(ScrollEventType.ThumbPosition, y, ScrollOrientation.VerticalScroll);
-      Scrolled?.Invoke(this, sargs);
+      var args = new ScrollEventArgs(ScrollEventType.ThumbPosition, y, ScrollOrientation.VerticalScroll);
+      Scrolled?.Invoke(this, args);
     }
 
     protected override void OnMouseDoubleClick(MouseEventArgs e) {
@@ -152,7 +152,7 @@ namespace Authenticator {
 
         var y = ItemHeight * index - TopIndex * ItemHeight;
         if (auth.AutoRefresh) {
-          // for autorefresh we repaint the pie or the code too
+          // for auto refresh we repaint the pie or the code too
           //int tillUpdate = (int)((auth.AuthenticatorData.ServerTime % ((long)auth.AuthenticatorData.Period * 1000L)) / 1000L);
           var tillUpdate = (int)Math.Round(
               auth.AuthenticatorData.ServerTime % (auth.AuthenticatorData.Period * 1000L) / 1000L *
@@ -244,7 +244,7 @@ namespace Authenticator {
     protected override void OnMouseMove(MouseEventArgs e) {
       // mouseMoveLocation = e.Location;
 
-      // if we are moving with LeftMouse down and moved more than 2 pixles then we are dragging
+      // if we are moving with LeftMouse down and moved more than 2 pixels then we are dragging
       if (e.Button == MouseButtons.Left && mouseDownLocation != Point.Empty && Items.Count > 1) {
         var dx = Math.Abs(mouseDownLocation.X - e.Location.X);
         var dy = Math.Abs(mouseDownLocation.Y - e.Location.Y);
@@ -252,15 +252,15 @@ namespace Authenticator {
           draggedItem = CurrentItem;
 
           // get a snapshot of the current item for the drag
-          var hasvscroll = Height < Items.Count * ItemHeight;
-          draggedBitmap = new Bitmap(Width - (hasvscroll ? SystemInformation.VerticalScrollBarWidth : 0), ItemHeight);
+          var hasVScroll = Height < Items.Count * ItemHeight;
+          draggedBitmap = new Bitmap(Width - (hasVScroll ? SystemInformation.VerticalScrollBarWidth : 0), ItemHeight);
           draggedBitmapRect = Rectangle.Empty;
           using (var g = Graphics.FromImage(draggedBitmap)) {
             var y = ItemHeight * CurrentItem.Index - ItemHeight * TopIndex;
 
             var screen = Parent.PointToScreen(new Point(Location.X, Location.Y + y));
             g.CopyFromScreen(screen.X, screen.Y, 0, 0,
-              new Size(Width - (hasvscroll ? SystemInformation.VerticalScrollBarWidth : 0), ItemHeight),
+              new Size(Width - (hasVScroll ? SystemInformation.VerticalScrollBarWidth : 0), ItemHeight),
               CopyPixelOperation.SourceCopy);
 
             // save offset in Y from top of item
@@ -340,8 +340,8 @@ namespace Authenticator {
         // if we are at the top or bottom, scroll every 150ms
         if (mousePoint.Y >= screen.Bottom) {
           var visible = ClientSize.Height / ItemHeight;
-          var maxtopindex = Math.Max(Items.Count - visible + 1, 0);
-          if (TopIndex < maxtopindex && now.Subtract(lastDragScroll).TotalMilliseconds >= 150) {
+          var maxTopIndex = Math.Max(Items.Count - visible + 1, 0);
+          if (TopIndex < maxTopIndex && now.Subtract(lastDragScroll).TotalMilliseconds >= 150) {
             TopIndex++;
             lastDragScroll = now;
             Refresh();
@@ -365,7 +365,7 @@ namespace Authenticator {
     protected override void OnDragDrop(DragEventArgs e) {
       var item = e.Data.GetData(typeof(ListItem)) as ListItem;
       if (item != null) {
-        // stop paiting as we reorder to reduce flicker
+        // stop painting as we reorder to reduce flicker
         WinApiHelper.SendMessage(Handle, WinApiHelper.WM_SETREDRAW, 0, IntPtr.Zero);
         try {
           // get the new index
@@ -420,12 +420,10 @@ namespace Authenticator {
           WinApiHelper.GetScrollInfo(msg.HWnd, 0, ref si);
 
           if (msg.WParam.ToInt32() == WinApiHelper.SB_ENDSCROLL) {
-            var sargs = new ScrollEventArgs(ScrollEventType.EndScroll, si.NPos);
-            Scrolled?.Invoke(this, sargs);
+            Scrolled?.Invoke(this, new ScrollEventArgs(ScrollEventType.EndScroll, si.NPos));
           }
           else if (msg.WParam.ToInt32() == WinApiHelper.SB_THUMBTRACK) {
-            var sargs = new ScrollEventArgs(ScrollEventType.ThumbTrack, si.NPos);
-            Scrolled?.Invoke(this, sargs);
+            Scrolled?.Invoke(this, new ScrollEventArgs(ScrollEventType.ThumbTrack, si.NPos));
           }
         }
       }
@@ -453,9 +451,9 @@ namespace Authenticator {
 
     public TextBox RenameTextbox {
       get {
-        var hasvscroll = Height < Items.Count * ItemHeight;
+        var hasVScroll = Height < Items.Count * ItemHeight;
         var labelMaxWidth = GetMaxAvailableLabelWidth(Width - Margin.Horizontal - DefaultPadding.Horizontal -
-                                                      (hasvscroll ? SystemInformation.VerticalScrollBarWidth : 0));
+                                                      (hasVScroll ? SystemInformation.VerticalScrollBarWidth : 0));
         if (renameTextbox == null) {
           renameTextbox = new TextBox();
           renameTextbox.Name = "renameTextBox";
@@ -511,7 +509,7 @@ namespace Authenticator {
       if (item != null) {
         var newname = RenameTextbox.Text.Trim();
         if (newname.Length != 0) {
-          // force the autowidth to be recaculated when we set the name
+          // force the auto width to be recalculated when we set the name
           item.AutoWidth = 0;
           item.Authenticator.Name = newname;
           RefreshItem(item.Index);
@@ -628,7 +626,7 @@ namespace Authenticator {
         return;
       }
 
-      // reprotect the authenticator
+      // re-protect the authenticator
       var auth = item.Authenticator;
       if (auth.AuthenticatorData == null) {
         return;
@@ -659,6 +657,7 @@ namespace Authenticator {
 
       var menuItem = AuthHelper.AddMenuItem(ContextMenuStrip.Items, "Icon", "iconMenuItem");
       AuthHelper.AddMenuItem(menuItem.DropDownItems, "Auto", "iconMenuItem_default", ContextMenu_Click, tag: string.Empty);
+      AuthHelper.AddMenuItem(menuItem.DropDownItems, "File...", "iconMenuItem_File", ContextMenu_Click);
       AuthHelper.AddMenuItem(menuItem.DropDownItems);
       var iconIndex = 1;
       var parentItem = menuItem;
@@ -678,8 +677,6 @@ namespace Authenticator {
           AuthHelper.AddMenuItem(parentItem.DropDownItems, icon, "iconMenuItem_" + iconIndex++, ContextMenu_Click, Keys.None, iconFile, AuthHelper.GetIconBitmap(iconFile));
         }
       }
-      AuthHelper.AddMenuItem(menuItem.DropDownItems);
-      AuthHelper.AddMenuItem(menuItem.DropDownItems, "Other...", "iconMenuItem_0", ContextMenu_Click, tag: "OTHER");
 
       AuthHelper.AddMenuItem(ContextMenuStrip.Items, "Rename", "renameMenuItem", ContextMenu_Click, Keys.F2);
       AuthHelper.AddMenuItem(ContextMenuStrip.Items, "Set Password...", "setPasswordMenuItem", ContextMenu_Click, Keys.Control | Keys.P);
@@ -748,16 +745,16 @@ namespace Authenticator {
       menuItem.Visible = !(auth.AuthenticatorData is HotpAuthenticator);
     }
 
-    private void ProcessMenu(ToolStripItem menuitem) {
+    private void ProcessMenu(ToolStripItem menuItem) {
       var item = CurrentItem;
       var auth = item.Authenticator;
 
       // check and perform each menu
-      switch (menuitem.Name) {
+      switch (menuItem.Name) {
         case "setPasswordMenuItem": {
-            // check if the authentcated is still protected
-            var wasprotected = UnprotectAuthenticator(item);
-            if (wasprotected == DialogResult.Cancel) {
+            // check if the authenticated is still protected
+            var wasProtected = UnprotectAuthenticator(item);
+            if (wasProtected == DialogResult.Cancel) {
               return;
             }
 
@@ -768,11 +765,11 @@ namespace Authenticator {
                 return;
               }
 
-              // set the encrpytion
+              // set the encryption
               var password = form.Password;
               if (string.IsNullOrEmpty(password) == false) {
                 auth.AuthenticatorData.SetEncryption(Authenticator.PasswordTypes.Explicit, password);
-                // can't have autorefresh on
+                // can't have auto refresh on
                 auth.AutoRefresh = false;
 
                 item.UnprotectCount = 0;
@@ -789,7 +786,7 @@ namespace Authenticator {
               RefreshCurrentItem();
             }
             finally {
-              if (wasprotected == DialogResult.OK) {
+              if (wasProtected == DialogResult.OK) {
                 ProtectAuthenticator(item);
               }
             }
@@ -798,7 +795,7 @@ namespace Authenticator {
           }
 
         case "showCodeMenuItem": {
-            // check if the authentcated is still protected
+            // check if the authenticated is still protected
             if (UnprotectAuthenticator(item) == DialogResult.Cancel) {
               return;
             }
@@ -816,9 +813,9 @@ namespace Authenticator {
           }
 
         case "copyCodeMenuItem": {
-            // check if the authentcated is still protected
-            var wasprotected = UnprotectAuthenticator(item);
-            if (wasprotected == DialogResult.Cancel) {
+            // check if the authenticated is still protected
+            var wasProtected = UnprotectAuthenticator(item);
+            if (wasProtected == DialogResult.Cancel) {
               return;
             }
 
@@ -826,7 +823,7 @@ namespace Authenticator {
               auth.CopyCodeToClipboard(Parent as Form, item.LastCode, true);
             }
             finally {
-              if (wasprotected == DialogResult.OK) {
+              if (wasProtected == DialogResult.OK) {
                 ProtectAuthenticator(item);
               }
             }
@@ -848,27 +845,27 @@ namespace Authenticator {
           }
 
         case "showRestoreCodeMenuItem": {
-            // check if the authentcated is still protected
-            var wasprotected = UnprotectAuthenticator(item);
-            if (wasprotected == DialogResult.Cancel) {
+            // check if the authenticated is still protected
+            var wasProtected = UnprotectAuthenticator(item);
+            if (wasProtected == DialogResult.Cancel) {
               return;
             }
 
             try {
-              if (wasprotected != DialogResult.OK) {
+              if (wasProtected != DialogResult.OK) {
                 // confirm current main password
-                var mainform = Parent as MainForm;
-                if ((mainform.Config.PasswordType & Authenticator.PasswordTypes.Explicit) != 0) {
+                var mainForm = Parent as MainForm;
+                if ((mainForm.Config.PasswordType & Authenticator.PasswordTypes.Explicit) != 0) {
                   var invalidPassword = false;
                   while (true) {
-                    var checkform = new GetPasswordForm();
-                    checkform.InvalidPassword = invalidPassword;
-                    var result = checkform.ShowDialog(this);
+                    var checkForm = new GetPasswordForm();
+                    checkForm.InvalidPassword = invalidPassword;
+                    var result = checkForm.ShowDialog(this);
                     if (result == DialogResult.Cancel) {
                       return;
                     }
 
-                    if (mainform.Config.IsPassword(checkform.Password)) {
+                    if (mainForm.Config.IsPassword(checkForm.Password)) {
                       break;
                     }
 
@@ -883,7 +880,7 @@ namespace Authenticator {
               form.ShowDialog(Parent as Form);
             }
             finally {
-              if (wasprotected == DialogResult.OK) {
+              if (wasProtected == DialogResult.OK) {
                 ProtectAuthenticator(item);
               }
             }
@@ -892,27 +889,27 @@ namespace Authenticator {
           }
 
         case "showGoogleSecretMenuItem": {
-            // check if the authentcated is still protected
-            var wasprotected = UnprotectAuthenticator(item);
-            if (wasprotected == DialogResult.Cancel) {
+            // check if the authenticated is still protected
+            var wasProtected = UnprotectAuthenticator(item);
+            if (wasProtected == DialogResult.Cancel) {
               return;
             }
 
             try {
-              if (wasprotected != DialogResult.OK) {
+              if (wasProtected != DialogResult.OK) {
                 // confirm current main password
-                var mainform = Parent as MainForm;
-                if ((mainform.Config.PasswordType & Authenticator.PasswordTypes.Explicit) != 0) {
+                var mainForm = Parent as MainForm;
+                if ((mainForm.Config.PasswordType & Authenticator.PasswordTypes.Explicit) != 0) {
                   var invalidPassword = false;
                   while (true) {
-                    var checkform = new GetPasswordForm();
-                    checkform.InvalidPassword = invalidPassword;
-                    var result = checkform.ShowDialog(this);
+                    var checkForm = new GetPasswordForm();
+                    checkForm.InvalidPassword = invalidPassword;
+                    var result = checkForm.ShowDialog(this);
                     if (result == DialogResult.Cancel) {
                       return;
                     }
 
-                    if (mainform.Config.IsPassword(checkform.Password)) {
+                    if (mainForm.Config.IsPassword(checkForm.Password)) {
                       break;
                     }
 
@@ -927,7 +924,7 @@ namespace Authenticator {
               form.ShowDialog(Parent as Form);
             }
             finally {
-              if (wasprotected == DialogResult.OK) {
+              if (wasProtected == DialogResult.OK) {
                 ProtectAuthenticator(item);
               }
             }
@@ -937,8 +934,8 @@ namespace Authenticator {
 
         case "showTrionSecretMenuItem": {
             // check if the authenticator is still protected
-            var wasprotected = UnprotectAuthenticator(item);
-            if (wasprotected == DialogResult.Cancel) {
+            var wasProtected = UnprotectAuthenticator(item);
+            if (wasProtected == DialogResult.Cancel) {
               return;
             }
 
@@ -949,7 +946,7 @@ namespace Authenticator {
               form.ShowDialog(Parent as Form);
             }
             finally {
-              if (wasprotected == DialogResult.OK) {
+              if (wasProtected == DialogResult.OK) {
                 ProtectAuthenticator(item);
               }
             }
@@ -989,9 +986,9 @@ namespace Authenticator {
           }
 
         case "syncMenuItem": {
-            // check if the authentcated is still protected
-            var wasprotected = UnprotectAuthenticator(item);
-            if (wasprotected == DialogResult.Cancel) {
+            // check if the authenticated is still protected
+            var wasProtected = UnprotectAuthenticator(item);
+            if (wasProtected == DialogResult.Cancel) {
               return;
             }
 
@@ -1003,7 +1000,7 @@ namespace Authenticator {
             }
             finally {
               Cursor.Current = cursor;
-              if (wasprotected == DialogResult.OK) {
+              if (wasProtected == DialogResult.OK) {
                 ProtectAuthenticator(item);
               }
             }
@@ -1012,75 +1009,59 @@ namespace Authenticator {
           }
 
         default:
-          if (menuitem.Name.StartsWith("iconMenuItem_")) {
-            if (menuitem.Tag is string tag && "OTHER".Equals(tag)) {
-              do {
-                // other..choose an image file
-                var ofd = new OpenFileDialog {
-                  AddExtension = true,
-                  CheckFileExists = true,
-                  DefaultExt = "png",
-                  InitialDirectory = Directory.GetCurrentDirectory(),
-                  FileName = string.Empty,
-                  Filter = "PNG Image Files (*.png)|*.png|GIF Image Files (*.gif)|*.gif|All Files (*.*)|*.*",
-                  RestoreDirectory = true,
-                  ShowReadOnly = false,
-                  Title = "Load Icon Image (png or gif @ 48x48)"
-                };
-                var result = ofd.ShowDialog(this);
-                if (result != DialogResult.OK) {
-                  return;
-                }
+          if (menuItem.Name.Equals("iconMenuItem_File")) {
+            // other..choose an image file
+            var ofd = new OpenFileDialog {
+              AddExtension = true,
+              CheckFileExists = true,
+              DefaultExt = "png",
+              //InitialDirectory = Updater.CurrentFileLocation,
+              FileName = string.Empty,
+              Filter = "PNG Image Files (*.png)|*.png|GIF Image Files (*.gif)|*.gif|All Files (*.*)|*.*",
+              RestoreDirectory = true,
+              ShowReadOnly = false,
+              Title = "Load Icon Image (48x48)"
+            };
+            if (ofd.ShowDialog(this) != DialogResult.OK)
+              return;
 
-                try {
-                  // get the image and create an icon if not already the right size
-                  using (var iconimage = (Bitmap)Image.FromFile(ofd.FileName)) {
-                    if (iconimage.Width != ICON_WIDTH || iconimage.Height != ICON_HEIGHT) {
-                      using (var scaled = new Bitmap(ICON_WIDTH, ICON_HEIGHT)) {
-                        using (var g = Graphics.FromImage(scaled)) {
-                          g.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.HighQuality;
-                          g.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.HighQualityBicubic;
-                          g.PixelOffsetMode = System.Drawing.Drawing2D.PixelOffsetMode.HighQuality;
-                          g.DrawImage(iconimage, new Rectangle(0, 0, ICON_WIDTH, ICON_HEIGHT));
-                        }
-
-                        auth.Icon = scaled;
-                      }
+            try {
+              // get the image and create an icon if not already the right size
+              using (var iconImage = (Bitmap)Image.FromFile(ofd.FileName)) {
+                if (iconImage.Width != ICON_WIDTH || iconImage.Height != ICON_HEIGHT) {
+                  using (var scaled = new Bitmap(ICON_WIDTH, ICON_HEIGHT)) {
+                    using (var g = Graphics.FromImage(scaled)) {
+                      g.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.HighQuality;
+                      g.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.HighQualityBicubic;
+                      g.PixelOffsetMode = System.Drawing.Drawing2D.PixelOffsetMode.HighQuality;
+                      g.DrawImage(iconImage, new Rectangle(0, 0, ICON_WIDTH, ICON_HEIGHT));
                     }
-                    else {
-                      auth.Icon = iconimage;
-                    }
-
-                    RefreshCurrentItem();
+                    auth.Icon = scaled;
                   }
                 }
-                catch (Exception ex) {
-                  if (MessageBox.Show(Parent as Form,
-                        $"Error loading image file: {ex.Message}\nDo you want to try again?",
-                        Updater.ApplicationName,
-                        MessageBoxButtons.YesNo, MessageBoxIcon.Warning, MessageBoxDefaultButton.Button2) ==
-                      DialogResult.Yes) {
-                    continue;
-                  }
+                else {
+                  auth.Icon = iconImage;
                 }
-
-                break;
-              } while (true);
+                RefreshCurrentItem();
+              }
             }
-            else {
-              var tagValue = menuitem.Tag as string;
-              if (string.IsNullOrEmpty(tagValue)) {
-                var issuer = auth.AuthenticatorData?.Issuer ?? auth.Name;
-                if (issuer != null)
-                  auth.Skin = AuthHelper.DetectIconByIssuer(issuer);
-              }
-              else {
-                auth.Skin = tagValue.Length != 0 ? tagValue : null;
-              }
-              RefreshCurrentItem();
+            catch (Exception ex) {
+              MessageBox.Show(Parent as Form, $"Error loading image file: {ex.Message}",
+                Updater.ApplicationName, MessageBoxButtons.OK, MessageBoxIcon.Warning);
             }
           }
-
+          else if (menuItem.Name.StartsWith("iconMenuItem_")) {
+            var tagValue = menuItem.Tag as string;
+            if (string.IsNullOrEmpty(tagValue)) {
+              var issuer = auth.AuthenticatorData?.Issuer ?? auth.Name;
+              if (issuer != null)
+                auth.Skin = AuthHelper.DetectIconByIssuer(issuer);
+            }
+            else {
+              auth.Skin = tagValue.Length != 0 ? tagValue : null;
+            }
+            RefreshCurrentItem();
+          }
           break;
       }
     }
@@ -1088,9 +1069,9 @@ namespace Authenticator {
     public string GetItemCode(ListItem item, Screen screen = null) {
       var auth = item.Authenticator;
 
-      // check if the authentcated is still protected
-      var wasprotected = UnprotectAuthenticator(item, screen);
-      if (wasprotected == DialogResult.Cancel) {
+      // check if the authenticated is still protected
+      var wasProtected = UnprotectAuthenticator(item, screen);
+      if (wasProtected == DialogResult.Cancel) {
         return null;
       }
 
@@ -1098,7 +1079,7 @@ namespace Authenticator {
         return auth.CurrentCode;
       }
       finally {
-        if (wasprotected == DialogResult.OK) {
+        if (wasProtected == DialogResult.OK) {
           ProtectAuthenticator(item);
         }
       }
@@ -1109,7 +1090,7 @@ namespace Authenticator {
     }
 
     private void RefreshItem(ListItem item) {
-      // var hasvscroll = Height < Items.Count * ItemHeight;
+      // var hasVScroll = Height < Items.Count * ItemHeight;
       var y = ItemHeight * item.Index - ItemHeight * TopIndex;
       var rect = new Rectangle(0, y, Width, Height);
       Invalidate(rect, false);
@@ -1310,7 +1291,7 @@ namespace Authenticator {
         string code;
         if (showCode) {
           try {
-            // we we aren't autorefresh we just keep the same code up for the 10 seconds so it doesn't change even crossing the 30s boundary
+            // we we aren't auto refresh we just keep the same code up for the 10 seconds so it doesn't change even crossing the 30s boundary
             if (auth.AutoRefresh == false) {
               code = item.LastCode ?? auth.CurrentCode;
             }
@@ -1391,28 +1372,24 @@ namespace Authenticator {
       e.Graphics.FillRegion(backColorBrush, region);
       if (Items.Count > 0) {
         for (var i = 0; i < Items.Count; ++i) {
-          var irect = GetItemRectangle(i);
-          if (e.ClipRectangle.IntersectsWith(irect)) {
+          var iRect = GetItemRectangle(i);
+          if (e.ClipRectangle.IntersectsWith(iRect)) {
             if ((SelectionMode == SelectionMode.One && SelectedIndex == i)
                 || (SelectionMode == SelectionMode.MultiSimple && SelectedIndices.Contains(i))
                 || (SelectionMode == SelectionMode.MultiExtended && SelectedIndices.Contains(i))) {
-              var diea = new DrawItemEventArgs(e.Graphics, Font,
-                irect, i,
-                DrawItemState.Selected, ForeColor,
-                BackColor);
-              OnDrawItem(diea, e.ClipRectangle);
-              base.OnDrawItem(diea);
+              var ea = new DrawItemEventArgs(e.Graphics, Font, iRect, i,
+                DrawItemState.Selected, ForeColor, BackColor);
+              OnDrawItem(ea, e.ClipRectangle);
+              base.OnDrawItem(ea);
             }
             else {
-              var diea = new DrawItemEventArgs(e.Graphics, Font,
-                irect, i,
-                DrawItemState.Default, ForeColor,
-                BackColor);
-              OnDrawItem(diea, e.ClipRectangle);
-              base.OnDrawItem(diea);
+              var ea = new DrawItemEventArgs(e.Graphics, Font, iRect, i,
+                DrawItemState.Default, ForeColor, BackColor);
+              OnDrawItem(ea, e.ClipRectangle);
+              base.OnDrawItem(ea);
             }
 
-            region.Complement(irect);
+            region.Complement(iRect);
           }
         }
       }
