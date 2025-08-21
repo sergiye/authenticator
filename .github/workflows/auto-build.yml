@@ -32,4 +32,4 @@ jobs:
         with:
           name: authenticator
           path: |
-            bin/Authenticator
+            Authenticator/bin

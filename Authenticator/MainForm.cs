@@ -470,9 +470,9 @@ namespace Authenticator {
       foreach (var auth in Config) {
         var ali = new AuthenticatorListBox.ListItem(auth, index);
         if (added != null && added == auth && auth.AutoRefresh == false &&
-            !(auth.AuthenticatorData is HotpAuthenticator)) {
+            auth.AuthenticatorData is not HotpAuthenticator) {
           ali.LastUpdate = DateTime.Now;
-          ali.DisplayUntil = DateTime.Now.AddSeconds(10);
+          ali.DisplayUntil = DateTime.MinValue; //DateTime.Now.AddSeconds(10);
         }
 
         authenticatorList.Items.Add(ali);
