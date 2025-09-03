@@ -45,7 +45,7 @@ namespace Authenticator {
       Updater.Subscribe(
         (message, isError) => { MessageBox.Show(message, Updater.ApplicationName, MessageBoxButtons.OK, isError ? MessageBoxIcon.Warning : MessageBoxIcon.Information); },
         (message) => { return MessageBox.Show(message, Updater.ApplicationName, MessageBoxButtons.OKCancel, MessageBoxIcon.Question) == DialogResult.OK; },
-        Application.Exit
+        () => { exitOptionMenuItem_Click(null, EventArgs.Empty); }
       );
 
       // initialize UI
@@ -69,13 +69,9 @@ namespace Authenticator {
       };
       passwordTimer.Interval = 500;
 
-      var timer = new Timer();
-      timer.Tick += async (s, eArgs) => {
-        timer.Enabled = false;
-        timer.Enabled = !await Updater.CheckForUpdatesAsync(true);
-      };
-      timer.Interval = 3000;
-      timer.Enabled = true;
+      var timer = new System.Threading.Timer((_) => {
+        Updater.CheckForUpdates(Updater.CheckUpdatesMode.AutoUpdate);
+      }, null, 10 * 1000, 1000 * 60 * 60 * 24);
 
       // hook into System time change event
       Microsoft.Win32.SystemEvents.TimeChanged += SystemEvents_TimeChanged;
@@ -961,7 +957,7 @@ namespace Authenticator {
 
       //Help section
       AuthHelper.AddMenuItem(helpToolStripMenuItem.DropDownItems, "Site", "siteMenuItem", (s, e) => Updater.VisitAppSite(), Keys.Control | Keys.F1);
-      AuthHelper.AddMenuItem(helpToolStripMenuItem.DropDownItems, "Check for updates", "checkUpdatesMenuItem", (s, e) => Updater.CheckForUpdates(false), Keys.Control | Keys.U);
+      AuthHelper.AddMenuItem(helpToolStripMenuItem.DropDownItems, "Check for updates", "checkUpdatesMenuItem", (s, e) => Updater.CheckForUpdates(Updater.CheckUpdatesMode.AllMessages), Keys.Control | Keys.U);
       AuthHelper.AddMenuItem(helpToolStripMenuItem.DropDownItems, "About", "aboutOptionsMenuItem", aboutOptionMenuItem_Click, Keys.F1);
     }
 
@@ -999,7 +995,7 @@ namespace Authenticator {
       }
 
       AuthHelper.AddMenuItem(menuItems, "Site", "siteMenuItem", (s, e) => Updater.VisitAppSite());
-      AuthHelper.AddMenuItem(menuItems, "Check for updates", "checkUpdatesMenuItem", (s, e) => Updater.CheckForUpdates(false));
+      AuthHelper.AddMenuItem(menuItems, "Check for updates", "checkUpdatesMenuItem", (s, e) => Updater.CheckForUpdates(Updater.CheckUpdatesMode.AllMessages));
       AuthHelper.AddMenuItem(menuItems, "About", "aboutOptionsMenuItem", aboutOptionMenuItem_Click);
       AuthHelper.AddMenuItem(menuItems);
       AuthHelper.AddMenuItem(menuItems, "Exit", "exitOptionsMenuItem", exitOptionMenuItem_Click);
@@ -1176,6 +1172,10 @@ namespace Authenticator {
     }
 
     private void exitOptionMenuItem_Click(object sender, EventArgs e) {
+      if (InvokeRequired) {
+        Invoke(new EventHandler(exitOptionMenuItem_Click), sender, e);
+        return;
+      }
       mExplicitClose = true;
       Close();
     }

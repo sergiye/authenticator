@@ -210,8 +210,8 @@
     <Content Include="app.ico" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="sergiye.Common" Version="1.*" />
-    <PackageReference Include="sergiye.Common.UI" Version="1.*" />
+    <PackageReference Include="SergiyE.Common" Version="1.*" />
+    <PackageReference Include="SergiyE.Common.UI" Version="1.*" />
     <PackageReference Include="BouncyCastle">
       <Version>1.8.9</Version>
     </PackageReference>
