@@ -5,7 +5,6 @@ using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using System.Security;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Web;
@@ -13,7 +12,6 @@ using System.Windows.Forms;
 using System.Xml;
 using ICSharpCode.SharpZipLib.Core;
 using ICSharpCode.SharpZipLib.Zip;
-using Microsoft.Win32;
 using Org.BouncyCastle.Bcpg;
 using Org.BouncyCastle.Bcpg.OpenPgp;
 using Org.BouncyCastle.Crypto.Generators;
@@ -25,7 +23,6 @@ using Svg;
 
 namespace Authenticator {
   class AuthHelper {
-    private const string RUNKEY = @"Software\Microsoft\Windows\CurrentVersion\Run";
     private const string ResourceNamePrefix = "Authenticator.Resources.";
     private static readonly Assembly assembly = Assembly.GetExecutingAssembly();
 
@@ -313,16 +310,6 @@ namespace Authenticator {
             throw;
           }
         }
-      }
-    }
-
-    public static void SetStartWithWindows(bool enabled) {
-      if (enabled) {
-        // get path of exe and minimize flag
-        WriteRegistryValue(RUNKEY + "\\" + Updater.ApplicationName, Application.ExecutablePath + " -min");
-      }
-      else {
-        DeleteRegistryKey(RUNKEY + "\\" + Updater.ApplicationName);
       }
     }
 
@@ -664,7 +651,7 @@ namespace Authenticator {
       }
     }
 
-    public static ToolStripMenuItem AddMenuItem(ToolStripItemCollection menuItems, string text = null, string name = null, EventHandler onClick = null, Keys shortcut = Keys.None, object tag = null, Image icon = null) {
+    public static ToolStripMenuItem AddMenuItem(ToolStripItemCollection menuItems, string text = null, string name = null, EventHandler onClick = null, Keys shortcut = Keys.None, object tag = null, Image icon = null, bool isChecked = false, bool checkOnClick = false) {
       if (text == null) {
         menuItems.Add(new ToolStripSeparator { Name = name });
         return null;
@@ -672,6 +659,8 @@ namespace Authenticator {
       var menuItem = new ToolStripMenuItem(text) {
         Name = name,
         Tag = tag,
+        Checked = isChecked,
+        CheckOnClick = checkOnClick,
       };
       menuItem.Click += onClick;
       if (shortcut != Keys.None) {
@@ -719,96 +708,6 @@ namespace Authenticator {
       }
 
       return pairs;
-    }
-
-    #endregion
-
-    #region Registry Function
-
-    public static void WriteRegistryValue(string keyname, object value) {
-      RegistryKey basekey;
-      var keyparts = keyname.Split('\\').ToList();
-      switch (keyparts[0]) {
-        case "HKEY_CLASSES_ROOT":
-          basekey = Registry.ClassesRoot;
-          keyparts.RemoveAt(0);
-          break;
-        case "HKEY_CURRENT_CONFIG":
-          basekey = Registry.CurrentConfig;
-          keyparts.RemoveAt(0);
-          break;
-        case "HKEY_CURRENT_USER":
-          basekey = Registry.CurrentUser;
-          keyparts.RemoveAt(0);
-          break;
-        case "HKEY_LOCAL_MACHINE":
-          basekey = Registry.LocalMachine;
-          keyparts.RemoveAt(0);
-          break;
-        case "HKEY_PERFORMANCE_DATA":
-          basekey = Registry.PerformanceData;
-          keyparts.RemoveAt(0);
-          break;
-        default:
-          basekey = Registry.CurrentUser;
-          break;
-      }
-
-      var subkey = string.Join("\\", keyparts.Take(keyparts.Count - 1).ToArray());
-      var valuekey = keyparts[keyparts.Count - 1];
-
-      try {
-        using (var key = basekey.CreateSubKey(subkey)) {
-          key.SetValue(valuekey, value);
-        }
-      }
-      catch (SecurityException) {
-      }
-    }
-
-    public static void DeleteRegistryKey(string keyname) {
-      RegistryKey baseKey;
-      var parts = keyname.Split('\\').ToList();
-      switch (parts[0]) {
-        case "HKEY_CLASSES_ROOT":
-          baseKey = Registry.ClassesRoot;
-          parts.RemoveAt(0);
-          break;
-        case "HKEY_CURRENT_CONFIG":
-          baseKey = Registry.CurrentConfig;
-          parts.RemoveAt(0);
-          break;
-        case "HKEY_CURRENT_USER":
-          baseKey = Registry.CurrentUser;
-          parts.RemoveAt(0);
-          break;
-        case "HKEY_LOCAL_MACHINE":
-          baseKey = Registry.LocalMachine;
-          parts.RemoveAt(0);
-          break;
-        case "HKEY_PERFORMANCE_DATA":
-          baseKey = Registry.PerformanceData;
-          parts.RemoveAt(0);
-          break;
-        default:
-          baseKey = Registry.CurrentUser;
-          break;
-      }
-
-      var subKey = string.Join("\\", parts.Take(parts.Count - 1).ToArray());
-      var valueKey = parts[parts.Count - 1];
-
-      try {
-        using (var key = baseKey.CreateSubKey(subKey)) {
-          if (key == null) return;
-          if (key.GetValueNames().Contains(valueKey)) key.DeleteValue(valueKey, false);
-          if (key.GetSubKeyNames().Contains(valueKey)) key.DeleteSubKeyTree(valueKey, false);
-          // if the parent now has no values, we can remove it too
-          if (key.SubKeyCount == 0 && key.ValueCount == 0) baseKey.DeleteSubKey(subKey, false);
-        }
-      }
-      catch (SecurityException) {
-      }
     }
 
     #endregion

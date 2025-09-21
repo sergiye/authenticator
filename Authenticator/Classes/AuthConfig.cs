@@ -1,4 +1,5 @@
-﻿using System;
+﻿using sergiye.Common;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Drawing;
@@ -47,10 +48,9 @@ namespace Authenticator {
 
     #region static settings
 
-    private static bool alwaysOnTop;
     private static bool useTrayIcon;
+    private static bool startMinimized;
     private static NotifyActions notifyAction;
-    private static bool startWithWindows;
     private static bool autoSize;
     private static Point position = Point.Empty;
     private static int width;
@@ -73,101 +73,77 @@ namespace Authenticator {
 
     public string Filename { get; set; }
 
-    public static bool AlwaysOnTop {
-      get => alwaysOnTop;
-      set {
-        alwaysOnTop = value;
-        if (OnConfigChanged != null) {
-          OnConfigChanged(new ConfigChangedEventArgs("AlwaysOnTop"));
-        }
-      }
-    }
+    public static bool AlwaysOnTop { get; set; }
 
     public static bool UseTrayIcon {
       get => useTrayIcon;
       set {
+        if (useTrayIcon == value) return;
         useTrayIcon = value;
-        if (OnConfigChanged != null) {
-          OnConfigChanged(new ConfigChangedEventArgs("UseTrayIcon"));
-        }
+        OnConfigChanged?.Invoke(new ConfigChangedEventArgs("UseTrayIcon"));
+      }
+    }
+
+    public static bool StartMinimized {
+      get => startMinimized;
+      set {
+        if (startMinimized == value) return;
+        startMinimized = value;
+        OnConfigChanged?.Invoke(new ConfigChangedEventArgs("StartMinimized"));
       }
     }
 
     public static NotifyActions NotifyAction {
       get => notifyAction;
       set {
+        if (notifyAction == value) return;
         notifyAction = value;
-        if (OnConfigChanged != null) {
-          OnConfigChanged(new ConfigChangedEventArgs("NotifyAction"));
-        }
-      }
-    }
-
-    public static bool StartWithWindows {
-      get => startWithWindows;
-      set {
-        startWithWindows = value;
-        if (OnConfigChanged != null) {
-          OnConfigChanged(new ConfigChangedEventArgs("StartWithWindows"));
-        }
+        OnConfigChanged?.Invoke(new ConfigChangedEventArgs("NotifyAction"));
       }
     }
 
     public static bool AutoSize {
       get => autoSize;
       set {
+        if (autoSize == value) return;
         autoSize = value;
-        if (OnConfigChanged != null) {
-          OnConfigChanged(new ConfigChangedEventArgs("AutoSize"));
-        }
+        OnConfigChanged?.Invoke(new ConfigChangedEventArgs("AutoSize"));
       }
     }
 
     public static Point Position {
       get => position;
       set {
-        if (position != value) {
-          position = value;
-          if (OnConfigChanged != null) {
-            OnConfigChanged(new ConfigChangedEventArgs("Position"));
-          }
-        }
+        if (position == value) return;
+        position = value;
+        OnConfigChanged?.Invoke(new ConfigChangedEventArgs("Position"));
       }
     }
 
     public static int Width {
       get => width;
       set {
-        if (width != value) {
-          width = value;
-          if (OnConfigChanged != null) {
-            OnConfigChanged(new ConfigChangedEventArgs("Width"));
-          }
-        }
+        if (width == value) return;
+        width = value;
+        OnConfigChanged?.Invoke(new ConfigChangedEventArgs("Width"));
       }
     }
 
     public static int Height {
       get => height;
       set {
-        if (height != value) {
-          height = value;
-          if (OnConfigChanged != null) {
-            OnConfigChanged(new ConfigChangedEventArgs("Height"));
-          }
-        }
+        if (height == value) return;
+        height = value;
+        OnConfigChanged?.Invoke(new ConfigChangedEventArgs("Height"));
       }
     }
 
     public static string Theme {
       get => theme;
       set {
-        if (theme != value) {
-          theme = value;
-          if (OnConfigChanged != null) {
-            OnConfigChanged(new ConfigChangedEventArgs("Theme"));
-          }
-        }
+        if (theme == value) return;
+        theme = value;
+        OnConfigChanged?.Invoke(new ConfigChangedEventArgs("Theme"));
       }
     }
 
@@ -295,9 +271,7 @@ namespace Authenticator {
     }
 
     public void OnAuthAuthenticatorChanged(AuthAuthenticator sender, AuthAuthenticatorChangedEventArgs e) {
-      if (OnConfigChanged != null) {
-        OnConfigChanged(new ConfigChangedEventArgs("Authenticator", sender, e));
-      }
+      OnConfigChanged?.Invoke(new ConfigChangedEventArgs("Authenticator", sender, e));
     }
 
     #region ICloneable
@@ -435,11 +409,18 @@ namespace Authenticator {
               break;
 
             case "alwaysontop":
-              alwaysOnTop = reader.ReadElementContentAsBoolean();
+              AlwaysOnTop = reader.ReadElementContentAsBoolean();
+              break;
+
+            case "autoUpdate":
+              Updater.AutoUpdate = reader.ReadElementContentAsBoolean();
               break;
 
             case "usetrayicon":
-              useTrayIcon = reader.ReadElementContentAsBoolean();
+              UseTrayIcon = reader.ReadElementContentAsBoolean();
+              break;
+            case "startMinimized":
+              StartMinimized = reader.ReadElementContentAsBoolean();
               break;
 
             case "notifyaction":
@@ -453,10 +434,6 @@ namespace Authenticator {
                 }
               }
 
-              break;
-
-            case "startwithwindows":
-              startWithWindows = reader.ReadElementContentAsBoolean();
               break;
 
             case "autosize":
@@ -557,16 +534,20 @@ namespace Authenticator {
       writer.WriteValue(AlwaysOnTop);
       writer.WriteEndElement();
       //
+      writer.WriteStartElement("autoUpdate");
+      writer.WriteValue(Updater.AutoUpdate);
+      writer.WriteEndElement();
+      //
       writer.WriteStartElement("usetrayicon");
       writer.WriteValue(UseTrayIcon);
       writer.WriteEndElement();
       //
-      writer.WriteStartElement("notifyaction");
-      writer.WriteValue(Enum.GetName(typeof(NotifyActions), NotifyAction));
+      writer.WriteStartElement("startMinimized");
+      writer.WriteValue(StartMinimized);
       writer.WriteEndElement();
       //
-      writer.WriteStartElement("startwithwindows");
-      writer.WriteValue(StartWithWindows);
+      writer.WriteStartElement("notifyaction");
+      writer.WriteValue(Enum.GetName(typeof(NotifyActions), NotifyAction));
       writer.WriteEndElement();
       //
       writer.WriteStartElement("autosize");
