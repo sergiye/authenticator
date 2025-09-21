@@ -974,9 +974,13 @@ namespace Authenticator {
       menuItems.Clear();
 
       AuthHelper.AddMenuItem(menuItems,"Show/Hide", "openOptionsMenuItem", ShowHideMenuItem_Click);
-      AuthHelper.AddMenuItem(menuItems);
 
       if (Config != null && Config.Count != 0) {
+        var menuItem = AuthHelper.AddMenuItem(menuItems, "Click Action", "defaultActionOptionsMenuItem");
+        AuthHelper.AddMenuItem(menuItem.DropDownItems, "Show Notification", "defaultActionNotificationOptionsMenuItem", defaultActionNotificationOptionsMenuItem_Click);
+        AuthHelper.AddMenuItem(menuItem.DropDownItems, "Copy To Clipboard", "defaultActionCopyToClipboardOptionsMenuItem", defaultActionCopyToClipboardOptionsMenuItem_Click);
+        AuthHelper.AddMenuItem(menuItems);
+
         // because of window size, we only show first 30.
         // @todo change to MRU
         var index = 1;
@@ -984,28 +988,8 @@ namespace Authenticator {
           AuthHelper.AddMenuItem(menuItems, index + ". " + auth.Name, onClick: authenticatorOptionsMenuItem_Click, tag: auth);
           index++;
         }
-
-        AuthHelper.AddMenuItem(menuItems);
-
-        var menuItem = AuthHelper.AddMenuItem(menuItems, "Action", "defaultActionOptionsMenuItem");
-        var subItem = new ToolStripMenuItem("Show Notification") {
-          Name = "defaultActionNotificationOptionsMenuItem"
-        };
-        subItem.Click += defaultActionNotificationOptionsMenuItem_Click;
-        menuItem.DropDownItems.Add(subItem);
-        subItem = new ToolStripMenuItem("Copy To Clipboard") {
-          Name = "defaultActionCopyToClipboardOptionsMenuItem"
-        };
-        subItem.Click += defaultActionCopyToClipboardOptionsMenuItem_Click;
-        menuItem.DropDownItems.Add(subItem);
-        menuItems.Add(menuItem);
-
-        AuthHelper.AddMenuItem(menuItems);
       }
 
-      AuthHelper.AddMenuItem(menuItems, "Site", "siteMenuItem", (s, e) => Updater.VisitAppSite());
-      AuthHelper.AddMenuItem(menuItems, "Check for updates", "checkUpdatesMenuItem", (s, e) => Updater.CheckForUpdates(Updater.CheckUpdatesMode.AllMessages));
-      AuthHelper.AddMenuItem(menuItems, "About", "aboutOptionsMenuItem", aboutOptionMenuItem_Click);
       AuthHelper.AddMenuItem(menuItems);
       AuthHelper.AddMenuItem(menuItems, "Exit", "exitOptionsMenuItem", exitOptionMenuItem_Click);
     }
