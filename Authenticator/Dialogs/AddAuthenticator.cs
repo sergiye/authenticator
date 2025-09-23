@@ -45,7 +45,7 @@ namespace Authenticator {
     private void timer_Tick(object sender, EventArgs e) {
       if (Authenticator.AuthenticatorData != null && !(Authenticator.AuthenticatorData is HotpAuthenticator) &&
           codeProgress.Visible) {
-        var time = (int) (Authenticator.AuthenticatorData.ServerTime / 1000L) % Authenticator.AuthenticatorData.Period;
+        var time = (int) (global::Authenticator.Authenticator.CurrentTime / 1000L) % Authenticator.AuthenticatorData.Period;
         codeProgress.Value = time + 1;
         if (time == 0) {
           codeField.Text = Authenticator.AuthenticatorData.CurrentCode;
@@ -382,13 +382,6 @@ namespace Authenticator {
         codeField.Text = auth.CurrentCode;
 
         codeProgress.Maximum = period;
-
-        if (!(auth is HotpAuthenticator) && auth.ServerTimeDiff == 0L && syncErrorWarned == false) {
-          syncErrorWarned = true;
-          MessageBox.Show(this,
-            "Warning: unable to connect to Google to set time correctly.\nYour code may not be correct",
-            Updater.ApplicationName, MessageBoxButtons.OK, MessageBoxIcon.Warning);
-        }
       }
       catch (Exception ex) {
         MainForm.ErrorDialog(Owner, "Unable to create the authenticator. The secret code is probably invalid.", ex);

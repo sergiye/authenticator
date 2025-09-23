@@ -522,9 +522,6 @@ namespace Authenticator {
               }
             }
 
-            // sync
-            importedAuthenticator.Sync();
-
             authenticators.Add(importedAuthenticator);
           }
         }

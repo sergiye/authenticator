@@ -28,7 +28,7 @@ namespace Authenticator {
 
     private void newAuthenticatorTimer_Tick(object sender, EventArgs e) {
       if (Authenticator.AuthenticatorData != null && newAuthenticatorProgress.Visible) {
-        var time = (int) (Authenticator.AuthenticatorData.ServerTime / 1000L) % 30;
+        var time = (int) (global::Authenticator.Authenticator.CurrentTime / 1000L) % 30;
         newAuthenticatorProgress.Value = time + 1;
         if (time == 0) {
           codeField.Text = Authenticator.AuthenticatorData.CurrentCode;

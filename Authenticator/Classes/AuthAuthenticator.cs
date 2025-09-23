@@ -156,17 +156,6 @@ namespace Authenticator {
       }
     }
 
-    public void Sync() {
-      if (AuthenticatorData != null) {
-        try {
-          AuthenticatorData.Sync();
-        }
-        catch (EncryptedSecretDataException) {
-          // reset lastsync to force sync on next decryption
-        }
-      }
-    }
-
     public void CopyCodeToClipboard(Form form, string code = null, bool showError = false) {
       if (code == null) {
         code = CurrentCode;
@@ -299,12 +288,6 @@ namespace Authenticator {
             case "authenticator":
               AuthenticatorData = Authenticator.ReadXmlv2(reader, password);
               break;
-            // v2
-            case "servertimediff":
-              AuthenticatorData.ServerTimeDiff = reader.ReadElementContentAsLong();
-              break;
-
-
             default:
               reader.Skip();
               break;

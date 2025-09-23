@@ -66,8 +66,6 @@ namespace Authenticator {
       };
       passwordTimer.Interval = 500;
 
-      // hook into System time change event
-      Microsoft.Win32.SystemEvents.TimeChanged += SystemEvents_TimeChanged;
       // redirect mouse wheel events
       new MessageForwarder(authenticatorList, WinApiHelper.WM_MOUSEWHEEL);
 
@@ -255,9 +253,6 @@ namespace Authenticator {
 
       // save all the new authenticators
       foreach (var authenticator in authenticators) {
-        //sync
-        authenticator.Sync();
-
         // make sure there isn't a name clash
         var rename = 0;
         var importedName = authenticator.Name;
@@ -307,8 +302,6 @@ namespace Authenticator {
           // get the actual authenticator and ensure it is synced
           var imported = new List<AuthAuthenticator>();
           foreach (var importedAuthenticator in config) {
-            importedAuthenticator.Sync();
-
             // make sure there isn't a name clash
             var rename = 0;
             var importedName = importedAuthenticator.Name;
@@ -824,23 +817,6 @@ namespace Authenticator {
         e.Handled = true;
         passwordButton_Click(sender, null);
       }
-    }
-
-    private void SystemEvents_TimeChanged(object sender, EventArgs e) {
-      var cursor = Cursor.Current;
-      Cursor.Current = Cursors.WaitCursor;
-      foreach (var auth in Config) {
-        if (auth.AuthenticatorData != null && auth.AuthenticatorData.RequiresPassword == false) {
-          try {
-            auth.Sync();
-          }
-          catch (Exception) {
-            // ignored
-          }
-        }
-      }
-
-      Cursor.Current = cursor;
     }
 
     #endregion

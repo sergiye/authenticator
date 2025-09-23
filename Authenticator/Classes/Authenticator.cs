@@ -40,8 +40,6 @@ namespace Authenticator {
     #region Authenticator data
 
     public byte[] SecretKey { get; set; }
-    public long ServerTimeDiff { get; set; }
-    public long LastServerTime { get; set; }
     public PasswordTypes PasswordType { get; private set; }
     protected string Password { get; set; }
     protected byte[] SecretHash { get; private set; }
@@ -80,11 +78,9 @@ namespace Authenticator {
       }
     }
 
-    public long ServerTime => CurrentTime + ServerTimeDiff;
-
     public long CodeInterval =>
       // calculate the code interval; the server's time div 30,000
-      (CurrentTime + ServerTimeDiff) / ((long) Period * 1000L);
+      (CurrentTime) / ((long) Period * 1000L);
 
     public string CurrentCode {
       get {
@@ -111,15 +107,6 @@ namespace Authenticator {
     }
 
     protected virtual string CalculateCode(bool resync = false, long interval = -1) {
-      // sync time if required
-      if (resync || ServerTimeDiff == 0) {
-        if (interval > 0) {
-          ServerTimeDiff = interval * Period * 1000L - CurrentTime;
-        }
-        else {
-          Sync();
-        }
-      }
 
       HMac hmac;
       switch (HmacType) {
@@ -168,8 +155,6 @@ namespace Authenticator {
       return code;
     }
 
-    public abstract void Sync();
-
     #region Load / Save
 
     public static Authenticator ReadXmlv2(XmlReader reader, string password = null) {
@@ -195,10 +180,6 @@ namespace Authenticator {
       while (reader.EOF == false) {
         if (reader.IsStartElement()) {
           switch (reader.Name) {
-            case "servertimediff":
-              authenticator.ServerTimeDiff = reader.ReadElementContentAsLong();
-              break;
-
             //case "restorecodeverified":
             //	authenticator.RestoreCodeVerified = reader.ReadElementContentAsBoolean();
             //	break;
@@ -455,23 +436,11 @@ namespace Authenticator {
       while (reader.EOF == false) {
         if (reader.IsStartElement()) {
           switch (reader.Name) {
-            case "lastservertime":
-              LastServerTime = reader.ReadElementContentAsLong();
-              break;
-
-            case "servertimediff":
-              ServerTimeDiff = reader.ReadElementContentAsLong();
-              break;
-
             case "secretdata":
               SecretData = reader.ReadElementContentAsString();
               break;
-
             default:
-              if (ReadExtraXml(reader, reader.Name) == false) {
-                reader.Skip();
-              }
-
+              if (ReadExtraXml(reader, reader.Name) == false) reader.Skip();
               break;
           }
         }
@@ -486,13 +455,8 @@ namespace Authenticator {
         // no time sync
         return true;
       }
-      else if (ServerTimeDiff == 0 || LastServerTime == 0 || LastServerTime < DateTime.Now.AddHours(-24).Ticks) {
-        //Sync();
-        return true;
-      }
-      else {
-        return false;
-      }
+
+      return true;
     }
 
     public void WriteToWriter(XmlWriter writer) {
@@ -507,13 +471,6 @@ namespace Authenticator {
         writer.WriteRaw(EncryptedData);
       }
       else {
-        writer.WriteStartElement("servertimediff");
-        writer.WriteString(ServerTimeDiff.ToString());
-        writer.WriteEndElement();
-        //
-        writer.WriteStartElement("lastservertime");
-        writer.WriteString(LastServerTime.ToString());
-        writer.WriteEndElement();
         //
         writer.WriteStartElement("secretdata");
         writer.WriteString(SecretData);

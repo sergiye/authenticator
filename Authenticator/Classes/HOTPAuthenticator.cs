@@ -38,9 +38,6 @@ namespace Authenticator {
       Counter = counter;
     }
 
-    public override void Sync() {
-    }
-
     protected override string CalculateCode(bool sync = false, long counter = -1) {
       if (sync) {
         if (counter == -1) {

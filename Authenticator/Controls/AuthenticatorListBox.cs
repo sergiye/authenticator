@@ -154,7 +154,7 @@ namespace Authenticator {
           // for auto refresh we repaint the pie or the code too
           //int tillUpdate = (int)((auth.AuthenticatorData.ServerTime % ((long)auth.AuthenticatorData.Period * 1000L)) / 1000L);
           var tillUpdate = (int)Math.Round(
-              auth.AuthenticatorData.ServerTime % (auth.AuthenticatorData.Period * 1000L) / 1000L *
+            Authenticator.CurrentTime % (auth.AuthenticatorData.Period * 1000L) / 1000L *
               (360M / auth.AuthenticatorData.Period));
           if (item.LastUpdate == DateTime.MinValue || tillUpdate == 0) {
             Invalidate(new Rectangle(0, y, Width, ItemHeight), false);
@@ -677,7 +677,6 @@ namespace Authenticator {
 
       AuthHelper.AddMenuItem(ContextMenuStrip.Items, "Rename", "renameMenuItem", ContextMenu_Click, Keys.F2);
       AuthHelper.AddMenuItem(ContextMenuStrip.Items, "Set Password...", "setPasswordMenuItem", ContextMenu_Click, Keys.Control | Keys.P);
-      AuthHelper.AddMenuItem(ContextMenuStrip.Items, "Sync Time", "syncMenuItem", ContextMenu_Click, Keys.Control | Keys.R);
       AuthHelper.AddMenuItem(ContextMenuStrip.Items, "Delete", "deleteMenuItem", ContextMenu_Click);
     }
 
@@ -731,9 +730,6 @@ namespace Authenticator {
           }
         }
       }
-
-      menuItem = menu.Items.Cast<ToolStripItem>().FirstOrDefault(i => i.Name == "syncMenuItem") as ToolStripMenuItem;
-      menuItem.Visible = !(auth.AuthenticatorData is HotpAuthenticator);
     }
 
     private void ProcessMenu(ToolStripItem menuItem) {
@@ -907,29 +903,6 @@ namespace Authenticator {
             RenameTextbox.Tag = item;
             RenameTextbox.Visible = true;
             RenameTextbox.Focus();
-            break;
-          }
-
-        case "syncMenuItem": {
-            // check if the authenticated is still protected
-            var wasProtected = UnprotectAuthenticator(item);
-            if (wasProtected == DialogResult.Cancel) {
-              return;
-            }
-
-            var cursor = Cursor.Current;
-            try {
-              Cursor.Current = Cursors.WaitCursor;
-              auth.Sync();
-              RefreshItem(item);
-            }
-            finally {
-              Cursor.Current = cursor;
-              if (wasProtected == DialogResult.OK) {
-                ProtectAuthenticator(item);
-              }
-            }
-
             break;
           }
 
@@ -1260,7 +1233,7 @@ namespace Authenticator {
       if (clipRect.IntersectsWith(rect)) {
         if (auth.AutoRefresh) {
           var tillUpdate = (int)Math.Round(
-              auth.AuthenticatorData.ServerTime % (auth.AuthenticatorData.Period * 1000L) / 1000L * 
+            Authenticator.CurrentTime % (auth.AuthenticatorData.Period * 1000L) / 1000L * 
               (360M / auth.AuthenticatorData.Period));
           e.Graphics.DrawPie(piePen, rect.Left, rect.Top, 
             PIE_WIDTH, PIE_HEIGHT, PIE_STARTANGLE, PIE_SWEEPANGLE);
