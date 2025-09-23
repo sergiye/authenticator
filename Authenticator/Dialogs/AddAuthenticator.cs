@@ -29,8 +29,6 @@ namespace Authenticator {
 
     public AuthAuthenticator Authenticator { get; set; }
 
-    private bool syncErrorWarned;
-
     #region Form Events
 
     private void AddAuthenticator_Load(object sender, EventArgs e) {
@@ -149,17 +147,6 @@ namespace Authenticator {
 
     #region Private methods
 
-    private static bool IsValidFile(string filename) {
-      try {
-        // check path is valid
-        var fi = new FileInfo(filename);
-        return fi.Exists;
-      }
-      catch (Exception) {
-        return false;
-      }
-    }
-
     private bool VerifyAuthenticator(bool updateNameField) {
 
       var privateKey = secretCodeField.Text.Trim();
@@ -264,7 +251,7 @@ namespace Authenticator {
         }
       }
       
-      if (IsValidFile(privateKey)) {
+      if (File.Exists(privateKey)) {
         // assume this is the image file
         using (var bitmap = (Bitmap) Image.FromFile(privateKey)) {
           IBarcodeReader reader = new BarcodeReader();
@@ -312,7 +299,7 @@ namespace Authenticator {
           label = issuer + (string.IsNullOrEmpty(label) == false ? " (" + label + ")" : string.Empty);
         }
         if (!string.IsNullOrEmpty(label) && updateNameField) {
-          Authenticator.Name = nameField.Text = label;
+          Authenticator.Name = nameField.Text = HttpUtility.UrlDecode(label);
         }
         
         serial = qs["serial"];
