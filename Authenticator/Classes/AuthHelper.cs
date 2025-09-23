@@ -171,64 +171,36 @@ namespace Authenticator {
         config.IsReadOnly = true;
       }
 
-      try {
-        var data = File.ReadAllBytes(configFile);
-        if (data.Length == 0 || data[0] == 0) {
-          // switch to backup
-          if (File.Exists(configFile + ".bak")) {
-            data = File.ReadAllBytes(configFile + ".bak");
-            if (data.Length != 0 && data[0] != 0) {
-              File.WriteAllBytes(configFile, data);
-            }
-          }
-        }
-
-        bool changed;
-        using (var fs = new FileStream(configFile, FileMode.Open, FileAccess.Read)) {
-          var reader = XmlReader.Create(fs);
-          changed = config.ReadXml(reader, password);
-        }
-
-        config.Filename = configFile;
-
-        if (config.Version < AuthConfig.CurrentVersion) {
-          config.Upgraded = true;
-        }
-
-        if (changed && config.IsReadOnly == false) {
-          SaveConfig(config);
-        }
+      bool changed;
+      using (var fs = new FileStream(configFile, FileMode.Open, FileAccess.Read)) {
+        var reader = XmlReader.Create(fs);
+        changed = config.ReadXml(reader, password);
       }
-      catch (EncryptedSecretDataException) {
-        // we require a password
-        throw;
+
+      config.Filename = configFile;
+
+      if (config.Version < AuthConfig.CurrentVersion) {
+        config.Upgraded = true;
       }
-      catch (BadPasswordException) {
-        // we require a password
-        throw;
-      }
-      catch (Exception) {
-        //generic
-        throw;
+
+      if (changed && config.IsReadOnly == false) {
+        SaveConfig(config);
       }
 
       return config;
     }
 
     public static void SaveConfig(AuthConfig config) {
-      // create the xml
-      var settings = new XmlWriterSettings();
-      settings.Indent = true;
-      settings.Encoding = Encoding.UTF8;
 
-      // Issue 41 (http://code.google.com/p/winauth/issues/detail?id=41): saving may crash leaving file corrupt, so write into memory stream first before an atomic file write
+      var settings = new XmlWriterSettings {
+        Indent = true,
+        Encoding = Encoding.UTF8
+      };
+
+      // saving may crash leaving file corrupt, so write into memory stream first before an atomic file write
       using (var ms = new MemoryStream()) {
-        // save config into memory
-        using (var writer = XmlWriter.Create(ms, settings)) {
-          config.WriteXmlString(writer);
-        }
+        using (var writer = XmlWriter.Create(ms, settings)) config.WriteXmlString(writer);
 
-        // if no config file yet, use default
         if (string.IsNullOrEmpty(config.Filename)) {
           var configDirectory = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
             Updater.ApplicationName);
@@ -237,44 +209,17 @@ namespace Authenticator {
         }
 
         var fi = new FileInfo(config.Filename);
-        if (!fi.Exists || !fi.IsReadOnly) {
-          // write memory stream to file
-          try {
-            var data = ms.ToArray();
-
-            // getting instance of zerod files, so do some sanity checks
-            if (data.Length == 0 || data[0] == 0) {
-              throw new ApplicationException("Zero data when saving config");
-            }
-
-            var tempfile = config.Filename + ".tmp";
-
-            File.WriteAllBytes(tempfile, data);
-
-            // read it back
-            var verify = File.ReadAllBytes(tempfile);
-            if (verify.Length != data.Length || verify.SequenceEqual(data) == false) {
-              throw new ApplicationException("Save config doesn't compare with memory: " +
-                                             Convert.ToBase64String(data));
-            }
-
-            // move it to old file
-            File.Delete(config.Filename + ".bak");
-            if (File.Exists(config.Filename)) {
-              File.Move(config.Filename, config.Filename + ".bak");
-            }
-
-            File.Move(tempfile, config.Filename);
-          }
-          catch (UnauthorizedAccessException) {
-            // fail silently if read only
-            if (fi.IsReadOnly) {
-              config.IsReadOnly = true;
-              return;
-            }
-
-            throw;
-          }
+        if (fi.Exists && fi.IsReadOnly) return;
+        
+        try {
+          var data = ms.ToArray();
+          if (data.Length == 0 || data[0] == 0)
+            throw new ApplicationException("Zero data when saving config");
+          File.WriteAllBytes(config.Filename, data);
+        }
+        catch (UnauthorizedAccessException) {
+          if (!fi.IsReadOnly) throw;
+          config.IsReadOnly = true;
         }
       }
     }
