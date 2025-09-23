@@ -73,36 +73,6 @@ namespace Authenticator.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap ArcheAgeIcon {
-            get {
-                object obj = ResourceManager.GetObject("ArcheAgeIcon", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap ArenaNetIcon {
-            get {
-                object obj = ResourceManager.GetObject("ArenaNetIcon", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap BattleNetAuthenticatorIcon {
-            get {
-                object obj = ResourceManager.GetObject("BattleNetAuthenticatorIcon", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
         internal static System.Drawing.Bitmap BluePixel {
             get {
                 object obj = ResourceManager.GetObject("BluePixel", resourceCulture);
@@ -116,26 +86,6 @@ namespace Authenticator.Properties {
         internal static System.Drawing.Bitmap ChromeIcon {
             get {
                 object obj = ResourceManager.GetObject("ChromeIcon", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap DiabloIcon {
-            get {
-                object obj = ResourceManager.GetObject("DiabloIcon", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap GlyphIcon {
-            get {
-                object obj = ResourceManager.GetObject("GlyphIcon", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -193,39 +143,9 @@ namespace Authenticator.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap RiftIcon {
-            get {
-                object obj = ResourceManager.GetObject("RiftIcon", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
         internal static System.Drawing.Bitmap spinner24 {
             get {
                 object obj = ResourceManager.GetObject("spinner24", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap TrionAuthenticatorIcon {
-            get {
-                object obj = ResourceManager.GetObject("TrionAuthenticatorIcon", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap WarcraftIcon {
-            get {
-                object obj = ResourceManager.GetObject("WarcraftIcon", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }

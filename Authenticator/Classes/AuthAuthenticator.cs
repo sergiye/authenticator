@@ -15,13 +15,9 @@ namespace Authenticator {
     public const string ConfigSectionName = "AuthAuthenticator";
     public event AuthAuthenticatorChangedHandler OnAuthAuthenticatorChanged;
 
-    public Guid Id { get; set; }
-
     public int Index { get; set; }
 
     public Authenticator AuthenticatorData { get; set; }
-
-    public DateTime Created { get; set; }
 
     private string name;
     private string skin;
@@ -29,15 +25,12 @@ namespace Authenticator {
     private bool copyOnCode;
 
     public AuthAuthenticator() {
-      Id = Guid.NewGuid();
-      Created = DateTime.Now;
       autoRefresh = true;
     }
 
     public object Clone() {
       var clone = MemberwiseClone() as AuthAuthenticator;
 
-      clone.Id = Guid.NewGuid();
       clone.OnAuthAuthenticatorChanged = null;
       clone.AuthenticatorData =
         (AuthenticatorData != null ? AuthenticatorData.Clone() as Authenticator : null);
@@ -206,10 +199,6 @@ namespace Authenticator {
     public bool ReadXml(XmlReader reader, string password) {
       var changed = false;
 
-      if (Guid.TryParse(reader.GetAttribute("id"), out var id)) {
-        Id = id;
-      }
-
       var authenticatorType = reader.GetAttribute("type");
       if (string.IsNullOrEmpty(authenticatorType) == false) {
         var type = Assembly.GetExecutingAssembly().GetType(authenticatorType, false, true);
@@ -249,13 +238,6 @@ namespace Authenticator {
           switch (reader.Name) {
             case "name":
               Name = reader.ReadElementContentAsString();
-              break;
-
-            case "created":
-              var t = reader.ReadElementContentAsLong();
-              t += Convert.ToInt64(new TimeSpan(new DateTime(1970, 1, 1).Ticks).TotalMilliseconds);
-              t *= TimeSpan.TicksPerMillisecond;
-              Created = new DateTime(t).ToLocalTime();
               break;
 
             case "autorefresh":
@@ -304,7 +286,6 @@ namespace Authenticator {
 
     public void WriteXmlString(XmlWriter writer) {
       writer.WriteStartElement(ConfigSectionName);
-      writer.WriteAttributeString("id", Id.ToString());
       if (AuthenticatorData != null) {
         writer.WriteAttributeString("type", AuthenticatorData.GetType().FullName);
       }
@@ -340,10 +321,6 @@ namespace Authenticator {
 
       writer.WriteStartElement("name");
       writer.WriteValue(Name ?? string.Empty);
-      writer.WriteEndElement();
-
-      writer.WriteStartElement("created");
-      writer.WriteValue(Convert.ToInt64((Created.ToUniversalTime() - new DateTime(1970, 1, 1)).TotalMilliseconds));
       writer.WriteEndElement();
 
       writer.WriteStartElement("autorefresh");

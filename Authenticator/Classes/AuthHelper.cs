@@ -6,7 +6,6 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text;
-using System.Text.RegularExpressions;
 using System.Web;
 using System.Windows.Forms;
 using System.Xml;
@@ -51,17 +50,6 @@ namespace Authenticator {
         {"Apple (Black)", "AppleWhiteIcon.png"},
         {"Apple (Color)", "AppleColorIcon.png"},
         {"Apple Mac", "AppleMacIcon.png"},
-
-        {"+Games", "BattleNetAuthenticatorIcon.png"},
-        {"ArcheAge", "ArcheAgeIcon.png"},
-        {"ArenaNet", "ArenaNetIcon.png"},
-        {"Battle.Net", "BattleNetAuthenticatorIcon.png"},
-        {"Diablo III", "DiabloIcon.png"},
-        {"Glyph", "GlyphIcon.png"},
-        {"Guild Wars 2", "GuildWarsAuthenticatorIcon.png"},
-        {"Rift", "RiftIcon.png"},
-        {"Trion", "TrionAuthenticatorIcon.png"},
-        {"World of Warcraft", "WarcraftIcon.png"},
       };
 
       string currentLetter = null;
@@ -204,11 +192,6 @@ namespace Authenticator {
         config.Filename = configFile;
 
         if (config.Version < AuthConfig.CurrentVersion) {
-          // set new created values
-          foreach (var wa in config) {
-            wa.Created = fi.CreationTime;
-          }
-
           config.Upgraded = true;
         }
 

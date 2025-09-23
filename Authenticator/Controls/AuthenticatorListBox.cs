@@ -687,7 +687,10 @@ namespace Authenticator {
       if (item == null || (auth = item.Authenticator) == null || auth.AuthenticatorData == null)
         return;
 
-      if (menu.Items.Cast<ToolStripItem>().FirstOrDefault(i => i.Name == "contextMenuItemName") is ToolStripLabel labelItem) labelItem.Text = item.Authenticator.Name;
+      if (menu.Items.Cast<ToolStripItem>().FirstOrDefault(i => i.Name == "contextMenuItemName") is ToolStripLabel labelItem) {
+        labelItem.Text = item.Authenticator.Name;
+        labelItem.Image = item.Authenticator.Icon;
+      }
 
       if (menu.Items.Cast<ToolStripItem>().FirstOrDefault(i => i.Name == "setPasswordMenuItem") is ToolStripMenuItem menuItem)
         menuItem.Text = item.Authenticator.AuthenticatorData.PasswordType == Authenticator.PasswordTypes.Explicit
