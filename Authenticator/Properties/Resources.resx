@@ -126,10 +126,6 @@
     <value>..\Resources\MicrosoftAuthenticatorIcon.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0,
             Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="trion" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\trion.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral,
-            PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
   <data name="GoogleIcon" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\GoogleIcon.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral,
             PublicKeyToken=b03f5f7f11d50a3a</value>
@@ -154,10 +150,6 @@
     <value>..\Resources\RiftIcon.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral,
             PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="battlenet" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\battlenet.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral,
-            PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
   <data name="ArenaNetIcon" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\ArenaNetIcon.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral,
             PublicKeyToken=b03f5f7f11d50a3a</value>
@@ -177,10 +169,6 @@
   <data name="Windows8Icon" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\Windows8Icon.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral,
             PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="GuildWarsAuthenticatorIcon" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\GuildWarsAuthenticatorIcon.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0,
-            Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="ChromeIcon" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\ChromeIcon.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral,

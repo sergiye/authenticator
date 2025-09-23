@@ -93,16 +93,6 @@ namespace Authenticator.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap battlenet {
-            get {
-                object obj = ResourceManager.GetObject("battlenet", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
         internal static System.Drawing.Bitmap BattleNetAuthenticatorIcon {
             get {
                 object obj = ResourceManager.GetObject("BattleNetAuthenticatorIcon", resourceCulture);
@@ -173,16 +163,6 @@ namespace Authenticator.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap GuildWarsAuthenticatorIcon {
-            get {
-                object obj = ResourceManager.GetObject("GuildWarsAuthenticatorIcon", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
         internal static System.Drawing.Bitmap MicrosoftAuthenticatorIcon {
             get {
                 object obj = ResourceManager.GetObject("MicrosoftAuthenticatorIcon", resourceCulture);
@@ -226,16 +206,6 @@ namespace Authenticator.Properties {
         internal static System.Drawing.Bitmap spinner24 {
             get {
                 object obj = ResourceManager.GetObject("spinner24", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap trion {
-            get {
-                object obj = ResourceManager.GetObject("trion", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
