@@ -81,9 +81,6 @@ namespace Authenticator {
   public class MicrosoftAuthenticator : GoogleAuthenticator {
   }
   
-  public class GuildWarsAuthenticator : GoogleAuthenticator {
-  }
-
   public class OktaVerifyAuthenticator : GoogleAuthenticator {
   }
 

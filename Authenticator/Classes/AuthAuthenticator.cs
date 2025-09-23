@@ -407,11 +407,7 @@ namespace Authenticator {
         extraparams += "&algorithm=" + AuthenticatorData.HmacType;
       }
 
-      if (AuthenticatorData is BattleNetAuthenticator battleNetAuthenticator) {
-        extraparams += "&serial=" +
-                       HttpUtility.UrlEncode(battleNetAuthenticator.Serial.Replace("-", ""));
-      }
-      else if (AuthenticatorData is HotpAuthenticator hotpAuthenticator) {
+      if (AuthenticatorData is HotpAuthenticator hotpAuthenticator) {
         type = "hotp";
         extraparams += "&counter=" + hotpAuthenticator.Counter;
       }

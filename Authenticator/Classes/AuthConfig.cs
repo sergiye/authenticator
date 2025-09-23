@@ -487,12 +487,6 @@ namespace Authenticator {
                 AuthenticatorData = Authenticator.ReadXmlv2(reader, password)
               };
               switch (authOld.AuthenticatorData) {
-                case BattleNetAuthenticator _:
-                  authOld.Name = "Battle.net";
-                  break;
-                case GuildWarsAuthenticator _:
-                  authOld.Name = "GuildWars 2";
-                  break;
                 default:
                   authOld.Name = "Authenticator";
                   break;

@@ -182,7 +182,7 @@ namespace Authenticator {
       }
 
       if (authenticator == null) {
-        authenticator = new BattleNetAuthenticator();
+        authenticator = new GoogleAuthenticator();
       }
 
       reader.MoveToContent();

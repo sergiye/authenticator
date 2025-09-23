@@ -646,9 +646,7 @@ namespace Authenticator {
       AuthHelper.AddMenuItem(ContextMenuStrip.Items);
       AuthHelper.AddMenuItem(ContextMenuStrip.Items, "Show Code", "showCodeMenuItem", ContextMenu_Click, Keys.Control | Keys.Space);
       AuthHelper.AddMenuItem(ContextMenuStrip.Items, "Copy Code", "copyCodeMenuItem", ContextMenu_Click, Keys.Control| Keys.Shift| Keys.C);
-      AuthHelper.AddMenuItem(ContextMenuStrip.Items, "Show Serial && Restore Code...", "showRestoreCodeMenuItem", ContextMenu_Click);
       AuthHelper.AddMenuItem(ContextMenuStrip.Items, "Show Secret Key...", "showGoogleSecretMenuItem", ContextMenu_Click, Keys.Control | Keys.Shift | Keys.V);
-      AuthHelper.AddMenuItem(ContextMenuStrip.Items, "Show Serial Key and Device ID...", "showTrionSecretMenuItem", ContextMenu_Click);
       AuthHelper.AddMenuItem(ContextMenuStrip.Items);
       AuthHelper.AddMenuItem(ContextMenuStrip.Items, "Auto Refresh", "autoRefreshMenuItem", ContextMenu_Click, Keys.Control | Keys.Shift | Keys.A);
       AuthHelper.AddMenuItem(ContextMenuStrip.Items, "Copy on New Code", "copyOnCodeMenuItem", ContextMenu_Click);
@@ -700,15 +698,9 @@ namespace Authenticator {
       menuItem = menu.Items.Cast<ToolStripItem>().FirstOrDefault(i => i.Name == "showCodeMenuItem") as ToolStripMenuItem;
       if (menuItem != null) menuItem.Visible = !auth.AutoRefresh;
       //
-      menuItem = menu.Items.Cast<ToolStripItem>().FirstOrDefault(i => i.Name == "showRestoreCodeMenuItem") as ToolStripMenuItem;
-      if (menuItem != null) menuItem.Visible = auth.AuthenticatorData is BattleNetAuthenticator;
-      //
       menuItem = menu.Items.Cast<ToolStripItem>().FirstOrDefault(i => i.Name == "showGoogleSecretMenuItem") as ToolStripMenuItem;
       if (menuItem != null)
         menuItem.Visible = auth.AuthenticatorData is GoogleAuthenticator || auth.AuthenticatorData is HotpAuthenticator;
-      //
-      menuItem = menu.Items.Cast<ToolStripItem>().FirstOrDefault(i => i.Name == "showTrionSecretMenuItem") as ToolStripMenuItem;
-      if (menuItem != null) menuItem.Visible = auth.AuthenticatorData is TrionAuthenticator;
       
       //
       menuItem = menu.Items.Cast<ToolStripItem>().FirstOrDefault(i => i.Name == "autoRefreshMenuItem") as ToolStripMenuItem;
@@ -843,50 +835,6 @@ namespace Authenticator {
             break;
           }
 
-        case "showRestoreCodeMenuItem": {
-            // check if the authenticated is still protected
-            var wasProtected = UnprotectAuthenticator(item);
-            if (wasProtected == DialogResult.Cancel) {
-              return;
-            }
-
-            try {
-              if (wasProtected != DialogResult.OK) {
-                // confirm current main password
-                var mainForm = Parent as MainForm;
-                if ((mainForm.Config.PasswordType & Authenticator.PasswordTypes.Explicit) != 0) {
-                  var invalidPassword = false;
-                  while (true) {
-                    var checkForm = new GetPasswordForm();
-                    checkForm.InvalidPassword = invalidPassword;
-                    var result = checkForm.ShowDialog(this);
-                    if (result == DialogResult.Cancel) {
-                      return;
-                    }
-
-                    if (mainForm.Config.IsPassword(checkForm.Password)) {
-                      break;
-                    }
-
-                    invalidPassword = true;
-                  }
-                }
-              }
-
-              // show the serial and restore code for Battle.net authenticator
-              var form = new ShowRestoreCodeForm();
-              form.CurrentAuthenticator = auth;
-              form.ShowDialog(Parent as Form);
-            }
-            finally {
-              if (wasProtected == DialogResult.OK) {
-                ProtectAuthenticator(item);
-              }
-            }
-
-            break;
-          }
-
         case "showGoogleSecretMenuItem": {
             // check if the authenticated is still protected
             var wasProtected = UnprotectAuthenticator(item);
@@ -919,28 +867,6 @@ namespace Authenticator {
 
               // show the secret key for Google authenticator
               var form = new ShowSecretKeyForm();
-              form.CurrentAuthenticator = auth;
-              form.ShowDialog(Parent as Form);
-            }
-            finally {
-              if (wasProtected == DialogResult.OK) {
-                ProtectAuthenticator(item);
-              }
-            }
-
-            break;
-          }
-
-        case "showTrionSecretMenuItem": {
-            // check if the authenticator is still protected
-            var wasProtected = UnprotectAuthenticator(item);
-            if (wasProtected == DialogResult.Cancel) {
-              return;
-            }
-
-            try {
-              // show the secret key for Trion authenticator
-              var form = new ShowTrionSecretForm();
               form.CurrentAuthenticator = auth;
               form.ShowDialog(Parent as Form);
             }

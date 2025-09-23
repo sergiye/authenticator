@@ -15,5 +15,5 @@ using System.Resources;
 
 [assembly: Guid("2d6dc5f7-7630-4d07-96cb-2bbe6cb31672")]
 
-[assembly: AssemblyVersion("1.0.*")]
+[assembly: AssemblyVersion("1.1.*")]
 [assembly: NeutralResourcesLanguage("")]

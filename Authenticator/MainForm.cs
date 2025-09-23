@@ -130,7 +130,7 @@ namespace Authenticator {
       if (Config.Upgraded) {
         SaveConfig(true);
         // display warning
-        ErrorDialog(this, string.Format("Authenticator has upgraded your authenticators to version {0}.\nDo NOT run an older version of Authenticator as this could overwrite them.\nNow is a good time to make a backup. Click the Options icon and choose Export.", AuthConfig.CurrentVersion));
+        ErrorDialog(this, string.Format("Authenticator has upgraded your authenticators to version {0}.\nDo NOT run an older version of Authenticator as this could overwrite them.\nNow is a good time to make a backup. Click the File menu item and choose Export.", AuthConfig.CurrentVersion));
       }
 
       notifyIcon.Visible = AuthConfig.UseTrayIcon;
@@ -649,58 +649,7 @@ namespace Authenticator {
       var authenticator = new AuthAuthenticator();
       bool added;
 
-      if (registeredAuth.AuthenticatorType == RegisteredAuthenticator.AuthenticatorTypes.BattleNet) {
-        var existing = 0;
-        string name;
-        do {
-          name = "Battle.net" + (existing != 0 ? " (" + existing + ")" : string.Empty);
-          existing++;
-        } while (authenticatorList.Items.Cast<AuthenticatorListBox.ListItem>().Count(a => a.Authenticator.Name == name) != 0);
-
-        authenticator.Name = name;
-        authenticator.AutoRefresh = false;
-
-        // create the Battle.net authenticator
-        var form = new AddBattleNetAuthenticator {
-          Authenticator = authenticator
-        };
-        added = (form.ShowDialog(this) == DialogResult.OK);
-      }
-      else if (registeredAuth.AuthenticatorType == RegisteredAuthenticator.AuthenticatorTypes.Trion) {
-        // create the Trion authenticator
-        var existing = 0;
-        string name;
-        do {
-          name = "Trion" + (existing != 0 ? " (" + existing + ")" : string.Empty);
-          existing++;
-        } while (authenticatorList.Items.Cast<AuthenticatorListBox.ListItem>().Count(a => a.Authenticator.Name == name) != 0);
-
-        authenticator.Name = name;
-        authenticator.AutoRefresh = false;
-
-        var form = new AddTrionAuthenticator {
-          Authenticator = authenticator
-        };
-        added = (form.ShowDialog(this) == DialogResult.OK);
-      }
-      else if (registeredAuth.AuthenticatorType == RegisteredAuthenticator.AuthenticatorTypes.GuildWars) {
-        // create the GW2 authenticator
-        var existing = 0;
-        string name;
-        do {
-          name = "GuildWars" + (existing != 0 ? " (" + existing + ")" : string.Empty);
-          existing++;
-        } while (authenticatorList.Items.Cast<AuthenticatorListBox.ListItem>().Count(a => a.Authenticator.Name == name) != 0);
-
-        authenticator.Name = name;
-        authenticator.AutoRefresh = false;
-
-        var form = new AddGuildWarsAuthenticator {
-          Authenticator = authenticator
-        };
-        added = (form.ShowDialog(this) == DialogResult.OK);
-      }
-      else if (registeredAuth.AuthenticatorType == RegisteredAuthenticator.AuthenticatorTypes.Microsoft) {
+      if (registeredAuth.AuthenticatorType == RegisteredAuthenticator.AuthenticatorTypes.Microsoft) {
         // create the Microsoft authenticator
         var existing = 0;
         string name;
@@ -749,8 +698,7 @@ namespace Authenticator {
         added = (form.ShowDialog(this) == DialogResult.OK);
       }
       else {
-        throw new NotImplementedException("Authenticator not implemented: " +
-                                          registeredAuth.AuthenticatorType);
+        throw new NotImplementedException("Authenticator not implemented: " + registeredAuth.AuthenticatorType);
       }
 
       if (added) {

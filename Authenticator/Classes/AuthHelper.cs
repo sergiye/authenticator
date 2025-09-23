@@ -114,23 +114,6 @@ namespace Authenticator {
         AuthenticatorType = RegisteredAuthenticator.AuthenticatorTypes.OktaVerify,
         Icon = "OktaVerifyAuthenticatorIcon.png"
       },
-      
-      null,
-      new RegisteredAuthenticator {
-        Name = "Battle.Net", 
-        AuthenticatorType = RegisteredAuthenticator.AuthenticatorTypes.BattleNet,
-        Icon = "BattleNetAuthenticatorIcon.png"
-      },
-      new RegisteredAuthenticator {
-        Name = "Guild Wars 2", 
-        AuthenticatorType = RegisteredAuthenticator.AuthenticatorTypes.GuildWars,
-        Icon = "GuildWarsAuthenticatorIcon.png"
-      },
-      new RegisteredAuthenticator {
-        Name = "Glyph / Trion", 
-        AuthenticatorType = RegisteredAuthenticator.AuthenticatorTypes.Trion,
-        Icon = "GlyphIcon.png"
-      },
     };
     
     public static string DetectIconByIssuer(string issuer) {
@@ -477,29 +460,7 @@ namespace Authenticator {
             importedAuthenticator.AutoRefresh = false;
             //
             Authenticator auth;
-            if (string.Compare(issuer, "BattleNet", true) == 0) {
-              var serial = query["serial"];
-              if (string.IsNullOrEmpty(serial)) {
-                throw new ApplicationException("Battle.net Authenticator does not have a serial");
-              }
-
-              serial = serial.ToUpper();
-              if (Regex.IsMatch(serial, @"^[A-Z]{2}-?[\d]{4}-?[\d]{4}-?[\d]{4}$") == false) {
-                throw new ApplicationException("Invalid serial for Battle.net Authenticator");
-              }
-
-              auth = new BattleNetAuthenticator();
-              //char[] decoded = Base32.getInstance().Decode(secret).Select(c => Convert.ToChar(c)).ToArray(); // this is hex string values
-              //string hex = new string(decoded);
-              //((BattleNetAuthenticator)auth).SecretKey = Authenticator.StringToByteArray(hex);
-
-              ((BattleNetAuthenticator) auth).SecretKey = Base32.GetInstance().Decode(secret);
-
-              ((BattleNetAuthenticator) auth).Serial = serial;
-
-              issuer = string.Empty;
-            }
-            else if (uri.Host == "hotp") {
+            if (uri.Host == "hotp") {
               auth = new HotpAuthenticator();
               ((HotpAuthenticator) auth).SecretKey = Base32.GetInstance().Decode(secret);
               ((HotpAuthenticator) auth).Counter = int.Parse(counter);

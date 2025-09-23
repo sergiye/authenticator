@@ -338,26 +338,8 @@ namespace Authenticator {
         Authenticator auth;
         switch (authType) {
           case TOTP: {
-            if ("BattleNet".Equals(issuer, StringComparison.OrdinalIgnoreCase)) {
-              if (string.IsNullOrEmpty(serial)) {
-                throw new ApplicationException("Battle.net Authenticator does not have a serial");
-              }
-
-              serial = serial.ToUpper();
-              if (Regex.IsMatch(serial, @"^[A-Z]{2}-?[\d]{4}-?[\d]{4}-?[\d]{4}$") == false) {
-                throw new ApplicationException("Invalid serial for Battle.net Authenticator");
-              }
-
-              auth = new BattleNetAuthenticator();
-              ((BattleNetAuthenticator) auth).SecretKey = Base32.GetInstance().Decode(privateKey);
-              ((BattleNetAuthenticator) auth).Serial = serial;
-
-              issuer = string.Empty;
-            }
-            else {
-              auth = new GoogleAuthenticator();
-              ((GoogleAuthenticator) auth).Enroll(privateKey);
-            }
+            auth = new GoogleAuthenticator();
+            ((GoogleAuthenticator) auth).Enroll(privateKey);
 
             timer.Enabled = true;
             codeProgress.Visible = true;
