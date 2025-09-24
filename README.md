@@ -139,13 +139,15 @@ You should have received a copy of the GNU General Public License  along with th
 The authenticator team welcomes feedback and contributions!<br/>
 You can check if it works properly on your PC. If you notice any inaccuracies, please send us a pull request. If you have any suggestions or improvements, don't hesitate to create an issue.
 
-Also, don't forget to star the repository to help other people find it.
+Also, don't forget to ★ star ★ the repository to help other people find it.
 
-[![Star History Chart](https://api.star-history.com/svg?repos=sergiye/authenticator&type=Date)](https://star-history.com/#sergiye/authenticator&Date)
+<!-- [![Star History Chart](https://api.star-history.com/svg?repos=sergiye/authenticator&type=Date)](https://star-history.com/#sergiye/authenticator&Date) -->
 
 [//]: # ([![Stargazers over time]&#40;https://starchart.cc/sergiye/authenticator.svg?variant=adaptive&#41;]&#40;https://starchart.cc/sergiye/authenticator&#41;)
 
-[![Stargazers repo roster for @sergiye/authenticator](https://reporoster.com/stars/sergiye/authenticator)](https://github.com/sergiye/authenticator/stargazers)
+[![Stargazers](https://reporoster.com/stars/sergiye/authenticator)](https://star-history.com/#sergiye/authenticator&Date)
+
+<!-- [![Forkers](https://reporoster.com/forks/sergiye/authenticator)](https://github.com/sergiye/authenticator/network/members) -->
 
 ## Donate!
 Every [cup of coffee](https://patreon.com/SergiyE) you donate will help this app become better and let me know that this project is in demand.
