@@ -7,5 +7,6 @@
   "SelectedBackgroundColor": "#C6DA36",
   "SelectedForegroundColor": "#000000",
   "LineColor": "#303030",
+  "StrongLineColor": "#454545",
   "WarnColor": "#FF4500"
 }
