@@ -27,8 +27,22 @@ Also there are:
  - `Auto`/`Light`/`Dark` themes integrated into executable.
  - Custom `themes` supported from external files
 
-You can find custom theme examples [here](https://github.com/sergiye/authenticator/tree/master/themes)
-To add custom theme to the app, just create a `themes` folder next to the executable file and place all theme files there.
+To add custom theme to the app, just create a `themes` folder next to the executable file and place any {themeName}.json files there.
+Custom theme.json file content example:
+```json
+{
+  "DisplayName": "Custom Theme",
+  "DarkMode": true,
+  "BackgroundColor": "#1E1E1E",
+  "ForegroundColor": "#E9E9E9",
+  "HyperlinkColor": "#00D980",
+  "SelectedBackgroundColor": "#4CBB17",
+  "SelectedForegroundColor": "#000000",
+  "LineColor": "#262626",
+  "StrongLineColor": "#454545",
+  "WarnColor": "#FF4500"
+}
+```
 Don't forget to restart the app to scan for new theme files!
 
 ## Download Latest Version

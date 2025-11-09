@@ -50,9 +50,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="..\themes\*.json" Link="themes\%(Filename)%(Extension)" />
-  </ItemGroup>
-  <ItemGroup>
     <Compile Include="Classes\AuthAuthenticator.cs" />
     <Compile Include="Classes\AuthConfig.cs" />
     <Compile Include="Classes\Authenticator.cs" />
