@@ -158,6 +158,7 @@ namespace Authenticator {
 
     private void InitializeTheme() {
 
+      ToolStripRadioButtonMenuItem.DisplayAsCheckboxes = true;
       mainMenu.Renderer = new ThemedToolStripRenderer();
       notifyMenu.Renderer = new ThemedToolStripRenderer();
       authenticatorList.ContextMenuStrip.Renderer = new ThemedToolStripRenderer();
