@@ -17,7 +17,7 @@ namespace Authenticator {
 
     #region Properties
 
-    public readonly AuthConfig Config;
+    public AuthConfig Config { get; set; }
 
     private ToolStripMenuItem themeMenuItem;
     private readonly Timer passwordTimer;
@@ -124,22 +124,7 @@ namespace Authenticator {
         }
       }
 
-      Config = LoadConfig(password);
-
-      LoadMainMenu();
-      InitializeForm();
-
-      AuthConfig.OnConfigChanged += OnConfigChanged;
-
-      if (Config.Upgraded) {
-        SaveConfig(true);
-        // display warning
-        ErrorDialog(this, string.Format("Authenticator has upgraded your authenticators to version {0}.\nDo NOT run an older version of Authenticator as this could overwrite them.\nNow is a good time to make a backup. Click the File menu item and choose Export.", AuthConfig.CurrentVersion));
-      }
-
-      notifyIcon.Visible = AuthConfig.UseTrayIcon;
-
-      InitializeTheme();
+      LoadConfig(password);
     }
 
     #region themes
@@ -180,7 +165,7 @@ namespace Authenticator {
 
     #region Private Methods
 
-    private AuthConfig LoadConfig(string password) {
+    private void LoadConfig(string password) {
       loadingPanel.Visible = true;
       passwordPanel.Visible = false;
       mainMenu.Visible = false;
@@ -191,7 +176,7 @@ namespace Authenticator {
       catch (AuthInvalidNewerConfigException ex) {
         MessageBox.Show(this, ex.Message, Updater.ApplicationName, MessageBoxButtons.OK, MessageBoxIcon.Error);
         System.Diagnostics.Process.GetCurrentProcess().Kill();
-        return null;
+        return;
       }
       catch (BadPasswordException) {
         loadingPanel.Visible = false;
@@ -206,7 +191,7 @@ namespace Authenticator {
           passwordField.Focus();
         });
         passwordTimer.Enabled = true;
-        return null;
+        return;
       }
       catch (Exception ex) {
         if (ex is AuthInvalidNewerConfigException || ex is EncryptedSecretDataException) {
@@ -215,20 +200,35 @@ namespace Authenticator {
           mainMenu.Visible = false;
           passwordButton.Focus();
           passwordField.Focus();
-          return null;
+          return;
         }
 
         ErrorDialog(this, "An unknown error occurred: " + ex.Message, ex, MessageBoxButtons.OK);
         Close();
-        return null;
+        return;
       }
 
       if (config == null) {
         System.Diagnostics.Process.GetCurrentProcess().Kill();
-        return null;
+        return;
       }
 
-      return config;
+      Config = config;
+      AuthConfig.OnConfigChanged += OnConfigChanged;
+
+      if (Config.Upgraded) {
+        SaveConfig(true);
+        // display warning
+        ErrorDialog(this, string.Format("Authenticator has upgraded your authenticators to version {0}.\nDo NOT run an older version of Authenticator as this could overwrite them.\nNow is a good time to make a backup. Click the File menu item and choose Export.", AuthConfig.CurrentVersion));
+      }
+
+      InitializeForm();
+
+      LoadMainMenu();
+
+      InitializeTheme();
+
+      notifyIcon.Visible = AuthConfig.UseTrayIcon;
     }
 
     private void ImportAuthenticator(string authenticatorFile) {
@@ -566,8 +566,10 @@ namespace Authenticator {
     }
 
     private void SetAutoSize() {
+
+      var listItemsCount = Config?.Count ?? 0;
       if (AuthConfig.AutoSize) {
-        if (Config.Count != 0) {
+        if (listItemsCount > 0) {
           Width = Math.Max(this.MinimumSize.Width,
             authenticatorList.Margin.Horizontal + authenticatorList.GetMaxItemWidth() +
             (Width - authenticatorList.Width));
@@ -580,7 +582,7 @@ namespace Authenticator {
         var maxHeight = Screen.GetWorkingArea(this).Height * 50 / 100; //use only 50% of total screen height 
         var fixedHeight = mainMenu.Height + Height - ClientRectangle.Height; 
         
-        Height = fixedHeight + authenticatorList.ItemHeight * Math.Min(Config.Count, (maxHeight - fixedHeight) / authenticatorList.ItemHeight);
+        Height = fixedHeight + authenticatorList.ItemHeight * Math.Min(listItemsCount, (maxHeight - fixedHeight) / authenticatorList.ItemHeight);
 
         FormBorderStyle = FormBorderStyle.FixedDialog;
       }
@@ -594,7 +596,7 @@ namespace Authenticator {
           Height = AuthConfig.Height;
         }
       }
-      introLabel.Visible = Config.Count == 0;
+      introLabel.Visible = listItemsCount == 0;
     }
 
     private void EndRenaming() {
