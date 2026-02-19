@@ -74,6 +74,8 @@ namespace Authenticator {
     public string Filename { get; set; }
 
     public static bool AlwaysOnTop { get; set; }
+    
+    public static bool HideMenu { get; set; }
 
     public static bool UseTrayIcon {
       get => useTrayIcon;
@@ -412,6 +414,10 @@ namespace Authenticator {
               AlwaysOnTop = reader.ReadElementContentAsBoolean();
               break;
 
+            case "hidemenu":
+              HideMenu = reader.ReadElementContentAsBoolean();
+              break;
+
             case "autoUpdate":
               Updater.AutoUpdate = reader.ReadElementContentAsBoolean();
               break;
@@ -526,6 +532,10 @@ namespace Authenticator {
       //
       writer.WriteStartElement("alwaysontop");
       writer.WriteValue(AlwaysOnTop);
+      writer.WriteEndElement();
+      //
+      writer.WriteStartElement("hidemenu");
+      writer.WriteValue(HideMenu);
       writer.WriteEndElement();
       //
       writer.WriteStartElement("autoUpdate");

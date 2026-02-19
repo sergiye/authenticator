@@ -520,6 +520,15 @@ namespace Authenticator {
       }
     }
 
+    protected override bool ProcessCmdKey(ref Message msg, Keys keyData) {
+      if (keyData.HasFlag(Keys.Alt) && AuthConfig.HideMenu) {
+        mainMenu.Visible = !mainMenu.Visible;
+        mainMenu.Focus();
+        return true;
+      }
+      return base.ProcessCmdKey(ref msg, keyData);
+    }
+
     private void RunAction(AuthAuthenticator auth, AuthConfig.NotifyActions action) {
       // get the code
       string code;
@@ -580,8 +589,10 @@ namespace Authenticator {
 
         // take the smallest of full height or 62% screen height
         var maxHeight = Screen.GetWorkingArea(this).Height * 50 / 100; //use only 50% of total screen height 
-        var fixedHeight = mainMenu.Height + Height - ClientRectangle.Height; 
-        
+        var fixedHeight = Height - ClientRectangle.Height;
+        if (!AuthConfig.HideMenu)
+          fixedHeight += mainMenu.Height;
+
         Height = fixedHeight + authenticatorList.ItemHeight * Math.Min(listItemsCount, (maxHeight - fixedHeight) / authenticatorList.ItemHeight);
 
         FormBorderStyle = FormBorderStyle.FixedDialog;
@@ -894,7 +905,18 @@ namespace Authenticator {
         TopMost = AuthConfig.AlwaysOnTop = !AuthConfig.AlwaysOnTop;
         SaveConfig();
       }, Keys.Control | Keys.T, isChecked: AuthConfig.AlwaysOnTop, checkOnClick: true);
-      
+
+      AuthHelper.AddMenuItem(optionsToolStripMenuItem.DropDownItems, "Hide Menu", "hideMenuOptionsMenuItem", (s, e) => {
+        AuthConfig.HideMenu = !AuthConfig.HideMenu;
+        mainMenu.Visible = !AuthConfig.HideMenu;
+        SetAutoSize();
+        SaveConfig();
+      }, Keys.Control | Keys.M, isChecked: AuthConfig.HideMenu, checkOnClick: true);
+      mainMenu.LostFocus += (_, _) => { if (AuthConfig.HideMenu) mainMenu.Visible = false; };
+      KeyPreview = true;
+      if (AuthConfig.HideMenu)
+        mainMenu.Visible = false;
+
       themeMenuItem = AuthHelper.AddMenuItem(optionsToolStripMenuItem.DropDownItems, "Theme", "themeMenuItem");
 
       //Help section
