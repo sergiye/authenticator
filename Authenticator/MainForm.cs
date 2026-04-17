@@ -11,7 +11,7 @@ using sergiye.Common;
 
 namespace Authenticator {
   public partial class MainForm : Form {
-    
+
     private readonly NotifyIcon notifyIcon;
     private readonly ContextMenuStrip notifyMenu;
 
@@ -35,7 +35,7 @@ namespace Authenticator {
 
       //Text = $"Authenticator {(Environment.Is64BitProcess ? "x64" : "x32")} - {Updater.CurrentVersion}";
       Icon = Icon.ExtractAssociatedIcon(Updater.CurrentFileLocation);
-      authenticatorList.ItemHeight = 50;
+      authenticatorList.ItemHeight = 60;
       authenticatorList.SelectionMode = SelectionMode.One;
 
       MinimumSize = new Size(200, mainMenu.Height + Height - ClientRectangle.Height + authenticatorList.ItemHeight);
@@ -55,7 +55,7 @@ namespace Authenticator {
 
       // initialize UI
       notifyMenu = new ContextMenuStrip(components);
-      
+
       notifyIcon = new NotifyIcon(components);
       notifyIcon.DoubleClick += ShowHideMenuItem_Click;
       notifyIcon.Icon = Icon.ExtractAssociatedIcon(Updater.CurrentFileLocation);
@@ -588,7 +588,7 @@ namespace Authenticator {
         }
 
         // take the smallest of full height or 62% screen height
-        var maxHeight = Screen.GetWorkingArea(this).Height * 50 / 100; //use only 50% of total screen height 
+        var maxHeight = Screen.GetWorkingArea(this).Height * 50 / 100; //use only 50% of total screen height
         var fixedHeight = Height - ClientRectangle.Height;
         if (!AuthConfig.HideMenu)
           fixedHeight += mainMenu.Height;
@@ -631,7 +631,7 @@ namespace Authenticator {
     }
 
     private void MainForm_FormClosing(object sender, FormClosingEventArgs e) {
-      // keep in the tray when closing Form 
+      // keep in the tray when closing Form
       if (AuthConfig.UseTrayIcon && Visible && mExplicitClose == false) {
         e.Cancel = true;
         Hide();
@@ -878,7 +878,7 @@ namespace Authenticator {
 
       AuthHelper.AddMenuItem(fileToolStripMenuItem.DropDownItems);
       AuthHelper.AddMenuItem(fileToolStripMenuItem.DropDownItems, "Exit", "exitOptionsMenuItem", exitOptionMenuItem_Click, Keys.Control | Keys.W);
-      
+
       //Options section
       optionsToolStripMenuItem.DropDownOpening += OpeningOptionsMenu;
 
@@ -950,7 +950,7 @@ namespace Authenticator {
     }
 
     private void OpeningOptionsMenu(object sender, EventArgs e) {
-      
+
       if (Config == null)
         return;
 
