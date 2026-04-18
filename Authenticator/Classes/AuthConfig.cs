@@ -52,6 +52,7 @@ namespace Authenticator {
     private static bool startMinimized;
     private static NotifyActions notifyAction;
     private static bool autoSize;
+    private static bool fullSize;
     private static Point position = Point.Empty;
     private static int width;
     private static int height;
@@ -74,7 +75,7 @@ namespace Authenticator {
     public string Filename { get; set; }
 
     public static bool AlwaysOnTop { get; set; }
-    
+
     public static bool HideMenu { get; set; }
 
     public static bool UseTrayIcon {
@@ -110,6 +111,15 @@ namespace Authenticator {
         if (autoSize == value) return;
         autoSize = value;
         OnConfigChanged?.Invoke(new ConfigChangedEventArgs("AutoSize"));
+      }
+    }
+
+    public static bool FullSize {
+      get => fullSize;
+      set {
+        if (fullSize == value) return;
+        fullSize = value;
+        OnConfigChanged?.Invoke(new ConfigChangedEventArgs("FullSize"));
       }
     }
 
@@ -264,6 +274,7 @@ namespace Authenticator {
 
     static AuthConfig() {
       AutoSize = true;
+      FullSize = false;
       Theme = "Auto";
       NotifyAction = NotifyActions.Notification;
     }
@@ -373,7 +384,7 @@ namespace Authenticator {
               changed = ReadXmlInternal(reader, password) || changed;
               break;
 
-            // 3.2 has new layout 
+            // 3.2 has new layout
             case "data": {
               encrypted = reader.GetAttribute("encrypted");
               PasswordType = Authenticator.DecodePasswordTypes(encrypted);
@@ -444,6 +455,10 @@ namespace Authenticator {
 
             case "autosize":
               autoSize = reader.ReadElementContentAsBoolean();
+              break;
+
+            case "fullSize":
+              fullSize = reader.ReadElementContentAsBoolean();
               break;
 
             case "left":
@@ -556,6 +571,10 @@ namespace Authenticator {
       //
       writer.WriteStartElement("autosize");
       writer.WriteValue(AutoSize);
+      writer.WriteEndElement();
+      //
+      writer.WriteStartElement("fullSize");
+      writer.WriteValue(FullSize);
       writer.WriteEndElement();
       //
       if (Position.IsEmpty == false) {

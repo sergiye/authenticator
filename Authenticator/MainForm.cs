@@ -4,7 +4,6 @@ using System.ComponentModel;
 using System.Drawing;
 using System.IO;
 using System.Linq;
-using System.Net;
 using System.Text;
 using System.Windows.Forms;
 using sergiye.Common;
@@ -17,7 +16,7 @@ namespace Authenticator {
 
     #region Properties
 
-    public AuthConfig Config { get; set; }
+    public AuthConfig Config { get; private set; }
 
     private ToolStripMenuItem themeMenuItem;
     private readonly Timer passwordTimer;
@@ -35,9 +34,7 @@ namespace Authenticator {
 
       //Text = $"Authenticator {(Environment.Is64BitProcess ? "x64" : "x32")} - {Updater.CurrentVersion}";
       Icon = Icon.ExtractAssociatedIcon(Updater.CurrentFileLocation);
-      authenticatorList.ItemHeight = 60;
       authenticatorList.SelectionMode = SelectionMode.One;
-
       MinimumSize = new Size(200, mainMenu.Height + Height - ClientRectangle.Height + authenticatorList.ItemHeight);
 
       Updater.Subscribe(
@@ -63,7 +60,7 @@ namespace Authenticator {
       notifyIcon.Text = Text = Updater.ApplicationTitle;
 
       passwordTimer = new Timer(components);
-      passwordTimer.Tick += (s, e) => {
+      passwordTimer.Tick += (_, _) => {
         if (passwordErrorLabel.Tag == null || (DateTime)passwordErrorLabel.Tag > DateTime.Now)
           return;
         passwordTimer.Enabled = false;
@@ -76,7 +73,6 @@ namespace Authenticator {
       new MessageForwarder(authenticatorList, WinApiHelper.WM_MOUSEWHEEL);
 
       string password = null;
-      string proxy = null;
       var args = Environment.GetCommandLineArgs();
       for (var i = 1; i < args.Length; i++) {
         var arg = args[i];
@@ -93,34 +89,10 @@ namespace Authenticator {
               i++;
               password = args[i];
               break;
-            case "--proxy":
-              // set proxy [user[:pass]@]ip[:host]
-              i++;
-              proxy = args[i];
-              break;
           }
         }
         else {
           startupConfigFile = arg;
-        }
-      }
-
-      // set the default web proxy
-      if (string.IsNullOrEmpty(proxy) == false) {
-        try {
-          var uri = new Uri(proxy.IndexOf("://", StringComparison.Ordinal) == -1 ? "http://" + proxy : proxy);
-          var webProxy = new WebProxy(uri.Host + ":" + uri.Port, true);
-          if (string.IsNullOrEmpty(uri.UserInfo) == false) {
-            var auth = uri.UserInfo.Split(':');
-            webProxy.Credentials = new NetworkCredential(auth[0], (auth.Length > 1 ? auth[1] : string.Empty));
-          }
-          WebRequest.DefaultWebProxy = webProxy;
-        }
-        catch (UriFormatException) {
-          ErrorDialog(this,
-            "Invalid proxy value (" + proxy + ")" + Environment.NewLine + Environment.NewLine +
-            "Use --proxy [user[:password]@]ip[:port], e.g. 127.0.0.1:8080 or me:mypass@10.0.0.1:8080");
-          Close();
         }
       }
 
@@ -169,7 +141,7 @@ namespace Authenticator {
       loadingPanel.Visible = true;
       passwordPanel.Visible = false;
       mainMenu.Visible = false;
-      AuthConfig config = null;
+      AuthConfig config;
       try {
         config = AuthHelper.LoadConfig(startupConfigFile, password);
       }
@@ -390,7 +362,7 @@ namespace Authenticator {
       // size the form based on the authenticators
       SetAutoSize();
 
-      notifyMenu.Opening += (s, e) => OpeningNotifyMenu(notifyMenu, e);
+      notifyMenu.Opening += (_, e) => OpeningNotifyMenu(notifyMenu, e);
       LoadNotifyMenu(notifyMenu.Items);
 
       loadingPanel.Visible = false;
@@ -577,11 +549,21 @@ namespace Authenticator {
     private void SetAutoSize() {
 
       var listItemsCount = Config?.Count ?? 0;
+
+      MinimumSize = new Size(AuthConfig.FullSize ? 350 : 200, mainMenu.Height + Height - ClientRectangle.Height + authenticatorList.ItemHeight);
+      if (AuthConfig.FullSize) {
+        authenticatorList.ItemHeight = 100;
+        authenticatorList.Font = new Font("Arial", 18.25F, FontStyle.Bold);
+      }
+      else {
+        authenticatorList.ItemHeight = 60;
+        authenticatorList.Font = new Font("Arial", 14.25F, FontStyle.Bold);
+      }
+
       if (AuthConfig.AutoSize) {
         if (listItemsCount > 0) {
-          Width = Math.Max(this.MinimumSize.Width,
-            authenticatorList.Margin.Horizontal + authenticatorList.GetMaxItemWidth() +
-            (Width - authenticatorList.Width));
+          Width = Math.Max(MinimumSize.Width,
+            authenticatorList.Margin.Horizontal * 4 + authenticatorList.GetMaxItemWidth());
         }
         else {
           Width = 420;
@@ -883,30 +865,33 @@ namespace Authenticator {
       optionsToolStripMenuItem.DropDownOpening += OpeningOptionsMenu;
 
       //if (Config.IsPortable == false) {
-      AuthHelper.AddMenuItem(optionsToolStripMenuItem.DropDownItems, "Run On User Login", "startWithWindowsOptionsMenuItem", (s, e) => startupManager.Startup = !startupManager.Startup, isChecked: startupManager.Startup, checkOnClick: true);
-      AuthHelper.AddMenuItem(optionsToolStripMenuItem.DropDownItems, "Start Minimized", "startMinimizedOptionsMenuItem", (s, e) => AuthConfig.StartMinimized = !AuthConfig.StartMinimized, isChecked: AuthConfig.StartMinimized, checkOnClick: true);
-      AuthHelper.AddMenuItem(optionsToolStripMenuItem.DropDownItems, "Use System Tray Icon", "useSystemTrayIconOptionsMenuItem", (s, e) => {
+      AuthHelper.AddMenuItem(optionsToolStripMenuItem.DropDownItems, "Run On User Login", "startWithWindowsOptionsMenuItem", (_, _) => startupManager.Startup = !startupManager.Startup, isChecked: startupManager.Startup, checkOnClick: true);
+      AuthHelper.AddMenuItem(optionsToolStripMenuItem.DropDownItems, "Start Minimized", "startMinimizedOptionsMenuItem", (_, _) => AuthConfig.StartMinimized = !AuthConfig.StartMinimized, isChecked: AuthConfig.StartMinimized, checkOnClick: true);
+      AuthHelper.AddMenuItem(optionsToolStripMenuItem.DropDownItems, "Use System Tray Icon", "useSystemTrayIconOptionsMenuItem", (_, _) => {
         AuthConfig.UseTrayIcon = !AuthConfig.UseTrayIcon;
       }, isChecked: AuthConfig.UseTrayIcon, checkOnClick: true);
 
-      AuthHelper.AddMenuItem(optionsToolStripMenuItem.DropDownItems, "Auto-Update App", "autoUpdateOptionsMenuItem", (s, e) => {
+      AuthHelper.AddMenuItem(optionsToolStripMenuItem.DropDownItems, "Auto-Update App", "autoUpdateOptionsMenuItem", (_, _) => {
         Updater.AutoUpdate = !Updater.AutoUpdate;
         SaveConfig();
       }, isChecked: Updater.AutoUpdate, checkOnClick: true);
       //}
 
       AuthHelper.AddMenuItem(optionsToolStripMenuItem.DropDownItems);
-      AuthHelper.AddMenuItem(optionsToolStripMenuItem.DropDownItems, "Auto-Size", "autoSizeOptionsMenuItem", (s, e) => {
+      AuthHelper.AddMenuItem(optionsToolStripMenuItem.DropDownItems, "Auto-Size", "autoSizeOptionsMenuItem", (_, _) => {
         AuthConfig.AutoSize = !AuthConfig.AutoSize;
       }, Keys.Control | Keys.S, isChecked: AuthConfig.AutoSize, checkOnClick: true);
+      AuthHelper.AddMenuItem(optionsToolStripMenuItem.DropDownItems, "Big size", "bigSizeOptionsMenuItem", (_, _) => {
+        AuthConfig.FullSize = !AuthConfig.FullSize;
+      }, Keys.Control | Keys.B, isChecked: AuthConfig.FullSize, checkOnClick: true);
 
       TopMost = AuthConfig.AlwaysOnTop;
-      AuthHelper.AddMenuItem(optionsToolStripMenuItem.DropDownItems, "Always On Top", "alwaysOnTopOptionsMenuItem", (s, e) => {
+      AuthHelper.AddMenuItem(optionsToolStripMenuItem.DropDownItems, "Always On Top", "alwaysOnTopOptionsMenuItem", (_, _) => {
         TopMost = AuthConfig.AlwaysOnTop = !AuthConfig.AlwaysOnTop;
         SaveConfig();
       }, Keys.Control | Keys.T, isChecked: AuthConfig.AlwaysOnTop, checkOnClick: true);
 
-      AuthHelper.AddMenuItem(optionsToolStripMenuItem.DropDownItems, "Hide Menu", "hideMenuOptionsMenuItem", (s, e) => {
+      AuthHelper.AddMenuItem(optionsToolStripMenuItem.DropDownItems, "Hide Menu", "hideMenuOptionsMenuItem", (_, _) => {
         AuthConfig.HideMenu = !AuthConfig.HideMenu;
         mainMenu.Visible = !AuthConfig.HideMenu;
         SetAutoSize();
@@ -920,8 +905,8 @@ namespace Authenticator {
       themeMenuItem = AuthHelper.AddMenuItem(optionsToolStripMenuItem.DropDownItems, "Theme", "themeMenuItem");
 
       //Help section
-      AuthHelper.AddMenuItem(helpToolStripMenuItem.DropDownItems, "Site", "siteMenuItem", (s, e) => Updater.VisitAppSite(), Keys.Control | Keys.F1);
-      AuthHelper.AddMenuItem(helpToolStripMenuItem.DropDownItems, "Check For Updates", "checkUpdatesMenuItem", (s, e) => Updater.CheckForUpdates(Updater.CheckUpdatesMode.AllMessages), Keys.Control | Keys.U);
+      AuthHelper.AddMenuItem(helpToolStripMenuItem.DropDownItems, "Site", "siteMenuItem", (_, _) => Updater.VisitAppSite(), Keys.Control | Keys.F1);
+      AuthHelper.AddMenuItem(helpToolStripMenuItem.DropDownItems, "Check For Updates", "checkUpdatesMenuItem", (_, _) => Updater.CheckForUpdates(Updater.CheckUpdatesMode.AllMessages), Keys.Control | Keys.U);
       AuthHelper.AddMenuItem(helpToolStripMenuItem.DropDownItems, "About", "aboutOptionsMenuItem", aboutOptionMenuItem_Click, Keys.F1);
     }
 
@@ -1118,6 +1103,11 @@ namespace Authenticator {
           notifyIcon.Visible = AuthConfig.UseTrayIcon;
           break;
         }
+        case "FullSize":
+          authenticatorList.ResetItemsAutoWidth();
+          SetAutoSize();
+          Invalidate();
+          break;
         case "AutoSize":
         case "Authenticator" when args.AuthenticatorChangedEventArgs.Property == "Name":
           SetAutoSize();

@@ -42,29 +42,29 @@ namespace Authenticator {
       ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
       this.mainMenu.SuspendLayout();
       this.SuspendLayout();
-      // 
+      //
       // mainTimer
-      // 
+      //
       this.mainTimer.Enabled = true;
       this.mainTimer.Interval = 500;
       this.mainTimer.Tick += new System.EventHandler(this.mainTimer_Tick);
-      // 
+      //
       // authenticatorMenu
-      // 
+      //
       this.authenticatorMenu.ImageScalingSize = new System.Drawing.Size(24, 24);
       this.authenticatorMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.testToolStripMenuItem});
       this.authenticatorMenu.Name = "authenticatorMenu";
       this.authenticatorMenu.Size = new System.Drawing.Size(95, 26);
-      // 
+      //
       // testToolStripMenuItem
-      // 
+      //
       this.testToolStripMenuItem.Name = "testToolStripMenuItem";
       this.testToolStripMenuItem.Size = new System.Drawing.Size(94, 22);
       this.testToolStripMenuItem.Text = "Test";
-      // 
+      //
       // passwordPanel
-      // 
+      //
       this.passwordPanel.BackColor = System.Drawing.SystemColors.Window;
       this.passwordPanel.Controls.Add(this.passwordButton);
       this.passwordPanel.Controls.Add(this.passwordErrorLabel);
@@ -75,9 +75,9 @@ namespace Authenticator {
       this.passwordPanel.Name = "passwordPanel";
       this.passwordPanel.Size = new System.Drawing.Size(297, 149);
       this.passwordPanel.TabIndex = 2;
-      // 
+      //
       // passwordButton
-      // 
+      //
       this.passwordButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
       this.passwordButton.Location = new System.Drawing.Point(215, 114);
       this.passwordButton.Name = "passwordButton";
@@ -85,10 +85,10 @@ namespace Authenticator {
       this.passwordButton.TabIndex = 3;
       this.passwordButton.Text = "OK";
       this.passwordButton.Click += new System.EventHandler(this.passwordButton_Click);
-      // 
+      //
       // passwordErrorLabel
-      // 
-      this.passwordErrorLabel.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+      //
+      this.passwordErrorLabel.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
             | System.Windows.Forms.AnchorStyles.Right)));
       this.passwordErrorLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
       this.passwordErrorLabel.ForeColor = System.Drawing.Color.Red;
@@ -96,9 +96,9 @@ namespace Authenticator {
       this.passwordErrorLabel.Name = "passwordErrorLabel";
       this.passwordErrorLabel.Size = new System.Drawing.Size(281, 19);
       this.passwordErrorLabel.TabIndex = 2;
-      // 
+      //
       // passwordLabel
-      // 
+      //
       this.passwordLabel.AutoSize = true;
       this.passwordLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
       this.passwordLabel.Location = new System.Drawing.Point(3, 30);
@@ -106,10 +106,10 @@ namespace Authenticator {
       this.passwordLabel.Size = new System.Drawing.Size(235, 20);
       this.passwordLabel.TabIndex = 0;
       this.passwordLabel.Text = "Please verify your password:";
-      // 
+      //
       // passwordField
-      // 
-      this.passwordField.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+      //
+      this.passwordField.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
             | System.Windows.Forms.AnchorStyles.Right)));
       this.passwordField.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
       this.passwordField.Location = new System.Drawing.Point(7, 63);
@@ -119,9 +119,9 @@ namespace Authenticator {
       this.passwordField.TabIndex = 1;
       this.passwordField.UseSystemPasswordChar = true;
       this.passwordField.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.passwordField_KeyPress);
-      // 
+      //
       // introLabel
-      // 
+      //
       this.introLabel.BackColor = System.Drawing.SystemColors.Window;
       this.introLabel.Dock = System.Windows.Forms.DockStyle.Fill;
       this.introLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
@@ -133,9 +133,9 @@ namespace Authenticator {
     " authenticators";
       this.introLabel.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
       this.introLabel.Visible = false;
-      // 
+      //
       // authenticatorList
-      // 
+      //
       this.authenticatorList.AllowDrop = true;
       this.authenticatorList.BorderStyle = System.Windows.Forms.BorderStyle.None;
       this.authenticatorList.CurrentItem = null;
@@ -143,7 +143,7 @@ namespace Authenticator {
       this.authenticatorList.DrawMode = System.Windows.Forms.DrawMode.OwnerDrawFixed;
       this.authenticatorList.Font = new System.Drawing.Font("Arial", 14.25F, System.Drawing.FontStyle.Bold);
       this.authenticatorList.IntegralHeight = false;
-      this.authenticatorList.ItemHeight = 66;
+      this.authenticatorList.ItemHeight = 60;
       this.authenticatorList.Location = new System.Drawing.Point(0, 0);
       this.authenticatorList.Name = "authenticatorList";
       this.authenticatorList.ReadOnly = false;
@@ -154,9 +154,9 @@ namespace Authenticator {
       this.authenticatorList.ItemRemoved += new System.EventHandler<AuthenticatorListBox.ListItem>(this.authenticatorList_ItemRemoved);
       this.authenticatorList.Reordered += new System.EventHandler(this.authenticatorList_Reordered);
       this.authenticatorList.DoubleClick += new System.EventHandler<AuthAuthenticator>(this.authenticatorList_DoubleClick);
-      // 
+      //
       // loadingPanel
-      // 
+      //
       this.loadingPanel.BackColor = System.Drawing.SystemColors.Window;
       this.loadingPanel.Controls.Add(this.pictureBox1);
       this.loadingPanel.Dock = System.Windows.Forms.DockStyle.Fill;
@@ -164,9 +164,9 @@ namespace Authenticator {
       this.loadingPanel.Name = "loadingPanel";
       this.loadingPanel.Size = new System.Drawing.Size(297, 149);
       this.loadingPanel.TabIndex = 4;
-      // 
+      //
       // pictureBox1
-      // 
+      //
       this.pictureBox1.Anchor = System.Windows.Forms.AnchorStyles.None;
       this.pictureBox1.Image = global::Authenticator.Properties.Resources.spinner24;
       this.pictureBox1.Location = new System.Drawing.Point(139, 64);
@@ -174,9 +174,9 @@ namespace Authenticator {
       this.pictureBox1.Size = new System.Drawing.Size(25, 25);
       this.pictureBox1.TabIndex = 1;
       this.pictureBox1.TabStop = false;
-      // 
+      //
       // mainMenu
-      // 
+      //
       this.mainMenu.BackColor = System.Drawing.SystemColors.Window;
       this.mainMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.fileToolStripMenuItem,
@@ -187,27 +187,27 @@ namespace Authenticator {
       this.mainMenu.Size = new System.Drawing.Size(297, 24);
       this.mainMenu.TabIndex = 5;
       this.mainMenu.Visible = false;
-      // 
+      //
       // fileToolStripMenuItem
-      // 
+      //
       this.fileToolStripMenuItem.Name = "fileToolStripMenuItem";
       this.fileToolStripMenuItem.Size = new System.Drawing.Size(37, 20);
       this.fileToolStripMenuItem.Text = "File";
-      // 
+      //
       // optionsToolStripMenuItem
-      // 
+      //
       this.optionsToolStripMenuItem.Name = "optionsToolStripMenuItem";
       this.optionsToolStripMenuItem.Size = new System.Drawing.Size(61, 20);
       this.optionsToolStripMenuItem.Text = "Options";
-      // 
+      //
       // helpToolStripMenuItem
-      // 
+      //
       this.helpToolStripMenuItem.Name = "helpToolStripMenuItem";
       this.helpToolStripMenuItem.Size = new System.Drawing.Size(44, 20);
       this.helpToolStripMenuItem.Text = "Help";
-      // 
+      //
       // MainForm
-      // 
+      //
       this.AutoScaleDimensions = new System.Drawing.SizeF(96F, 96F);
       this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
       this.ClientSize = new System.Drawing.Size(297, 149);
