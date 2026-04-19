@@ -484,6 +484,7 @@ namespace Authenticator {
         }
         else {
           renameTextbox.Width = labelMaxWidth;
+          renameTextbox.Font = labelFont;
         }
 
         return renameTextbox;
