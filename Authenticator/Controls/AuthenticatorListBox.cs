@@ -34,7 +34,7 @@ namespace Authenticator {
     private const int ICON_MARGIN_RIGHT = 8;
     private const int PIE_STARTANGLE = 270;
     private const int PIE_SWEEPANGLE = 360;
-    private const string NO_CODE_TEXT = "••• •••";
+    private const string NO_CODE_TEXT = "- - - - - -";
 
     private int marginTop = 1;
     private int iconSize = 40;
