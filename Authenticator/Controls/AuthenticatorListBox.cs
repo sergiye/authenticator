@@ -32,13 +32,18 @@ namespace Authenticator {
     private const int MARGIN_LEFT = 4;
     private const int MARGIN_RIGHT = 0;
     private const int ICON_MARGIN_RIGHT = 8;
+    private const int PIE_STARTANGLE = 270;
+    private const int PIE_SWEEPANGLE = 360;
     private const string NO_CODE_TEXT = "••• •••";
 
     private int marginTop = 1;
     private int iconSize = 40;
+    private int PIE_SIZE = 36;
+    private int PIE_MARGIN_TOP = 2;
     private int progressSize = 4;
     private int labelMarginTop = 1;
     private Font labelFont = new Font("Microsoft Sans Serif", 10F, FontStyle.Regular, GraphicsUnit.Point, 0);
+    private Font pieFont = new Font("Microsoft Sans Serif", 7F, FontStyle.Regular, GraphicsUnit.Point, 0);
 
     public event EventHandler<ListItem> ItemRemoved;
 
@@ -98,10 +103,12 @@ namespace Authenticator {
           return;
         base.ItemHeight = value;
         iconSize = ItemHeight * 2 / 3;
+        PIE_SIZE = ItemHeight * 3 / 5;
         progressSize = ItemHeight / 20;
 
         marginTop = (ItemHeight - iconSize) / 2;
         labelMarginTop = marginTop / 4;
+        PIE_MARGIN_TOP = (ItemHeight - PIE_SIZE) / 2;
       }
     }
 
@@ -112,6 +119,7 @@ namespace Authenticator {
           return;
         base.Font = value;
         labelFont = new Font("Microsoft Sans Serif", Font.Size * 2 / 3, FontStyle.Regular, GraphicsUnit.Point, 0);
+        pieFont = new Font("Microsoft Sans Serif", Font.Size / 2, FontStyle.Regular, GraphicsUnit.Point, 0);
       }
     }
 
@@ -213,8 +221,13 @@ namespace Authenticator {
         if (index >= 0 && index < Items.Count) {
           if (!(Items[index] is ListItem item)) return;
           var y = ItemHeight * index - ItemHeight * TopIndex;
+          var hasVScroll = Height < Items.Count * ItemHeight;
           if (!item.Authenticator.AutoRefresh && item.DisplayUntil < DateTime.Now
-                                              && (GetCodeRectangle(item.Authenticator.Name, y).Contains(e.Location))) {
+                                              && (GetCodeRectangle(item.Authenticator.Name, y).Contains(e.Location)) ||
+                                                new Rectangle(
+                                                Width - (PIE_SIZE + MARGIN_RIGHT) -
+                                                (hasVScroll ? SystemInformation.VerticalScrollBarWidth : 0),
+                                                y + marginTop, PIE_SIZE, PIE_SIZE).Contains(e.Location)) {
             if (UnprotectAuthenticator(item) == DialogResult.Cancel) {
               return;
             }
@@ -559,8 +572,14 @@ namespace Authenticator {
         if (index >= 0 && index < Items.Count) {
           if (!(Items[index] is ListItem item)) return;
           var y = ItemHeight * index - TopIndex * ItemHeight;
+          var hasVScroll = Height < Items.Count * ItemHeight;
           if (!item.Authenticator.AutoRefresh && item.DisplayUntil < DateTime.Now
-                                              && (GetCodeRectangle(item.Authenticator.Name, y).Contains(mouseLocation))) {
+                                              && (GetCodeRectangle(item.Authenticator.Name, y).Contains(mouseLocation)) ||
+                                                new Rectangle(
+                                                  Width - (PIE_SIZE + MARGIN_RIGHT) -
+                                                  (hasVScroll ? SystemInformation.VerticalScrollBarWidth : 0),
+                                                  y + marginTop, PIE_SIZE, PIE_SIZE)
+                                                .Contains(mouseLocation)) {
             cursor = Cursors.Hand;
           }
         }
@@ -1087,7 +1106,7 @@ namespace Authenticator {
     }
 
     protected int GetMaxAvailableLabelWidth(int totalWidth) {
-      return totalWidth - MARGIN_LEFT - iconSize - ICON_MARGIN_RIGHT - MARGIN_RIGHT;
+      return totalWidth - MARGIN_LEFT - iconSize - ICON_MARGIN_RIGHT - PIE_SIZE - MARGIN_RIGHT;
     }
 
     public void ResetItemsAutoWidth() {
@@ -1103,7 +1122,7 @@ namespace Authenticator {
           foreach (var item in items) {
             var auth = item.Authenticator;
             var labelSize = g.MeasureString(auth.Name, labelFont);
-            item.AutoWidth = MARGIN_LEFT + iconSize + ICON_MARGIN_RIGHT + (int)Math.Ceiling(labelSize.Width) + MARGIN_RIGHT;
+            item.AutoWidth = MARGIN_LEFT + iconSize + ICON_MARGIN_RIGHT + (int)Math.Ceiling(labelSize.Width) + PIE_SIZE + MARGIN_RIGHT;
           }
         }
       }
@@ -1235,6 +1254,60 @@ namespace Authenticator {
       }
 
       // draw the refresh image or pie
+      rect = new Rectangle(e.Bounds.X + e.Bounds.Width - (MARGIN_RIGHT + PIE_SIZE),
+        e.Bounds.Y + PIE_MARGIN_TOP,
+        PIE_SIZE, PIE_SIZE);
+      if (clipRect.IntersectsWith(rect)) {
+        if (auth.AutoRefresh) {
+          var remainingMs = auth.AuthenticatorData.Period * 1000L -
+                            Authenticator.CurrentTime % (auth.AuthenticatorData.Period * 1000L);
+          var tillUpdate = (int) Math.Round(remainingMs / 1000.0);
+          var sweepAngle = (int) Math.Round((1.0 - remainingMs / (auth.AuthenticatorData.Period * 1000.0)) * PIE_SWEEPANGLE);
+
+          var iconColor = GetAverageColor(auth.Icon);
+          using (var customPiePen = new Pen(iconColor))
+          using (var customPieBrush = new SolidBrush(iconColor)) {
+            e.Graphics.DrawEllipse(customPiePen, rect.Left, rect.Top, PIE_SIZE, PIE_SIZE);
+            e.Graphics.DrawArc(new Pen(customPieBrush, 4), rect.Left, rect.Top, PIE_SIZE, PIE_SIZE, PIE_STARTANGLE,
+              sweepAngle);
+          }
+
+          var secondsText = $"{tillUpdate}";
+          var secondsSize = e.Graphics.MeasureString(secondsText, pieFont);
+          e.Graphics.DrawString(secondsText, pieFont, foreColorBrush,
+            rect.Left + (PIE_SIZE - secondsSize.Width) / 2,
+            rect.Top + (PIE_SIZE - secondsSize.Height) / 2);
+        }
+        else {
+          if (showCode) {
+            var totalTime = item.DisplayUntil.Subtract(item.LastUpdate).TotalMilliseconds;
+            var remainingTime = item.DisplayUntil.Subtract(DateTime.Now).TotalMilliseconds;
+            var tillUpdate = (int) Math.Max(0, Math.Round(remainingTime / 1000.0));
+            var sweepAngle = (int) Math.Round((1.0 - remainingTime / totalTime) * PIE_SWEEPANGLE);
+
+            var iconColor = GetAverageColor(auth.Icon);
+            using (var customPiePen = new Pen(iconColor))
+            using (var customPieBrush = new SolidBrush(iconColor)) {
+              e.Graphics.DrawEllipse(customPiePen, rect.Left, rect.Top, PIE_SIZE, PIE_SIZE);
+              e.Graphics.DrawArc(new Pen(customPieBrush, 4), rect.Left, rect.Top, PIE_SIZE, PIE_SIZE,
+                PIE_STARTANGLE, sweepAngle);
+            }
+
+            var secondsText = $"{tillUpdate}";
+            var secondsSize = e.Graphics.MeasureString(secondsText, pieFont);
+            e.Graphics.DrawString(secondsText, pieFont, foreColorBrush,
+              rect.Left + (PIE_SIZE - secondsSize.Width) / 2,
+              rect.Top + (PIE_SIZE - secondsSize.Height) / 2);
+          }
+          else if (auth.AuthenticatorData?.RequiresPassword == true) {
+            e.Graphics.DrawImage(Properties.Resources.RefreshIconWithLock, rect);
+          }
+          else {
+            e.Graphics.DrawImage(Properties.Resources.RefreshIcon, rect);
+          }
+        }
+      }
+
       if (showCode) {
         double progress;
         if (auth.AutoRefresh) {
@@ -1250,8 +1323,9 @@ namespace Authenticator {
 
         var iconColor = GetAverageColor(auth.Icon);
         using (var progressPen = new Pen(iconColor, progressSize)) {
-          var y = rect.Bottom - progressSize / 3;
-          e.Graphics.DrawLine(progressPen, rect.Left, y, rect.Left + (int) (rect.Width * progress), y);
+          var y = e.Bounds.Y + codeVertShift + (int) codeSize.Height - progressSize / 3;
+          var left = e.Bounds.X + MARGIN_LEFT + iconSize + ICON_MARGIN_RIGHT;
+          e.Graphics.DrawLine(progressPen, left, y, left + (int) (codeSize.Width * progress), y);
         }
       }
 

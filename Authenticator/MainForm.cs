@@ -551,9 +551,9 @@ namespace Authenticator {
       var listItemsCount = Config?.Count ?? 0;
 
       var minWidth = AuthConfig.ItemSize switch {
-        0 => 230,
-        1 => 270,
-        2 => 320,
+        0 => 260,
+        1 => 340,
+        2 => 420,
         _ => throw new ArgumentOutOfRangeException()
       };
       MinimumSize = new Size(minWidth, mainMenu.Height + Height - ClientRectangle.Height + authenticatorList.ItemHeight);
