@@ -38,8 +38,8 @@ namespace Authenticator {
 
     private int marginTop = 1;
     private int iconSize = 40;
-    private int PIE_SIZE = 36;
-    private int PIE_MARGIN_TOP = 2;
+    private int pieSize = 36;
+    private int pieMarginTop = 2;
     private int progressSize = 4;
     private int labelMarginTop = 1;
     private Font labelFont = new Font("Microsoft Sans Serif", 10F, FontStyle.Regular, GraphicsUnit.Point, 0);
@@ -103,12 +103,12 @@ namespace Authenticator {
           return;
         base.ItemHeight = value;
         iconSize = ItemHeight * 2 / 3;
-        PIE_SIZE = ItemHeight * 3 / 5;
+        pieSize = ItemHeight * 3 / 5;
         progressSize = ItemHeight / 20;
 
         marginTop = (ItemHeight - iconSize) / 2;
         labelMarginTop = marginTop / 4;
-        PIE_MARGIN_TOP = (ItemHeight - PIE_SIZE) / 2;
+        pieMarginTop = (ItemHeight - pieSize) / 2;
       }
     }
 
@@ -223,11 +223,11 @@ namespace Authenticator {
           var y = ItemHeight * index - ItemHeight * TopIndex;
           var hasVScroll = Height < Items.Count * ItemHeight;
           if (!item.Authenticator.AutoRefresh && item.DisplayUntil < DateTime.Now
-                                              && (GetCodeRectangle(item.Authenticator.Name, y).Contains(e.Location)) ||
+                                              && GetCodeRectangle(item.Authenticator.Name, y).Contains(e.Location) ||
                                                 new Rectangle(
-                                                Width - (PIE_SIZE + MARGIN_RIGHT) -
+                                                Width - (pieSize + MARGIN_RIGHT) -
                                                 (hasVScroll ? SystemInformation.VerticalScrollBarWidth : 0),
-                                                y + marginTop, PIE_SIZE, PIE_SIZE).Contains(e.Location)) {
+                                                y + marginTop, pieSize, pieSize).Contains(e.Location)) {
             if (UnprotectAuthenticator(item) == DialogResult.Cancel) {
               return;
             }
@@ -496,7 +496,6 @@ namespace Authenticator {
       if (!save) {
         RenameTextbox.Tag = null;
       }
-
       RenameTextbox.Visible = false;
     }
 
@@ -534,7 +533,6 @@ namespace Authenticator {
         if (currentItem == null && Items.Count != 0) {
           currentItem = (ListItem)Items[0];
         }
-
         return currentItem;
       }
       set {
@@ -574,11 +572,11 @@ namespace Authenticator {
           var y = ItemHeight * index - TopIndex * ItemHeight;
           var hasVScroll = Height < Items.Count * ItemHeight;
           if (!item.Authenticator.AutoRefresh && item.DisplayUntil < DateTime.Now
-                                              && (GetCodeRectangle(item.Authenticator.Name, y).Contains(mouseLocation)) ||
+                                              && GetCodeRectangle(item.Authenticator.Name, y).Contains(mouseLocation) ||
                                                 new Rectangle(
-                                                  Width - (PIE_SIZE + MARGIN_RIGHT) -
+                                                  Width - (pieSize + MARGIN_RIGHT) -
                                                   (hasVScroll ? SystemInformation.VerticalScrollBarWidth : 0),
-                                                  y + marginTop, PIE_SIZE, PIE_SIZE)
+                                                  y + marginTop, pieSize, pieSize)
                                                 .Contains(mouseLocation)) {
             cursor = Cursors.Hand;
           }
@@ -1074,10 +1072,7 @@ namespace Authenticator {
       }
     }
 
-    public Color PieColor {
-      get => pieColor;
-      set => pieColor = value;
-    }
+    public Color PieColor { get; set; } = SystemColors.ActiveCaption;
 
     public Color LineColor {
       get => lineColor;
@@ -1092,7 +1087,6 @@ namespace Authenticator {
     private Color selectedCodeColor = Color.Black;
     private Color selectedBackColor = Color.LightSteelBlue;
     private Color selectedForeColor = Color.LightSteelBlue;
-    private Color pieColor = SystemColors.ActiveCaption;
     private Color lineColor = SystemColors.Control;
 
     private void ApplyColors() {
@@ -1106,7 +1100,7 @@ namespace Authenticator {
     }
 
     protected int GetMaxAvailableLabelWidth(int totalWidth) {
-      return totalWidth - MARGIN_LEFT - iconSize - ICON_MARGIN_RIGHT - PIE_SIZE - MARGIN_RIGHT;
+      return totalWidth - MARGIN_LEFT - iconSize - ICON_MARGIN_RIGHT - pieSize - MARGIN_RIGHT;
     }
 
     public void ResetItemsAutoWidth() {
@@ -1122,7 +1116,7 @@ namespace Authenticator {
           foreach (var item in items) {
             var auth = item.Authenticator;
             var labelSize = g.MeasureString(auth.Name, labelFont);
-            item.AutoWidth = MARGIN_LEFT + iconSize + ICON_MARGIN_RIGHT + (int)Math.Ceiling(labelSize.Width) + PIE_SIZE + MARGIN_RIGHT;
+            item.AutoWidth = MARGIN_LEFT + iconSize + ICON_MARGIN_RIGHT + (int)Math.Ceiling(labelSize.Width) + pieSize + MARGIN_RIGHT;
           }
         }
       }
@@ -1139,29 +1133,28 @@ namespace Authenticator {
     }
 
     private Color GetAverageColor(Bitmap bmp) {
-      if (bmp == null) return pieColor;
+      if (bmp == null) return PieColor;
       try {
         // Simple approach: get color from a few pixels near the center or calculate average. Since icons are small, average is fine.
         long r = 0, g = 0, b = 0;
-        int count = 0;
-        for (int x = 0; x < bmp.Width; x += 4) {
-          for (int y = 0; y < bmp.Height; y += 4) {
-            Color pixel = bmp.GetPixel(x, y);
-            if (pixel.A > 128) {
-              // Skip transparent
-              r += pixel.R;
-              g += pixel.G;
-              b += pixel.B;
-              count++;
-            }
+        var count = 0;
+        for (var x = 0; x < bmp.Width; x += 4) {
+          for (var y = 0; y < bmp.Height; y += 4) {
+            var pixel = bmp.GetPixel(x, y);
+            if (pixel.A <= 128) continue;
+            // Skip transparent
+            r += pixel.R;
+            g += pixel.G;
+            b += pixel.B;
+            count++;
           }
         }
         return count == 0
-          ? pieColor
+          ? PieColor
           : Color.FromArgb((int) (r / count), (int) (g / count), (int) (b / count));
       }
       catch {
-        return pieColor;
+        return PieColor;
       }
     }
 
@@ -1254,9 +1247,9 @@ namespace Authenticator {
       }
 
       // draw the refresh image or pie
-      rect = new Rectangle(e.Bounds.X + e.Bounds.Width - (MARGIN_RIGHT + PIE_SIZE),
-        e.Bounds.Y + PIE_MARGIN_TOP,
-        PIE_SIZE, PIE_SIZE);
+      rect = new Rectangle(e.Bounds.X + e.Bounds.Width - (MARGIN_RIGHT + pieSize),
+        e.Bounds.Y + pieMarginTop,
+        pieSize, pieSize);
       if (clipRect.IntersectsWith(rect)) {
         if (auth.AutoRefresh) {
           var remainingMs = auth.AuthenticatorData.Period * 1000L -
@@ -1267,16 +1260,16 @@ namespace Authenticator {
           var iconColor = GetAverageColor(auth.Icon);
           using (var customPiePen = new Pen(iconColor))
           using (var customPieBrush = new SolidBrush(iconColor)) {
-            e.Graphics.DrawEllipse(customPiePen, rect.Left, rect.Top, PIE_SIZE, PIE_SIZE);
-            e.Graphics.DrawArc(new Pen(customPieBrush, 4), rect.Left, rect.Top, PIE_SIZE, PIE_SIZE, PIE_STARTANGLE,
+            e.Graphics.DrawEllipse(customPiePen, rect.Left, rect.Top, pieSize, pieSize);
+            e.Graphics.DrawArc(new Pen(customPieBrush, 4), rect.Left, rect.Top, pieSize, pieSize, PIE_STARTANGLE,
               sweepAngle);
           }
 
           var secondsText = $"{tillUpdate}";
           var secondsSize = e.Graphics.MeasureString(secondsText, pieFont);
           e.Graphics.DrawString(secondsText, pieFont, foreColorBrush,
-            rect.Left + (PIE_SIZE - secondsSize.Width) / 2,
-            rect.Top + (PIE_SIZE - secondsSize.Height) / 2);
+            rect.Left + (pieSize - secondsSize.Width) / 2,
+            rect.Top + (pieSize - secondsSize.Height) / 2);
         }
         else {
           if (showCode) {
@@ -1288,16 +1281,16 @@ namespace Authenticator {
             var iconColor = GetAverageColor(auth.Icon);
             using (var customPiePen = new Pen(iconColor))
             using (var customPieBrush = new SolidBrush(iconColor)) {
-              e.Graphics.DrawEllipse(customPiePen, rect.Left, rect.Top, PIE_SIZE, PIE_SIZE);
-              e.Graphics.DrawArc(new Pen(customPieBrush, 4), rect.Left, rect.Top, PIE_SIZE, PIE_SIZE,
+              e.Graphics.DrawEllipse(customPiePen, rect.Left, rect.Top, pieSize, pieSize);
+              e.Graphics.DrawArc(new Pen(customPieBrush, 4), rect.Left, rect.Top, pieSize, pieSize,
                 PIE_STARTANGLE, sweepAngle);
             }
 
             var secondsText = $"{tillUpdate}";
             var secondsSize = e.Graphics.MeasureString(secondsText, pieFont);
             e.Graphics.DrawString(secondsText, pieFont, foreColorBrush,
-              rect.Left + (PIE_SIZE - secondsSize.Width) / 2,
-              rect.Top + (PIE_SIZE - secondsSize.Height) / 2);
+              rect.Left + (pieSize - secondsSize.Width) / 2,
+              rect.Top + (pieSize - secondsSize.Height) / 2);
           }
           else if (auth.AuthenticatorData?.RequiresPassword == true) {
             e.Graphics.DrawImage(Properties.Resources.RefreshIconWithLock, rect);
