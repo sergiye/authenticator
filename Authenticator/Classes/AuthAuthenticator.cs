@@ -33,7 +33,7 @@ namespace Authenticator {
 
       clone.OnAuthAuthenticatorChanged = null;
       clone.AuthenticatorData =
-        (AuthenticatorData != null ? AuthenticatorData.Clone() as Authenticator : null);
+        AuthenticatorData?.Clone() as Authenticator;
 
       return clone;
     }
@@ -79,10 +79,17 @@ namespace Authenticator {
 
     private Bitmap icon;
     public Bitmap Icon {
-      get => icon ?? (icon = GenerateIconFromSkin());
+      get {
+        if (icon == null) {
+          icon = GenerateIconFromSkin();
+          SetAverageColor();
+        }
+        return icon;
+      }
       set {
         if (value == icon) return;
         icon = value;
+        SetAverageColor();
         if (icon == null) {
           Skin = null;
         }
@@ -93,6 +100,39 @@ namespace Authenticator {
           }
         }
       }
+    }
+
+    public Color AverageColor { get; private set; } = Color.Empty;
+
+    private void SetAverageColor() {
+      var bmp = icon;
+      if (bmp != null) {
+        try {
+          // Simple approach: get color from a few pixels near the center or calculate average. Since icons are small, average is fine.
+          long r = 0, g = 0, b = 0;
+          var count = 0;
+          for (var x = 0; x < bmp.Width; x += 4) {
+            for (var y = 0; y < bmp.Height; y += 4) {
+              var pixel = bmp.GetPixel(x, y);
+              if (pixel.A <= 128) continue;
+              // Skip transparent
+              r += pixel.R;
+              g += pixel.G;
+              b += pixel.B;
+              count++;
+            }
+          }
+
+          if (count != 0) {
+            AverageColor = Color.FromArgb((int) (r / count), (int) (g / count), (int) (b / count));
+            return;
+          }
+        }
+        catch {
+          //ignore
+        }
+      }
+      AverageColor = Color.Empty;
     }
 
     private Bitmap GenerateIconFromSkin() {
@@ -109,7 +149,7 @@ namespace Authenticator {
       else {
         return AuthHelper.GetIconBitmap(Skin);
       }
-        
+
       return AuthenticatorData == null ? null : AuthHelper.GetIconBitmap(AuthenticatorData.GetType().Name + "Icon.png");
     }
 
@@ -142,7 +182,7 @@ namespace Authenticator {
         var code = AuthenticatorData.CurrentCode;
 
         if (AuthenticatorData is HotpAuthenticator) {
-          OnAuthAuthenticatorChanged?.Invoke(this, new AuthAuthenticatorChangedEventArgs("HOTP", AuthenticatorData));
+          OnAuthAuthenticatorChanged?.Invoke(this, new AuthAuthenticatorChangedEventArgs("HOTP"));
         }
 
         return code;
@@ -150,10 +190,7 @@ namespace Authenticator {
     }
 
     public void CopyCodeToClipboard(Form form, string code = null, bool showError = false) {
-      if (code == null) {
-        code = CurrentCode;
-      }
-
+      code ??= CurrentCode;
       var clipRetry = false;
       do {
         var failed = false;
@@ -407,11 +444,9 @@ namespace Authenticator {
 
   public class AuthAuthenticatorChangedEventArgs : EventArgs {
     public string Property { get; }
-    public Authenticator Authenticator { get; }
 
-    public AuthAuthenticatorChangedEventArgs(string property = null, Authenticator authenticator = null) {
+    public AuthAuthenticatorChangedEventArgs(string property = null) {
       Property = property;
-      Authenticator = authenticator;
     }
   }
 }

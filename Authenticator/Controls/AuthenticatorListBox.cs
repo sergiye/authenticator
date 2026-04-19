@@ -118,7 +118,9 @@ namespace Authenticator {
         if (Equals(base.Font, value))
           return;
         base.Font = value;
+        labelFont?.Dispose();
         labelFont = new Font("Microsoft Sans Serif", Font.Size * 2 / 3, FontStyle.Regular, GraphicsUnit.Point, 0);
+        pieFont?.Dispose();
         pieFont = new Font("Microsoft Sans Serif", Font.Size / 2, FontStyle.Regular, GraphicsUnit.Point, 0);
       }
     }
@@ -1022,8 +1024,10 @@ namespace Authenticator {
     public override Color BackColor {
       get => base.BackColor;
       set {
-        if (BackColor != value)
+        if (BackColor != value) {
+          backColorBrush?.Dispose();
           backColorBrush = new SolidBrush(value);
+        }
         base.BackColor = value;
       }
     }
@@ -1031,8 +1035,10 @@ namespace Authenticator {
     public override Color ForeColor {
       get => base.ForeColor;
       set {
-        if (ForeColor != value)
+        if (ForeColor != value) {
+          foreColorBrush?.Dispose();
           foreColorBrush = new SolidBrush(value);
+        }
         base.ForeColor = value;
       }
     }
@@ -1040,8 +1046,10 @@ namespace Authenticator {
     public Color CodeColor {
       get => codeColor;
       set {
-        if (codeColor != value)
+        if (codeColor != value) {
+          codeBrush?.Dispose();
           codeBrush = new SolidBrush(value);
+        }
         codeColor = value;
       }
     }
@@ -1049,8 +1057,10 @@ namespace Authenticator {
     public Color SelectedCodeColor {
       get => selectedCodeColor;
       set {
-        if (selectedCodeColor != value)
+        if (selectedCodeColor != value) {
+          selectedCodeBrush?.Dispose();
           selectedCodeBrush = new SolidBrush(value);
+        }
         selectedCodeColor = value;
       }
     }
@@ -1058,8 +1068,10 @@ namespace Authenticator {
     public Color SelectedBackColor {
       get => selectedBackColor;
       set {
-        if (selectedBackColor != value)
+        if (selectedBackColor != value) {
+          selectedBackBrush?.Dispose();
           selectedBackBrush = new SolidBrush(value);
+        }
         selectedBackColor = value;
       }
     }
@@ -1067,8 +1079,10 @@ namespace Authenticator {
     public Color SelectedForeColor {
       get => selectedForeColor;
       set {
-        if (selectedForeColor != value)
+        if (selectedForeColor != value) {
+          selectedForeBrush?.Dispose();
           selectedForeBrush = new SolidBrush(value);
+        }
         selectedForeColor = value;
       }
     }
@@ -1078,8 +1092,10 @@ namespace Authenticator {
     public Color LineColor {
       get => lineColor;
       set {
-        if (lineColor != value)
+        if (lineColor != value) {
+          linePen?.Dispose();
           linePen = new Pen(value, 2);
+        }
         lineColor = value;
       }
     }
@@ -1091,12 +1107,19 @@ namespace Authenticator {
     private Color lineColor = SystemColors.Control;
 
     private void ApplyColors() {
+      backColorBrush?.Dispose();
       backColorBrush = new SolidBrush(BackColor);
+      foreColorBrush?.Dispose();
       foreColorBrush = new SolidBrush(ForeColor);
+      selectedBackBrush?.Dispose();
       selectedBackBrush = new SolidBrush(selectedBackColor);
+      selectedForeBrush?.Dispose();
       selectedForeBrush = new SolidBrush(selectedForeColor);
+      codeBrush?.Dispose();
       codeBrush = new SolidBrush(codeColor);
+      selectedCodeBrush?.Dispose();
       selectedCodeBrush = new SolidBrush(selectedCodeColor);
+      linePen?.Dispose();
       linePen = new Pen(lineColor, 2);
     }
 
@@ -1133,38 +1156,12 @@ namespace Authenticator {
       }
     }
 
-    private Color GetAverageColor(Bitmap bmp, Color backColor, Color foreColor) {
-      if (bmp == null) return PieColor;
-      try {
-        // Simple approach: get color from a few pixels near the center or calculate average. Since icons are small, average is fine.
-        long r = 0, g = 0, b = 0;
-        var count = 0;
-        for (var x = 0; x < bmp.Width; x += 4) {
-          for (var y = 0; y < bmp.Height; y += 4) {
-            var pixel = bmp.GetPixel(x, y);
-            if (pixel.A <= 128) continue;
-            // Skip transparent
-            r += pixel.R;
-            g += pixel.G;
-            b += pixel.B;
-            count++;
-          }
-        }
-
-        if (count == 0) return PieColor;
-
-        var avgR = (int) (r / count);
-        var avgG = (int) (g / count);
-        var avgB = (int) (b / count);
-
-        // Check contrast with backColor. If too close, return foreColor.
-        // Simple Euclidean distance in RGB space. Threshold 100 is a rough estimate for "close" in 0-255 range.
-        var dist = Math.Sqrt(Math.Pow(avgR - backColor.R, 2) + Math.Pow(avgG - backColor.G, 2) + Math.Pow(avgB - backColor.B, 2));
-        return dist < 100 ? foreColor : Color.FromArgb(avgR, avgG, avgB);
-      }
-      catch {
-        return PieColor;
-      }
+    private Color GetAverageColor(ListItem listItem, Color backColor, Color foreColor) {
+      if (listItem.Authenticator.AverageColor == Color.Empty) return PieColor;
+      // Check contrast with backColor. If too close, return foreColor.
+      // Simple Euclidean distance in RGB space. Threshold 100 is a rough estimate for "close" in 0-255 range.
+      var dist = Math.Sqrt(Math.Pow(listItem.Authenticator.AverageColor.R - backColor.R, 2) + Math.Pow(listItem.Authenticator.AverageColor.G - backColor.G, 2) + Math.Pow(listItem.Authenticator.AverageColor.B - backColor.B, 2));
+      return dist < 100 ? foreColor : listItem.Authenticator.AverageColor;
     }
 
     protected void OnDrawItem(DrawItemEventArgs e, Rectangle clipRect) {
@@ -1269,11 +1266,12 @@ namespace Authenticator {
           var tillUpdate = (int) Math.Round(remainingMs / 1000.0);
           var sweepAngle = (int) Math.Round((1.0 - remainingMs / (auth.AuthenticatorData.Period * 1000.0)) * PIE_SWEEPANGLE);
 
-          var iconColor = GetAverageColor(auth.Icon, currentBack, currentFore);
+          var iconColor = GetAverageColor(item, currentBack, currentFore);
           using (var customPiePen = new Pen(iconColor))
-          using (var customPieBrush = new SolidBrush(iconColor)) {
+          using (var customPieBrush = new SolidBrush(iconColor))
+          using (var customArcPen = new Pen(customPieBrush, 4)) {
             e.Graphics.DrawEllipse(customPiePen, rect.Left, rect.Top, pieSize, pieSize);
-            e.Graphics.DrawArc(new Pen(customPieBrush, 4), rect.Left, rect.Top, pieSize, pieSize, PIE_STARTANGLE,
+            e.Graphics.DrawArc(customArcPen, rect.Left, rect.Top, pieSize, pieSize, PIE_STARTANGLE,
               sweepAngle);
           }
 
@@ -1290,11 +1288,12 @@ namespace Authenticator {
             var tillUpdate = (int) Math.Max(0, Math.Round(remainingTime / 1000.0));
             var sweepAngle = (int) Math.Round((1.0 - remainingTime / totalTime) * PIE_SWEEPANGLE);
 
-            var iconColor = GetAverageColor(auth.Icon, currentBack, currentFore);
+            var iconColor = GetAverageColor(item, currentBack, currentFore);
             using (var customPiePen = new Pen(iconColor))
-            using (var customPieBrush = new SolidBrush(iconColor)) {
+            using (var customPieBrush = new SolidBrush(iconColor))
+            using (var customArcPen = new Pen(customPieBrush, 4)) {
               e.Graphics.DrawEllipse(customPiePen, rect.Left, rect.Top, pieSize, pieSize);
-              e.Graphics.DrawArc(new Pen(customPieBrush, 4), rect.Left, rect.Top, pieSize, pieSize,
+              e.Graphics.DrawArc(customArcPen, rect.Left, rect.Top, pieSize, pieSize,
                 PIE_STARTANGLE, sweepAngle);
             }
 
@@ -1326,7 +1325,7 @@ namespace Authenticator {
           progress = remainingTime / totalTime;
         }
 
-        var iconColor = GetAverageColor(auth.Icon, currentBack, currentFore);
+        var iconColor = GetAverageColor(item, currentBack, currentFore);
         using (var progressPen = new Pen(iconColor, progressSize)) {
           var y = e.Bounds.Y + codeVertShift + (int) codeSize.Height - progressSize / 3;
           var left = e.Bounds.X + MARGIN_LEFT + iconSize + ICON_MARGIN_RIGHT;
@@ -1375,6 +1374,24 @@ namespace Authenticator {
       }
 
       base.OnPaint(e);
+      region.Dispose();
+    }
+
+    protected override void Dispose(bool disposing) {
+      if (disposing) {
+        backColorBrush?.Dispose();
+        foreColorBrush?.Dispose();
+        codeBrush?.Dispose();
+        selectedCodeBrush?.Dispose();
+        selectedBackBrush?.Dispose();
+        selectedForeBrush?.Dispose();
+        linePen?.Dispose();
+        labelFont?.Dispose();
+        pieFont?.Dispose();
+        draggedBitmap?.Dispose();
+        renameTextbox?.Dispose();
+      }
+      base.Dispose(disposing);
     }
 
     #endregion
