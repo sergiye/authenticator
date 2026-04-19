@@ -235,7 +235,7 @@ namespace Authenticator {
         // make sure there isn't a name clash
         var rename = 0;
         var importedName = authenticator.Name;
-        while (Config.Where(a => a.Name == importedName).Count() != 0) {
+        while (Config.Any(a => a.Name == importedName)) {
           importedName = authenticator.Name + " " + (++rename);
         }
 
@@ -249,7 +249,7 @@ namespace Authenticator {
           if (form.ShowDialog(this) == DialogResult.OK) {
             Config.PasswordType = form.PasswordType;
             if ((Config.PasswordType & Authenticator.PasswordTypes.Explicit) != 0 &&
-                string.IsNullOrEmpty(form.Password) == false) {
+                !string.IsNullOrEmpty(form.Password)) {
               Config.Password = form.Password;
             }
           }
