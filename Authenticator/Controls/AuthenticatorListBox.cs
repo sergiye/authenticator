@@ -1132,7 +1132,7 @@ namespace Authenticator {
       }
     }
 
-    private Color GetAverageColor(Bitmap bmp) {
+    private Color GetAverageColor(Bitmap bmp, Color backColor, Color foreColor) {
       if (bmp == null) return PieColor;
       try {
         // Simple approach: get color from a few pixels near the center or calculate average. Since icons are small, average is fine.
@@ -1149,9 +1149,17 @@ namespace Authenticator {
             count++;
           }
         }
-        return count == 0
-          ? PieColor
-          : Color.FromArgb((int) (r / count), (int) (g / count), (int) (b / count));
+
+        if (count == 0) return PieColor;
+
+        var avgR = (int) (r / count);
+        var avgG = (int) (g / count);
+        var avgB = (int) (b / count);
+
+        // Check contrast with backColor. If too close, return foreColor.
+        // Simple Euclidean distance in RGB space. Threshold 100 is a rough estimate for "close" in 0-255 range.
+        var dist = Math.Sqrt(Math.Pow(avgR - backColor.R, 2) + Math.Pow(avgG - backColor.G, 2) + Math.Pow(avgB - backColor.B, 2));
+        return dist < 100 ? foreColor : Color.FromArgb(avgR, avgG, avgB);
       }
       catch {
         return PieColor;
@@ -1181,6 +1189,9 @@ namespace Authenticator {
 
       if (e.State == DrawItemState.Selected)
         e.Graphics.FillRectangle(selectedBackBrush, e.Bounds);
+
+      var currentBack = e.State == DrawItemState.Selected ? SelectedBackColor : BackColor;
+      var currentFore = e.State == DrawItemState.Selected ? SelectedForeColor : ForeColor;
 
       var rect = new Rectangle(e.Bounds.X + MARGIN_LEFT, e.Bounds.Y + marginTop, iconSize, iconSize);
       if (clipRect.IntersectsWith(rect) && auth.Icon != null) {
@@ -1257,7 +1268,7 @@ namespace Authenticator {
           var tillUpdate = (int) Math.Round(remainingMs / 1000.0);
           var sweepAngle = (int) Math.Round((1.0 - remainingMs / (auth.AuthenticatorData.Period * 1000.0)) * PIE_SWEEPANGLE);
 
-          var iconColor = GetAverageColor(auth.Icon);
+          var iconColor = GetAverageColor(auth.Icon, currentBack, currentFore);
           using (var customPiePen = new Pen(iconColor))
           using (var customPieBrush = new SolidBrush(iconColor)) {
             e.Graphics.DrawEllipse(customPiePen, rect.Left, rect.Top, pieSize, pieSize);
@@ -1278,7 +1289,7 @@ namespace Authenticator {
             var tillUpdate = (int) Math.Max(0, Math.Round(remainingTime / 1000.0));
             var sweepAngle = (int) Math.Round((1.0 - remainingTime / totalTime) * PIE_SWEEPANGLE);
 
-            var iconColor = GetAverageColor(auth.Icon);
+            var iconColor = GetAverageColor(auth.Icon, currentBack, currentFore);
             using (var customPiePen = new Pen(iconColor))
             using (var customPieBrush = new SolidBrush(iconColor)) {
               e.Graphics.DrawEllipse(customPiePen, rect.Left, rect.Top, pieSize, pieSize);
@@ -1314,7 +1325,7 @@ namespace Authenticator {
           progress = remainingTime / totalTime;
         }
 
-        var iconColor = GetAverageColor(auth.Icon);
+        var iconColor = GetAverageColor(auth.Icon, currentBack, currentFore);
         using (var progressPen = new Pen(iconColor, progressSize)) {
           var y = e.Bounds.Y + codeVertShift + (int) codeSize.Height - progressSize / 3;
           var left = e.Bounds.X + MARGIN_LEFT + iconSize + ICON_MARGIN_RIGHT;
