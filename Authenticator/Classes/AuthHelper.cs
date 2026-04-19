@@ -59,7 +59,7 @@ namespace Authenticator {
           continue;
 
         var name = resName.Substring(prefixLength);
-        string title = null;
+        string title;
         if (name.EndsWith("Icon.png")) {
           title = name.Substring(0, name.Length - 8);
         }
@@ -86,26 +86,26 @@ namespace Authenticator {
 
     public static List<RegisteredAuthenticator> RegisteredAuthenticators = new List<RegisteredAuthenticator> {
       new RegisteredAuthenticator {
-        Name = "Time-Based / Google", 
+        Name = "Time-Based / Google",
         AuthenticatorType = RegisteredAuthenticator.AuthenticatorTypes.RFC6238_TIME_COUNTER,
         Icon = "AppIcon.png"
       },
-      
+
       null,
       new RegisteredAuthenticator {
-        Name = "Microsoft", 
+        Name = "Microsoft",
         AuthenticatorType = RegisteredAuthenticator.AuthenticatorTypes.Microsoft,
         Icon = "MicrosoftAuthenticatorIcon.png"
       },
       new RegisteredAuthenticator {
-        Name = "Okta Verify", 
+        Name = "Okta Verify",
         AuthenticatorType = RegisteredAuthenticator.AuthenticatorTypes.OktaVerify,
         Icon = "OktaVerifyAuthenticatorIcon.png"
       },
     };
-    
+
     public static string DetectIconByIssuer(string issuer) {
-      
+
       if (string.IsNullOrEmpty(issuer))
         return null;
       var detectedIssuer = AuthenticatorIcons.FirstOrDefault(i => i.Key.Equals(issuer, StringComparison.OrdinalIgnoreCase));
@@ -124,7 +124,7 @@ namespace Authenticator {
 
     public static AuthConfig LoadConfig(string configFile, string password = null) {
       var config = new AuthConfig();
-      if (string.IsNullOrEmpty(password) == false) {
+      if (!string.IsNullOrEmpty(password)) {
         config.Password = password;
       }
 
@@ -183,7 +183,7 @@ namespace Authenticator {
         config.Upgraded = true;
       }
 
-      if (changed && config.IsReadOnly == false) {
+      if (changed && !config.IsReadOnly) {
         SaveConfig(config);
       }
 
@@ -210,7 +210,7 @@ namespace Authenticator {
 
         var fi = new FileInfo(config.Filename);
         if (fi.Exists && fi.IsReadOnly) return;
-        
+
         try {
           var data = ms.ToArray();
           if (data.Length == 0 || data[0] == 0)
@@ -237,18 +237,18 @@ namespace Authenticator {
         lines.Length = 0;
 
         // open the zip file
-        if (string.Compare(Path.GetExtension(file), ".zip", true) == 0) {
+        if (string.Compare(Path.GetExtension(file), ".zip", StringComparison.OrdinalIgnoreCase) == 0) {
           using (var fs = new FileStream(file, FileMode.Open, FileAccess.Read)) {
             ZipFile zip = null;
             try {
               zip = new ZipFile(fs);
-              if (string.IsNullOrEmpty(password) == false) {
+              if (!string.IsNullOrEmpty(password)) {
                 zip.Password = password;
               }
 
               var buffer = new byte[4096];
               foreach (ZipEntry entry in zip) {
-                if (entry.IsFile == false || string.Compare(Path.GetExtension(entry.Name), ".txt", true) != 0) {
+                if (!entry.IsFile || String.Compare(Path.GetExtension(entry.Name), ".txt", StringComparison.OrdinalIgnoreCase) != 0) {
                   continue;
                 }
 
@@ -268,7 +268,7 @@ namespace Authenticator {
             catch (ZipException ex) {
               if (ex.Message.IndexOf("password") != -1) {
                 // already have a password
-                if (string.IsNullOrEmpty(password) == false) {
+                if (!string.IsNullOrEmpty(password)) {
                   MainForm.ErrorDialog(parent, "Invalid password", ex.InnerException);
                 }
 
@@ -293,7 +293,7 @@ namespace Authenticator {
             }
           }
         }
-        else if (string.Compare(Path.GetExtension(file), ".pgp", true) == 0) {
+        else if (String.Compare(Path.GetExtension(file), ".pgp", StringComparison.OrdinalIgnoreCase) == 0) {
           var encoded = File.ReadAllText(file);
           if (string.IsNullOrEmpty(pgpKey)) {
             // need password
@@ -361,7 +361,7 @@ namespace Authenticator {
 
             // get the label and optional issuer
             var issuer = string.Empty;
-            var label = (string.IsNullOrEmpty(uri.LocalPath) == false
+            var label = (!string.IsNullOrEmpty(uri.LocalPath)
               ? uri.LocalPath.Substring(1)
               : string.Empty); // skip past initial /
             var p = label.IndexOf(":");
@@ -393,7 +393,7 @@ namespace Authenticator {
               ((HotpAuthenticator) auth).SecretKey = Base32.GetInstance().Decode(secret);
               ((HotpAuthenticator) auth).Counter = int.Parse(counter);
 
-              if (string.IsNullOrEmpty(issuer) == false) {
+              if (!string.IsNullOrEmpty(issuer)) {
                 auth.Issuer = issuer;
               }
             }
@@ -402,10 +402,10 @@ namespace Authenticator {
               auth = new GoogleAuthenticator();
               ((GoogleAuthenticator) auth).Enroll(secret);
 
-              if (string.Compare(issuer, "Google", true) == 0) {
+              if (String.Compare(issuer, "Google", StringComparison.OrdinalIgnoreCase) == 0) {
                 issuer = string.Empty;
               }
-              else if (string.IsNullOrEmpty(issuer) == false) {
+              else if (!string.IsNullOrEmpty(issuer)) {
                 auth.Issuer = issuer;
               }
             }
@@ -440,7 +440,7 @@ namespace Authenticator {
 
             // set the icon
             var icon = query["icon"];
-            if (string.IsNullOrEmpty(icon) == false) {
+            if (!string.IsNullOrEmpty(icon)) {
               if (icon.StartsWith("base64:")) {
                 var b64 = Convert.ToBase64String(Base32.GetInstance().Decode(icon.Substring(7)));
                 importedAuthenticator.Skin = "base64:" + b64;
@@ -499,9 +499,9 @@ namespace Authenticator {
           ms.Seek(0, SeekOrigin.Begin);
 
           // reset and write stream out to disk or as zip
-          if (string.Compare(Path.GetExtension(file), ".zip", true) == 0) {
+          if (String.Compare(Path.GetExtension(file), ".zip", StringComparison.OrdinalIgnoreCase) == 0) {
             using (var zip = new ZipOutputStream(new FileStream(file, FileMode.Create, FileAccess.Write))) {
-              if (string.IsNullOrEmpty(password) == false) {
+              if (!string.IsNullOrEmpty(password)) {
                 zip.Password = password;
               }
 
@@ -519,7 +519,7 @@ namespace Authenticator {
               zip.CloseEntry();
             }
           }
-          else if (string.IsNullOrEmpty(pgpKey) == false) {
+          else if (!string.IsNullOrEmpty(pgpKey)) {
             using (var sr = new StreamReader(ms)) {
               var plain = sr.ReadToEnd();
               var encoded = PgpEncrypt(plain, pgpKey);
@@ -582,7 +582,7 @@ namespace Authenticator {
         var keypair = p.Split('=');
         var key = keypair[0];
         var v = (keypair.Length >= 2 ? keypair[1] : null);
-        if (string.IsNullOrEmpty(v) == false) {
+        if (!string.IsNullOrEmpty(v)) {
           // decode (without using System.Web)
           string newv;
           while ((newv = Uri.UnescapeDataString(v)) != v) {
@@ -602,7 +602,7 @@ namespace Authenticator {
 
     public static void PgpGenerateKey(int bits, string identifier, string password, out string privateKey,
       out string publicKey) {
-      // generate a new RSA keypair 
+      // generate a new RSA keypair
       var gen = new RsaKeyPairGenerator();
       gen.Init(new RsaKeyGenerationParameters(BigInteger.ValueOf(0x101), new SecureRandom(),
         bits, 80));
@@ -628,7 +628,7 @@ namespace Authenticator {
         DateTime.Now,
         identifier,
         SymmetricKeyAlgorithmTag.Cast5,
-        (password != null ? password.ToCharArray() : null),
+        password?.ToCharArray(),
         hashedGen.Generate(),
         unhashedGen.Generate(),
         new SecureRandom());
@@ -662,7 +662,7 @@ namespace Authenticator {
           var bundle = new PgpPublicKeyRingBundle(dis);
           foreach (PgpPublicKeyRing keyring in bundle.GetKeyRings()) {
             foreach (PgpPublicKey key in keyring.GetPublicKeys()) {
-              if (key.IsEncryptionKey && key.IsRevoked() == false) {
+              if (key.IsEncryptionKey && !key.IsRevoked()) {
                 publicKey = key;
                 break;
               }
@@ -682,7 +682,7 @@ namespace Authenticator {
             using (var pcdgStream = pcdg.Open(pedgStream)) {
               var pldg = new PgpLiteralDataGenerator();
               using (var encrypter =
-                     pldg.Open(pcdgStream, PgpLiteralData.Binary, "", (long) data.Length, DateTime.Now)) {
+                     pldg.Open(pcdgStream, PgpLiteralData.Binary, "", data.Length, DateTime.Now)) {
                 encrypter.Write(data, 0, data.Length);
               }
             }

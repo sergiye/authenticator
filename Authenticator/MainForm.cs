@@ -70,7 +70,7 @@ namespace Authenticator {
       passwordTimer.Interval = 500;
 
       // redirect mouse wheel events
-      new MessageForwarder(authenticatorList, WinApiHelper.WM_MOUSEWHEEL);
+      _ = new MessageForwarder(authenticatorList, WinApiHelper.WM_MOUSEWHEEL);
 
       string password = null;
       var args = Environment.GetCommandLineArgs();
@@ -175,7 +175,7 @@ namespace Authenticator {
           return;
         }
 
-        ErrorDialog(this, "An unknown error occurred: " + ex.Message, ex, MessageBoxButtons.OK);
+        ErrorDialog(this, "An unknown error occurred: " + ex.Message, ex);
         Close();
         return;
       }
@@ -550,14 +550,26 @@ namespace Authenticator {
 
       var listItemsCount = Config?.Count ?? 0;
 
-      MinimumSize = new Size(AuthConfig.FullSize ? 350 : 200, mainMenu.Height + Height - ClientRectangle.Height + authenticatorList.ItemHeight);
-      if (AuthConfig.FullSize) {
-        authenticatorList.ItemHeight = 100;
-        authenticatorList.Font = new Font("Arial", 18.25F, FontStyle.Bold);
-      }
-      else {
-        authenticatorList.ItemHeight = 60;
-        authenticatorList.Font = new Font("Arial", 14.25F, FontStyle.Bold);
+      var minWidth = AuthConfig.ItemSize switch {
+        0 => 230,
+        1 => 270,
+        2 => 320,
+        _ => throw new ArgumentOutOfRangeException()
+      };
+      MinimumSize = new Size(minWidth, mainMenu.Height + Height - ClientRectangle.Height + authenticatorList.ItemHeight);
+      switch (AuthConfig.ItemSize) {
+        case 1:
+          authenticatorList.ItemHeight = 90;
+          authenticatorList.Font = new Font("Arial", 18.25F, FontStyle.Bold);
+          break;
+        case 2:
+          authenticatorList.ItemHeight = 120;
+          authenticatorList.Font = new Font("Arial", 23.25F, FontStyle.Bold);
+          break;
+        default:
+          authenticatorList.ItemHeight = 60;
+          authenticatorList.Font = new Font("Arial", 14.25F, FontStyle.Bold);
+          break;
       }
 
       if (AuthConfig.AutoSize) {
@@ -768,11 +780,15 @@ namespace Authenticator {
     }
 
     private void authenticatorList_Reordered(object source, EventArgs args) {
+
+      if (Config == null) return;
       // set the new order of items in Config from that of the list
       var count = authenticatorList.Items.Count;
       for (var i = 0; i < count; i++) {
         var item = (AuthenticatorListBox.ListItem) authenticatorList.Items[i];
-        Config.FirstOrDefault(a => a == item.Authenticator).Index = i;
+        var found = Config.FirstOrDefault(a => a == item.Authenticator);
+        if (found != null)
+          found.Index = i;
       }
 
       // resort the config list
@@ -847,7 +863,7 @@ namespace Authenticator {
           }
           var shortcut = index == 0 ? Keys.Control | Keys.A : Keys.None;
           var icon = string.IsNullOrEmpty(auth.Icon) ? null : AuthHelper.GetIconBitmap(auth.Icon);
-          var subItem = AuthHelper.AddMenuItem(addMenuItem.DropDownItems, auth.Name, "addAuthenticatorMenuItem_" + index++, addAuthenticatorMenu_Click, shortcut, auth, icon);
+          AuthHelper.AddMenuItem(addMenuItem.DropDownItems, auth.Name, "addAuthenticatorMenuItem_" + index++, addAuthenticatorMenu_Click, shortcut, auth, icon);
         }
       }
 
@@ -881,9 +897,20 @@ namespace Authenticator {
       AuthHelper.AddMenuItem(optionsToolStripMenuItem.DropDownItems, "Auto-Size", "autoSizeOptionsMenuItem", (_, _) => {
         AuthConfig.AutoSize = !AuthConfig.AutoSize;
       }, Keys.Control | Keys.S, isChecked: AuthConfig.AutoSize, checkOnClick: true);
-      AuthHelper.AddMenuItem(optionsToolStripMenuItem.DropDownItems, "Big size", "bigSizeOptionsMenuItem", (_, _) => {
-        AuthConfig.FullSize = !AuthConfig.FullSize;
-      }, Keys.Control | Keys.B, isChecked: AuthConfig.FullSize, checkOnClick: true);
+
+      var sizesMenu = AuthHelper.AddMenuItem(optionsToolStripMenuItem.DropDownItems, "Item size", "sizesOptionsMenuItem");
+      void setItemSize(int size) {
+        AuthConfig.ItemSize = size;
+        foreach (ToolStripItem item in sizesMenu.DropDownItems)
+          if (item is ToolStripMenuItem menuItem)
+            menuItem.Checked = (int)menuItem.Tag == AuthConfig.ItemSize;
+      }
+      AuthHelper.AddMenuItem(sizesMenu.DropDownItems, "Small", "smallSizeOptionsMenuItem", (_, _) => { setItemSize(0); },
+        Keys.Control | Keys.D1, isChecked: AuthConfig.ItemSize == 0, checkOnClick: true, tag: 0);
+      AuthHelper.AddMenuItem(sizesMenu.DropDownItems, "Medium", "mediumSizeOptionsMenuItem", (_, _) => {setItemSize(1); },
+        Keys.Control | Keys.D2, isChecked: AuthConfig.ItemSize == 1, checkOnClick: true, tag: 1);
+      AuthHelper.AddMenuItem(sizesMenu.DropDownItems, "Large", "largeSizeOptionsMenuItem", (_, _) => {setItemSize(2); },
+        Keys.Control | Keys.D3, isChecked: AuthConfig.ItemSize == 2, checkOnClick: true, tag: 2);
 
       TopMost = AuthConfig.AlwaysOnTop;
       AuthHelper.AddMenuItem(optionsToolStripMenuItem.DropDownItems, "Always On Top", "alwaysOnTopOptionsMenuItem", (_, _) => {
@@ -955,14 +982,13 @@ namespace Authenticator {
 
       menuItem = menu.Items.Cast<ToolStripItem>().FirstOrDefault(t => t.Name == "defaultActionOptionsMenuItem") as
           ToolStripMenuItem;
-      if (menuItem != null) {
-        var subItem = menuItem.DropDownItems.Cast<ToolStripItem>()
-            .FirstOrDefault(t => t.Name == "defaultActionNotificationOptionsMenuItem") as ToolStripMenuItem;
+      if (menuItem?.DropDownItems.Cast<ToolStripItem>()
+            .FirstOrDefault(t => t.Name == "defaultActionNotificationOptionsMenuItem") is ToolStripMenuItem subItem) {
         subItem.Checked = AuthConfig.NotifyAction == AuthConfig.NotifyActions.Notification;
-
-        subItem = menuItem.DropDownItems.Cast<ToolStripItem>()
-          .FirstOrDefault(t => t.Name == "defaultActionCopyToClipboardOptionsMenuItem") as ToolStripMenuItem;
-        subItem.Checked = AuthConfig.NotifyAction == AuthConfig.NotifyActions.CopyToClipboard;
+      }
+      if (menuItem?.DropDownItems.Cast<ToolStripItem>()
+            .FirstOrDefault(t => t.Name == "defaultActionCopyToClipboardOptionsMenuItem") is ToolStripMenuItem copyItem) {
+        copyItem.Checked = AuthConfig.NotifyAction == AuthConfig.NotifyActions.CopyToClipboard;
       }
 
       //menuItem = menu.Items.Cast<ToolStripItem>().Where(t => t.Name == "useSystemTrayIconOptionsMenuItem").FirstOrDefault() as ToolStripMenuItem;
@@ -1103,7 +1129,7 @@ namespace Authenticator {
           notifyIcon.Visible = AuthConfig.UseTrayIcon;
           break;
         }
-        case "FullSize":
+        case "ItemSize":
           authenticatorList.ResetItemsAutoWidth();
           SetAutoSize();
           Invalidate();

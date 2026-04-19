@@ -52,7 +52,7 @@ namespace Authenticator {
     private static bool startMinimized;
     private static NotifyActions notifyAction;
     private static bool autoSize;
-    private static bool fullSize;
+    private static int itemSize;
     private static Point position = Point.Empty;
     private static int width;
     private static int height;
@@ -114,12 +114,12 @@ namespace Authenticator {
       }
     }
 
-    public static bool FullSize {
-      get => fullSize;
+    public static int ItemSize {
+      get => itemSize;
       set {
-        if (fullSize == value) return;
-        fullSize = value;
-        OnConfigChanged?.Invoke(new ConfigChangedEventArgs("FullSize"));
+        if (itemSize == value) return;
+        itemSize = value;
+        OnConfigChanged?.Invoke(new ConfigChangedEventArgs("ItemSize"));
       }
     }
 
@@ -274,7 +274,7 @@ namespace Authenticator {
 
     static AuthConfig() {
       AutoSize = true;
-      FullSize = false;
+      ItemSize = 0;
       Theme = "Auto";
       NotifyAction = NotifyActions.Notification;
     }
@@ -284,7 +284,7 @@ namespace Authenticator {
     }
 
     public void OnAuthAuthenticatorChanged(AuthAuthenticator sender, AuthAuthenticatorChangedEventArgs e) {
-      OnConfigChanged?.Invoke(new ConfigChangedEventArgs("Authenticator", sender, e));
+      OnConfigChanged?.Invoke(new ConfigChangedEventArgs("Authenticator", e));
     }
 
     #region ICloneable
@@ -457,8 +457,8 @@ namespace Authenticator {
               autoSize = reader.ReadElementContentAsBoolean();
               break;
 
-            case "fullSize":
-              fullSize = reader.ReadElementContentAsBoolean();
+            case "itemSize":
+              itemSize = reader.ReadElementContentAsInt();
               break;
 
             case "left":
@@ -573,8 +573,8 @@ namespace Authenticator {
       writer.WriteValue(AutoSize);
       writer.WriteEndElement();
       //
-      writer.WriteStartElement("fullSize");
-      writer.WriteValue(FullSize);
+      writer.WriteStartElement("itemSize");
+      writer.WriteValue(ItemSize);
       writer.WriteEndElement();
       //
       if (Position.IsEmpty == false) {
@@ -669,14 +669,10 @@ namespace Authenticator {
 
   public class ConfigChangedEventArgs : EventArgs {
     public string PropertyName { get; }
-
-    public AuthAuthenticator Authenticator { get; }
     public AuthAuthenticatorChangedEventArgs AuthenticatorChangedEventArgs { get; }
 
-    public ConfigChangedEventArgs(string propertyName, AuthAuthenticator authenticator = null,
-      AuthAuthenticatorChangedEventArgs acargs = null) {
+    public ConfigChangedEventArgs(string propertyName, AuthAuthenticatorChangedEventArgs acargs = null) {
       PropertyName = propertyName;
-      Authenticator = authenticator;
       AuthenticatorChangedEventArgs = acargs;
     }
   }
