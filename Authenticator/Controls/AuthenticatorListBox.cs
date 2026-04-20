@@ -30,7 +30,7 @@ namespace Authenticator {
     }
 
     private const int MARGIN_LEFT = 4;
-    private const int MARGIN_RIGHT = 0;
+    private const int MARGIN_RIGHT = 4;
     private const int ICON_MARGIN_RIGHT = 8;
     private const int PIE_STARTANGLE = 270;
     private const int PIE_SWEEPANGLE = 360;
@@ -1269,7 +1269,7 @@ namespace Authenticator {
           var iconColor = GetAverageColor(item, currentBack, currentFore);
           using (var customPiePen = new Pen(iconColor))
           using (var customPieBrush = new SolidBrush(iconColor))
-          using (var customArcPen = new Pen(customPieBrush, 4)) {
+          using (var customArcPen = new Pen(customPieBrush, progressSize)) {
             e.Graphics.DrawEllipse(customPiePen, rect.Left, rect.Top, pieSize, pieSize);
             e.Graphics.DrawArc(customArcPen, rect.Left, rect.Top, pieSize, pieSize, PIE_STARTANGLE,
               sweepAngle);
@@ -1291,7 +1291,7 @@ namespace Authenticator {
             var iconColor = GetAverageColor(item, currentBack, currentFore);
             using (var customPiePen = new Pen(iconColor))
             using (var customPieBrush = new SolidBrush(iconColor))
-            using (var customArcPen = new Pen(customPieBrush, 4)) {
+            using (var customArcPen = new Pen(customPieBrush, progressSize)) {
               e.Graphics.DrawEllipse(customPiePen, rect.Left, rect.Top, pieSize, pieSize);
               e.Graphics.DrawArc(customArcPen, rect.Left, rect.Top, pieSize, pieSize,
                 PIE_STARTANGLE, sweepAngle);
