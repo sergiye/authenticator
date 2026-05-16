@@ -589,10 +589,10 @@ namespace Authenticator {
 
         Height = fixedHeight + authenticatorList.ItemHeight * Math.Min(listItemsCount, (maxHeight - fixedHeight) / authenticatorList.ItemHeight);
 
-        FormBorderStyle = FormBorderStyle.FixedDialog;
+        FormBorderStyle = FormBorderStyle.FixedToolWindow;
       }
       else {
-        FormBorderStyle = FormBorderStyle.Sizable;
+        FormBorderStyle = FormBorderStyle.SizableToolWindow;
         if (AuthConfig.Width != 0) {
           Width = AuthConfig.Width;
         }
