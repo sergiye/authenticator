@@ -216,7 +216,7 @@ namespace Authenticator {
       this.Controls.Add(this.loadingPanel);
       this.Controls.Add(this.authenticatorList);
       this.Controls.Add(this.mainMenu);
-      this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedToolWindow;
+      this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
       this.MainMenuStrip = this.mainMenu;
       this.MaximizeBox = false;
       this.MinimizeBox = true;

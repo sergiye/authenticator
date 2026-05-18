@@ -4,7 +4,6 @@ using System.ComponentModel;
 using System.Drawing;
 using System.IO;
 using System.Linq;
-using System.Text;
 using System.Windows.Forms;
 using sergiye.Common;
 
@@ -451,9 +450,7 @@ namespace Authenticator {
 
     public static DialogResult ErrorDialog(Form form, string message = null, Exception ex = null,
       MessageBoxButtons buttons = MessageBoxButtons.OK) {
-      if (message == null) {
-        message = $"An error has occurred{(ex != null ? ": " + ex.Message : string.Empty)}";
-      }
+      message ??= $"An error has occurred{(ex != null ? ": " + ex.Message : string.Empty)}";
 
       if (ex != null && string.IsNullOrEmpty(ex.Message) == false) {
         message += Environment.NewLine + Environment.NewLine + ex.Message;
@@ -589,10 +586,10 @@ namespace Authenticator {
 
         Height = fixedHeight + authenticatorList.ItemHeight * Math.Min(listItemsCount, (maxHeight - fixedHeight) / authenticatorList.ItemHeight);
 
-        FormBorderStyle = FormBorderStyle.FixedToolWindow;
+        FormBorderStyle = FormBorderStyle.FixedSingle;
       }
       else {
-        FormBorderStyle = FormBorderStyle.SizableToolWindow;
+        FormBorderStyle = FormBorderStyle.Sizable;
         if (AuthConfig.Width != 0) {
           Width = AuthConfig.Width;
         }
