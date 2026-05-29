@@ -10,7 +10,7 @@ using ZXing;
 using ZXing.Common;
 
 namespace Authenticator {
-  public partial class AddAuthenticator : Form {
+  internal partial class AddAuthenticator : Form {
     private const string HOTP = "hotp";
     private const string TOTP = "totp";
     private const string GoogleMigration = "otpauth-migration://offline?data=";
@@ -108,7 +108,7 @@ namespace Authenticator {
     private void secretCodeField_Leave(object sender, EventArgs e) {
       VerifyAuthenticator(true);
     }
-    
+
     private void getFromScreenButton_Click(object sender, EventArgs e) {
       try {
         this.Visible = false;
@@ -175,7 +175,7 @@ namespace Authenticator {
 
       long counter = 0;
       string issuer = null;
-      string serial = null;
+      string serial;
 
       //google migration support
       if (privateKey.StartsWith(GoogleMigration)) {
@@ -237,7 +237,7 @@ namespace Authenticator {
           return false;
         }
       }
-      
+
       if ((match = Regex.Match(privateKey, @"data:image/([^;]+);base64,(.*)", RegexOptions.IgnoreCase)).Success) {
         var imageData = Convert.FromBase64String(match.Groups[2].Value);
         using (var ms = new MemoryStream(imageData)) {
@@ -250,7 +250,7 @@ namespace Authenticator {
           }
         }
       }
-      
+
       if (File.Exists(privateKey)) {
         // assume this is the image file
         using (var bitmap = (Bitmap) Image.FromFile(privateKey)) {
@@ -272,7 +272,7 @@ namespace Authenticator {
           // issuer = label.Substring(0, p);
           label = label.Substring(p + 1);
         }
-        
+
         switch (authType) {
           case HOTP:
             counterBasedRadio.Checked = true;
@@ -282,7 +282,7 @@ namespace Authenticator {
             counterField.Text = string.Empty;
             break;
         }
-        
+
         var qs = AuthHelper.ParseQueryString(match.Groups[3].Value);
         privateKey = qs["secret"] ?? privateKey;
         if (int.TryParse(qs["digits"], out var queryDigits) && queryDigits != 0) {
@@ -301,9 +301,9 @@ namespace Authenticator {
         if (!string.IsNullOrEmpty(label) && updateNameField) {
           Authenticator.Name = nameField.Text = HttpUtility.UrlDecode(label);
         }
-        
+
         serial = qs["serial"];
-        
+
         var periods = qs["period"];
         if (!string.IsNullOrEmpty(periods) && int.TryParse(periods, out period)){
           intervalField.Text = period.ToString();

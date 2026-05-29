@@ -1,7 +1,7 @@
 ﻿using System;
 
 namespace Authenticator {
-  public class AuthenticatorException : ApplicationException {
+  internal class AuthenticatorException : ApplicationException {
     public AuthenticatorException() {
     }
 
@@ -14,38 +14,36 @@ namespace Authenticator {
     }
   }
 
-  public class InvalidHmacAlgorithmException : AuthenticatorException {
-  }
+  internal class InvalidHmacAlgorithmException : AuthenticatorException;
 
-  public class InvalidEnrollResponseException : AuthenticatorException {
+  internal class InvalidEnrollResponseException : AuthenticatorException {
     public InvalidEnrollResponseException(string msg = null, Exception ex = null) : base(msg, ex) {
     }
   }
 
-  public class InvalidSyncResponseException : AuthenticatorException {
+  internal class InvalidSyncResponseException : AuthenticatorException {
     public InvalidSyncResponseException(string msg) : base(msg) {
     }
   }
 
-  public class EncryptedSecretDataException : AuthenticatorException {
-  }
+  internal class EncryptedSecretDataException : AuthenticatorException;
 
-  public class BadPasswordException : AuthenticatorException {
+  internal class BadPasswordException : AuthenticatorException {
     public BadPasswordException(string msg = null, Exception ex = null) : base(msg, ex) {
     }
   }
 
-  public class InvalidRestoreResponseException : AuthenticatorException {
+  internal class InvalidRestoreResponseException : AuthenticatorException {
     public InvalidRestoreResponseException(string msg) : base(msg) {
     }
   }
 
-  public class InvalidRestoreCodeException : InvalidRestoreResponseException {
+  internal class InvalidRestoreCodeException : InvalidRestoreResponseException {
     public InvalidRestoreCodeException(string msg) : base(msg) {
     }
   }
 
-  public class InvalidEncryptionException : AuthenticatorException {
+  internal class InvalidEncryptionException : AuthenticatorException {
     public InvalidEncryptionException(string plain, string password, string encrypted, string decrypted) {
       Plain = plain;
       Password = password;
@@ -58,8 +56,8 @@ namespace Authenticator {
     public string Encrypted { get; set; }
     public string Decrypted { get; set; }
   }
-  
-  public class ImportException : ApplicationException {
+
+  internal class ImportException : ApplicationException {
     public ImportException() {
     }
 

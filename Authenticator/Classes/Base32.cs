@@ -4,8 +4,8 @@ using System.Text;
 using System.Text.RegularExpressions;
 
 namespace Authenticator {
-  public class Base32 {
-    private static string defaultAlphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ234567";
+  internal class Base32 {
+    private static readonly string defaultAlphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ234567";
 
     private static readonly int[] numberTrailingZerosLookup = {
       32, 0, 1, 26, 2, 23, 27, 0, 3, 16, 24, 30, 28, 11, 0, 13, 4, 7, 17,
@@ -18,12 +18,12 @@ namespace Authenticator {
       return (alphabet == null ? instance : new Base32(alphabet));
     }
 
-    private char[] digits;
-    private int mask;
-    private int shift;
-    private Dictionary<char, int> map;
+    private readonly char[] digits;
+    private readonly int mask;
+    private readonly int shift;
+    private readonly Dictionary<char, int> map;
 
-    protected Base32(string alphabet) {
+    private Base32(string alphabet) {
       // initialise the decoder and precalculate the char map
       digits = alphabet.ToCharArray();
       mask = digits.Length - 1;
@@ -50,7 +50,7 @@ namespace Authenticator {
 
       // handle zero case
       if (encoded.Length == 0) {
-        return new byte[0];
+        return [];
       }
 
       var encodedLength = encoded.Length;

@@ -16,7 +16,7 @@ namespace Authenticator {
     private const int SALT_LENGTH = 8;
     private const int PBKDF2_ITERATIONS = 2000;
     private const int PBKDF2_KEYSIZE = 256;
-    private static string encryptionHeader = ByteArrayToString(Encoding.UTF8.GetBytes("SergiyeAuthenticator"));
+    private static string encryptionHeader = ByteArrayToString("SergiyeAuthenticator"u8.ToArray());
     public const int DEFAULT_CODE_DIGITS = 6;
     public const int DEFAULT_PERIOD = 30;
 
@@ -80,7 +80,7 @@ namespace Authenticator {
 
     public long CodeInterval =>
       // calculate the code interval; the server's time div 30,000
-      (CurrentTime) / ((long) Period * 1000L);
+      (CurrentTime) / (Period * 1000L);
 
     public string CurrentCode {
       get {

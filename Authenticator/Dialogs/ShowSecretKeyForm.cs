@@ -5,7 +5,7 @@ using sergiye.Common;
 using ZXing;
 
 namespace Authenticator {
-  public partial class ShowSecretKeyForm : Form {
+  internal partial class ShowSecretKeyForm : Form {
     public AuthAuthenticator CurrentAuthenticator { get; set; }
 
     public ShowSecretKeyForm() {

@@ -4,7 +4,7 @@ using System.Windows.Forms;
 using sergiye.Common;
 
 namespace Authenticator {
-  public partial class ChangePasswordForm : Form {
+  internal partial class ChangePasswordForm : Form {
     private const string EXISTING_PASSWORD = "******";
 
     public ChangePasswordForm() {

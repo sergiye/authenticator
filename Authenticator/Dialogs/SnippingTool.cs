@@ -4,7 +4,7 @@ using System.Drawing.Imaging;
 using System.Windows.Forms;
 
 namespace Authenticator {
-  public sealed class SnippingTool : Form {
+  internal sealed class SnippingTool : Form {
 
     #region Windows Form Designer code
 

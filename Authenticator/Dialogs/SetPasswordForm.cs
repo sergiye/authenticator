@@ -4,7 +4,7 @@ using System.Windows.Forms;
 using sergiye.Common;
 
 namespace Authenticator {
-  public partial class SetPasswordForm : Form {
+  internal partial class SetPasswordForm : Form {
     public SetPasswordForm() {
       InitializeComponent();
       Icon = Icon.ExtractAssociatedIcon(Updater.CurrentFileLocation);

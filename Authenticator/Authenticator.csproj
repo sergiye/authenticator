@@ -195,13 +195,29 @@
     <PackageReference Include="ZXing.Net">
       <Version>0.16.10</Version>
     </PackageReference>
+    <PackageReference Include="Obfuscar">
+      <Version>2.2.50</Version>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <PropertyGroup>
-    <PostBuildEvent>
-    </PostBuildEvent>
-  </PropertyGroup>
   <Target Name="PostBuild" AfterTargets="PostBuildEvent" Condition=" '$(Configuration)' == 'Release' ">
     <Exec Command="for %%f in ($(OutDir)\*) do if not %%~xf==.exe del /S /Q &quot;%%f&quot;" />
   </Target>
+  <Target Name="GenerateObfuscarConfig" AfterTargets="PreBuildEvent" Condition="'$(Configuration)' == 'Release' ">
+    <WriteLinesToFile File="$(TargetDir)obfuscar.xml" Overwrite="true" Lines="
+&lt;?xml version='1.0' encoding='utf-8' ?&gt;
+&lt;Obfuscator&gt;
+  &lt;Var name='InPath' value='$(TargetDir)' /&gt;
+  &lt;Var name='OutPath' value='$(TargetDir)Obfuscated' /&gt;
+  &lt;Var name='KeepPublicApi' value='true' /&gt;
+  &lt;Var name='HidePrivateApi' value='true' /&gt;
+  &lt;Module file='$(TargetDir)$(TargetFileName)' /&gt;
+&lt;/Obfuscator&gt;
+" />
+  </Target>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
+    <PostBuildEvent>$(Obfuscar) obfuscar.xml</PostBuildEvent>
+  </PropertyGroup>
 </Project>

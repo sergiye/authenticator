@@ -12,7 +12,7 @@ namespace Authenticator {
 
     #endregion
 
-    public HotpAuthenticator() : base() {
+    public HotpAuthenticator() {
     }
 
     public HotpAuthenticator(int digits) : base(digits) {

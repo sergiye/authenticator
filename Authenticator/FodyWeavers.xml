@@ -5,7 +5,7 @@
              IncludeRuntimeReferences="false"
              UseRuntimeReferencePaths='false'
              DisableCompression='false'
-             DisableCleanup='false'>
+             DisableCleanup='true'>
         <ExcludeAssemblies>
         </ExcludeAssemblies>
     </Costura>

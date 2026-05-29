@@ -5,7 +5,7 @@ using System.IO;
 using System.Windows.Forms;
 
 namespace Authenticator {
-  public partial class ExportForm : Form {
+  internal partial class ExportForm : Form {
     public ExportForm() {
       InitializeComponent();
       BackColor = SystemColors.Window;

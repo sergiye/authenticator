@@ -1,7 +1,7 @@
 ﻿namespace Authenticator {
 
   public class RegisteredAuthenticator {
-  
+
     public enum AuthenticatorTypes {
       None = 0,
       Google,

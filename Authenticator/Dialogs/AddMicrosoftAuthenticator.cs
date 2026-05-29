@@ -9,7 +9,7 @@ using System.Windows.Forms;
 using ZXing;
 
 namespace Authenticator {
-  public partial class AddMicrosoftAuthenticator : Form {
+  internal partial class AddMicrosoftAuthenticator : Form {
     public AddMicrosoftAuthenticator() {
       InitializeComponent();
       BackColor = SystemColors.Window;

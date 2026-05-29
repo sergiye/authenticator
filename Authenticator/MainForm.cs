@@ -8,7 +8,7 @@ using System.Windows.Forms;
 using sergiye.Common;
 
 namespace Authenticator {
-  public partial class MainForm : Form {
+  internal partial class MainForm : Form {
 
     private readonly NotifyIcon notifyIcon;
     private readonly ContextMenuStrip notifyMenu;

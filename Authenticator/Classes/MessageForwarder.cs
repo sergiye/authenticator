@@ -5,7 +5,7 @@ using System.Windows.Forms;
 
 namespace Authenticator {
 
-  public class MessageForwarder : IMessageFilter {
+  internal class MessageForwarder : IMessageFilter {
 
     private Control control;
     private Control previousParent;

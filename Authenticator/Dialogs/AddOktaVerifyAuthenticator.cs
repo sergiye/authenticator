@@ -9,7 +9,7 @@ using System.Windows.Forms;
 using ZXing;
 
 namespace Authenticator {
-  public partial class AddOktaVerifyAuthenticator : Form {
+  internal partial class AddOktaVerifyAuthenticator : Form {
     public AddOktaVerifyAuthenticator() {
       InitializeComponent();
       BackColor = SystemColors.Window;

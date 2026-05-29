@@ -22,10 +22,11 @@ using Svg;
 
 namespace Authenticator {
   class AuthHelper {
+
     private const string ResourceNamePrefix = "Authenticator.Resources.";
     private static readonly Assembly assembly = Assembly.GetExecutingAssembly();
 
-    public const string DEFAULT_AUTHENTICATOR_FILE_NAME = "Authenticator.config";
+    private const string DEFAULT_AUTHENTICATOR_FILE_NAME = "Authenticator.config";
 
     #region Config
 

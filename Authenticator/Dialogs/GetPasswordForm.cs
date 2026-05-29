@@ -4,7 +4,7 @@ using System.Windows.Forms;
 using sergiye.Common;
 
 namespace Authenticator {
-  public partial class GetPasswordForm : Form {
+  internal partial class GetPasswordForm : Form {
     public GetPasswordForm() {
       InitializeComponent();
       Theme.Current.Apply(this);

@@ -8,7 +8,7 @@ using System.Text;
 using System.Windows.Forms;
 
 namespace Authenticator {
-  public class AuthenticatorListBox : ListBox {
+  internal class AuthenticatorListBox : ListBox {
 
     public class ListItem {
 

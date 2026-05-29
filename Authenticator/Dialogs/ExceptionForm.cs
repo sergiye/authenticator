@@ -5,8 +5,8 @@ using System.Drawing;
 using System.Windows.Forms;
 
 namespace Authenticator {
-  public partial class ExceptionForm : Form {
-    public Exception Error { get; set; }
+  internal partial class ExceptionForm : Form {
+    private Exception Error { get; set; }
 
     public ExceptionForm(Exception error) {
       InitializeComponent();

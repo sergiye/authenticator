@@ -4,7 +4,7 @@ using System.IO;
 using System.Windows.Forms;
 
 namespace Authenticator {
-  public partial class GetPgpKeyForm : Form {
+  internal partial class GetPgpKeyForm : Form {
 
     public GetPgpKeyForm() {
       InitializeComponent();
