@@ -27,9 +27,9 @@ jobs:
       - name: Build
         run: msbuild authenticator.sln -p:Configuration=Release -m
 
-      - name: Publish build
-        uses: actions/upload-artifact@v4
-        with:
-          name: authenticator
-          path: |
-            Authenticator/bin
+      # - name: Publish build
+      #   uses: actions/upload-artifact@v4
+      #   with:
+      #     name: authenticator
+      #     path: |
+      #       Authenticator/bin
