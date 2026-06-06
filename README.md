@@ -71,6 +71,7 @@ To use:
   * Use the Add menu item to add or import an authenticator
   * Right-click any authenticator to bring up context menu
   * Click the icon on the right to show the current code, if auto-refresh is not enabled
+  * Double-clicking on an element will copy the current code (even if the code is hidden)
   * Use options menu for program options
 
 ## Developer information
@@ -158,7 +159,7 @@ Also, don't forget to ★ star ★ the repository to help other people find it.
 
 [//]: # ([![Stargazers over time]&#40;https://starchart.cc/sergiye/authenticator.svg?variant=adaptive&#41;]&#40;https://starchart.cc/sergiye/authenticator&#41;)
 
-[![Stargazers](https://reporoster.com/stars/sergiye/authenticator)](https://star-history.com/#sergiye/authenticator&Date)
+<!-- [![Stargazers](https://reporoster.com/stars/sergiye/authenticator)](https://star-history.com/#sergiye/authenticator&Date) -->
 
 <!-- [![Forkers](https://reporoster.com/forks/sergiye/authenticator)](https://github.com/sergiye/authenticator/network/members) -->
 
