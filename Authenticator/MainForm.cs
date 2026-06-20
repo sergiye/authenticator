@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.Drawing;
 using System.IO;
 using System.Linq;
+using System.Text;
 using System.Windows.Forms;
 using sergiye.Common;
 
@@ -368,8 +369,6 @@ namespace Authenticator {
       passwordPanel.Visible = false;
       mainMenu.Visible = true;
 
-      authenticatorList.Focus();
-
       // set positions
       if (AuthConfig.Position.IsEmpty == false) {
         // check we aren't out of bounds in case of multi-monitor change
@@ -455,7 +454,7 @@ namespace Authenticator {
       if (ex != null && string.IsNullOrEmpty(ex.Message) == false) {
         message += Environment.NewLine + Environment.NewLine + ex.Message;
       }
-#if DEBUG
+      
       var capture = new StringBuilder();
       var e = ex;
       while (e != null) {
@@ -468,7 +467,6 @@ namespace Authenticator {
       if (ex != null) {
         AuthHelper.ShowException(ex);
       }
-#endif
 
       return MessageBox.Show(form, message, Updater.ApplicationName, buttons, MessageBoxIcon.Exclamation);
     }
@@ -619,6 +617,13 @@ namespace Authenticator {
       else {
         Activate();
       }
+      if (authenticatorList.Visible) {
+        ActiveControl = authenticatorList;
+        // if (authenticatorList.Items.Count > 0)
+        //   authenticatorList.SelectedIndex = 0;
+        authenticatorList.Select();
+        authenticatorList.Focus();
+      }
     }
 
     private void MainForm_FormClosing(object sender, FormClosingEventArgs e) {
@@ -646,8 +651,8 @@ namespace Authenticator {
         SaveConfig(true);
       }
     }
-
-    void addAuthenticatorMenu_Click(object sender, EventArgs e) {
+    
+    private void addAuthenticatorMenu_Click(object sender, EventArgs e) {
       if (sender is not ToolStripItem menuItem || menuItem.Tag is not RegisteredAuthenticator registeredAuth) return;
       // add the new authenticator
       var authenticator = new AuthAuthenticator();
@@ -728,8 +733,8 @@ namespace Authenticator {
         SetAutoSize();
       }
     }
-
-    void importTextMenu_Click(object sender, EventArgs e) {
+    
+    private void importTextMenu_Click(object sender, EventArgs e) {
       var ofd = new OpenFileDialog {
         AddExtension = true,
         CheckFileExists = true,
