@@ -205,6 +205,7 @@ namespace Authenticator {
       InitializeTheme();
 
       notifyIcon.Visible = AuthConfig.UseTrayIcon;
+      filterTextBox.TextChanged += (_, _) => LoadAuthenticatorList();
     }
 
     private void ImportAuthenticator(string authenticatorFile) {
@@ -423,7 +424,14 @@ namespace Authenticator {
       authenticatorList.Items.Clear();
 
       var index = 0;
+      var filter = filterTextBox?.Text;
       foreach (var auth in Config) {
+        if (!string.IsNullOrEmpty(filter)) {
+          var match = auth.Name?.IndexOf(filter, StringComparison.OrdinalIgnoreCase) >= 0 ||
+                      auth.Skin?.IndexOf(filter, StringComparison.OrdinalIgnoreCase) >= 0;
+          if (!match) continue;
+        }
+
         var ali = new AuthenticatorListBox.ListItem(auth, index);
         if (added != null && added == auth && auth.AutoRefresh == false &&
             auth.AuthenticatorData is not HotpAuthenticator) {
@@ -435,7 +443,7 @@ namespace Authenticator {
         index++;
       }
 
-      authenticatorList.Visible = (authenticatorList.Items.Count != 0);
+      authenticatorList.Visible = authenticatorList.Items.Count != 0;
     }
 
     private void SaveConfig(bool immediate = false) {
@@ -570,6 +578,7 @@ namespace Authenticator {
           authenticatorList.Font = new Font("Arial", 14.25F, FontStyle.Bold);
           break;
       }
+      filterTextBox.Font = new Font("Microsoft Sans Serif", authenticatorList.Font.Size * 2 / 3, FontStyle.Regular, GraphicsUnit.Point, 0);
 
       if (AuthConfig.AutoSize) {
         if (listItemsCount > 0) {
@@ -585,6 +594,8 @@ namespace Authenticator {
         var fixedHeight = Height - ClientRectangle.Height;
         if (!AuthConfig.HideMenu)
           fixedHeight += mainMenu.Height;
+        if (filterTextBox.Visible)
+          fixedHeight += filterTextBox.Height;
         if (updateButton.Visible)
           fixedHeight += updateButton.Height;
 
@@ -624,7 +635,6 @@ namespace Authenticator {
         Activate();
       }
       if (authenticatorList.Visible) {
-        ActiveControl = authenticatorList;
         authenticatorList.Focus();
       }
     }
@@ -842,6 +852,14 @@ namespace Authenticator {
       }
     }
 
+    private void UpdateFilterVisibility() {
+      filterTextBox.Visible = AuthConfig.ShowFilter;// && authenticatorList.Visible;
+      if (filterTextBox.Visible && !filterTextBox.Focused) {
+        filterTextBox.Focus();
+      }
+      SetAutoSize();
+    }
+
     private void ShowUpdateButton() {
       updateButton.Visible = true;
       SetAutoSize();
@@ -912,6 +930,13 @@ namespace Authenticator {
       AuthHelper.AddMenuItem(optionsToolStripMenuItem.DropDownItems, "Auto-Size", "autoSizeOptionsMenuItem", (_, _) => {
         AuthConfig.AutoSize = !AuthConfig.AutoSize;
       }, Keys.Control | Keys.S, isChecked: AuthConfig.AutoSize, checkOnClick: true);
+
+      AuthHelper.AddMenuItem(optionsToolStripMenuItem.DropDownItems, "Show filter", "showFilterOptionsMenuItem", (_, _) => {
+        AuthConfig.ShowFilter = !AuthConfig.ShowFilter;
+        if (!AuthConfig.ShowFilter) filterTextBox.Text = string.Empty;
+        UpdateFilterVisibility();
+      }, Keys.Control | Keys.F, isChecked: AuthConfig.ShowFilter, checkOnClick: true);
+      UpdateFilterVisibility();
 
       var sizesMenu = AuthHelper.AddMenuItem(optionsToolStripMenuItem.DropDownItems, "Item size", "sizesOptionsMenuItem");
       void setItemSize(int size) {

@@ -52,6 +52,7 @@ namespace Authenticator {
     private static bool startMinimized;
     private static NotifyActions notifyAction;
     private static bool autoSize;
+    private static bool showFilter;
     private static int itemSize;
     private static Point position = Point.Empty;
     private static int width;
@@ -111,6 +112,15 @@ namespace Authenticator {
         if (autoSize == value) return;
         autoSize = value;
         OnConfigChanged?.Invoke(new ConfigChangedEventArgs("AutoSize"));
+      }
+    }
+
+    public static bool ShowFilter {
+      get => showFilter;
+      set {
+        if (showFilter == value) return;
+        showFilter = value;
+        OnConfigChanged?.Invoke(new ConfigChangedEventArgs("ShowFilter"));
       }
     }
 
@@ -457,6 +467,10 @@ namespace Authenticator {
               autoSize = reader.ReadElementContentAsBoolean();
               break;
 
+            case "showfilter":
+              showFilter = reader.ReadElementContentAsBoolean();
+              break;
+
             case "itemSize":
               itemSize = reader.ReadElementContentAsInt();
               break;
@@ -571,6 +585,10 @@ namespace Authenticator {
       //
       writer.WriteStartElement("autosize");
       writer.WriteValue(AutoSize);
+      writer.WriteEndElement();
+      //
+      writer.WriteStartElement("showfilter");
+      writer.WriteValue(ShowFilter);
       writer.WriteEndElement();
       //
       writer.WriteStartElement("itemSize");

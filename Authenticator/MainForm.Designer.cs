@@ -30,6 +30,7 @@ namespace Authenticator {
       this.passwordField = new System.Windows.Forms.TextBox();
       this.introLabel = new System.Windows.Forms.Label();
       this.authenticatorList = new AuthenticatorListBox();
+      this.filterTextBox = new System.Windows.Forms.TextBox();
       this.updateButton = new System.Windows.Forms.Button();
       this.loadingPanel = new System.Windows.Forms.Panel();
       this.pictureBox1 = new System.Windows.Forms.PictureBox();
@@ -142,7 +143,6 @@ namespace Authenticator {
       this.authenticatorList.CurrentItem = null;
       this.authenticatorList.Dock = System.Windows.Forms.DockStyle.Fill;
       this.authenticatorList.DrawMode = System.Windows.Forms.DrawMode.OwnerDrawFixed;
-      this.authenticatorList.Font = new System.Drawing.Font("Arial", 14.25F, System.Drawing.FontStyle.Bold);
       this.authenticatorList.IntegralHeight = false;
       this.authenticatorList.ItemHeight = 60;
       this.authenticatorList.Location = new System.Drawing.Point(0, 0);
@@ -155,6 +155,11 @@ namespace Authenticator {
       this.authenticatorList.ItemRemoved += new System.EventHandler<AuthenticatorListBox.ListItem>(this.authenticatorList_ItemRemoved);
       this.authenticatorList.Reordered += new System.EventHandler(this.authenticatorList_Reordered);
       this.authenticatorList.DoubleClick += new System.EventHandler<AuthAuthenticator>(this.authenticatorList_DoubleClick);
+      //
+      // filterTextBox
+      //
+      this.filterTextBox.Dock = DockStyle.Bottom;
+      this.filterTextBox.Visible = false;
       //
       // updateButton
       //
@@ -227,6 +232,7 @@ namespace Authenticator {
       this.Controls.Add(this.introLabel);
       this.Controls.Add(this.loadingPanel);
       this.Controls.Add(this.authenticatorList);
+      this.Controls.Add(this.filterTextBox);
       this.Controls.Add(this.updateButton);
       this.Controls.Add(this.mainMenu);
       this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
@@ -271,6 +277,7 @@ namespace Authenticator {
     private ToolStripMenuItem fileToolStripMenuItem;
     private ToolStripMenuItem optionsToolStripMenuItem;
     private ToolStripMenuItem helpToolStripMenuItem;
+    private TextBox filterTextBox;
     private Button updateButton;
   }
 }
