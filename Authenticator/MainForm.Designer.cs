@@ -30,6 +30,7 @@ namespace Authenticator {
       this.passwordField = new System.Windows.Forms.TextBox();
       this.introLabel = new System.Windows.Forms.Label();
       this.authenticatorList = new AuthenticatorListBox();
+      this.updateButton = new System.Windows.Forms.Button();
       this.loadingPanel = new System.Windows.Forms.Panel();
       this.pictureBox1 = new System.Windows.Forms.PictureBox();
       this.mainMenu = new System.Windows.Forms.MenuStrip();
@@ -155,6 +156,15 @@ namespace Authenticator {
       this.authenticatorList.Reordered += new System.EventHandler(this.authenticatorList_Reordered);
       this.authenticatorList.DoubleClick += new System.EventHandler<AuthAuthenticator>(this.authenticatorList_DoubleClick);
       //
+      // updateButton
+      //
+      this.updateButton.Dock = DockStyle.Bottom;
+      this.updateButton.Name = "updateButton";
+      this.updateButton.TabIndex = 1;
+      this.updateButton.Text = "Update";
+      this.updateButton.Visible = false;
+      this.updateButton.Click += new System.EventHandler(this.updateButton_Click);
+      //
       // loadingPanel
       //
       this.loadingPanel.BackColor = System.Drawing.SystemColors.Window;
@@ -215,6 +225,7 @@ namespace Authenticator {
       this.Controls.Add(this.introLabel);
       this.Controls.Add(this.loadingPanel);
       this.Controls.Add(this.authenticatorList);
+      this.Controls.Add(this.updateButton);
       this.Controls.Add(this.mainMenu);
       this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
       this.MainMenuStrip = this.mainMenu;
@@ -258,5 +269,6 @@ namespace Authenticator {
     private ToolStripMenuItem fileToolStripMenuItem;
     private ToolStripMenuItem optionsToolStripMenuItem;
     private ToolStripMenuItem helpToolStripMenuItem;
+    private Button updateButton;
   }
 }

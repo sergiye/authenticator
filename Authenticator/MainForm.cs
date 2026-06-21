@@ -44,9 +44,13 @@ namespace Authenticator {
           else
             MessageBox.Show(message, Updater.ApplicationName, MessageBoxButtons.OK, isError ? MessageBoxIcon.Warning : MessageBoxIcon.Information);
         },
-        message => InvokeRequired
-            ? (bool)Invoke(new Func<bool>(() => MessageBox.Show(this, message, Updater.ApplicationName, MessageBoxButtons.OKCancel, MessageBoxIcon.Question) == DialogResult.OK))
-            : MessageBox.Show(this, message, Updater.ApplicationName, MessageBoxButtons.OKCancel, MessageBoxIcon.Question) == DialogResult.OK,
+        _ => {
+          if (InvokeRequired)
+            Invoke(new Action(() => ShowUpdateButton()));
+          else
+            ShowUpdateButton();
+          return false;
+        },
         () => { exitOptionMenuItem_Click(null, EventArgs.Empty); }
       );
 
@@ -581,6 +585,8 @@ namespace Authenticator {
         var fixedHeight = Height - ClientRectangle.Height;
         if (!AuthConfig.HideMenu)
           fixedHeight += mainMenu.Height;
+        if (updateButton.Visible)
+          fixedHeight += updateButton.Height;
 
         Height = fixedHeight + authenticatorList.ItemHeight * Math.Min(listItemsCount, (maxHeight - fixedHeight) / authenticatorList.ItemHeight);
 
@@ -619,9 +625,6 @@ namespace Authenticator {
       }
       if (authenticatorList.Visible) {
         ActiveControl = authenticatorList;
-        // if (authenticatorList.Items.Count > 0)
-        //   authenticatorList.SelectedIndex = 0;
-        authenticatorList.Select();
         authenticatorList.Focus();
       }
     }
@@ -837,6 +840,17 @@ namespace Authenticator {
         e.Handled = true;
         passwordButton_Click(sender, null);
       }
+    }
+
+    private void ShowUpdateButton() {
+      updateButton.Visible = true;
+      updateButton.Text = $"Upgrade to new version";
+      SetAutoSize();
+    }
+
+    private void updateButton_Click(object sender, EventArgs e) {
+      
+      Updater.CheckForUpdates(Updater.CheckUpdatesMode.AutoUpdate);
     }
 
     #endregion
