@@ -86,7 +86,7 @@ namespace Authenticator {
         return;
       }
 
-      Authenticator.Skin = "OktaVerifyAuthenticatorIcon.png";
+      Authenticator.Skin = "OktaIcon.png";
     }
 
     #endregion

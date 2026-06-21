@@ -39,13 +39,13 @@ namespace Authenticator {
         {"Google", "GoogleIcon.png"},
         {"Google (Blue)", "Google.svg"},
         {"Google (Small)", "Google2Icon.png"},
-        {"Chrome", "ChromeIcon.png"},
-        {"GMail", "GMailIcon.png"},
-        {"Authenticator", "GoogleAuthenticatorIcon.png"},
+        {"Google (Chrome)", "GoogleChromeIcon.png"},
+        {"Google (GMail)", "GoogleGMailIcon.png"},
+        {"Google (Silver)", "Google3Icon.png"},
         {"s1", string.Empty},
-        {"Microsoft", "MicrosoftAuthenticatorIcon.png"},
-        {"Windows 8", "Windows8Icon.png"},
-        {"Windows 7", "Windows7Icon.png"},
+        {"Microsoft", "MicrosoftIcon.png"},
+        {"Microsoft 8", "Microsoft8Icon.png"},
+        {"Microsoft 7", "Microsoft7Icon.png"},
         {"s2", string.Empty},
         {"Apple", "Apple.svg"},
         {"Apple (Black)", "AppleWhiteIcon.png"},
@@ -96,12 +96,12 @@ namespace Authenticator {
       new RegisteredAuthenticator {
         Name = "Microsoft",
         AuthenticatorType = RegisteredAuthenticator.AuthenticatorTypes.Microsoft,
-        Icon = "MicrosoftAuthenticatorIcon.png"
+        Icon = "MicrosoftIcon.png"
       },
       new RegisteredAuthenticator {
         Name = "Okta Verify",
         AuthenticatorType = RegisteredAuthenticator.AuthenticatorTypes.OktaVerify,
-        Icon = "OktaVerifyAuthenticatorIcon.png"
+        Icon = "OktaIcon.png"
       },
     };
 

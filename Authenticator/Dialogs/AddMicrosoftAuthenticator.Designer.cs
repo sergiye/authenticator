@@ -150,7 +150,7 @@ namespace Authenticator
       this.icon3RadioButton.Name = "icon3RadioButton";
       this.icon3RadioButton.Size = new System.Drawing.Size(14, 13);
       this.icon3RadioButton.TabIndex = 3;
-      this.icon3RadioButton.Tag = "Windows7Icon.png";
+      this.icon3RadioButton.Tag = "Microsoft7Icon.png";
       this.icon3RadioButton.CheckedChanged += new System.EventHandler(this.iconRadioButton_CheckedChanged);
       // 
       // icon2RadioButton
@@ -160,7 +160,7 @@ namespace Authenticator
       this.icon2RadioButton.Name = "icon2RadioButton";
       this.icon2RadioButton.Size = new System.Drawing.Size(14, 13);
       this.icon2RadioButton.TabIndex = 2;
-      this.icon2RadioButton.Tag = "Windows8Icon.png";
+      this.icon2RadioButton.Tag = "Microsoft8Icon.png";
       this.icon2RadioButton.CheckedChanged += new System.EventHandler(this.iconRadioButton_CheckedChanged);
       // 
       // icon1RadioButton
@@ -172,12 +172,12 @@ namespace Authenticator
       this.icon1RadioButton.Size = new System.Drawing.Size(14, 13);
       this.icon1RadioButton.TabIndex = 1;
       this.icon1RadioButton.TabStop = true;
-      this.icon1RadioButton.Tag = "MicrosoftAuthenticatorIcon.png";
+      this.icon1RadioButton.Tag = "MicrosoftIcon.png";
       this.icon1RadioButton.CheckedChanged += new System.EventHandler(this.iconRadioButton_CheckedChanged);
       // 
       // icon3
       // 
-      this.icon3.Image = global::Authenticator.Properties.Resources.Windows7Icon;
+      this.icon3.Image = global::Authenticator.Properties.Resources.Microsoft7Icon;
       this.icon3.Location = new System.Drawing.Point(236, 56);
       this.icon3.Name = "icon3";
       this.icon3.Size = new System.Drawing.Size(48, 48);
@@ -188,7 +188,7 @@ namespace Authenticator
       // 
       // icon2
       // 
-      this.icon2.Image = global::Authenticator.Properties.Resources.Windows8Icon;
+      this.icon2.Image = global::Authenticator.Properties.Resources.Microsoft8Icon;
       this.icon2.Location = new System.Drawing.Point(163, 56);
       this.icon2.Name = "icon2";
       this.icon2.Size = new System.Drawing.Size(48, 48);
@@ -199,7 +199,7 @@ namespace Authenticator
       // 
       // icon1
       // 
-      this.icon1.Image = global::Authenticator.Properties.Resources.MicrosoftAuthenticatorIcon;
+      this.icon1.Image = global::Authenticator.Properties.Resources.MicrosoftIcon;
       this.icon1.Location = new System.Drawing.Point(87, 56);
       this.icon1.Name = "icon1";
       this.icon1.Size = new System.Drawing.Size(48, 48);
