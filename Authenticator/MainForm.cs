@@ -844,7 +844,6 @@ namespace Authenticator {
 
     private void ShowUpdateButton() {
       updateButton.Visible = true;
-      updateButton.Text = $"Upgrade to new version";
       SetAutoSize();
     }
 

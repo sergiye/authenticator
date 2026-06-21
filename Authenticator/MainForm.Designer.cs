@@ -159,9 +159,11 @@ namespace Authenticator {
       // updateButton
       //
       this.updateButton.Dock = DockStyle.Bottom;
+      this.updateButton.Font = new System.Drawing.Font("Arial", 12F, System.Drawing.FontStyle.Bold);
       this.updateButton.Name = "updateButton";
+      this.updateButton.Size = new System.Drawing.Size(297, 30);
       this.updateButton.TabIndex = 1;
-      this.updateButton.Text = "Update";
+      this.updateButton.Text = "Update now";
       this.updateButton.Visible = false;
       this.updateButton.Click += new System.EventHandler(this.updateButton_Click);
       //
