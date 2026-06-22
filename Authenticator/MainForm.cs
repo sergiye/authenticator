@@ -101,6 +101,8 @@ namespace Authenticator {
       }
 
       LoadConfig(password);
+
+      InitializeTheme();
     }
 
     #region themes
@@ -124,6 +126,7 @@ namespace Authenticator {
       notifyMenu.Renderer = new ThemedToolStripRenderer();
       authenticatorList.ContextMenuStrip.Renderer = new ThemedToolStripRenderer();
 
+      themeMenuItem = AuthHelper.AddMenuItem(optionsToolStripMenuItem.DropDownItems, "Theme", "themeMenuItem");
       var currentItem = CustomTheme.FillThemesMenu((title, theme, onClick) => {
         if (theme == null && onClick == null) {
           themeMenuItem.DropDownItems.Add(title);
@@ -201,8 +204,6 @@ namespace Authenticator {
       InitializeForm();
 
       LoadMainMenu();
-
-      InitializeTheme();
 
       notifyIcon.Visible = AuthConfig.UseTrayIcon;
       filterTextBox.TextChanged += (_, _) => LoadAuthenticatorList();
@@ -450,6 +451,8 @@ namespace Authenticator {
       }
 
       authenticatorList.Visible = authenticatorList.Items.Count != 0;
+      if (authenticatorList.Visible)
+        authenticatorList.Focus();
     }
 
     private void SaveConfig(bool immediate = false) {
@@ -640,9 +643,8 @@ namespace Authenticator {
       else {
         Activate();
       }
-      if (authenticatorList.Visible) {
+      if (authenticatorList.Visible)
         authenticatorList.Focus();
-      }
     }
 
     private void MainForm_FormClosing(object sender, FormClosingEventArgs e) {
@@ -975,7 +977,11 @@ namespace Authenticator {
       if (AuthConfig.HideMenu)
         mainMenu.Visible = false;
 
-      themeMenuItem = AuthHelper.AddMenuItem(optionsToolStripMenuItem.DropDownItems, "Theme", "themeMenuItem");
+      if (themeMenuItem != null) {
+        //move themeMenuItem to the end of list
+        optionsToolStripMenuItem.DropDownItems.Remove(themeMenuItem);
+        optionsToolStripMenuItem.DropDownItems.Add(themeMenuItem);
+      }
 
       //Help section
       AuthHelper.AddMenuItem(helpToolStripMenuItem.DropDownItems, "Site", "siteMenuItem", (_, _) => Updater.VisitAppSite(), Keys.Control | Keys.F1);
