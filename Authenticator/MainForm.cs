@@ -206,6 +206,12 @@ namespace Authenticator {
 
       notifyIcon.Visible = AuthConfig.UseTrayIcon;
       filterTextBox.TextChanged += (_, _) => LoadAuthenticatorList();
+      filterTextBox.KeyDown += (sender, e) => {
+        if (e.KeyCode == Keys.Escape) {
+          ((TextBox)sender).Text = string.Empty;
+          e.SuppressKeyPress = true;
+        }
+      };
     }
 
     private void ImportAuthenticator(string authenticatorFile) {
