@@ -107,7 +107,7 @@ namespace Authenticator {
       this.passwordLabel.Name = "passwordLabel";
       this.passwordLabel.Size = new System.Drawing.Size(235, 20);
       this.passwordLabel.TabIndex = 0;
-      this.passwordLabel.Text = "Please verify your password:";
+      this.passwordLabel.Text = "Verify your password to continue:";
       //
       // passwordField
       //

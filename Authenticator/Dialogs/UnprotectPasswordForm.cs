@@ -42,7 +42,7 @@ namespace Authenticator {
         }
       }
       catch (BadPasswordException) {
-        invalidPasswordLabel.Text = "Invalid password";
+        invalidPasswordLabel.Text = "Invalid password. Please try again.";
         invalidPasswordLabel.Visible = true;
         invalidPasswordTimer.Enabled = true;
         DialogResult = DialogResult.None;

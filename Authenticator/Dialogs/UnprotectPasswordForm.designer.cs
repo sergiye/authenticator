@@ -80,7 +80,7 @@ namespace Authenticator
       this.invalidPasswordLabel.Name = "invalidPasswordLabel";
       this.invalidPasswordLabel.Size = new System.Drawing.Size(127, 20);
       this.invalidPasswordLabel.TabIndex = 3;
-      this.invalidPasswordLabel.Text = "Invalid Password";
+      this.invalidPasswordLabel.Text = "Invalid password. Please try again.";
       this.invalidPasswordLabel.Visible = false;
       // 
       // invalidPasswordTimer

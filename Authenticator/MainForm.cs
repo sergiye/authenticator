@@ -843,7 +843,7 @@ namespace Authenticator {
 
     private void passwordButton_Click(object sender, EventArgs e) {
       if (passwordField.Text.Trim().Length == 0) {
-        passwordErrorLabel.Text = "Please enter a password";
+        passwordErrorLabel.Text = "Invalid password. Please try again";
         passwordErrorLabel.Tag = DateTime.Now.AddSeconds(3);
         passwordTimer.Enabled = true;
         return;

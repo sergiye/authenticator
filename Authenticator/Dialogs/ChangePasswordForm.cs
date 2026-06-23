@@ -71,7 +71,7 @@ namespace Authenticator {
         return;
       }
 
-      if (passwordCheckbox.Checked && string.Compare(passwordField.Text.Trim(), verifyField.Text.Trim()) != 0) {
+      if (passwordCheckbox.Checked && !passwordField.Text.Trim().Equals(verifyField.Text.Trim())) {
         MainForm.ErrorDialog(this, "Passwords do not match");
         DialogResult = DialogResult.None;
         return;
