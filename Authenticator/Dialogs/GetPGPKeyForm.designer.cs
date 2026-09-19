@@ -90,7 +90,7 @@ namespace Authenticator
       this.passwordLabel.Name = "passwordLabel";
       this.passwordLabel.Size = new System.Drawing.Size(195, 20);
       this.passwordLabel.TabIndex = 4;
-      this.passwordLabel.Text = "If you key has a password ";
+      this.passwordLabel.Text = "If your key has a password ";
       // 
       // browseButton
       // 

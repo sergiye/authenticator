@@ -56,8 +56,7 @@ namespace Authenticator
       this.errorLabel.Name = "errorLabel";
       this.errorLabel.Size = new System.Drawing.Size(624, 131);
       this.errorLabel.TabIndex = 4;
-      this.errorLabel.Text = "An error has occured.\r\n\r\n{0}\r\n\r\nSome diagnostic information  that might help trac" +
-    "k down issues can be found below:";
+      this.errorLabel.Text = "An error has occurred.\r\n\r\n{0}\r\n\r\nSome diagnostic information that might help track down issues can be found below:";
       // 
       // closeButton
       // 

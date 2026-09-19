@@ -887,7 +887,7 @@ namespace Authenticator {
           }
 
         case "deleteMenuItem": {
-            if (MainForm.ConfirmDialog(Parent as Form, $"Are you sure you want to delete '{auth.Name}' authenticator?\nThis will permanently remove it and you may no longer be able to access you account.", MessageBoxButtons.YesNo,
+            if (MainForm.ConfirmDialog(Parent as Form, $"Are you sure you want to delete the '{auth.Name}' authenticator?\nThis will permanently remove it and you may no longer be able to access your account.", MessageBoxButtons.YesNo,
                   MessageBoxIcon.Exclamation, MessageBoxDefaultButton.Button2) == DialogResult.Yes) {
               var index = item.Index;
               Items.Remove(item);

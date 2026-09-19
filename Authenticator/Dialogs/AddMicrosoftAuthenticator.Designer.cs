@@ -102,7 +102,7 @@ namespace Authenticator
       this.label3.Name = "label3";
       this.label3.Size = new System.Drawing.Size(391, 43);
       this.label3.TabIndex = 1;
-      this.label3.Text = "10. IMPORTANT: Write down you Secret Code and store it somewhere safe and secure." +
+      this.label3.Text = "10. IMPORTANT: Write down your Secret Code and store it somewhere safe and secure." +
     " You will need it if you ever need to restore your authenticator.";
       // 
       // step9Label

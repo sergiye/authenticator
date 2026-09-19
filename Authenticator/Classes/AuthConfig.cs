@@ -354,7 +354,7 @@ namespace Authenticator {
 
         if (version > CurrentVersion) {
           // ensure we don't overwrite a newer config
-          throw new AuthInvalidNewerConfigException($"Your authenticators were saved with newer a version of Authenticator and so cannot be loaded. Please use Authenticator {version} or later.");
+          throw new AuthInvalidNewerConfigException($"Your authenticators were saved with a newer version of Authenticator and so cannot be loaded. Please use Authenticator {version} or later.");
         }
       }
 

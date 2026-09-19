@@ -39,7 +39,7 @@ namespace Authenticator {
     private void verifyAuthenticatorButton_Click(object sender, EventArgs e) {
       var privatekey = secretCodeField.Text.Trim();
       if (string.IsNullOrEmpty(privatekey)) {
-        MainForm.ErrorDialog(this, "Please enter the secret code");
+        MainForm.ErrorDialog(this, "Please enter the Secret Code");
         return;
       }
 
@@ -50,7 +50,7 @@ namespace Authenticator {
       if (Authenticator.AuthenticatorData != null) {
         var result = MainForm.ConfirmDialog(Owner,
           "WARNING: Your authenticator has not been saved." + Environment.NewLine + Environment.NewLine
-          + "If you have added this authenticator to your account, you will not be able to login in the future, and you need to click YES to save it." +
+          + "If you have added this authenticator to your account, you will not be able to log in later, and you need to click YES to save it." +
           Environment.NewLine + Environment.NewLine
           + "Do you want to save this authenticator?", MessageBoxButtons.YesNoCancel);
         if (result == DialogResult.Yes) {

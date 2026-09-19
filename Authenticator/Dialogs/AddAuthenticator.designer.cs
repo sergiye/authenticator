@@ -113,8 +113,7 @@ namespace Authenticator {
       this.step2Label.Name = "step2Label";
       this.step2Label.Size = new System.Drawing.Size(423, 32);
       this.step2Label.TabIndex = 3;
-      this.step2Label.Text = "2. Select additional settings. If you don\'t know, it\'s likely the pre-selected on" +
-    "es so just leave the default choice.";
+      this.step2Label.Text = "2. Select additional settings. If you don\'t know, the pre-selected values are usually correct, so just leave the default choice.";
       // 
       // verifyButton
       // 
@@ -154,7 +153,7 @@ namespace Authenticator {
       this.step4Label.Name = "step4Label";
       this.step4Label.Size = new System.Drawing.Size(240, 13);
       this.step4Label.TabIndex = 17;
-      this.step4Label.Text = "4. Verify the following code matches your service.";
+      this.step4Label.Text = "4. Verify that the following code matches your service.";
       // 
       // timer
       // 

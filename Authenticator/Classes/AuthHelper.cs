@@ -377,7 +377,7 @@ namespace Authenticator {
             var query = HttpUtility.ParseQueryString(uri.Query);
             var secret = query["secret"];
             if (string.IsNullOrEmpty(secret)) {
-              throw new ApplicationException("Authenticator does not contain secret");
+              throw new ApplicationException("Authenticator does not contain a secret");
             }
 
             var counter = query["counter"];
@@ -461,7 +461,7 @@ namespace Authenticator {
         throw new ImportException($"Invalid authenticator at line {linenumber}", ex);
       }
       catch (Exception ex) {
-        throw new ImportException($"Error importing at line {linenumber}:{ex.Message}", ex);
+        throw new ImportException($"Error importing at line {linenumber}: {ex.Message}", ex);
       }
     }
 

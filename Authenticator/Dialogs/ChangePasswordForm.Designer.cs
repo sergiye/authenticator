@@ -62,7 +62,7 @@ namespace Authenticator {
       this.machineCheckbox.Name = "machineCheckbox";
       this.machineCheckbox.Size = new System.Drawing.Size(304, 21);
       this.machineCheckbox.TabIndex = 3;
-      this.machineCheckbox.Text = "Encrypt to only be useable on this computer";
+      this.machineCheckbox.Text = "Encrypt to only be usable on this computer";
       this.machineCheckbox.CheckedChanged += new System.EventHandler(this.machineCheckbox_CheckedChanged);
       // 
       // userCheckbox

@@ -17,7 +17,7 @@ namespace Authenticator {
 
     private void ExceptionForm_Load(object sender, EventArgs e) {
       Icon = SystemIcons.Error;
-      errorLabel.Text = string.Format(errorLabel.Text, Error != null ? Error.Message : "An unknown error occured");
+      errorLabel.Text = string.Format(errorLabel.Text, Error != null ? Error.Message : "An unknown error occurred");
       if (Error != null) dataText.Text = $"{Error.Message}\n\n{new StackTrace(Error)}";
     }
   }

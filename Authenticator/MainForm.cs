@@ -843,7 +843,7 @@ namespace Authenticator {
 
     private void passwordButton_Click(object sender, EventArgs e) {
       if (passwordField.Text.Trim().Length == 0) {
-        passwordErrorLabel.Text = "Invalid password. Please try again";
+        passwordErrorLabel.Text = "Invalid password. Please try again.";
         passwordErrorLabel.Tag = DateTime.Now.AddSeconds(3);
         passwordTimer.Enabled = true;
         return;
@@ -939,14 +939,14 @@ namespace Authenticator {
         AuthConfig.AutoSize = !AuthConfig.AutoSize;
       }, Keys.Control | Keys.S, isChecked: AuthConfig.AutoSize, checkOnClick: true);
 
-      AuthHelper.AddMenuItem(optionsToolStripMenuItem.DropDownItems, "Show filter", "showFilterOptionsMenuItem", (_, _) => {
+      AuthHelper.AddMenuItem(optionsToolStripMenuItem.DropDownItems, "Show Filter", "showFilterOptionsMenuItem", (_, _) => {
         AuthConfig.ShowFilter = !AuthConfig.ShowFilter;
         if (!AuthConfig.ShowFilter) filterTextBox.Text = string.Empty;
         UpdateFilterVisibility();
       }, Keys.Control | Keys.F, isChecked: AuthConfig.ShowFilter, checkOnClick: true);
       UpdateFilterVisibility();
 
-      var sizesMenu = AuthHelper.AddMenuItem(optionsToolStripMenuItem.DropDownItems, "Item size", "sizesOptionsMenuItem");
+      var sizesMenu = AuthHelper.AddMenuItem(optionsToolStripMenuItem.DropDownItems, "Item Size", "sizesOptionsMenuItem");
       void setItemSize(int size) {
         AuthConfig.ItemSize = size;
         foreach (ToolStripItem item in sizesMenu.DropDownItems)

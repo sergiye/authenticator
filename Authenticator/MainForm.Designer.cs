@@ -131,8 +131,7 @@ namespace Authenticator {
       this.introLabel.Name = "introLabel";
       this.introLabel.Size = new System.Drawing.Size(297, 149);
       this.introLabel.TabIndex = 3;
-      this.introLabel.Text = "Use \"Add\" menu item to create new authenticator or \"File\"-\"Import\" to import your" +
-    " authenticators";
+      this.introLabel.Text = "Use the \"Add\" menu item to create a new authenticator, or \"File\" > \"Import\" to import your authenticators";
       this.introLabel.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
       this.introLabel.Visible = false;
       //
