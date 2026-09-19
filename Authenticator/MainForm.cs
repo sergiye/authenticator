@@ -90,8 +90,9 @@ namespace Authenticator {
             case "-p":
             case "--password":
               // set explicit password to use
-              i++;
-              password = args[i];
+              if (i + 1 < args.Length) {
+                password = args[++i];
+              }
               break;
           }
         }
