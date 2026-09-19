@@ -137,7 +137,8 @@ namespace Authenticator {
 
     private Bitmap GenerateIconFromSkin() {
       if (string.IsNullOrEmpty(Skin)) {
-        return GenerateDrawText(Name.Substring(0, 2).ToUpper(), Color.Azure, Color.CornflowerBlue);
+        var initials = string.IsNullOrEmpty(Name) ? "?" : Name.Substring(0, Math.Min(2, Name.Length));
+        return GenerateDrawText(initials.ToUpper(), Color.Azure, Color.CornflowerBlue);
       }
 
       if (Skin.StartsWith("base64:")) {
