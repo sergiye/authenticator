@@ -413,8 +413,11 @@ namespace Authenticator {
                 // read the encrypted text from the node
                 var data = reader.ReadElementContentAsString();
 
-                hasher.ComputeHash(Authenticator.StringToByteArray(data));
+                var comparehash = Authenticator.ByteArrayToString(hasher.ComputeHash(Authenticator.StringToByteArray(data)));
                 hasher.Dispose();
+                if (!string.IsNullOrEmpty(hash) && string.Compare(comparehash, hash) != 0) {
+                  throw new BadPasswordException();
+                }
 
                 // decrypt
                 data = Authenticator.DecryptSequence(data, PasswordType, password);
