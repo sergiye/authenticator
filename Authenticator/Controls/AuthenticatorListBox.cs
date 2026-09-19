@@ -1134,6 +1134,7 @@ namespace Authenticator {
     }
 
     public int GetMaxItemWidth() {
+      if (Items.Count == 0) return 0;
       var items = Items.Cast<ListItem>().Where(i => i.AutoWidth == 0).ToArray();
       if (items.Any()) {
         using (var g = CreateGraphics()) {
