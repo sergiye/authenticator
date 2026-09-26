@@ -182,10 +182,26 @@ namespace Authenticator {
 
       //google migration support
       if (privateKey.StartsWith(GoogleMigration)) {
-        var szData = HttpUtility.UrlDecode(privateKey.Substring(GoogleMigration.Length));
-        var arrByte = Convert.FromBase64String(szData);
-        Payload item = Payload.Parser.ParseFrom(arrByte);
+        Payload item;
+        try {
+          var szData = HttpUtility.UrlDecode(privateKey.Substring(GoogleMigration.Length));
+          var arrByte = Convert.FromBase64String(szData);
+          item = Payload.Parser.ParseFrom(arrByte);
+        }
+        catch (Exception ex) when (ex is System.FormatException || ex is Google.Protobuf.InvalidProtocolBufferException) {
+          MainForm.ErrorDialog(Owner, "The Google Authenticator export data is not valid", ex);
+          return false;
+        }
         var arr = item.OtpParameters;
+        if (arr.Count == 0) {
+          MainForm.ErrorDialog(Owner, "The Google Authenticator export does not contain any accounts");
+          return false;
+        }
+        if (arr.Count > 1 && updateNameField) {
+          MainForm.ConfirmDialog(Owner,
+            $"The Google Authenticator export contains {arr.Count} accounts, but only the first one is added here. Export the other accounts to separate QR codes to add them.",
+            MessageBoxButtons.OK, MessageBoxIcon.Warning);
+        }
 
         for (var i = 0; i < arr.Count; ++i) {
           serial = Base32.GetInstance().Encode(arr[i].Secret.ToByteArray());
