@@ -44,17 +44,9 @@ namespace Authenticator {
   }
 
   internal class InvalidEncryptionException : AuthenticatorException {
-    public InvalidEncryptionException(string plain, string password, string encrypted, string decrypted) {
-      Plain = plain;
-      Password = password;
-      Encrypted = encrypted;
-      Decrypted = decrypted;
+    public InvalidEncryptionException()
+      : base("Encrypted data could not be verified.") {
     }
-
-    public string Plain { get; set; }
-    public string Password { get; set; }
-    public string Encrypted { get; set; }
-    public string Decrypted { get; set; }
   }
 
   internal class ImportException : ApplicationException {

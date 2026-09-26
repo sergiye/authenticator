@@ -690,7 +690,7 @@ namespace Authenticator {
         // test the encryption
         var decrypted = Decrypt(encrypted, password, true);
         if (string.Compare(data, decrypted) != 0) {
-          throw new InvalidEncryptionException(data, password, encrypted, decrypted);
+          throw new InvalidEncryptionException();
         }
 
         data = encrypted;
