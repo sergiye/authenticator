@@ -218,7 +218,14 @@ namespace Authenticator {
             // add delay for clip error
             System.Threading.Thread.Sleep(100);
 
-            Clipboard.SetDataObject(code, true, 4, 250);
+            var data = new DataObject();
+            data.SetText(code);
+            // keep one-time codes out of the Windows clipboard history and cloud sync
+            data.SetData("ExcludeClipboardContentFromMonitorProcessing", new MemoryStream(new byte[4]));
+            data.SetData("CanIncludeInClipboardHistory", new MemoryStream(new byte[4]));
+            data.SetData("CanUploadToCloudClipboard", new MemoryStream(new byte[4]));
+            Clipboard.SetDataObject(data, true, 4, 250);
+            ScheduleClipboardClear(code);
           }
           catch (ExternalException) {
           }
@@ -232,6 +239,30 @@ namespace Authenticator {
             MessageBoxDefaultButton.Button2) == DialogResult.Yes);
         }
       } while (clipRetry);
+    }
+
+    private const int ClipboardClearDelay = 30000;
+    private static Timer clipboardClearTimer;
+    private static string clipboardCode;
+
+    private static void ScheduleClipboardClear(string code) {
+      clipboardCode = code;
+      if (clipboardClearTimer == null) {
+        clipboardClearTimer = new Timer { Interval = ClipboardClearDelay };
+        clipboardClearTimer.Tick += (_, _) => {
+          clipboardClearTimer.Stop();
+          try {
+            if (Clipboard.ContainsText() && Clipboard.GetText() == clipboardCode)
+              Clipboard.Clear();
+          }
+          catch (ExternalException) {
+            // clipboard is locked by another process, leave it as is
+          }
+          clipboardCode = null;
+        };
+      }
+      clipboardClearTimer.Stop();
+      clipboardClearTimer.Start();
     }
 
     public bool ReadXml(XmlReader reader, string password) {

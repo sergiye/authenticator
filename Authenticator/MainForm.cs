@@ -589,7 +589,7 @@ namespace Authenticator {
 
       if (code != null) {
         if (action == AuthConfig.NotifyActions.CopyToClipboard) {
-          Clipboard.SetText(code);
+          auth.CopyCodeToClipboard(this, code, true);
         }
         else // if (this.Config.NotifyAction == AuthConfig.NotifyActions.Notification)
         {
