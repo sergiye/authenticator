@@ -1170,13 +1170,15 @@ namespace Authenticator {
         try {
           SaveConfig(true);
         }
-        catch (InvalidEncryptionException ex) {
-          // the config file is written only after a successful encryption, so it still has the previous protection
+        catch (Exception ex) when (ex is InvalidEncryptionException || ex is IOException || ex is UnauthorizedAccessException) {
+          // the config file was not written, so it still has the previous protection
           Config.PasswordType = previousPasswordType;
           if ((previousPasswordType & Authenticator.PasswordTypes.Explicit) != 0) {
             Config.Password = currentPassword;
           }
-          ErrorDialog(this, "Unable to change the protection because the encryption test failed. The previous protection is kept.", ex);
+          ErrorDialog(this, ex is InvalidEncryptionException
+            ? "Unable to change the protection because the encryption test failed. The previous protection is kept."
+            : "Unable to save the new protection. The previous protection is kept.", ex);
         }
       }
     }
