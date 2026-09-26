@@ -364,11 +364,11 @@ namespace Authenticator {
         // read the encrypted text from the node
         var data = reader.ReadElementContentAsString();
         // decrypt
-        data = Authenticator.DecryptSequence(data, PasswordType, password);
+        data = Authenticator.DecryptSequence(data, PasswordType, password, out var legacy);
 
         using (var ms = new MemoryStream(Authenticator.StringToByteArray(data))) {
           using (var datareader = XmlReader.Create(ms)) {
-            changed = ReadXml(datareader, password);
+            changed = ReadXml(datareader, password) || legacy;
           }
         }
 
@@ -421,12 +421,12 @@ namespace Authenticator {
                 }
 
                 // decrypt
-                data = Authenticator.DecryptSequence(data, PasswordType, password);
+                data = Authenticator.DecryptSequence(data, PasswordType, password, out var legacy);
                 var plain = Authenticator.StringToByteArray(data);
 
                 using (var ms = new MemoryStream(plain)) {
                   using (var datareader = XmlReader.Create(ms)) {
-                    changed = ReadXmlInternal(datareader, password) || changed;
+                    changed = ReadXmlInternal(datareader, password) || legacy || changed;
                   }
                 }
 

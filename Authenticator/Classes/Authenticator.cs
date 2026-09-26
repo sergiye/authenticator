@@ -422,10 +422,10 @@ namespace Authenticator {
       // decrypt
       var changed = false;
       try {
-        var data = DecryptSequence(EncryptedData, PasswordType, password);
+        var data = DecryptSequence(EncryptedData, PasswordType, password, out var legacy);
         using (var ms = new MemoryStream(StringToByteArray(data))) {
           using (var reader = XmlReader.Create(ms)) {
-            changed = ReadXml(reader, password) || changed;
+            changed = ReadXml(reader, password) || legacy;
           }
         }
 
@@ -582,9 +582,16 @@ namespace Authenticator {
 
     public static string DecryptSequence(string data, PasswordTypes encryptedTypes, string password,
       bool decode = false) {
+      return DecryptSequence(data, encryptedTypes, password, out _, decode);
+    }
+
+    // legacy is set when the data is in an old format (no header or Blowfish encryption) and should be re-encrypted
+    public static string DecryptSequence(string data, PasswordTypes encryptedTypes, string password, out bool legacy,
+      bool decode = false) {
       // check for encrpytion header
       if (data.Length < encryptionHeader.Length || data.IndexOf(encryptionHeader) != 0) {
-        return DecryptSequenceNoHash(data, encryptedTypes, password, decode);
+        legacy = true;
+        return DecryptSequenceNoHash(data, encryptedTypes, password, out _, decode);
       }
 
       // extract salt and hash
@@ -598,7 +605,7 @@ namespace Authenticator {
         datastart += hash.Length;
         data = data.Substring(datastart);
 
-        data = DecryptSequenceNoHash(data, encryptedTypes, password);
+        data = DecryptSequenceNoHash(data, encryptedTypes, password, out legacy);
 
         // check the hash
         var compareplain = StringToByteArray(salt + data);
@@ -612,7 +619,8 @@ namespace Authenticator {
     }
 
     private static string DecryptSequenceNoHash(string data, PasswordTypes encryptedTypes, string password,
-      bool decode = false) {
+      out bool legacy, bool decode = false) {
+      legacy = false;
       try {
         // reverse order they were encrypted
         if ((encryptedTypes & PasswordTypes.Machine) != 0) {
@@ -645,6 +653,7 @@ namespace Authenticator {
             throw new EncryptedSecretDataException();
           }
 
+          legacy = !data.StartsWith(aesEncryptionHeader, StringComparison.Ordinal);
           data = Decrypt(data, password, true);
           if (decode) {
             var plain = StringToByteArray(data);
