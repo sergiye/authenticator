@@ -45,9 +45,40 @@ namespace Authenticator {
     protected byte[] SecretHash { get; private set; }
     public bool RequiresPassword { get; private set; }
     protected string EncryptedData { get; private set; }
-    public int CodeDigits { get; set; }
-    public HmacTypes HmacType { get; set; }
-    public int Period { get; set; }
+    private int codeDigits;
+    private HmacTypes hmacType;
+    private int period;
+
+    public int CodeDigits {
+      get => codeDigits;
+      set {
+        if (!IsValidCodeDigits(value))
+          throw new ArgumentOutOfRangeException(nameof(CodeDigits), value, "Number of digits must be between 1 and 9.");
+        codeDigits = value;
+      }
+    }
+
+    public HmacTypes HmacType {
+      get => hmacType;
+      set {
+        if (!Enum.IsDefined(typeof(HmacTypes), value))
+          throw new ArgumentOutOfRangeException(nameof(HmacType), value, "Unsupported HMAC algorithm.");
+        hmacType = value;
+      }
+    }
+
+    public int Period {
+      get => period;
+      set {
+        if (!IsValidPeriod(value))
+          throw new ArgumentOutOfRangeException(nameof(Period), value, "Period must be a positive number of seconds.");
+        period = value;
+      }
+    }
+
+    private static bool IsValidCodeDigits(int value) => value >= 1 && value <= 9;
+
+    private static bool IsValidPeriod(int value) => value > 0;
     public virtual string Issuer { get; set; }
 
     public virtual string SecretData {
@@ -57,18 +88,20 @@ namespace Authenticator {
           var parts = value.Split('|')[0].Split('\t');
           SecretKey = StringToByteArray(parts[0]);
           if (parts.Length > 1) {
-            if (int.TryParse(parts[1], out var digits)) {
+            if (int.TryParse(parts[1], out var digits) && IsValidCodeDigits(digits)) {
               CodeDigits = digits;
             }
           }
 
           if (parts.Length > 2) {
-            HmacType = (HmacTypes) Enum.Parse(typeof(HmacTypes), parts[2]);
+            if (Enum.TryParse(parts[2], out HmacTypes hmac) && Enum.IsDefined(typeof(HmacTypes), hmac)) {
+              HmacType = hmac;
+            }
           }
 
           if (parts.Length > 3) {
-            if (int.TryParse(parts[3], out var period)) {
-              Period = period;
+            if (int.TryParse(parts[3], out var seconds) && IsValidPeriod(seconds)) {
+              Period = seconds;
             }
           }
         }
