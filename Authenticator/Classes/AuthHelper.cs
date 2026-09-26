@@ -473,7 +473,10 @@ namespace Authenticator {
                 importedAuthenticator.Skin = "base64:" + b64;
               }
               else {
-                importedAuthenticator.Skin = icon + "Icon.png";
+                // exports write png icons without the "Icon.png" suffix and svg icons with their full name
+                importedAuthenticator.Skin = icon.EndsWith(".svg", StringComparison.OrdinalIgnoreCase) || icon.EndsWith(".png", StringComparison.OrdinalIgnoreCase)
+                  ? icon
+                  : icon + "Icon.png";
               }
             }
 
