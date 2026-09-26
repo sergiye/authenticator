@@ -707,11 +707,8 @@ namespace Authenticator {
         var key = keypair[0];
         var v = (keypair.Length >= 2 ? keypair[1] : null);
         if (!string.IsNullOrEmpty(v)) {
-          // decode (without using System.Web)
-          string newv;
-          while ((newv = Uri.UnescapeDataString(v)) != v) {
-            v = newv;
-          }
+          // decode exactly once, a value may legitimately contain an encoded '%'
+          v = Uri.UnescapeDataString(v);
         }
 
         pairs.Add(key, v);
