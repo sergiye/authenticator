@@ -32,20 +32,8 @@ namespace TwoFactorAuth {
       accountTitle = RemoveWhitespace(Uri.EscapeDataString(accountTitle));
       var provisionUrl = $"otpauth://totp/{accountTitle}?secret={NormalizeSecretKey(encodedSecretKey).Trim('=')}";
       if (!string.IsNullOrWhiteSpace(issuer))
-        provisionUrl += $"&issuer={UrlEncode(issuer)}";
+        provisionUrl += $"&issuer={Uri.EscapeDataString(issuer)}";
       return provisionUrl;
-    }
-
-    private static string UrlEncode(string value) {
-      var result = new StringBuilder();
-      var validChars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-_.~";
-      foreach (var symbol in value) {
-        if (!validChars.Contains(symbol))
-          result.AppendFormat("%{0:X2}", (int)symbol);
-        else
-          result.Append(symbol);
-      }
-      return result.Replace(" ", "%20").ToString();
     }
 
     public static string NormalizeSecretKey(string key) => new string(key.Where(c => !char.IsWhiteSpace(c) && c != '-').ToArray()).ToUpperInvariant();
