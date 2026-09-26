@@ -190,7 +190,13 @@ namespace Authenticator {
 
       // an imported file belongs to the user and must stay readable by the version that created it
       if (changed && !config.IsReadOnly && !import) {
-        SaveConfig(config);
+        try {
+          SaveConfig(config);
+        }
+        catch (Exception ex) when (ex is IOException || ex is UnauthorizedAccessException) {
+          // the config was read fine; the migrated data is written by a later save
+          config.SavePending = true;
+        }
       }
 
       return config;

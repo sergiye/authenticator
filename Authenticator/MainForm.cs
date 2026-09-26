@@ -224,6 +224,9 @@ namespace Authenticator {
 
       Config = config;
       AuthConfig.OnConfigChanged += OnConfigChanged;
+      if (Config.SavePending) {
+        SaveConfig();
+      }
 
       if (Config.Upgraded) {
         TrySaveConfig();

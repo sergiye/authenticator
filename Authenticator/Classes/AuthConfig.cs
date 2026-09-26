@@ -44,6 +44,8 @@ namespace Authenticator {
 
     public bool Upgraded { get; set; }
 
+    public bool SavePending { get; set; }
+
     // an imported config only provides authenticators; its application settings must not replace the current ones
     public bool IsImport { get; set; }
 
