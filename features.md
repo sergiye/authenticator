@@ -70,7 +70,7 @@ Right-click an authenticator to open its context menu:
 |---|---|---|
 | Show Code | `Ctrl+Space` | Shows the current code (only when auto refresh is off). |
 | Copy Code | `Ctrl+Shift+C` | Copies the current code to the clipboard. |
-| Show Secret Key... | `Ctrl+Shift+V` | Shows the secret key and its QR code, for time-based and counter-based authenticators. Requires the main password if the configuration is protected with one. |
+| Show Secret Key... | `Ctrl+Shift+V` | Shows the secret key and its QR code, for time-based and counter-based authenticators. Always asks for a password: the authenticator's own password if it has one, otherwise the main password if the configuration is protected with one. |
 | Auto Refresh | `Ctrl+Shift+A` | Keeps the code visible and refreshes it automatically. Not available for counter-based or password-protected authenticators. |
 | Copy on New Code | | Copies each newly shown code to the clipboard. |
 | Icon | | Selects an automatic, built-in or custom icon. |
