@@ -226,7 +226,7 @@ namespace Authenticator {
       AuthConfig.OnConfigChanged += OnConfigChanged;
 
       if (Config.Upgraded) {
-        SaveConfig(true);
+        TrySaveConfig();
         // display warning
         ErrorDialog(this, string.Format("Authenticator has upgraded your authenticators to version {0}.\nDo NOT run an older version of Authenticator as this could overwrite them.\nNow is a good time to make a backup. Click the File menu item and choose Export.", AuthConfig.CurrentVersion));
       }
