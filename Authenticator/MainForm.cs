@@ -735,7 +735,10 @@ namespace Authenticator {
         try {
           SaveConfig(true);
         }
-        catch (Exception ex) when (e.CloseReason != CloseReason.WindowsShutDown) {
+        catch (Exception ex) {
+          // the session is ending, nothing can be done about it and the close must not be blocked
+          if (e.CloseReason == CloseReason.WindowsShutDown)
+            return;
           if (ErrorDialog(this, "Unable to save your authenticators. Close anyway and lose the unsaved changes?", ex,
                 MessageBoxButtons.YesNo) != DialogResult.Yes) {
             e.Cancel = true;
