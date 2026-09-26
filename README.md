@@ -96,11 +96,16 @@ var provisionUrl = QrGenerator.GetProvisionUrl(applicationName, $"{applicationNa
 //base64 image string to use on web page (<img src="data:image/png;base64, ...) - no internet required
 var qrCodeImageString = QrGeneratorEx.GenerateQrCode(applicationName, $"{applicationName} - {accountName}", secretKey);
 
-//generate recovery codes (up to 9 digits)
+//generate random recovery codes (store only their hashes on the server)
 const int codesCount = 10;
 var recoveryCodes = new string[codesCount];
-for (var i = 0; i < codesCount; i++)
-  recoveryCodes[i] = tfa.GenerateHashedCode(Environment.TickCount + i, 8);
+using (var rng = System.Security.Cryptography.RandomNumberGenerator.Create()) {
+  var bytes = new byte[8];
+  for (var i = 0; i < codesCount; i++) {
+    rng.GetBytes(bytes);
+    recoveryCodes[i] = (BitConverter.ToUInt64(bytes, 0) % 10_000_000_000UL).ToString("D10");
+  }
+}
 
 //generate and validate PIN
 var currentPin = tfa.GetCurrentPin();
