@@ -59,13 +59,17 @@ namespace TwoFactorAuth {
         digits);
 
     private string GenerateHashedCode(byte[] key, long iterationNumber, int digits = 6) {
+      if (digits < 1 || digits > 9)
+        throw new ArgumentOutOfRangeException(nameof(digits), digits, "Number of digits must be between 1 and 9.");
+
       var counter = BitConverter.GetBytes(iterationNumber);
 
       if (BitConverter.IsLittleEndian)
         Array.Reverse(counter);
 
-      var hmac = new HMACSHA1(key);
-      var hash = hmac.ComputeHash(counter);
+      byte[] hash;
+      using (var hmac = new HMACSHA1(key))
+        hash = hmac.ComputeHash(counter);
       var offset = hash[hash.Length - 1] & 0xf;
 
       // Convert the 4 bytes into an integer, ignoring the sign.
