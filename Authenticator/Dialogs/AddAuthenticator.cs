@@ -106,6 +106,9 @@ namespace Authenticator {
     }
 
     private void secretCodeField_Leave(object sender, EventArgs e) {
+      // do not download images just because the focus moved; the Verify button does that explicitly
+      if (AuthHelper.IsUrl(secretCodeField.Text.Trim()))
+        return;
       VerifyAuthenticator(true);
     }
 
@@ -205,63 +208,12 @@ namespace Authenticator {
         }
       }
 
-      // if this is a URL, pull it down
+      privateKey = AuthHelper.ReadQrCode(Owner, privateKey);
+      if (privateKey == null) {
+        return false;
+      }
+
       Match match;
-      if (Regex.IsMatch(privateKey, "https?://.*", RegexOptions.IgnoreCase) && Uri.TryCreate(privateKey, UriKind.Absolute, out var uri)) {
-        try {
-          var request = (HttpWebRequest) WebRequest.Create(uri);
-          request.AllowAutoRedirect = true;
-          request.Timeout = 10000;
-          request.UserAgent = "Mozilla/4.0 (compatible; MSIE 8.0; Windows NT 6.1; Trident/4.0)";
-          using (var response = (HttpWebResponse) request.GetResponse()) {
-            if (response.StatusCode == HttpStatusCode.OK &&
-                response.ContentType.StartsWith("image/", StringComparison.OrdinalIgnoreCase)) {
-              using (var stream = response.GetResponseStream()) {
-                if (stream == null) {
-                  MainForm.ErrorDialog(Owner, "Cannot load QR code image");
-                  return false;
-                }
-                using (var bitmap = (Bitmap) Image.FromStream(stream)) {
-                  IBarcodeReader reader = new BarcodeReader();
-                  var result = reader.Decode(bitmap);
-                  if (result != null && !string.IsNullOrEmpty(result.Text)) {
-                    privateKey = HttpUtility.UrlDecode(result.Text);
-                  }
-                }
-              }
-            }
-          }
-        }
-        catch (Exception ex) {
-          MainForm.ErrorDialog(Owner, "Cannot load QR code image from " + privateKey, ex);
-          return false;
-        }
-      }
-
-      if ((match = Regex.Match(privateKey, @"data:image/([^;]+);base64,(.*)", RegexOptions.IgnoreCase)).Success) {
-        var imageData = Convert.FromBase64String(match.Groups[2].Value);
-        using (var ms = new MemoryStream(imageData)) {
-          using (var bitmap = (Bitmap) Image.FromStream(ms)) {
-            IBarcodeReader reader = new BarcodeReader();
-            var result = reader.Decode(bitmap);
-            if (result != null) {
-              privateKey = HttpUtility.UrlDecode(result.Text);
-            }
-          }
-        }
-      }
-
-      if (File.Exists(privateKey)) {
-        // assume this is the image file
-        using (var bitmap = (Bitmap) Image.FromFile(privateKey)) {
-          IBarcodeReader reader = new BarcodeReader();
-          var result = reader.Decode(bitmap);
-          if (result != null) {
-            privateKey = result.Text;
-          }
-        }
-      }
-
       // check for otpauth://, e.g. "otpauth://totp/dc3bf64c-2fd4-40fe-a8cf-83315945f08b@blockchain.info?secret=IHZJDKAEEC774BMUK3GX6SA"
       match = Regex.Match(privateKey, @"otpauth://([^/]+)/([^?]+)\?(.*)", RegexOptions.IgnoreCase);
       if (match.Success) {

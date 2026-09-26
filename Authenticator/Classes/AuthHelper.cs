@@ -4,8 +4,10 @@ using System.Collections.Specialized;
 using System.Drawing;
 using System.IO;
 using System.Linq;
+using System.Net;
 using System.Reflection;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Web;
 using System.Windows.Forms;
 using System.Xml;
@@ -19,6 +21,7 @@ using Org.BouncyCastle.Math;
 using Org.BouncyCastle.Security;
 using sergiye.Common;
 using Svg;
+using ZXing;
 
 namespace Authenticator {
   class AuthHelper {
@@ -576,6 +579,79 @@ namespace Authenticator {
             }
           }
         }
+      }
+    }
+
+    public static bool IsUrl(string text) => Regex.IsMatch(text, "^https?://", RegexOptions.IgnoreCase);
+
+    public static string ReadQrCode(Form owner, string input) {
+      try {
+        if (IsUrl(input) && Uri.TryCreate(input, UriKind.Absolute, out var uri)) {
+          if (uri.Scheme != Uri.UriSchemeHttps) {
+            MainForm.ErrorDialog(owner, "Only https:// addresses are supported for QR code images");
+            return null;
+          }
+
+          var request = (HttpWebRequest) WebRequest.Create(uri);
+          request.AllowAutoRedirect = true;
+          request.Timeout = 10000;
+          request.UserAgent = "Mozilla/4.0 (compatible; MSIE 8.0; Windows NT 6.1; Trident/4.0)";
+          using (var response = (HttpWebResponse) request.GetResponse()) {
+            if (response.ResponseUri.Scheme != Uri.UriSchemeHttps) {
+              MainForm.ErrorDialog(owner, "The QR code image was redirected to an insecure address");
+              return null;
+            }
+            if (response.StatusCode != HttpStatusCode.OK ||
+                !response.ContentType.StartsWith("image/", StringComparison.OrdinalIgnoreCase)) {
+              MainForm.ErrorDialog(owner, "Cannot load QR code image from " + input);
+              return null;
+            }
+            using (var stream = response.GetResponseStream())
+            using (var bitmap = (Bitmap) Image.FromStream(stream)) {
+              return DecodeQrCode(owner, bitmap, true);
+            }
+          }
+        }
+
+        var match = Regex.Match(input, @"data:image/([^;]+);base64,(.*)", RegexOptions.IgnoreCase);
+        if (match.Success) {
+          using (var ms = new MemoryStream(Convert.FromBase64String(match.Groups[2].Value)))
+          using (var bitmap = (Bitmap) Image.FromStream(ms)) {
+            return DecodeQrCode(owner, bitmap, true);
+          }
+        }
+
+        if (IsExistingFile(input)) {
+          using (var bitmap = (Bitmap) Image.FromFile(input)) {
+            return DecodeQrCode(owner, bitmap, false);
+          }
+        }
+      }
+      catch (Exception ex) when (ex is WebException || ex is IOException || ex is System.FormatException ||
+                                 ex is ArgumentException || ex is OutOfMemoryException) {
+        MainForm.ErrorDialog(owner, "Cannot load QR code image", ex);
+        return null;
+      }
+
+      return input;
+    }
+
+    private static string DecodeQrCode(Form owner, Bitmap bitmap, bool urlDecode) {
+      IBarcodeReader reader = new BarcodeReader();
+      var result = reader.Decode(bitmap);
+      if (string.IsNullOrEmpty(result?.Text)) {
+        MainForm.ErrorDialog(owner, "Unable to decode a QR code from the image");
+        return null;
+      }
+      return urlDecode ? HttpUtility.UrlDecode(result.Text) : result.Text;
+    }
+
+    private static bool IsExistingFile(string fileName) {
+      try {
+        return File.Exists(fileName);
+      }
+      catch (Exception) {
+        return false;
       }
     }
 
