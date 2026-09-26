@@ -610,7 +610,7 @@ namespace Authenticator {
             }
             using (var stream = response.GetResponseStream())
             using (var image = Image.FromStream(stream)) {
-              return DecodeQrCode(owner, image, true);
+              return DecodeQrCode(owner, image);
             }
           }
         }
@@ -619,13 +619,13 @@ namespace Authenticator {
         if (match.Success) {
           using (var ms = new MemoryStream(Convert.FromBase64String(match.Groups[2].Value)))
           using (var image = Image.FromStream(ms)) {
-            return DecodeQrCode(owner, image, true);
+            return DecodeQrCode(owner, image);
           }
         }
 
         if (IsExistingFile(input)) {
           using (var image = Image.FromFile(input)) {
-            return DecodeQrCode(owner, image, false);
+            return DecodeQrCode(owner, image);
           }
         }
       }
@@ -637,7 +637,8 @@ namespace Authenticator {
       return input;
     }
 
-    private static string DecodeQrCode(Form owner, Image image, bool urlDecode) {
+    // the text is returned as encoded in the QR code; callers parse and decode otpauth URIs themselves
+    private static string DecodeQrCode(Form owner, Image image) {
       IBarcodeReader reader = new BarcodeReader();
       Result result;
       // metafiles (wmf, emf) are loaded as Metafile, not Bitmap
@@ -648,7 +649,7 @@ namespace Authenticator {
         MainForm.ErrorDialog(owner, "Unable to decode a QR code from the image");
         return null;
       }
-      return urlDecode ? HttpUtility.UrlDecode(result.Text) : result.Text;
+      return result.Text;
     }
 
     private static bool IsExistingFile(string fileName) {
