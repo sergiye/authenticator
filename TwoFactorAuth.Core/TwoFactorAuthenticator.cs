@@ -43,7 +43,7 @@ namespace TwoFactorAuth {
         return result.TrimStart();
       }
       set {
-        secretKey = value?.Replace(" ", "").ToUpperInvariant();
+        secretKey = value == null ? null : QrGenerator.NormalizeSecretKey(value);
       }
     }
 

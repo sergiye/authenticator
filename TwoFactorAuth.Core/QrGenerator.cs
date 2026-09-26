@@ -30,7 +30,7 @@ namespace TwoFactorAuth {
         throw new NotSupportedException("Empty Account Title is not supported.");
       //https://github.com/google/google-authenticator/wiki/Key-Uri-Format
       accountTitle = RemoveWhitespace(Uri.EscapeDataString(accountTitle));
-      var provisionUrl = $"otpauth://totp/{accountTitle}?secret={encodedSecretKey.Replace(" ", "").Trim('=')}";
+      var provisionUrl = $"otpauth://totp/{accountTitle}?secret={NormalizeSecretKey(encodedSecretKey).Trim('=')}";
       if (!string.IsNullOrWhiteSpace(issuer))
         provisionUrl += $"&issuer={UrlEncode(issuer)}";
       return provisionUrl;
@@ -47,6 +47,8 @@ namespace TwoFactorAuth {
       }
       return result.Replace(" ", "%20").ToString();
     }
+
+    public static string NormalizeSecretKey(string key) => new string(key.Where(c => !char.IsWhiteSpace(c) && c != '-').ToArray()).ToUpperInvariant();
 
     public static string RemoveWhitespace(string str) => new string(str.Where(c => !char.IsWhiteSpace(c)).ToArray());
   }
