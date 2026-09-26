@@ -22,7 +22,7 @@
     <Version>$(AssemblyVersion)</Version>
     <SignAssembly>false</SignAssembly>
     <PackageTags>authenticator, 2fa, two-factor, code</PackageTags>
-    <Description>Library for generating and verifying OTP codes (and recovery codes) with methods to generate QR-codes by google APIs</Description>
+    <Description>Library for generating and verifying OTP codes (and recovery codes) and otpauth:// provisioning URIs for QR codes</Description>
     <RepositoryType>git</RepositoryType>
     <PackageIcon>packageicon.png</PackageIcon>
     <RepositoryUrl>https://github.com/$(AssemblyCompany)/$(AssemblyProduct)</RepositoryUrl>
