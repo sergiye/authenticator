@@ -294,7 +294,7 @@ namespace Authenticator {
               if (ex.Message.IndexOf("password") != -1) {
                 // already have a password
                 if (!string.IsNullOrEmpty(password)) {
-                  MainForm.ErrorDialog(parent, "Invalid password", ex.InnerException);
+                  MainForm.ErrorDialog(parent, "Invalid password", ex);
                 }
 
                 // need password
@@ -338,7 +338,7 @@ namespace Authenticator {
             lines.Append(line);
           }
           catch (Exception ex) {
-            MainForm.ErrorDialog(parent, "Invalid password", ex.InnerException);
+            MainForm.ErrorDialog(parent, "Invalid password", ex);
 
             pgpKey = null;
             password = null;
@@ -699,6 +699,10 @@ namespace Authenticator {
         }
       }
 
+      if (publicKey == null) {
+        throw new PgpException("The public key has no valid encryption key.");
+      }
+
       // encrypt the data using PGP
       using (var encryptedStream = new MemoryStream()) {
         using (var armored = new ArmoredOutputStream(encryptedStream)) {
@@ -723,15 +727,10 @@ namespace Authenticator {
 
     public static string PgpDecrypt(string armoredCipher, string armoredPrivateKey, string keyPassword) {
       // decode the private key
-      var privateKeys = new Dictionary<long, PgpPrivateKey>();
+      PgpSecretKeyRingBundle bundle;
       using (var ms = new MemoryStream(Encoding.ASCII.GetBytes(armoredPrivateKey))) {
         using (var dis = PgpUtilities.GetDecoderStream(ms)) {
-          var bundle = new PgpSecretKeyRingBundle(dis);
-          foreach (PgpSecretKeyRing keyring in bundle.GetKeyRings()) {
-            foreach (PgpSecretKey key in keyring.GetSecretKeys()) {
-              privateKeys.Add(key.KeyId, key.ExtractPrivateKey(keyPassword != null ? keyPassword.ToCharArray() : null));
-            }
-          }
+          bundle = new PgpSecretKeyRingBundle(dis);
         }
       }
 
@@ -741,10 +740,18 @@ namespace Authenticator {
         using (var inputStream = new MemoryStream(cipher)) {
           using (var ais = new ArmoredInputStream(inputStream)) {
             var message = new PgpObjectFactory(ais).NextPgpObject();
-            if (message is PgpEncryptedDataList) {
-              foreach (PgpPublicKeyEncryptedData pked in ((PgpEncryptedDataList) message).GetEncryptedDataObjects()) {
-                message = new PgpObjectFactory(pked.GetDataStream(privateKeys[pked.KeyId])).NextPgpObject();
+            if (message is PgpEncryptedDataList encryptedDataList) {
+              PgpObject decrypted = null;
+              foreach (PgpPublicKeyEncryptedData pked in encryptedDataList.GetEncryptedDataObjects()) {
+                var secretKey = bundle.GetSecretKey(pked.KeyId);
+                if (secretKey == null) {
+                  continue;
+                }
+                var privateKey = secretKey.ExtractPrivateKey(keyPassword?.ToCharArray());
+                decrypted = new PgpObjectFactory(pked.GetDataStream(privateKey)).NextPgpObject();
+                break;
               }
+              message = decrypted ?? throw new PgpException("The data is not encrypted for the provided private key.");
             }
 
             if (message is PgpCompressedData) {
