@@ -40,10 +40,10 @@ namespace TwoFactorAuth {
           result += key[idx];
           idx++;
         }
-        return result;
+        return result.TrimStart();
       }
       set {
-        secretKey = value;
+        secretKey = value?.Replace(" ", "").ToUpperInvariant();
       }
     }
 

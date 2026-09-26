@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 
 namespace TwoFactorAuth {
   
@@ -9,7 +10,7 @@ namespace TwoFactorAuth {
       if (string.IsNullOrEmpty(input))
         throw new ArgumentNullException(nameof(input));
 
-      input = input.TrimEnd('='); //remove padding characters
+      input = new string(input.Where(c => !char.IsWhiteSpace(c) && c != '-').ToArray()).TrimEnd('='); //remove separators and padding characters
       var byteCount = input.Length * 5 / 8; //this must be TRUNCATED
       var returnArray = new byte[byteCount];
 
