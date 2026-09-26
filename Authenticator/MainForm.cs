@@ -775,7 +775,7 @@ namespace Authenticator {
         do {
           name = "Microsoft" + (existing != 0 ? " (" + existing + ")" : string.Empty);
           existing++;
-        } while (authenticatorList.Items.Cast<AuthenticatorListBox.ListItem>().Count(a => a.Authenticator.Name == name) != 0);
+        } while (Config.Any(a => a.Name == name));
 
         authenticator.Name = name;
         authenticator.AutoRefresh = false;
@@ -793,7 +793,7 @@ namespace Authenticator {
         do {
           name = "Authenticator" + (existing != 0 ? " (" + existing + ")" : string.Empty);
           existing++;
-        } while (authenticatorList.Items.Cast<AuthenticatorListBox.ListItem>().Count(a => a.Authenticator.Name == name) != 0);
+        } while (Config.Any(a => a.Name == name));
         authenticator.Name = name;
         authenticator.AutoRefresh = false;
         authenticator.Skin = "AppIcon.png";
@@ -806,7 +806,7 @@ namespace Authenticator {
         do {
           name = "Okta" + (existing != 0 ? " (" + existing + ")" : string.Empty);
           existing++;
-        } while (authenticatorList.Items.Cast<AuthenticatorListBox.ListItem>().Count(a => a.Authenticator.Name == name) != 0);
+        } while (Config.Any(a => a.Name == name));
 
         authenticator.Name = name;
         authenticator.AutoRefresh = false;
@@ -836,6 +836,8 @@ namespace Authenticator {
         }
 
         Config.Add(authenticator);
+        // a new authenticator must be visible even if it does not match the current filter
+        filterTextBox.Text = string.Empty;
         LoadAuthenticatorList(authenticator);
 
         // reset UI
