@@ -8,6 +8,7 @@ using Org.BouncyCastle.Crypto;
 using Org.BouncyCastle.Crypto.Digests;
 using Org.BouncyCastle.Crypto.Engines;
 using Org.BouncyCastle.Crypto.Macs;
+using Org.BouncyCastle.Crypto.Modes;
 using Org.BouncyCastle.Crypto.Paddings;
 using Org.BouncyCastle.Crypto.Parameters;
 
@@ -16,7 +17,17 @@ namespace Authenticator {
     private const int SALT_LENGTH = 8;
     private const int PBKDF2_ITERATIONS = 2000;
     private const int PBKDF2_KEYSIZE = 256;
+    private const int AES_SALT_LENGTH = 16;
+    private const int AES_NONCE_LENGTH = 12;
+    private const int AES_TAG_LENGTH = 16;
+    private const int AES_KEY_LENGTH = 32;
+    private const int AES_PBKDF2_ITERATIONS = 200000;
     private static string encryptionHeader = ByteArrayToString("SergiyeAuthenticator"u8.ToArray());
+    private static readonly string aesEncryptionHeader = ByteArrayToString("AESGCMv2"u8.ToArray());
+    private static readonly object aesKeyCacheLock = new object();
+    private static byte[] cachedPasswordHash;
+    private static byte[] cachedSalt;
+    private static byte[] cachedKey;
     public const int DEFAULT_CODE_DIGITS = 6;
     public const int DEFAULT_PERIOD = 30;
 
@@ -716,46 +727,97 @@ namespace Authenticator {
 
     public static string Encrypt(string plain, string password) {
       var passwordBytes = Encoding.UTF8.GetBytes(password);
+      var key = GetAesKey(passwordBytes, null, out var saltBytes);
 
-      // build a new salt
-      var saltbytes = new byte[SALT_LENGTH];
+      var nonce = new byte[AES_NONCE_LENGTH];
       using (var rg = RandomNumberGenerator.Create()) {
-        rg.GetBytes(saltbytes);
-      }
-      var salt = ByteArrayToString(saltbytes);
-
-      // build our PBKDF2 key
-      byte[] key;
-      using (var kg = new Rfc2898DeriveBytes(passwordBytes, saltbytes, PBKDF2_ITERATIONS)) {
-        key = kg.GetBytes(PBKDF2_KEYSIZE);
+        rg.GetBytes(nonce);
       }
 
-      return salt + Encrypt(plain, key);
-    }
-
-    public static string Encrypt(string plain, byte[] key) {
       var inBytes = StringToByteArray(plain);
-
-      // get our cipher
-      BufferedBlockCipher cipher = new PaddedBufferedBlockCipher(new BlowfishEngine(), new ISO10126d2Padding());
-      cipher.Init(true, new KeyParameter(key));
-
-      // encrypt data
-      var osize = cipher.GetOutputSize(inBytes.Length);
-      var outBytes = new byte[osize];
+      var cipher = new GcmBlockCipher(new AesEngine());
+      cipher.Init(true, new AeadParameters(new KeyParameter(key), AES_TAG_LENGTH * 8, nonce));
+      var outBytes = new byte[cipher.GetOutputSize(inBytes.Length)];
       var olen = cipher.ProcessBytes(inBytes, 0, inBytes.Length, outBytes, 0);
-      olen += cipher.DoFinal(outBytes, olen);
-      if (olen < osize) {
-        var t = new byte[olen];
-        Array.Copy(outBytes, 0, t, 0, olen);
-        outBytes = t;
-      }
+      cipher.DoFinal(outBytes, olen);
 
-      // return encoded byte->hex string
-      return ByteArrayToString(outBytes);
+      return aesEncryptionHeader + ByteArrayToString(saltBytes) + ByteArrayToString(nonce) + ByteArrayToString(outBytes);
     }
 
     public static string Decrypt(string data, string password, bool pbkdf2) {
+      if (pbkdf2 && data.StartsWith(aesEncryptionHeader, StringComparison.Ordinal)) {
+        return DecryptAes(data.Substring(aesEncryptionHeader.Length), password);
+      }
+      return DecryptLegacy(data, password, pbkdf2);
+    }
+
+    private static string DecryptAes(string data, string password) {
+      byte[] saltBytes, nonce, inBytes;
+      try {
+        saltBytes = StringToByteArray(data.Substring(0, AES_SALT_LENGTH * 2));
+        nonce = StringToByteArray(data.Substring(AES_SALT_LENGTH * 2, AES_NONCE_LENGTH * 2));
+        inBytes = StringToByteArray(data.Substring((AES_SALT_LENGTH + AES_NONCE_LENGTH) * 2));
+      }
+      catch (Exception ex) when (ex is ArgumentException || ex is FormatException) {
+        throw new BadPasswordException(ex.Message, ex);
+      }
+
+      var key = GetAesKey(Encoding.UTF8.GetBytes(password), saltBytes, out _);
+      var cipher = new GcmBlockCipher(new AesEngine());
+      cipher.Init(false, new AeadParameters(new KeyParameter(key), AES_TAG_LENGTH * 8, nonce));
+      var outBytes = new byte[cipher.GetOutputSize(inBytes.Length)];
+      try {
+        var olen = cipher.ProcessBytes(inBytes, 0, inBytes.Length, outBytes, 0);
+        olen += cipher.DoFinal(outBytes, olen);
+        if (olen < outBytes.Length) {
+          Array.Resize(ref outBytes, olen);
+        }
+      }
+      catch (InvalidCipherTextException) {
+        throw new BadPasswordException();
+      }
+
+      return ByteArrayToString(outBytes);
+    }
+
+    // the slow PBKDF2 key of the last password is reused with its salt; GCM stays safe as every encryption gets a new nonce
+    private static byte[] GetAesKey(byte[] passwordBytes, byte[] saltBytes, out byte[] usedSalt) {
+      byte[] passwordHash;
+      using (var sha = SHA256.Create()) {
+        passwordHash = sha.ComputeHash(passwordBytes);
+      }
+
+      lock (aesKeyCacheLock) {
+        if (cachedPasswordHash != null && passwordHash.SequenceEqual(cachedPasswordHash) &&
+            (saltBytes == null || saltBytes.SequenceEqual(cachedSalt))) {
+          usedSalt = cachedSalt;
+          return cachedKey;
+        }
+      }
+
+      if (saltBytes == null) {
+        saltBytes = new byte[AES_SALT_LENGTH];
+        using (var rg = RandomNumberGenerator.Create()) {
+          rg.GetBytes(saltBytes);
+        }
+      }
+
+      byte[] key;
+      using (var kg = new Rfc2898DeriveBytes(passwordBytes, saltBytes, AES_PBKDF2_ITERATIONS, HashAlgorithmName.SHA256)) {
+        key = kg.GetBytes(AES_KEY_LENGTH);
+      }
+
+      lock (aesKeyCacheLock) {
+        cachedPasswordHash = passwordHash;
+        cachedSalt = saltBytes;
+        cachedKey = key;
+      }
+
+      usedSalt = saltBytes;
+      return key;
+    }
+
+    private static string DecryptLegacy(string data, string password, bool pbkdf2) {
       byte[] key;
       var saltBytes = StringToByteArray(data.Substring(0, SALT_LENGTH * 2));
 
@@ -782,35 +844,6 @@ namespace Authenticator {
 
       // extract the actual data to be decrypted
       var inBytes = StringToByteArray(data.Substring(SALT_LENGTH * 2));
-
-      // get cipher
-      BufferedBlockCipher cipher = new PaddedBufferedBlockCipher(new BlowfishEngine(), new ISO10126d2Padding());
-      cipher.Init(false, new KeyParameter(key));
-
-      // decrypt the data
-      var osize = cipher.GetOutputSize(inBytes.Length);
-      var outBytes = new byte[osize];
-      try {
-        var olen = cipher.ProcessBytes(inBytes, 0, inBytes.Length, outBytes, 0);
-        olen += cipher.DoFinal(outBytes, olen);
-        if (olen < osize) {
-          var t = new byte[olen];
-          Array.Copy(outBytes, 0, t, 0, olen);
-          outBytes = t;
-        }
-      }
-      catch (Exception) {
-        // an exception is due to bad password
-        throw new BadPasswordException();
-      }
-
-      // return encoded string
-      return ByteArrayToString(outBytes);
-    }
-
-    public static string Decrypt(string data, byte[] key) {
-      // the actual data to be decrypted
-      var inBytes = StringToByteArray(data);
 
       // get cipher
       BufferedBlockCipher cipher = new PaddedBufferedBlockCipher(new BlowfishEngine(), new ISO10126d2Padding());
