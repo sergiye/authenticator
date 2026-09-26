@@ -457,7 +457,7 @@ namespace Authenticator {
       }
 
       if (string.IsNullOrEmpty(issuer) == false) {
-        extraparams += "&issuer=" + HttpUtility.UrlEncode(issuer);
+        extraparams += "&issuer=" + Uri.EscapeDataString(issuer);
       }
 
       if (AuthenticatorData.HmacType != Authenticator.DEFAULT_HMAC_TYPE) {
@@ -469,17 +469,17 @@ namespace Authenticator {
         extraparams += "&counter=" + hotpAuthenticator.Counter;
       }
 
-      var secret = HttpUtility.UrlEncode(Base32.GetInstance().Encode(AuthenticatorData.SecretKey));
+      var secret = Uri.EscapeDataString(Base32.GetInstance().Encode(AuthenticatorData.SecretKey));
 
       // add the skin
       if (string.IsNullOrEmpty(Skin) == false && compat == false) {
         if (Skin.StartsWith("base64:")) {
           var bytes = Convert.FromBase64String(Skin.Substring(7));
           var icon32 = Base32.GetInstance().Encode(bytes);
-          extraparams += "&icon=" + HttpUtility.UrlEncode("base64:" + icon32);
+          extraparams += "&icon=" + Uri.EscapeDataString("base64:" + icon32);
         }
         else {
-          extraparams += "&icon=" + HttpUtility.UrlEncode(Skin.Replace("Icon.png", ""));
+          extraparams += "&icon=" + Uri.EscapeDataString(Skin.Replace("Icon.png", ""));
         }
       }
 
@@ -489,8 +489,8 @@ namespace Authenticator {
 
       var url = string.Format("otpauth://" + type + "/{0}?secret={1}&digits={2}{3}",
         (string.IsNullOrEmpty(issuer) == false
-          ? HttpUtility.UrlPathEncode(issuer) + ":" + HttpUtility.UrlPathEncode(label)
-          : HttpUtility.UrlPathEncode(label)),
+          ? Uri.EscapeDataString(issuer) + ":" + Uri.EscapeDataString(label)
+          : Uri.EscapeDataString(label)),
         secret,
         AuthenticatorData.CodeDigits,
         extraparams);
