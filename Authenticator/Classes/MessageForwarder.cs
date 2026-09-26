@@ -33,11 +33,7 @@ namespace Authenticator {
 
     public bool PreFilterMessage(ref Message m) {
       if (!messages.Contains(m.Msg) || !control.CanFocus || control.Focused || !isMouseOverControl) return false;
-      try {
-        WinApiHelper.SendMessage(control.Handle, m.Msg, (int) m.WParam, m.LParam);
-      }
-      catch (OverflowException) {
-      }
+      WinApiHelper.SendMessage(control.Handle, (uint) m.Msg, m.WParam, m.LParam);
       return true;
     }
 
