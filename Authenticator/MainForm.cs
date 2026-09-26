@@ -301,6 +301,8 @@ namespace Authenticator {
         Config.Add(authenticator);
       }
 
+      // imported authenticators must be visible even if they do not match the current filter
+      filterTextBox.Text = string.Empty;
       LoadAuthenticatorList();
 
       // reset UI
@@ -348,6 +350,7 @@ namespace Authenticator {
             }
           }
 
+          filterTextBox.Text = string.Empty;
           foreach (var auth in imported) {
             // add to main list
             Config.Add(auth);
