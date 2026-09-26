@@ -1,12 +1,8 @@
 ﻿using sergiye.Common;
 using System;
 using System.Drawing;
-using System.IO;
-using System.Net;
 using System.Text.RegularExpressions;
-using System.Web;
 using System.Windows.Forms;
-using ZXing;
 
 namespace Authenticator {
   internal partial class AddOktaVerifyAuthenticator : Form {
