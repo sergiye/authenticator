@@ -486,9 +486,17 @@ namespace Authenticator {
 
     private void SaveConfig(bool immediate = false) {
       if (immediate || (saveConfigTime != null && saveConfigTime <= DateTime.Now)) {
-        saveConfigTime = null;
-        lock (Config) {
-          AuthHelper.SaveConfig(Config);
+        try {
+          lock (Config) {
+            AuthHelper.SaveConfig(Config);
+          }
+          saveConfigTime = null;
+        }
+        catch (IOException) {
+          // the file may be locked for a moment (antivirus, sync clients), so keep the save pending and retry
+          saveConfigTime = DateTime.Now.AddSeconds(5);
+          if (immediate)
+            throw;
         }
       }
       else {
