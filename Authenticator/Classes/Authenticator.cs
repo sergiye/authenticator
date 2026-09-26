@@ -326,6 +326,10 @@ namespace Authenticator {
         RequiresPassword = false;
         EncryptedData = null;
         PasswordType = passwordType;
+        if (!string.IsNullOrEmpty(Password)) {
+          ForgetAesKeys(Password);
+        }
+        Password = null;
       }
       else {
         using (var ms = new MemoryStream()) {
@@ -361,6 +365,12 @@ namespace Authenticator {
           if (PasswordType == PasswordTypes.Explicit) {
             SecretData = null;
             RequiresPassword = true;
+            // the entry is locked now, so neither the new nor the previous password key may stay cached
+            ForgetAesKeys(password);
+            if (!string.IsNullOrEmpty(Password)) {
+              ForgetAesKeys(Password);
+            }
+            Password = null;
           }
         }
       }
