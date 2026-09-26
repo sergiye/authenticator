@@ -391,17 +391,14 @@ namespace Authenticator {
 
             // get the label and optional issuer
             var issuer = string.Empty;
-            var label = (!string.IsNullOrEmpty(uri.LocalPath)
-              ? uri.LocalPath.Substring(1)
-              : string.Empty); // skip past initial /
+            // a raw '+' in the label stands for a space (as some exporters write it), an encoded %2B for a plus sign
+            var rawLabel = !string.IsNullOrEmpty(uri.AbsolutePath) ? uri.AbsolutePath.Substring(1) : string.Empty; // skip past initial /
+            var label = Uri.UnescapeDataString(rawLabel.Replace("+", "%20"));
             var p = label.IndexOf(":");
             if (p != -1) {
               issuer = label.Substring(0, p);
               label = label.Substring(p + 1);
             }
-
-            // + aren't decoded
-            label = label.Replace("+", " ");
 
             var query = HttpUtility.ParseQueryString(uri.Query);
             var secret = query["secret"];
