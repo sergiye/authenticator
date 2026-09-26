@@ -571,8 +571,12 @@ namespace Authenticator {
 
     protected override bool ProcessCmdKey(ref Message msg, Keys keyData) {
       if (AuthConfig.HideMenu && (keyData & Keys.KeyCode) == Keys.Menu && (keyData & Keys.Modifiers) == Keys.Alt) {
-        mainMenu.Visible = !mainMenu.Visible;
-        mainMenu.Focus();
+        // bit 30 of lParam is set for auto-repeated key presses while Alt is held down
+        if (((long) msg.LParam & 0x40000000) == 0) {
+          mainMenu.Visible = !mainMenu.Visible;
+          mainMenu.Focus();
+          SetAutoSize();
+        }
         return true;
       }
       return base.ProcessCmdKey(ref msg, keyData);
@@ -671,7 +675,7 @@ namespace Authenticator {
         // take the smallest of full height or 62% screen height
         var maxHeight = Screen.GetWorkingArea(this).Height * 50 / 100; //use only 50% of total screen height
         var fixedHeight = Height - ClientRectangle.Height;
-        if (!AuthConfig.HideMenu)
+        if (!AuthConfig.HideMenu || mainMenu.Visible)
           fixedHeight += mainMenu.Height;
         if (filterTextBox.Visible)
           fixedHeight += filterTextBox.Height;
@@ -1066,7 +1070,12 @@ namespace Authenticator {
         SetAutoSize();
         SaveConfig();
       }, Keys.Control | Keys.M, isChecked: AuthConfig.HideMenu, checkOnClick: true);
-      mainMenu.LostFocus += (_, _) => { if (AuthConfig.HideMenu) mainMenu.Visible = false; };
+      mainMenu.LostFocus += (_, _) => {
+        if (AuthConfig.HideMenu && mainMenu.Visible) {
+          mainMenu.Visible = false;
+          SetAutoSize();
+        }
+      };
       KeyPreview = true;
       if (AuthConfig.HideMenu)
         mainMenu.Visible = false;
