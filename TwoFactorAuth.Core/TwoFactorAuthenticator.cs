@@ -127,6 +127,7 @@ namespace TwoFactorAuth {
     public string GetCurrentPin() => GenerateHashedCode(GetCurrentCounter());
 
     // only a local time needs converting; an unspecified kind is taken as UTC, as before
+    public string GetCurrentPin(DateTime now) => GenerateHashedCode(GetCurrentCounter(now.Kind == DateTimeKind.Local ? now.ToUniversalTime() : now, epoch, 30));
 
     public string[] GetCurrentPins() => GetCurrentPins(DefaultClockDriftTolerance);
 
