@@ -350,13 +350,14 @@ namespace Authenticator {
 
           var data = ByteArrayToString(ms.ToArray());
 
-          // update secret hash
+          byte[] secretHash;
           using (var sha1 = SHA1.Create()) {
-            SecretHash = sha1.ComputeHash(Encoding.UTF8.GetBytes(SecretData));
+            secretHash = sha1.ComputeHash(Encoding.UTF8.GetBytes(SecretData));
           }
 
-          // encrypt
+          // encrypt, and update the secret hash only when it succeeded
           EncryptedData = EncryptSequence(data, passwordType, password);
+          SecretHash = secretHash;
           PasswordType = passwordType;
           if (PasswordType == PasswordTypes.Explicit) {
             SecretData = null;
