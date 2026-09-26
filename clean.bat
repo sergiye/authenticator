@@ -9,12 +9,6 @@ for /f "delims=" %%e in ('dir /A:D /S /B *.vs^|find /i "\.vs"') do @if exist "%%
 
 del /S ".\Authenticator\FodyWeavers.xsd"
 
-git reflog expire --expire=1.days.ago --expire-unreachable=now --all
-if errorlevel 1 goto error
-
-git gc --prune=now
-if errorlevel 1 goto error
-
 goto exit
 :error
 pause
