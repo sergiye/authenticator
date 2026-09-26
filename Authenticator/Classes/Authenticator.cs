@@ -27,6 +27,7 @@ namespace Authenticator {
     private const int AES_KEY_CACHE_SIZE = 4;
     private static readonly System.Collections.Generic.List<AesKeyCacheEntry> aesKeyCache = new System.Collections.Generic.List<AesKeyCacheEntry>();
     private static readonly byte[] aesKeyCacheSecret = CreateRandomBytes(32);
+    private static byte[] retainedPasswordHash;
     public const int DEFAULT_CODE_DIGITS = 6;
     public const int DEFAULT_PERIOD = 30;
 
@@ -842,8 +843,16 @@ namespace Authenticator {
       return bytes;
     }
 
+    // the config password stays in memory while the app runs, so evicting its key would only slow down every save
+    public static void RetainAesKeys(string password) {
+      retainedPasswordHash = string.IsNullOrEmpty(password) ? null : HashPassword(Encoding.UTF8.GetBytes(password));
+    }
+
     private static void ForgetAesKeys(string password) {
       var passwordHash = HashPassword(Encoding.UTF8.GetBytes(password));
+      if (retainedPasswordHash != null && passwordHash.SequenceEqual(retainedPasswordHash)) {
+        return;
+      }
       lock (aesKeyCache) {
         aesKeyCache.RemoveAll(e => e.PasswordHash.SequenceEqual(passwordHash));
       }

@@ -25,7 +25,15 @@ namespace Authenticator {
 
     public decimal Version { get; private set; }
 
-    public string Password { protected get; set; }
+    private string password;
+
+    public string Password {
+      protected get => password;
+      set {
+        password = value;
+        Authenticator.RetainAesKeys(value);
+      }
+    }
 
     public bool Upgraded { get; set; }
 
