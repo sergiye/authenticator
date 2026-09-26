@@ -60,7 +60,7 @@ Features include:
   * Selection of standard or custom icons
   * Capture a QR code from a selected area of the screen, image URL or parse from 'otpauth' string
   * Portable mode preventing changes to other files or registry settings
-  * Import and export in UriKeyFormat and from Authenticator Plus for Android 
+  * Import and export of otpauth:// URIs as text, password protected zip or PGP files
 
 See [features.md](features.md) for a detailed description of all features.
 
@@ -133,7 +133,7 @@ There are no other executables installed on your machine. There is no installer 
 
 #### I found Authenticator on another website, is it the same thing?
 
-Authenticator source code is uploaded to GitHub at http://github.com/sergiey/authenticator and pre-built binaries are in [releases](https://github.com/sergiye/authenticator/releases). It is not published anywhere else, so please do not download any other programs claiming to be Authenticator.
+Authenticator source code is uploaded to GitHub at https://github.com/sergiye/authenticator and pre-built binaries are in [releases](https://github.com/sergiye/authenticator/releases). It is not published anywhere else, so please do not download any other programs claiming to be Authenticator.
 
 #### Where does Authenticator save my authenticator information?
 
