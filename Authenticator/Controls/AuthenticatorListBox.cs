@@ -245,7 +245,7 @@ namespace Authenticator {
 
             if (item.Authenticator.CopyOnCode) {
               // copy to clipboard
-              item.Authenticator.CopyCodeToClipboard(Parent as Form);
+              item.Authenticator.CopyCodeToClipboard(Parent as Form, item.LastCode);
             }
 
             RefreshCurrentItem();
