@@ -686,7 +686,7 @@ namespace Authenticator {
 
     private void MainForm_FormClosing(object sender, FormClosingEventArgs e) {
       // keep in the tray when closing Form
-      if (AuthConfig.UseTrayIcon && Visible && mExplicitClose == false) {
+      if (AuthConfig.UseTrayIcon && Visible && mExplicitClose == false && e.CloseReason == CloseReason.UserClosing) {
         e.Cancel = true;
         Hide();
         return;
