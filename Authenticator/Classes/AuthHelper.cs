@@ -896,7 +896,7 @@ namespace Authenticator {
           return new Bitmap(iconStream);
         if (iconFile.EndsWith(".svg")) {
           var svgDoc = SvgDocument.Open<SvgDocument>(iconStream);
-          return new Bitmap(svgDoc.Draw(width, height));
+          return svgDoc.Draw(width, height);
           // return new Bitmap(svgDoc.Draw(ICON_WIDTH, ICON_HEIGHT));
         }
         return null;
