@@ -55,7 +55,10 @@ namespace Authenticator {
       set {
         if (skin == value) return;
         skin = value;
-        icon = null; //reset
+        // the icon was generated from the previous skin and is owned here, so release it before regenerating
+        var previousIcon = icon;
+        icon = null;
+        previousIcon?.Dispose();
         OnAuthAuthenticatorChanged?.Invoke(this, new AuthAuthenticatorChangedEventArgs("Skin"));
       }
     }
@@ -88,16 +91,14 @@ namespace Authenticator {
       }
       set {
         if (value == icon) return;
-        icon = value;
-        SetAverageColor();
-        if (icon == null) {
+        if (value == null) {
           Skin = null;
+          return;
         }
-        else {
-          using (var ms = new MemoryStream()) {
-            icon.Save(ms, System.Drawing.Imaging.ImageFormat.Png);
-            Skin = "base64:" + Convert.ToBase64String(ms.ToArray());
-          }
+        // the caller keeps ownership of the bitmap; the icon is regenerated from the stored skin
+        using (var ms = new MemoryStream()) {
+          value.Save(ms, System.Drawing.Imaging.ImageFormat.Png);
+          Skin = "base64:" + Convert.ToBase64String(ms.ToArray());
         }
       }
     }
