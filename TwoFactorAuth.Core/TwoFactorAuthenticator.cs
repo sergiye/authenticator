@@ -17,7 +17,7 @@ namespace TwoFactorAuth {
     private TimeSpan DefaultClockDriftTolerance { get; set; }
 
     public TwoFactorAuthenticator(int userId) {
-      DefaultClockDriftTolerance = TimeSpan.FromMinutes(2);
+      DefaultClockDriftTolerance = TimeSpan.FromSeconds(30);
       UserId = userId;
     }
 
@@ -93,7 +93,21 @@ namespace TwoFactorAuth {
     public bool ValidateTwoFactorPin(string twoFactorCodeFromClient, TimeSpan timeTolerance) {
       if (!string.IsNullOrEmpty(twoFactorCodeFromClient))
         twoFactorCodeFromClient = twoFactorCodeFromClient.Replace(" ", "");
-      return GetCurrentPins(timeTolerance).Any(c => c == twoFactorCodeFromClient);
+      if (string.IsNullOrEmpty(twoFactorCodeFromClient))
+        return false;
+      var valid = false;
+      foreach (var pin in GetCurrentPins(timeTolerance))
+        valid |= FixedTimeEquals(pin, twoFactorCodeFromClient);
+      return valid;
+    }
+
+    private static bool FixedTimeEquals(string a, string b) {
+      if (a.Length != b.Length)
+        return false;
+      var diff = 0;
+      for (var i = 0; i < a.Length; i++)
+        diff |= a[i] ^ b[i];
+      return diff == 0;
     }
 
     public string GetCurrentPin() => GenerateHashedCode(GetCurrentCounter());
@@ -107,8 +121,8 @@ namespace TwoFactorAuth {
       var iterationCounter = GetCurrentCounter();
       var iterationOffset = 0;
 
-      if (timeTolerance.TotalSeconds > 30) {
-        iterationOffset = Convert.ToInt32(timeTolerance.TotalSeconds / 30.00);
+      if (timeTolerance.TotalSeconds > 0) {
+        iterationOffset = (int)Math.Ceiling(timeTolerance.TotalSeconds / 30.00);
       }
 
       var iterationStart = iterationCounter - iterationOffset;
