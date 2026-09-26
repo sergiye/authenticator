@@ -486,7 +486,8 @@ namespace Authenticator {
       }
 
       authenticatorList.Visible = authenticatorList.Items.Count != 0;
-      if (authenticatorList.Visible)
+      // keep typing in the filter box, which rebuilds the list on every change
+      if (authenticatorList.Visible && !filterTextBox.Focused)
         authenticatorList.Focus();
     }
 
