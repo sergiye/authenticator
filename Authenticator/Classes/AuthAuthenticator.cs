@@ -387,7 +387,7 @@ namespace Authenticator {
 
       Match match;
       var issuer = AuthenticatorData.Issuer;
-      var label = Name;
+      var label = Name ?? string.Empty;
       if (string.IsNullOrEmpty(issuer) &&
           (match = Regex.Match(label, @"^([^\(]+)\s+\((.*?)\)(.*)")).Success) {
         issuer = match.Groups[1].Value;
@@ -395,7 +395,7 @@ namespace Authenticator {
       }
 
       if (string.IsNullOrEmpty(issuer) == false &&
-          (match = Regex.Match(label, @"^" + issuer + @"\s+\((.*?)\)(.*)")).Success) {
+          (match = Regex.Match(label, @"^" + Regex.Escape(issuer) + @"\s+\((.*?)\)(.*)")).Success) {
         label = match.Groups[1].Value + match.Groups[2].Value;
       }
 
