@@ -601,6 +601,12 @@ namespace Authenticator {
     }
 
     private static DialogResult UnprotectAuthenticator(ListItem item, Screen screen = null) {
+      return UnprotectAuthenticator(item, out _, screen);
+    }
+
+    // prompted tells whether the password was entered just now, as OK is also returned for an already unlocked item
+    private static DialogResult UnprotectAuthenticator(ListItem item, out bool prompted, Screen screen = null) {
+      prompted = false;
       // keep a count so we can have multiples
       if (item.UnprotectCount > 0) {
         item.UnprotectCount++;
@@ -628,9 +634,25 @@ namespace Authenticator {
       var result = getPassForm.ShowDialog();
       if (result == DialogResult.OK) {
         item.UnprotectCount++;
+        prompted = true;
       }
 
       return result;
+    }
+
+    private bool ConfirmPassword(Func<string, bool> checkPassword) {
+      var invalidPassword = false;
+      while (true) {
+        using (var checkForm = new GetPasswordForm { InvalidPassword = invalidPassword }) {
+          if (checkForm.ShowDialog(this) == DialogResult.Cancel) {
+            return false;
+          }
+          if (checkPassword(checkForm.Password)) {
+            return true;
+          }
+        }
+        invalidPassword = true;
+      }
     }
 
     private static void ProtectAuthenticator(ListItem item) {
@@ -851,14 +873,14 @@ namespace Authenticator {
 
         case "showGoogleSecretMenuItem": {
             // check if the authenticated is still protected
-            var wasProtected = UnprotectAuthenticator(item);
+            var wasProtected = UnprotectAuthenticator(item, out var prompted);
             if (wasProtected == DialogResult.Cancel) {
               return;
             }
 
             try {
               // the secret key is shown only after a password is entered now: the authenticator's own, otherwise the main one
-              if (wasProtected != DialogResult.OK) {
+              if (!prompted) {
                 Func<string, bool> checkPassword = null;
                 if (auth.AuthenticatorData.PasswordType == Authenticator.PasswordTypes.Explicit) {
                   // unlocked earlier while its code is displayed, so no password has been asked yet
@@ -868,22 +890,8 @@ namespace Authenticator {
                   checkPassword = mainForm.Config.IsPassword;
                 }
 
-                if (checkPassword != null) {
-                  var invalidPassword = false;
-                  while (true) {
-                    var checkForm = new GetPasswordForm();
-                    checkForm.InvalidPassword = invalidPassword;
-                    var result = checkForm.ShowDialog(this);
-                    if (result == DialogResult.Cancel) {
-                      return;
-                    }
-
-                    if (checkPassword(checkForm.Password)) {
-                      break;
-                    }
-
-                    invalidPassword = true;
-                  }
+                if (checkPassword != null && !ConfirmPassword(checkPassword)) {
+                  return;
                 }
               }
 
