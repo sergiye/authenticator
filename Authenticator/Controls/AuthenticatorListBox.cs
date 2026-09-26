@@ -780,12 +780,18 @@ namespace Authenticator {
       switch (menuItem.Name) {
         case "setPasswordMenuItem": {
             // check if the authenticated is still protected
-            var wasProtected = UnprotectAuthenticator(item);
+            var wasProtected = UnprotectAuthenticator(item, out var prompted);
             if (wasProtected == DialogResult.Cancel) {
               return;
             }
 
             try {
+              // an authenticator unlocked earlier (its code is displayed) must not have its password changed or removed without it
+              if (!prompted && auth.AuthenticatorData.PasswordType == Authenticator.PasswordTypes.Explicit &&
+                  !ConfirmPassword(auth.AuthenticatorData.VerifyPassword)) {
+                return;
+              }
+
               // show the new password form
               var form = new SetPasswordForm();
               if (form.ShowDialog(Parent as Form) != DialogResult.OK) {
