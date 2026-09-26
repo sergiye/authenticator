@@ -29,6 +29,7 @@ namespace Authenticator {
     private int saveRetries;
     private bool unsavedChanges;
     private bool mExplicitClose;
+    private bool exitingForUpdate;
     private readonly bool startMinimized;
     private readonly string startupConfigFile;
 
@@ -56,7 +57,11 @@ namespace Authenticator {
             ShowUpdateButton();
           return false;
         },
-        () => { exitOptionMenuItem_Click(null, EventArgs.Empty); }
+        () => {
+          // the updater terminates the process right after this callback, so the close cannot be cancelled
+          exitingForUpdate = true;
+          exitOptionMenuItem_Click(null, EventArgs.Empty);
+        }
       );
 
       // initialize UI
@@ -760,6 +765,10 @@ namespace Authenticator {
           // the session is ending, nothing can be done about it and the close must not be blocked
           if (e.CloseReason == CloseReason.WindowsShutDown)
             return;
+          if (exitingForUpdate) {
+            ErrorDialog(this, "Unable to save your authenticators before the update. The latest changes are lost.", ex);
+            return;
+          }
           if (ErrorDialog(this, "Unable to save your authenticators. Close anyway and lose the unsaved changes?", ex,
                 MessageBoxButtons.YesNo) != DialogResult.Yes) {
             e.Cancel = true;
