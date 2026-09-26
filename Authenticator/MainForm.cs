@@ -85,6 +85,9 @@ namespace Authenticator {
       var args = Environment.GetCommandLineArgs();
       for (var i = 1; i < args.Length; i++) {
         var arg = args[i];
+        if (arg.Length == 0) {
+          continue;
+        }
         if (arg[0] == '-') {
           switch (arg) {
             case "-min":
