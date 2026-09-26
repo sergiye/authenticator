@@ -43,7 +43,9 @@ namespace TwoFactorAuth {
         return result.TrimStart();
       }
       set {
-        secretKey = value == null ? null : QrGenerator.NormalizeSecretKey(value);
+        if (value == null)
+          throw new ArgumentNullException(nameof(value));
+        secretKey = QrGenerator.NormalizeSecretKey(value);
       }
     }
 
