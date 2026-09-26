@@ -209,25 +209,29 @@ namespace Authenticator {
             MessageBoxButtons.OK, MessageBoxIcon.Warning);
         }
 
-        for (var i = 0; i < arr.Count; ++i) {
-          serial = Base32.GetInstance().Encode(arr[i].Secret.ToByteArray());
-          authType = arr[i].Type.ToString().ToUpper();
-          if (arr[i].HasIssuer)
-            issuer = arr[i].Issuer;
-          if (arr[i].HasDigits) {
-            switch (arr[i].Digits) {
-              case Payload.Types.DigitCount.Six:
-                digits = 6;
-                break;
-              case Payload.Types.DigitCount.Eight:
-                digits = 8;
-                break;
-            }
-          }
-          var label = arr[i].HasIssuer ? $"{arr[i].Issuer} ({arr[i].Name})" : arr[i].Name;
-          secretCodeField.Text = privateKey = $"otpauth://{authType}/{label}?secret={serial}";
-          break; //todo: process only the first one
+        // only the first account is added; all its parameters go into the URI, which also fills the form fields for the re-verify on OK
+        var otp = arr[0];
+        if (otp.HasAlgorithm && otp.Algorithm == Payload.Types.Algorithm.Md5) {
+          MainForm.ErrorDialog(Owner, "MD5 authenticators are not supported");
+          return false;
         }
+        serial = Base32.GetInstance().Encode(otp.Secret.ToByteArray());
+        authType = otp.HasType && otp.Type == Payload.Types.OtpType.Hotp ? HOTP : TOTP;
+        if (otp.HasIssuer)
+          issuer = otp.Issuer;
+        var migrationDigits = otp.HasDigits && otp.Digits == Payload.Types.DigitCount.Eight ? 8 : 6;
+        var migrationAlgorithm = !otp.HasAlgorithm ? "SHA1" : otp.Algorithm switch {
+          Payload.Types.Algorithm.Sha256 => "SHA256",
+          Payload.Types.Algorithm.Sha512 => "SHA512",
+          _ => "SHA1"
+        };
+        var migrationLabel = otp.HasIssuer && !string.IsNullOrEmpty(otp.Name) ? $"{otp.Issuer} ({otp.Name})" : otp.Name;
+        if (string.IsNullOrEmpty(migrationLabel))
+          migrationLabel = string.IsNullOrEmpty(issuer) ? "Imported" : issuer;
+        var migrationUri = $"otpauth://{authType}/{Uri.EscapeDataString(migrationLabel)}?secret={serial}&digits={migrationDigits}&algorithm={migrationAlgorithm}";
+        if (authType == HOTP)
+          migrationUri += $"&counter={otp.Counter}";
+        secretCodeField.Text = privateKey = migrationUri;
       }
 
       Match match;
