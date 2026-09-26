@@ -104,8 +104,20 @@ namespace Authenticator {
         return;
       }
 
+      // password protection is only possible in a zip file
+      var exportFile = fileField.Text;
+      if (passwordCheckbox.Checked && string.Compare(Path.GetExtension(exportFile), ".zip", StringComparison.OrdinalIgnoreCase) != 0) {
+        exportFile = Path.ChangeExtension(exportFile, ".zip");
+        if (File.Exists(exportFile) && MainForm.ConfirmDialog(this, $"The export will be saved as a password protected zip file.\n\n{exportFile} already exists. Do you want to replace it?",
+              MessageBoxButtons.YesNo, MessageBoxIcon.Warning, MessageBoxDefaultButton.Button2) != DialogResult.Yes) {
+          DialogResult = DialogResult.None;
+          return;
+        }
+        fileField.Text = exportFile;
+      }
+
       // set the valid password type property
-      ExportFile = fileField.Text;
+      ExportFile = exportFile;
       if (passwordCheckbox.Checked && passwordField.Text.Length != 0) {
         Password = passwordField.Text;
       }

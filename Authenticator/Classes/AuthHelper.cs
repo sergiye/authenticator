@@ -525,7 +525,8 @@ namespace Authenticator {
           ms.Seek(0, SeekOrigin.Begin);
 
           // reset and write stream out to disk or as zip
-          if (String.Compare(Path.GetExtension(file), ".zip", StringComparison.OrdinalIgnoreCase) == 0) {
+          if (string.IsNullOrEmpty(pgpKey) &&
+              (!string.IsNullOrEmpty(password) || String.Compare(Path.GetExtension(file), ".zip", StringComparison.OrdinalIgnoreCase) == 0)) {
             using (var zip = new ZipOutputStream(new FileStream(file, FileMode.Create, FileAccess.Write))) {
               if (!string.IsNullOrEmpty(password)) {
                 zip.Password = password;
