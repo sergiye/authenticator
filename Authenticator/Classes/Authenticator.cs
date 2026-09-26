@@ -26,6 +26,7 @@ namespace Authenticator {
     private static readonly string aesEncryptionHeader = ByteArrayToString("AESGCMv2"u8.ToArray());
     private const int AES_KEY_CACHE_SIZE = 4;
     private static readonly System.Collections.Generic.List<AesKeyCacheEntry> aesKeyCache = new System.Collections.Generic.List<AesKeyCacheEntry>();
+    private static readonly byte[] aesKeyCacheSecret = CreateRandomBytes(32);
     public const int DEFAULT_CODE_DIGITS = 6;
     public const int DEFAULT_PERIOD = 30;
 
@@ -404,6 +405,10 @@ namespace Authenticator {
         RefreshEncryptedData();
         SecretData = null;
         RequiresPassword = true;
+        if ((PasswordType & PasswordTypes.Explicit) != 0 && !string.IsNullOrEmpty(Password)) {
+          // a locked authenticator must not stay decryptable with a key left in memory
+          ForgetAesKeys(Password);
+        }
         Password = null;
       }
     }
@@ -803,9 +808,25 @@ namespace Authenticator {
       public byte[] Key;
     }
 
+    // keyed with a random per-process secret, so the cached value cannot be brute-forced without PBKDF2
     private static byte[] HashPassword(byte[] passwordBytes) {
-      using (var sha = SHA256.Create()) {
-        return sha.ComputeHash(passwordBytes);
+      using (var hmac = new HMACSHA256(aesKeyCacheSecret)) {
+        return hmac.ComputeHash(passwordBytes);
+      }
+    }
+
+    private static byte[] CreateRandomBytes(int length) {
+      var bytes = new byte[length];
+      using (var rg = RandomNumberGenerator.Create()) {
+        rg.GetBytes(bytes);
+      }
+      return bytes;
+    }
+
+    private static void ForgetAesKeys(string password) {
+      var passwordHash = HashPassword(Encoding.UTF8.GetBytes(password));
+      lock (aesKeyCache) {
+        aesKeyCache.RemoveAll(e => e.PasswordHash.SequenceEqual(passwordHash));
       }
     }
 
