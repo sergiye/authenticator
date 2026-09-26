@@ -15,7 +15,7 @@
     <AssemblyCompany>SergiyE</AssemblyCompany>
     <AssemblyCopyright>Copyright © 2023 Sergiy Egoshyn</AssemblyCopyright>
     <Authors>Sergiy Egoshin</Authors>
-    <AssemblyVersion>1.0.9765</AssemblyVersion>
+    <AssemblyVersion>1.0.9766</AssemblyVersion>
     <Copyright>$(AssemblyCopyright)</Copyright>
     <Company>$(AssemblyCompany)</Company>
     <Product>$(AssemblyProduct)</Product>
