@@ -21,7 +21,7 @@ For time-based and counter-based authenticators you can set:
 
 ## Adding an authenticator
 
-Use **File → Add** (the first entry has the `Ctrl+A` shortcut) and choose the type. In the dialog, enter a name and provide the secret in any of these forms:
+Use **File → Add** (the first entry has the `Ctrl+A` shortcut) and choose the type. In the **Time-Based / Google** dialog, enter a name and provide the secret in any of these forms:
 
 * the secret key as shown by the service (Base32, spaces and dashes are ignored);
 * an `otpauth://totp/...` or `otpauth://hotp/...` URI; the name, issuer, digits, period, algorithm and counter are taken from it;
@@ -30,7 +30,11 @@ Use **File → Add** (the first entry has the `Ctrl+A` shortcut) and choose the 
 * a `data:image/...;base64,...` QR code image;
 * the path of a QR code image file, or pick one with the browse button.
 
+A Google Authenticator export can be given in any of the QR code forms above, as well as pasted as text.
+
 You can also capture a QR code directly from the screen: the dialog hides and you select the area of the screen that contains the code.
+
+The **Microsoft** and **Okta Verify** dialogs accept the secret key, a time-based `otpauth://totp/...` URI, an `https://` or `data:` QR code image, or the path of a QR code image file; they have no screen capture, browse button or Google export support.
 
 Click **Verify** to check the secret and see the first code. For counter-based authenticators you can enter the current counter value. The icon is detected automatically from the issuer when possible.
 
@@ -78,11 +82,13 @@ Right-click an authenticator to open its context menu:
 
 ### Configuration protection
 
-**File → Change Protection** selects how the whole configuration file is encrypted. The options can be combined:
+**File → Change Protection** selects how the whole configuration file is encrypted:
 
-* **Password**: the configuration is encrypted with your password (AES-256-GCM with a PBKDF2-HMAC-SHA256 key). The password is requested at startup.
-* **Windows account**: the configuration can be decrypted only by your Windows user account (DPAPI).
-* **This computer**: the configuration can be decrypted only on this computer (DPAPI).
+* **Protect with my own password**: the configuration is encrypted with your password (AES-256-GCM with a PBKDF2-HMAC-SHA256 key). The password is requested at startup.
+* **Encrypt to only be usable on this computer**: the configuration can be decrypted only on this computer (DPAPI).
+* **And only by the current user on this computer**: available when the previous option is selected; restricts decryption further to your Windows user account.
+
+The password can be combined with either Windows option; the data is then encrypted with both.
 
 Changing the protection requires the current password when one is set. If no protection is chosen, the configuration is stored unencrypted.
 
