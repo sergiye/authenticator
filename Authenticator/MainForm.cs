@@ -1046,7 +1046,7 @@ namespace Authenticator {
       AuthHelper.AddMenuItem(fileToolStripMenuItem.DropDownItems, "Exit", "exitOptionsMenuItem", exitOptionMenuItem_Click, Keys.Control | Keys.W);
 
       //Options section
-      optionsToolStripMenuItem.DropDownOpening += OpeningOptionsMenu;
+      fileToolStripMenuItem.DropDownOpening += OpeningFileMenu;
 
       //if (Config.IsPortable == false) {
       AuthHelper.AddMenuItem(optionsToolStripMenuItem.DropDownItems, "Run On User Login", "startWithWindowsOptionsMenuItem", (_, _) => startupManager.Startup = !startupManager.Startup, isChecked: startupManager.Startup, checkOnClick: true);
@@ -1147,12 +1147,12 @@ namespace Authenticator {
       AuthHelper.AddMenuItem(menuItems, "Exit", "exitOptionsMenuItem", exitOptionMenuItem_Click);
     }
 
-    private void OpeningOptionsMenu(object sender, EventArgs e) {
+    private void OpeningFileMenu(object sender, EventArgs e) {
 
       if (Config == null)
         return;
 
-      var menuItems = optionsToolStripMenuItem.DropDownItems;
+      var menuItems = fileToolStripMenuItem.DropDownItems;
       if (menuItems.Find("changePasswordOptionsMenuItem", false).FirstOrDefault() is ToolStripMenuItem changeProtection)
         changeProtection.Enabled = Config.Count != 0;
     }
