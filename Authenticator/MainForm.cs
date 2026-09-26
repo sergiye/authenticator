@@ -30,6 +30,7 @@ namespace Authenticator {
     private bool unsavedChanges;
     private bool mExplicitClose;
     private bool exitingForUpdate;
+    private bool updateAvailable;
     private readonly bool startMinimized;
     private readonly string startupConfigFile;
 
@@ -689,9 +690,10 @@ namespace Authenticator {
         var fixedHeight = Height - ClientRectangle.Height;
         if (!AuthConfig.HideMenu || mainMenu.Visible)
           fixedHeight += mainMenu.Height;
-        if (filterTextBox.Visible)
+        // Visible of child controls is false while the form itself is not shown (at startup or in the tray)
+        if (AuthConfig.ShowFilter)
           fixedHeight += filterTextBox.Height;
-        if (updateButton.Visible)
+        if (updateAvailable)
           fixedHeight += updateButton.Height;
 
         Height = fixedHeight + authenticatorList.ItemHeight * Math.Min(listItemsCount, (maxHeight - fixedHeight) / authenticatorList.ItemHeight);
@@ -989,6 +991,7 @@ namespace Authenticator {
 
     private void ShowUpdateButton() {
       updateButton.Visible = true;
+      updateAvailable = true;
       SetAutoSize();
     }
 
