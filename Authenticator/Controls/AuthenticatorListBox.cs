@@ -1255,7 +1255,8 @@ namespace Authenticator {
           }
           else {
             code = auth.CurrentCode;
-            if (code != item.LastCode && auth.CopyOnCode) {
+            // the first code shown for an item (at startup or when it reappears after filtering) is not a new code
+            if (item.LastCode != null && code != item.LastCode && auth.CopyOnCode) {
               // remember the code first, as copying may pump messages and repaint this item again
               item.LastCode = code;
               auth.CopyCodeToClipboard(Parent as Form, code);
