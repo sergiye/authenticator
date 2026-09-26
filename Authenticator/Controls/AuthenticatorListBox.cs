@@ -864,7 +864,8 @@ namespace Authenticator {
             }
 
             try {
-              auth.CopyCodeToClipboard(Parent as Form, item.LastCode, true);
+              // an auto-refreshing item's last code is only updated when painted, so it may have expired
+              auth.CopyCodeToClipboard(Parent as Form, auth.AutoRefresh ? null : item.LastCode, true);
             }
             finally {
               if (wasProtected == DialogResult.OK) {
