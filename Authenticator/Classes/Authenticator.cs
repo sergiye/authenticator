@@ -164,9 +164,7 @@ namespace Authenticator {
       Authenticator authenticator = null;
       var authenticatorType = reader.GetAttribute("type");
       if (string.IsNullOrEmpty(authenticatorType) == false) {
-        authenticatorType = authenticatorType.Replace("WindowsAuthenticator.", "Authenticator.");
-        var type = System.Reflection.Assembly.GetExecutingAssembly().GetType(authenticatorType, false, true);
-        authenticator = Activator.CreateInstance(type) as Authenticator;
+        authenticator = CreateInstance(authenticatorType.Replace("WindowsAuthenticator.", "Authenticator."));
       }
 
       if (authenticator == null) {
@@ -218,6 +216,14 @@ namespace Authenticator {
       }
 
       return authenticator;
+    }
+
+    public static Authenticator CreateInstance(string typeName) {
+      var type = System.Reflection.Assembly.GetExecutingAssembly().GetType(typeName, false, true);
+      if (type == null || type.IsAbstract || !typeof(Authenticator).IsAssignableFrom(type)) {
+        throw new InvalidDataException($"Unknown authenticator type '{typeName}'.");
+      }
+      return (Authenticator) Activator.CreateInstance(type);
     }
 
     public virtual bool ReadExtraXml(XmlReader reader, string name) {

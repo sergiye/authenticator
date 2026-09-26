@@ -239,8 +239,7 @@ namespace Authenticator {
 
       var authenticatorType = reader.GetAttribute("type");
       if (string.IsNullOrEmpty(authenticatorType) == false) {
-        var type = Assembly.GetExecutingAssembly().GetType(authenticatorType, false, true);
-        AuthenticatorData = Activator.CreateInstance(type) as Authenticator;
+        AuthenticatorData = Authenticator.CreateInstance(authenticatorType);
       }
 
       //string encrypted = reader.GetAttribute("encrypted");
@@ -291,6 +290,9 @@ namespace Authenticator {
               break;
 
             case "authenticatordata":
+              if (AuthenticatorData == null) {
+                throw new InvalidDataException($"Authenticator '{Name}' has no type.");
+              }
               try {
                 // we don't pass the password as they are locked till clicked
                 changed = AuthenticatorData.ReadXml(reader) || changed;
