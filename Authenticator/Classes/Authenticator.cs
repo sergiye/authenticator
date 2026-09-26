@@ -24,10 +24,8 @@ namespace Authenticator {
     private const int AES_PBKDF2_ITERATIONS = 200000;
     private static string encryptionHeader = ByteArrayToString("SergiyeAuthenticator"u8.ToArray());
     private static readonly string aesEncryptionHeader = ByteArrayToString("AESGCMv2"u8.ToArray());
-    private static readonly object aesKeyCacheLock = new object();
-    private static byte[] cachedPasswordHash;
-    private static byte[] cachedSalt;
-    private static byte[] cachedKey;
+    private const int AES_KEY_CACHE_SIZE = 4;
+    private static readonly System.Collections.Generic.List<AesKeyCacheEntry> aesKeyCache = new System.Collections.Generic.List<AesKeyCacheEntry>();
     public const int DEFAULT_CODE_DIGITS = 6;
     public const int DEFAULT_PERIOD = 30;
 
@@ -728,7 +726,21 @@ namespace Authenticator {
 
     public static string Encrypt(string plain, string password) {
       var passwordBytes = Encoding.UTF8.GetBytes(password);
-      var key = GetAesKey(passwordBytes, null, out var saltBytes);
+      var passwordHash = HashPassword(passwordBytes);
+      byte[] saltBytes, key;
+      var cached = FindAesKey(passwordHash, null);
+      if (cached != null) {
+        saltBytes = cached.Salt;
+        key = cached.Key;
+      }
+      else {
+        saltBytes = new byte[AES_SALT_LENGTH];
+        using (var rg = RandomNumberGenerator.Create()) {
+          rg.GetBytes(saltBytes);
+        }
+        key = DeriveAesKey(passwordBytes, saltBytes);
+        CacheAesKey(passwordHash, saltBytes, key);
+      }
 
       var nonce = new byte[AES_NONCE_LENGTH];
       using (var rg = RandomNumberGenerator.Create()) {
@@ -763,8 +775,9 @@ namespace Authenticator {
         throw new BadPasswordException(ex.Message, ex);
       }
 
-      var key = GetAesKey(Encoding.UTF8.GetBytes(password), saltBytes, out _);
-      var cipher = new GcmBlockCipher(new AesEngine());
+      var passwordBytes = Encoding.UTF8.GetBytes(password);
+      var passwordHash = HashPassword(passwordBytes);
+      var key = FindAesKey(passwordHash, saltBytes)?.Key ?? DeriveAesKey(passwordBytes, saltBytes);      var cipher = new GcmBlockCipher(new AesEngine());
       cipher.Init(false, new AeadParameters(new KeyParameter(key), AES_TAG_LENGTH * 8, nonce));
       var outBytes = new byte[cipher.GetOutputSize(inBytes.Length)];
       try {
@@ -778,44 +791,52 @@ namespace Authenticator {
         throw new BadPasswordException();
       }
 
+      // cache only keys of correct passwords, so failed attempts do not evict them
+      CacheAesKey(passwordHash, saltBytes, key);
       return ByteArrayToString(outBytes);
     }
 
-    // the slow PBKDF2 key of the last password is reused with its salt; GCM stays safe as every encryption gets a new nonce
-    private static byte[] GetAesKey(byte[] passwordBytes, byte[] saltBytes, out byte[] usedSalt) {
-      byte[] passwordHash;
+    // slow PBKDF2 keys are cached per password and salt; GCM stays safe as every encryption gets a new nonce
+    private sealed class AesKeyCacheEntry {
+      public byte[] PasswordHash;
+      public byte[] Salt;
+      public byte[] Key;
+    }
+
+    private static byte[] HashPassword(byte[] passwordBytes) {
       using (var sha = SHA256.Create()) {
-        passwordHash = sha.ComputeHash(passwordBytes);
+        return sha.ComputeHash(passwordBytes);
       }
+    }
 
-      lock (aesKeyCacheLock) {
-        if (cachedPasswordHash != null && passwordHash.SequenceEqual(cachedPasswordHash) &&
-            (saltBytes == null || saltBytes.SequenceEqual(cachedSalt))) {
-          usedSalt = cachedSalt;
-          return cachedKey;
+    private static AesKeyCacheEntry FindAesKey(byte[] passwordHash, byte[] saltBytes) {
+      lock (aesKeyCache) {
+        for (var i = aesKeyCache.Count - 1; i >= 0; i--) {
+          var entry = aesKeyCache[i];
+          if (entry.PasswordHash.SequenceEqual(passwordHash) && (saltBytes == null || entry.Salt.SequenceEqual(saltBytes))) {
+            return entry;
+          }
         }
       }
+      return null;
+    }
 
-      if (saltBytes == null) {
-        saltBytes = new byte[AES_SALT_LENGTH];
-        using (var rg = RandomNumberGenerator.Create()) {
-          rg.GetBytes(saltBytes);
+    private static void CacheAesKey(byte[] passwordHash, byte[] saltBytes, byte[] key) {
+      lock (aesKeyCache) {
+        if (FindAesKey(passwordHash, saltBytes) != null) {
+          return;
+        }
+        aesKeyCache.Add(new AesKeyCacheEntry { PasswordHash = passwordHash, Salt = saltBytes, Key = key });
+        if (aesKeyCache.Count > AES_KEY_CACHE_SIZE) {
+          aesKeyCache.RemoveAt(0);
         }
       }
+    }
 
-      byte[] key;
+    private static byte[] DeriveAesKey(byte[] passwordBytes, byte[] saltBytes) {
       using (var kg = new Rfc2898DeriveBytes(passwordBytes, saltBytes, AES_PBKDF2_ITERATIONS, HashAlgorithmName.SHA256)) {
-        key = kg.GetBytes(AES_KEY_LENGTH);
+        return kg.GetBytes(AES_KEY_LENGTH);
       }
-
-      lock (aesKeyCacheLock) {
-        cachedPasswordHash = passwordHash;
-        cachedSalt = saltBytes;
-        cachedKey = key;
-      }
-
-      usedSalt = saltBytes;
-      return key;
     }
 
     private static string DecryptLegacy(string data, string password, bool pbkdf2) {
