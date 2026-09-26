@@ -8,6 +8,8 @@ namespace TwoFactorAuth {
 
   public class TwoFactorAuthenticator {
     
+    public const int MinSecretKeyLength = 10;
+
     private int userId;
     private string secretKey;
 
@@ -45,7 +47,18 @@ namespace TwoFactorAuth {
       set {
         if (value == null)
           throw new ArgumentNullException(nameof(value));
-        secretKey = QrGenerator.NormalizeSecretKey(value);
+        var key = QrGenerator.NormalizeSecretKey(value);
+        byte[] keyBytes;
+        try {
+          keyBytes = Base32Encoder.FromBase32(key);
+        }
+        catch (ArgumentException ex) {
+          throw new ArgumentException("The secret key is not a valid Base32 string.", nameof(value), ex);
+        }
+        // a short key (or one made of padding only) gives PINs that are easy to guess
+        if (keyBytes.Length < MinSecretKeyLength)
+          throw new ArgumentException($"The secret key must be at least {MinSecretKeyLength} bytes ({MinSecretKeyLength * 8 / 5} Base32 characters) long.", nameof(value));
+        secretKey = key;
       }
     }
 
