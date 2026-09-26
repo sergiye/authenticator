@@ -416,7 +416,7 @@ namespace Authenticator {
             if (uri.Host == "hotp") {
               auth = new HotpAuthenticator();
               ((HotpAuthenticator) auth).SecretKey = Base32.GetInstance().Decode(secret);
-              ((HotpAuthenticator) auth).Counter = int.Parse(counter);
+              ((HotpAuthenticator) auth).Counter = long.Parse(counter);
 
               if (!string.IsNullOrEmpty(issuer)) {
                 auth.Issuer = issuer;
