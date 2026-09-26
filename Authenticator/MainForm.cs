@@ -428,7 +428,8 @@ namespace Authenticator {
     }
 
     private void LoadAuthenticatorList(AuthAuthenticator added = null) {
-      // set up list
+      // set up list, keeping the display and unprotect state of existing items
+      var previousItems = authenticatorList.Items.Cast<AuthenticatorListBox.ListItem>().ToList();
       authenticatorList.Items.Clear();
 
       var index = 0;
@@ -440,7 +441,14 @@ namespace Authenticator {
           if (!match) continue;
         }
 
-        var ali = new AuthenticatorListBox.ListItem(auth, index);
+        var ali = previousItems.FirstOrDefault(i => i.Authenticator == auth);
+        if (ali != null) {
+          previousItems.Remove(ali);
+          ali.Index = index;
+        }
+        else {
+          ali = new AuthenticatorListBox.ListItem(auth, index);
+        }
         if (added != null && added == auth && auth.AutoRefresh == false &&
             auth.AuthenticatorData is not HotpAuthenticator) {
           ali.LastUpdate = DateTime.Now;
@@ -449,6 +457,12 @@ namespace Authenticator {
 
         authenticatorList.Items.Add(ali);
         index++;
+      }
+
+      // items no longer listed are not re-protected by the list timer, so protect them now
+      foreach (var removed in previousItems.Where(i => i.UnprotectCount > 0)) {
+        removed.Authenticator.AuthenticatorData?.Protect();
+        removed.UnprotectCount = 0;
       }
 
       authenticatorList.Visible = authenticatorList.Items.Count != 0;
