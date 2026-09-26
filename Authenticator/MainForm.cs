@@ -22,6 +22,8 @@ namespace Authenticator {
     private readonly Timer passwordTimer;
     private readonly StartupManager startupManager = new StartupManager();
 
+    private Font listFont;
+    private Font filterFont;
     private DateTime? saveConfigTime;
     private bool mExplicitClose;
     private readonly bool startMinimized;
@@ -611,21 +613,29 @@ namespace Authenticator {
         _ => throw new ArgumentOutOfRangeException()
       };
       MinimumSize = new Size(minWidth, mainMenu.Height + Height - ClientRectangle.Height + authenticatorList.ItemHeight);
+      float listFontSize;
       switch (AuthConfig.ItemSize) {
         case 1:
           authenticatorList.ItemHeight = 90;
-          authenticatorList.Font = new Font("Arial", 18.25F, FontStyle.Bold);
+          listFontSize = 18.25F;
           break;
         case 2:
           authenticatorList.ItemHeight = 120;
-          authenticatorList.Font = new Font("Arial", 23.25F, FontStyle.Bold);
+          listFontSize = 23.25F;
           break;
         default:
           authenticatorList.ItemHeight = 60;
-          authenticatorList.Font = new Font("Arial", 14.25F, FontStyle.Bold);
+          listFontSize = 14.25F;
           break;
       }
-      filterTextBox.Font = new Font("Microsoft Sans Serif", authenticatorList.Font.Size * 2 / 3, FontStyle.Regular, GraphicsUnit.Point, 0);
+      if (listFont == null || listFont.Size != listFontSize) {
+        var oldFont = listFont;
+        authenticatorList.Font = listFont = new Font("Arial", listFontSize, FontStyle.Bold);
+        oldFont?.Dispose();
+        oldFont = filterFont;
+        filterTextBox.Font = filterFont = new Font("Microsoft Sans Serif", listFontSize * 2 / 3, FontStyle.Regular, GraphicsUnit.Point, 0);
+        oldFont?.Dispose();
+      }
 
       if (AuthConfig.AutoSize) {
         if (listItemsCount > 0) {

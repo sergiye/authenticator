@@ -324,10 +324,11 @@ namespace Authenticator {
 
           if (draggedBitmapRect != Rectangle.Empty) {
             // invalidate the extent between the old rect and this one
-            var region = new Region(rect);
-            region.Union(draggedBitmapRect);
-            region.Exclude(rect);
-            Invalidate(region);
+            using (var region = new Region(rect)) {
+              region.Union(draggedBitmapRect);
+              region.Exclude(rect);
+              Invalidate(region);
+            }
           }
 
           draggedBitmapRect = rect;
