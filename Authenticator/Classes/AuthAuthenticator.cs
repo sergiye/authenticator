@@ -272,17 +272,14 @@ namespace Authenticator {
       clipboardClearTimer?.Stop();
       if (clipboardCode == null)
         return;
-      // clipboard monitors often open the clipboard for a moment, so retry while it is locked
-      for (var attempt = 0; attempt < 10; attempt++) {
-        try {
-          if (Clipboard.ContainsText() && Clipboard.GetText() == clipboardCode)
-            Clipboard.Clear();
-          clipboardCode = null;
-          return;
-        }
-        catch (ExternalException) {
-          System.Threading.Thread.Sleep(100);
-        }
+      // a single attempt: the Clipboard methods already retry for about a second while another process holds it
+      try {
+        if (Clipboard.ContainsText() && Clipboard.GetText() == clipboardCode)
+          Clipboard.Clear();
+        clipboardCode = null;
+        return;
+      }
+      catch (ExternalException) {
       }
       // still locked: keep the code and try again shortly
       if (clipboardClearTimer != null) {
