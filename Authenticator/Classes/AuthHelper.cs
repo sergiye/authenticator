@@ -534,6 +534,9 @@ namespace Authenticator {
 
               var entry = new ZipEntry(ZipEntry.CleanName(Path.GetFileNameWithoutExtension(file) + ".txt"));
               entry.DateTime = DateTime.Now;
+              if (!string.IsNullOrEmpty(password)) {
+                entry.AESKeySize = 256;
+              }
               zip.UseZip64 = UseZip64.Off;
 
               zip.PutNextEntry(entry);
