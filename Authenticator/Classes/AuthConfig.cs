@@ -30,9 +30,14 @@ namespace Authenticator {
     public string Password {
       protected get => password;
       set {
+        var previous = password;
         password = value;
         if (!IsImport) {
           Authenticator.RetainAesKeys(value);
+          // entries locked while this was the config password kept their keys cached, which are not needed any more
+          if (!string.IsNullOrEmpty(previous) && previous != value) {
+            Authenticator.ForgetAesKeys(previous);
+          }
         }
       }
     }

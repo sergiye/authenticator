@@ -861,7 +861,7 @@ namespace Authenticator {
       retainedPasswordHash = string.IsNullOrEmpty(password) ? null : HashPassword(Encoding.UTF8.GetBytes(password));
     }
 
-    private static void ForgetAesKeys(string password) {
+    public static void ForgetAesKeys(string password) {
       var passwordHash = HashPassword(Encoding.UTF8.GetBytes(password));
       if (retainedPasswordHash != null && passwordHash.SequenceEqual(retainedPasswordHash)) {
         return;
