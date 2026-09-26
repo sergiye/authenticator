@@ -210,7 +210,7 @@ namespace Authenticator {
           failed = true;
         }
         else {
-          // Issue#170: can still get error copying even though it works, so just increase retries and ignore error
+          // Issue#170: can still get error copying even though it works, so an error only counts when the code is not on the clipboard
           try {
             Clipboard.Clear();
 
@@ -228,6 +228,7 @@ namespace Authenticator {
             Clipboard.SetDataObject(data, true, 4, 250);
           }
           catch (ExternalException) {
+            failed = !ClipboardContains(code);
           }
         }
 
@@ -241,6 +242,15 @@ namespace Authenticator {
             MessageBoxDefaultButton.Button2) == DialogResult.Yes);
         }
       } while (clipRetry);
+    }
+
+    private static bool ClipboardContains(string code) {
+      try {
+        return Clipboard.ContainsText() && Clipboard.GetText() == code;
+      }
+      catch (ExternalException) {
+        return false;
+      }
     }
 
     private const int ClipboardClearDelay = 30000;
