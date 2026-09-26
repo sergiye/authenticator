@@ -834,6 +834,7 @@ namespace Authenticator {
         using (var inputStream = new MemoryStream(cipher)) {
           using (var ais = new ArmoredInputStream(inputStream)) {
             var message = new PgpObjectFactory(ais).NextPgpObject();
+            PgpPublicKeyEncryptedData encryptedData = null;
             if (message is PgpEncryptedDataList encryptedDataList) {
               PgpObject decrypted = null;
               foreach (PgpPublicKeyEncryptedData pked in encryptedDataList.GetEncryptedDataObjects()) {
@@ -843,6 +844,7 @@ namespace Authenticator {
                 }
                 var privateKey = secretKey.ExtractPrivateKey(keyPassword?.ToCharArray());
                 decrypted = new PgpObjectFactory(pked.GetDataStream(privateKey)).NextPgpObject();
+                encryptedData = pked;
                 break;
               }
               message = decrypted ?? throw new PgpException("The data is not encrypted for the provided private key.");
@@ -860,6 +862,10 @@ namespace Authenticator {
                   decryptedStream.Write(buffer, 0, read);
                 }
               }
+            }
+
+            if (encryptedData != null && (!encryptedData.IsIntegrityProtected() || !encryptedData.Verify())) {
+              throw new PgpException("The PGP message failed the integrity check.");
             }
 
             return Encoding.UTF8.GetString(decryptedStream.ToArray());
