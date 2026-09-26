@@ -127,7 +127,7 @@ namespace Authenticator {
     #endregion
 
     public static AuthConfig LoadConfig(string configFile, string password = null, bool import = false) {
-      var config = new AuthConfig();
+      var config = new AuthConfig { IsImport = import };
       if (!string.IsNullOrEmpty(password)) {
         config.Password = password;
       }

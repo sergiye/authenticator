@@ -31,11 +31,21 @@ namespace Authenticator {
       protected get => password;
       set {
         password = value;
-        Authenticator.RetainAesKeys(value);
+        if (!IsImport) {
+          Authenticator.RetainAesKeys(value);
+        }
       }
     }
 
     public bool Upgraded { get; set; }
+
+    // an imported config only provides authenticators; its application settings must not replace the current ones
+    public bool IsImport { get; set; }
+
+    private static readonly HashSet<string> settingElements = new HashSet<string> {
+      "alwaysontop", "hidemenu", "autoUpdate", "usetrayicon", "startMinimized", "notifyaction", "autosize",
+      "showfilter", "itemSize", "left", "top", "width", "height", "theme"
+    };
 
     private Authenticator.PasswordTypes passwordType = Authenticator.PasswordTypes.None;
 
@@ -398,6 +408,10 @@ namespace Authenticator {
       reader.Read();
       while (reader.EOF == false) {
         if (reader.IsStartElement()) {
+          if (IsImport && settingElements.Contains(reader.Name)) {
+            reader.Skip();
+            continue;
+          }
           switch (reader.Name) {
             case "config":
               changed = ReadXmlInternal(reader, password) || changed;
