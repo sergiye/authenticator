@@ -111,7 +111,14 @@ using (var rng = System.Security.Cryptography.RandomNumberGenerator.Create()) {
 //generate and validate PIN
 var currentPin = tfa.GetCurrentPin();
 var isValid = tfa.ValidateTwoFactorPin(currentPin);
+
+//allow a larger clock difference between the client and the server (2 minutes = 4 steps each way)
+var isValidWithDrift = tfa.ValidateTwoFactorPin(currentPin, TimeSpan.FromMinutes(2));
 ```
+
+**Clock drift tolerance.** Since version 1.0.9765, `ValidateTwoFactorPin(pin)` uses a default tolerance of 30 seconds, which accepts the current code and one code before and after it (RFC 6238 recommends at most one step). Earlier versions defaulted to 2 minutes and accepted up to 4 steps each way. A tolerance passed explicitly is now rounded up to whole 30-second steps, so `TimeSpan.FromSeconds(30)` accepts one step each way instead of none. Pass `TimeSpan.FromMinutes(2)` to keep the previous behavior.
+
+**Secret key format.** `ManualSecretKey` returns the key in lowercase groups of four characters without a leading space, and its setter accepts spaces and dashes but rejects invalid Base32 and keys shorter than 16 characters (10 bytes).
 
 ----
 

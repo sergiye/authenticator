@@ -204,4 +204,4 @@ Only one instance of Authenticator can run at a time.
 
 ## Developer libraries
 
-The `TwoFactorAuth.Core` and `TwoFactorAuth` NuGet packages let you add two-factor authentication to your own applications: generate secret keys and provisioning URIs, generate and validate PIN codes (with a configurable clock drift tolerance, 30 seconds by default), and create QR code images without internet access. See the [README](README.md#developer-information) for sample code.
+The `TwoFactorAuth.Core` and `TwoFactorAuth` NuGet packages let you add two-factor authentication to your own applications: generate secret keys and provisioning URIs, generate and validate PIN codes (with a configurable clock drift tolerance, 30 seconds by default, that is one 30-second step before and after the current code; versions before 1.0.9765 defaulted to 2 minutes), and create QR code images without internet access. See the [README](README.md#developer-information) for sample code.
