@@ -573,7 +573,8 @@ namespace Authenticator {
           BringToFront();
         }
 
-        var item = authenticatorList.Items.Cast<AuthenticatorListBox.ListItem>().FirstOrDefault(i => i.Authenticator == auth);
+        var item = authenticatorList.Items.Cast<AuthenticatorListBox.ListItem>().FirstOrDefault(i => i.Authenticator == auth)
+                   ?? new AuthenticatorListBox.ListItem(auth, -1);
         code = authenticatorList.GetItemCode(item, screen);
 
         // restore active window
@@ -1027,7 +1028,9 @@ namespace Authenticator {
     }
 
     private void LoadNotifyMenu(ToolStripItemCollection menuItems) {
+      var oldItems = menuItems.Cast<ToolStripItem>().ToList();
       menuItems.Clear();
+      oldItems.ForEach(i => i.Dispose());
 
       AuthHelper.AddMenuItem(menuItems,"Show/Hide", "openOptionsMenuItem", ShowHideMenuItem_Click);
 
@@ -1064,6 +1067,9 @@ namespace Authenticator {
       if (Config == null) {
         return;
       }
+
+      // authenticators may have been added, renamed or removed since the menu was built
+      LoadNotifyMenu(menu.Items);
 
       if (menu.Items.Cast<ToolStripItem>().FirstOrDefault(t => t.Name == "changePasswordOptionsMenuItem") is ToolStripMenuItem menuItem) {
         menuItem.Enabled = Config.Count != 0;
@@ -1152,8 +1158,7 @@ namespace Authenticator {
 
     private void authenticatorOptionsMenuItem_Click(object sender, EventArgs e) {
       if (sender is not ToolStripMenuItem menuItem || menuItem.Tag is not AuthAuthenticator auth) return;
-      var item = authenticatorList.Items.Cast<AuthenticatorListBox.ListItem>().FirstOrDefault(i => i.Authenticator == auth);
-      if (item != null) {
+      if (Config.Contains(auth)) {
         RunAction(auth, AuthConfig.NotifyAction);
       }
     }
