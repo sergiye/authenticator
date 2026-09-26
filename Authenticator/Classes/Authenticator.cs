@@ -480,13 +480,7 @@ namespace Authenticator {
         }
       }
 
-      // check if we need to sync, or if it's been a day
-      if (this is HotpAuthenticator) {
-        // no time sync
-        return true;
-      }
-
-      return true;
+      return false;
     }
 
     public void WriteToWriter(XmlWriter writer) {
