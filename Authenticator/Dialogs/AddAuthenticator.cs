@@ -180,11 +180,17 @@ namespace Authenticator {
       string issuer = null;
       string serial;
 
+      privateKey = AuthHelper.ReadQrCode(Owner, privateKey);
+      if (privateKey == null) {
+        return false;
+      }
+
       //google migration support
       if (privateKey.StartsWith(GoogleMigration)) {
         Payload item;
         try {
-          var szData = HttpUtility.UrlDecode(privateKey.Substring(GoogleMigration.Length));
+          // the QR text may already be URL-decoded, and a second HttpUtility.UrlDecode would turn base64 '+' into spaces
+          var szData = Uri.UnescapeDataString(privateKey.Substring(GoogleMigration.Length)).Replace(' ', '+');
           var arrByte = Convert.FromBase64String(szData);
           item = Payload.Parser.ParseFrom(arrByte);
         }
@@ -222,11 +228,6 @@ namespace Authenticator {
           secretCodeField.Text = privateKey = $"otpauth://{authType}/{label}?secret={serial}";
           break; //todo: process only the first one
         }
-      }
-
-      privateKey = AuthHelper.ReadQrCode(Owner, privateKey);
-      if (privateKey == null) {
-        return false;
       }
 
       Match match;
