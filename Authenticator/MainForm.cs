@@ -444,8 +444,8 @@ namespace Authenticator {
         CenterToScreen();
       }
 
-      // if we passed "-min" flag
-      if (startMinimized || AuthConfig.StartMinimized) {
+      // start minimized only at startup, not after the password was just entered on the shown window
+      if ((startMinimized || AuthConfig.StartMinimized) && !Created) {
         WindowState = FormWindowState.Minimized;
         ShowInTaskbar = true;
       }
