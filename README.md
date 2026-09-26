@@ -90,18 +90,17 @@ var applicationName = "Your Application Name";
 var tfa = new TwoFactorAuthenticator(accountId);
 var secretKey = tfa.ManualSecretKey;
 
-//generate QR code image by google api
-var qrCodeImageLink = QrGenerator.GetQrCodeLink(applicationName, $"{applicationName} - {accountName}", secretKey);
-var qrCodeImageBytes = QrGenerator.GenerateQrCodeByGoogle(applicationName, $"{applicationName} - {accountName}", secretKey);
+//otpauth:// URI to show as text or encode into a QR code
+var provisionUrl = QrGenerator.GetProvisionUrl(applicationName, $"{applicationName} - {accountName}", secretKey);
 
 //base64 image string to use on web page (<img src="data:image/png;base64, ...) - no internet required
 var qrCodeImageString = QrGeneratorEx.GenerateQrCode(applicationName, $"{applicationName} - {accountName}", secretKey);
 
-//generate recovery codes
+//generate recovery codes (up to 9 digits)
 const int codesCount = 10;
 var recoveryCodes = new string[codesCount];
 for (var i = 0; i < codesCount; i++)
-  recoveryCodes[i] = tfa.GenerateHashedCode(Environment.TickCount + i, 10);
+  recoveryCodes[i] = tfa.GenerateHashedCode(Environment.TickCount + i, 8);
 
 //generate and validate PIN
 var currentPin = tfa.GetCurrentPin();
