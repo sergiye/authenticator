@@ -192,8 +192,9 @@ namespace Authenticator {
 
     public void CopyCodeToClipboard(Form form, string code = null, bool showError = false) {
       code ??= CurrentCode;
-      var clipRetry = false;
+      bool clipRetry;
       do {
+        clipRetry = false;
         var failed = false;
         string lockedBy = null;
         // check if the clipboard is locked
