@@ -774,7 +774,16 @@ namespace Authenticator {
 
     private void ProcessMenu(ToolStripItem menuItem) {
       var item = CurrentItem;
+      if (item?.Authenticator?.AuthenticatorData == null) {
+        return;
+      }
       var auth = item.Authenticator;
+
+      // shortcut keys run items without the menu being opened, so their state must be updated and respected here
+      SetContextMenuItems();
+      if (!menuItem.Available || !menuItem.Enabled) {
+        return;
+      }
 
       // check and perform each menu
       switch (menuItem.Name) {
