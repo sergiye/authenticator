@@ -547,35 +547,6 @@ namespace Authenticator {
 
     #region Utility functions
 
-    protected internal static byte[] CreateOneTimePad(int length) {
-      // There is a MITM vulnerability from using the standard Random call
-      // see https://docs.google.com/document/edit?id=1pf-YCgUnxR4duE8tr-xulE3rJ1Hw-Bm5aMk5tNOGU3E&hl=en
-      // in http://code.google.com/p/winauth/issues/detail?id=2
-      // so we switch out to use RNGCryptoServiceProvider instead of Random
-
-      var random = new RNGCryptoServiceProvider();
-
-      var randomblock = new byte[length];
-
-      var sha1 = SHA1.Create();
-      var i = 0;
-      do {
-        var hashBlock = new byte[128];
-        random.GetBytes(hashBlock);
-
-        var key = sha1.ComputeHash(hashBlock, 0, hashBlock.Length);
-        if (key.Length >= randomblock.Length) {
-          Array.Copy(key, 0, randomblock, i, randomblock.Length);
-          break;
-        }
-
-        Array.Copy(key, 0, randomblock, i, key.Length);
-        i += key.Length;
-      } while (true);
-
-      return randomblock;
-    }
-
     public static long CurrentTime => Convert.ToInt64((DateTime.UtcNow - new DateTime(1970, 1, 1)).TotalMilliseconds);
 
     public static byte[] StringToByteArray(string hex) {
