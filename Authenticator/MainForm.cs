@@ -200,6 +200,7 @@ namespace Authenticator {
 
         ErrorDialog(this, "An unknown error occurred: " + ex.Message, ex);
         // closing the form before it is shown disposes it, and Application.Run then fails on the disposed form
+        mExplicitClose = true;
         if (Created)
           Close();
         else
