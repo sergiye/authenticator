@@ -224,8 +224,9 @@ namespace Authenticator {
             data.SetData("ExcludeClipboardContentFromMonitorProcessing", new MemoryStream(new byte[4]));
             data.SetData("CanIncludeInClipboardHistory", new MemoryStream(new byte[4]));
             data.SetData("CanUploadToCloudClipboard", new MemoryStream(new byte[4]));
-            Clipboard.SetDataObject(data, true, 4, 250);
+            // scheduled first, as SetDataObject can throw although the code was copied
             ScheduleClipboardClear(code);
+            Clipboard.SetDataObject(data, true, 4, 250);
           }
           catch (ExternalException) {
           }
@@ -259,12 +260,16 @@ namespace Authenticator {
       clipboardClearTimer?.Stop();
       if (clipboardCode == null)
         return;
-      try {
-        if (Clipboard.ContainsText() && Clipboard.GetText() == clipboardCode)
-          Clipboard.Clear();
-      }
-      catch (ExternalException) {
-        // clipboard is locked by another process, leave it as is
+      // clipboard monitors often open the clipboard for a moment, so retry while it is locked
+      for (var attempt = 0; attempt < 10; attempt++) {
+        try {
+          if (Clipboard.ContainsText() && Clipboard.GetText() == clipboardCode)
+            Clipboard.Clear();
+          break;
+        }
+        catch (ExternalException) {
+          System.Threading.Thread.Sleep(100);
+        }
       }
       clipboardCode = null;
     }
