@@ -28,7 +28,7 @@ namespace Authenticator {
           Counter = (parts.Length > 1 ? long.Parse(parts[1]) : 0);
         }
         else {
-          Counter = 0;
+          base.SecretData = null;
         }
       }
     }
