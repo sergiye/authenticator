@@ -8,12 +8,14 @@ namespace TwoFactorAuth {
   
   public static class QrGenerator {
 
+    [Obsolete("The secret key is sent to a third-party service, and the Google Chart QR API is deprecated. Use QrGeneratorEx.GenerateQrCode instead.")]
     public static string GetQrCodeLink(string issuer, string accountTitle, string encodedSecretKey, int width = 300, int height = 300) {
       var provisionUrl = GetProvisionUrl(issuer, accountTitle, encodedSecretKey);
-      var chartUrl = $"https://chart.apis.google.com/chart?cht=qr&chs={width}x{height}&chl={provisionUrl}";
+      var chartUrl = $"https://chart.apis.google.com/chart?cht=qr&chs={width}x{height}&chl={Uri.EscapeDataString(provisionUrl)}";
       return chartUrl;
     }
 
+    [Obsolete("The secret key is sent to a third-party service, and the Google Chart QR API is deprecated. Use QrGeneratorEx.GenerateQrCode instead.")]
     public static async Task<byte[]> GenerateQrCodeByGoogle(string issuer, string accountTitle, string encodedSecretKey, int width = 300, int height = 300) {
       var chartUrl = GetQrCodeLink(issuer, accountTitle, encodedSecretKey, width, height);
 
