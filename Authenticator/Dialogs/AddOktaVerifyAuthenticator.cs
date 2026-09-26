@@ -70,7 +70,8 @@ namespace Authenticator {
       }
 
       var first = !newAuthenticatorProgress.Visible;
-      if (VerifyAuthenticator(privatekey) == false) {
+      // keep a name the user may have typed after verifying
+      if (VerifyAuthenticator(privatekey, false) == false) {
         DialogResult = DialogResult.None;
         return;
       }
@@ -93,7 +94,7 @@ namespace Authenticator {
 
     #region Private methods
 
-    private bool VerifyAuthenticator(string privatekey) {
+    private bool VerifyAuthenticator(string privatekey, bool updateNameField = true) {
       if (string.IsNullOrEmpty(privatekey)) {
         return false;
       }
@@ -124,7 +125,7 @@ namespace Authenticator {
         if (p != -1) {
           label = label.Substring(p + 1);
         }
-        if (string.IsNullOrEmpty(label) == false) {
+        if (string.IsNullOrEmpty(label) == false && updateNameField) {
           Authenticator.Name = nameField.Text = label;
         }
 
