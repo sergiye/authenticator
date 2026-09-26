@@ -25,6 +25,9 @@ namespace Authenticator {
     private Font listFont;
     private Font filterFont;
     private DateTime? saveConfigTime;
+    private const int MaxSaveRetries = 3;
+    private int saveRetries;
+    private bool unsavedChanges;
     private bool mExplicitClose;
     private readonly bool startMinimized;
     private readonly string startupConfigFile;
@@ -493,12 +496,20 @@ namespace Authenticator {
             AuthHelper.SaveConfig(Config);
           }
           saveConfigTime = null;
+          saveRetries = 0;
+          unsavedChanges = false;
         }
-        catch (IOException) {
+        catch (IOException) when (!immediate && saveRetries < MaxSaveRetries) {
           // the file may be locked for a moment (antivirus, sync clients), so keep the save pending and retry
+          saveRetries++;
           saveConfigTime = DateTime.Now.AddSeconds(5);
-          if (immediate)
-            throw;
+        }
+        catch {
+          // stop the timer from retrying, the changes are written with the next save or on close
+          saveConfigTime = null;
+          saveRetries = 0;
+          unsavedChanges = true;
+          throw;
         }
       }
       else {
@@ -716,7 +727,7 @@ namespace Authenticator {
       }
 
       // perform save if we have one pending
-      if (saveConfigTime != null) {
+      if (saveConfigTime != null || unsavedChanges) {
         SaveConfig(true);
       }
     }
