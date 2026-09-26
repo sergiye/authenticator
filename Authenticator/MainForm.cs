@@ -1191,8 +1191,13 @@ namespace Authenticator {
 
       using (var exportForm = new ExportForm()) {
         if (exportForm.ShowDialog(this) == DialogResult.OK) {
-          AuthHelper.ExportAuthenticators(this, Config, exportForm.ExportFile, exportForm.Password,
-            exportForm.PgpKey);
+          try {
+            AuthHelper.ExportAuthenticators(this, Config, exportForm.ExportFile, exportForm.Password,
+              exportForm.PgpKey);
+          }
+          catch (Exception ex) when (ex is IOException || ex is UnauthorizedAccessException) {
+            ErrorDialog(this, "Unable to export authenticators to " + exportForm.ExportFile, ex);
+          }
         }
       }
     }

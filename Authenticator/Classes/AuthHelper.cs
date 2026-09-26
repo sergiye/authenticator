@@ -496,28 +496,40 @@ namespace Authenticator {
       using (var ms = new MemoryStream()) {
         using (var sw = new StreamWriter(ms)) {
           var unprotected = new List<AuthAuthenticator>();
-          foreach (var auth in authenticators) {
-            // unprotect if necessary
-            if (auth.AuthenticatorData.RequiresPassword) {
-              // request the password
-              var getPassForm = new UnprotectPasswordForm();
-              getPassForm.Authenticator = auth;
-              var result = getPassForm.ShowDialog(form);
-              if (result == DialogResult.OK) {
-                unprotected.Add(auth);
+          var skipped = new List<string>();
+          try {
+            foreach (var auth in authenticators) {
+              // unprotect if necessary
+              if (auth.AuthenticatorData.RequiresPassword) {
+                // request the password
+                var getPassForm = new UnprotectPasswordForm();
+                getPassForm.Authenticator = auth;
+                var result = getPassForm.ShowDialog(form);
+                if (result == DialogResult.OK) {
+                  unprotected.Add(auth);
+                }
+                else {
+                  skipped.Add(auth.Name);
+                  continue;
+                }
               }
-              else {
-                continue;
-              }
-            }
 
-            var line = auth.ToUrl();
-            sw.WriteLine(line);
+              var line = auth.ToUrl();
+              sw.WriteLine(line);
+            }
+          }
+          finally {
+            // reprotect
+            foreach (var auth in unprotected) {
+              auth.AuthenticatorData.Protect();
+            }
           }
 
-          // reprotect
-          foreach (var auth in unprotected) {
-            auth.AuthenticatorData.Protect();
+          if (skipped.Count != 0 && MainForm.ConfirmDialog(form,
+                "The following authenticators were not unlocked and will be missing from the export:\n\n" +
+                string.Join("\n", skipped) + "\n\nDo you want to continue?",
+                MessageBoxButtons.YesNo, MessageBoxIcon.Warning, MessageBoxDefaultButton.Button2) != DialogResult.Yes) {
+            return;
           }
 
           // reset and write stream out to disk or as zip
