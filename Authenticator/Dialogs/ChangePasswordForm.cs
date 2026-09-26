@@ -89,7 +89,8 @@ namespace Authenticator {
 
       if (passwordCheckbox.Checked) {
         PasswordType |= Authenticator.PasswordTypes.Explicit;
-        if (passwordField.Text != EXISTING_PASSWORD) {
+        // the placeholder stands for the current password only when there is one
+        if (!HasPassword || passwordField.Text != EXISTING_PASSWORD) {
           Password = passwordField.Text;
         }
       }
