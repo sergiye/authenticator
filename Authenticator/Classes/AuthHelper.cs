@@ -174,8 +174,9 @@ namespace Authenticator {
 
       bool changed;
       using (var fs = new FileStream(configFile, FileMode.Open, FileAccess.Read)) {
-        var reader = XmlReader.Create(fs);
-        changed = config.ReadXml(reader, password);
+        using (var reader = XmlReader.Create(fs)) {
+          changed = config.ReadXml(reader, password);
+        }
       }
 
       config.Filename = configFile;
@@ -278,7 +279,7 @@ namespace Authenticator {
                 }
 
                 // read file out
-                var zs = zip.GetInputStream(entry);
+                using (var zs = zip.GetInputStream(entry))
                 using (var ms = new MemoryStream()) {
                   StreamUtils.Copy(zs, ms, buffer);
 

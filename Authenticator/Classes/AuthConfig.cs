@@ -367,8 +367,9 @@ namespace Authenticator {
         data = Authenticator.DecryptSequence(data, PasswordType, password);
 
         using (var ms = new MemoryStream(Authenticator.StringToByteArray(data))) {
-          reader = XmlReader.Create(ms);
-          changed = ReadXml(reader, password);
+          using (var datareader = XmlReader.Create(ms)) {
+            changed = ReadXml(datareader, password);
+          }
         }
 
         PasswordType = Authenticator.DecodePasswordTypes(encrypted);
@@ -424,8 +425,9 @@ namespace Authenticator {
                 var plain = Authenticator.StringToByteArray(data);
 
                 using (var ms = new MemoryStream(plain)) {
-                  var datareader = XmlReader.Create(ms);
-                  changed = ReadXmlInternal(datareader, password) || changed;
+                  using (var datareader = XmlReader.Create(ms)) {
+                    changed = ReadXmlInternal(datareader, password) || changed;
+                  }
                 }
 
                 PasswordType = Authenticator.DecodePasswordTypes(encrypted);

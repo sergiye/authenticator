@@ -409,8 +409,9 @@ namespace Authenticator {
       try {
         var data = DecryptSequence(EncryptedData, PasswordType, password);
         using (var ms = new MemoryStream(StringToByteArray(data))) {
-          var reader = XmlReader.Create(ms);
-          changed = ReadXml(reader, password) || changed;
+          using (var reader = XmlReader.Create(ms)) {
+            changed = ReadXml(reader, password) || changed;
+          }
         }
 
         RequiresPassword = false;
@@ -670,9 +671,10 @@ namespace Authenticator {
 
     public static string EncryptSequence(string data, PasswordTypes passwordType, string password) {
       // get hash of original
-      var random = new RNGCryptoServiceProvider();
       var saltbytes = new byte[SALT_LENGTH];
-      random.GetBytes(saltbytes);
+      using (var random = RandomNumberGenerator.Create()) {
+        random.GetBytes(saltbytes);
+      }
       var salt = ByteArrayToString(saltbytes);
 
       string hash;
@@ -716,14 +718,17 @@ namespace Authenticator {
       var passwordBytes = Encoding.UTF8.GetBytes(password);
 
       // build a new salt
-      var rg = new RNGCryptoServiceProvider();
       var saltbytes = new byte[SALT_LENGTH];
-      rg.GetBytes(saltbytes);
+      using (var rg = RandomNumberGenerator.Create()) {
+        rg.GetBytes(saltbytes);
+      }
       var salt = ByteArrayToString(saltbytes);
 
       // build our PBKDF2 key
-      var kg = new Rfc2898DeriveBytes(passwordBytes, saltbytes, PBKDF2_ITERATIONS);
-      var key = kg.GetBytes(PBKDF2_KEYSIZE);
+      byte[] key;
+      using (var kg = new Rfc2898DeriveBytes(passwordBytes, saltbytes, PBKDF2_ITERATIONS)) {
+        key = kg.GetBytes(PBKDF2_KEYSIZE);
+      }
 
       return salt + Encrypt(plain, key);
     }
@@ -759,8 +764,9 @@ namespace Authenticator {
         var passwordBytes = Encoding.UTF8.GetBytes(password);
 
         // build our PBKDF2 key
-        var kg = new Rfc2898DeriveBytes(passwordBytes, saltBytes, PBKDF2_ITERATIONS);
-        key = kg.GetBytes(PBKDF2_KEYSIZE);
+        using (var kg = new Rfc2898DeriveBytes(passwordBytes, saltBytes, PBKDF2_ITERATIONS)) {
+          key = kg.GetBytes(PBKDF2_KEYSIZE);
+        }
       }
       else {
         // extract the salt from the data
@@ -769,8 +775,9 @@ namespace Authenticator {
         Array.Copy(saltBytes, key, saltBytes.Length);
         Array.Copy(passwordBytes, 0, key, saltBytes.Length, passwordBytes.Length);
         // build out combined key
-        var md5 = MD5.Create();
-        key = md5.ComputeHash(key);
+        using (var md5 = MD5.Create()) {
+          key = md5.ComputeHash(key);
+        }
       }
 
       // extract the actual data to be decrypted
