@@ -1233,7 +1233,8 @@ namespace Authenticator {
           else {
             code = auth.CurrentCode;
             if (code != item.LastCode && auth.CopyOnCode) {
-              // code has changed - copy to clipboard
+              // remember the code first, as copying may pump messages and repaint this item again
+              item.LastCode = code;
               auth.CopyCodeToClipboard(Parent as Form, code);
             }
           }

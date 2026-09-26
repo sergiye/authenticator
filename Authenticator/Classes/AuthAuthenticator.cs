@@ -195,17 +195,15 @@ namespace Authenticator {
       var clipRetry = false;
       do {
         var failed = false;
+        string lockedBy = null;
         // check if the clipboard is locked
         var hWnd = WinApiHelper.GetOpenClipboardWindow();
         if (hWnd != IntPtr.Zero) {
           var len = WinApiHelper.GetWindowTextLength(hWnd);
-          if (len == 0) {
-            AuthHelper.ShowException(new ApplicationException("Clipboard in use by another process"));
-          }
-          else {
+          if (len != 0) {
             var sb = new StringBuilder(len + 1);
             WinApiHelper.GetWindowText(hWnd, sb, sb.Capacity);
-            AuthHelper.ShowException(new ApplicationException("Clipboard in use by '" + sb + "'"));
+            lockedBy = sb.ToString();
           }
 
           failed = true;
@@ -232,10 +230,12 @@ namespace Authenticator {
           }
         }
 
+        // silent copies (such as copy on new code from painting) must not open dialogs
         if (failed && showError) {
-          // only show an error the first time
           clipRetry = (MessageBox.Show(form,
-            "Unable to copy to the clipboard. Another application is probably using it.\nTry again?",
+            (lockedBy != null
+              ? $"Unable to copy to the clipboard. It is in use by '{lockedBy}'."
+              : "Unable to copy to the clipboard. Another application is probably using it.") + "\nTry again?",
             Updater.ApplicationName, MessageBoxButtons.YesNo, MessageBoxIcon.Warning,
             MessageBoxDefaultButton.Button2) == DialogResult.Yes);
         }
