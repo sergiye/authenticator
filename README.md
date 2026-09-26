@@ -62,6 +62,8 @@ Features include:
   * Portable mode preventing changes to other files or registry settings
   * Import and export in UriKeyFormat and from Authenticator Plus for Android 
 
+See [features.md](features.md) for a detailed description of all features.
+
 
 ## How To Use
 
