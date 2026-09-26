@@ -595,6 +595,7 @@ namespace Authenticator {
           var request = (HttpWebRequest) WebRequest.Create(uri);
           request.AllowAutoRedirect = true;
           request.Timeout = 10000;
+          request.ReadWriteTimeout = 10000;
           request.UserAgent = "Mozilla/4.0 (compatible; MSIE 8.0; Windows NT 6.1; Trident/4.0)";
           using (var response = (HttpWebResponse) request.GetResponse()) {
             if (response.ResponseUri.Scheme != Uri.UriSchemeHttps) {
@@ -607,8 +608,8 @@ namespace Authenticator {
               return null;
             }
             using (var stream = response.GetResponseStream())
-            using (var bitmap = (Bitmap) Image.FromStream(stream)) {
-              return DecodeQrCode(owner, bitmap, true);
+            using (var image = Image.FromStream(stream)) {
+              return DecodeQrCode(owner, image, true);
             }
           }
         }
@@ -616,19 +617,18 @@ namespace Authenticator {
         var match = Regex.Match(input, @"data:image/([^;]+);base64,(.*)", RegexOptions.IgnoreCase);
         if (match.Success) {
           using (var ms = new MemoryStream(Convert.FromBase64String(match.Groups[2].Value)))
-          using (var bitmap = (Bitmap) Image.FromStream(ms)) {
-            return DecodeQrCode(owner, bitmap, true);
+          using (var image = Image.FromStream(ms)) {
+            return DecodeQrCode(owner, image, true);
           }
         }
 
         if (IsExistingFile(input)) {
-          using (var bitmap = (Bitmap) Image.FromFile(input)) {
-            return DecodeQrCode(owner, bitmap, false);
+          using (var image = Image.FromFile(input)) {
+            return DecodeQrCode(owner, image, false);
           }
         }
       }
-      catch (Exception ex) when (ex is WebException || ex is IOException || ex is System.FormatException ||
-                                 ex is ArgumentException || ex is OutOfMemoryException) {
+      catch (Exception ex) {
         MainForm.ErrorDialog(owner, "Cannot load QR code image", ex);
         return null;
       }
@@ -636,9 +636,13 @@ namespace Authenticator {
       return input;
     }
 
-    private static string DecodeQrCode(Form owner, Bitmap bitmap, bool urlDecode) {
+    private static string DecodeQrCode(Form owner, Image image, bool urlDecode) {
       IBarcodeReader reader = new BarcodeReader();
-      var result = reader.Decode(bitmap);
+      Result result;
+      // metafiles (wmf, emf) are loaded as Metafile, not Bitmap
+      using (var bitmap = new Bitmap(image)) {
+        result = reader.Decode(bitmap);
+      }
       if (string.IsNullOrEmpty(result?.Text)) {
         MainForm.ErrorDialog(owner, "Unable to decode a QR code from the image");
         return null;
