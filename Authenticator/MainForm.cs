@@ -843,13 +843,16 @@ namespace Authenticator {
     private void authenticatorList_Reordered(object source, EventArgs args) {
 
       if (Config == null) return;
-      // set the new order of items in Config from that of the list
-      var count = authenticatorList.Items.Count;
-      for (var i = 0; i < count; i++) {
-        var item = (AuthenticatorListBox.ListItem) authenticatorList.Items[i];
-        var found = Config.FirstOrDefault(a => a == item.Authenticator);
-        if (found != null)
-          found.Index = i;
+      // with a filter only the listed authenticators are reordered, within their own positions
+      var listed = authenticatorList.Items.Cast<AuthenticatorListBox.ListItem>().Select(i => i.Authenticator).ToList();
+      var order = Config.ToList();
+      var slot = 0;
+      for (var i = 0; i < order.Count && slot < listed.Count; i++) {
+        if (listed.Contains(order[i]))
+          order[i] = listed[slot++];
+      }
+      for (var i = 0; i < order.Count; i++) {
+        order[i].Index = i;
       }
 
       // resort the config list
