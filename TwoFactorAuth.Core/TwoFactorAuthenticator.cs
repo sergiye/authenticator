@@ -112,7 +112,7 @@ namespace TwoFactorAuth {
 
     public string GetCurrentPin() => GenerateHashedCode(GetCurrentCounter());
 
-    public string GetCurrentPin(DateTime now) => GenerateHashedCode(GetCurrentCounter(now, epoch, 30));
+    public string GetCurrentPin(DateTime now) => GenerateHashedCode(GetCurrentCounter(now.ToUniversalTime(), epoch, 30));
 
     public string[] GetCurrentPins() => GetCurrentPins(DefaultClockDriftTolerance);
 
