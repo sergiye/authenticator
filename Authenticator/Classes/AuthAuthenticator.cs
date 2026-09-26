@@ -264,6 +264,7 @@ namespace Authenticator {
         clipboardClearTimer.Tick += (_, _) => ClearCopiedCode();
       }
       clipboardClearTimer.Stop();
+      clipboardClearTimer.Interval = ClipboardClearDelay;
       clipboardClearTimer.Start();
     }
 
@@ -276,13 +277,18 @@ namespace Authenticator {
         try {
           if (Clipboard.ContainsText() && Clipboard.GetText() == clipboardCode)
             Clipboard.Clear();
-          break;
+          clipboardCode = null;
+          return;
         }
         catch (ExternalException) {
           System.Threading.Thread.Sleep(100);
         }
       }
-      clipboardCode = null;
+      // still locked: keep the code and try again shortly
+      if (clipboardClearTimer != null) {
+        clipboardClearTimer.Interval = 1000;
+        clipboardClearTimer.Start();
+      }
     }
 
     public bool ReadXml(XmlReader reader, string password) {
