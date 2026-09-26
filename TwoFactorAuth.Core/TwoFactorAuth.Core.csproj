@@ -15,7 +15,7 @@
     <AssemblyCompany>SergiyE</AssemblyCompany>
     <AssemblyCopyright>Copyright © 2023 Sergiy Egoshyn</AssemblyCopyright>
     <Authors>Sergiy Egoshin</Authors>
-    <AssemblyVersion>1.0.9766</AssemblyVersion>
+    <AssemblyVersion>1.0.9767</AssemblyVersion>
     <Copyright>$(AssemblyCopyright)</Copyright>
     <Company>$(AssemblyCompany)</Company>
     <Product>$(AssemblyProduct)</Product>
@@ -52,13 +52,8 @@
     <Reference Include="PresentationFramework" />
     <Reference Include="System" />
     <Reference Include="System.Core" />
-    <Reference Include="System.Drawing" />
-    <Reference Include="System.Xml.Linq" />
-    <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
-    <Reference Include="System.Data" />
     <Reference Include="System.Net.Http" />
-    <Reference Include="System.Xml" />
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup Condition="'$(TargetFramework)' == 'netstandard2.0'">

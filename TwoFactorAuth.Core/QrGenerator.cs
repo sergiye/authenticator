@@ -1,11 +1,10 @@
 ﻿using System;
 using System.Linq;
-using System.Text;
 using System.Net.Http;
 using System.Threading.Tasks;
 
 namespace TwoFactorAuth {
-  
+
   public static class QrGenerator {
 
     [Obsolete("The secret key is sent to a third-party service, and the Google Chart QR API is deprecated. Use QrGeneratorEx.GenerateQrCode instead.")]
