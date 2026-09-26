@@ -126,7 +126,7 @@ namespace Authenticator {
 
     #endregion
 
-    public static AuthConfig LoadConfig(string configFile, string password = null) {
+    public static AuthConfig LoadConfig(string configFile, string password = null, bool import = false) {
       var config = new AuthConfig();
       if (!string.IsNullOrEmpty(password)) {
         config.Password = password;
@@ -188,7 +188,8 @@ namespace Authenticator {
         config.Upgraded = true;
       }
 
-      if (changed && !config.IsReadOnly) {
+      // an imported file belongs to the user and must stay readable by the version that created it
+      if (changed && !config.IsReadOnly && !import) {
         SaveConfig(config);
       }
 

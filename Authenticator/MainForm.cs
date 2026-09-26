@@ -306,7 +306,7 @@ namespace Authenticator {
       do {
         bool needPassword;
         try {
-          var config = AuthHelper.LoadConfig(authenticatorFile, password);
+          var config = AuthHelper.LoadConfig(authenticatorFile, password, true);
           if (config.Count == 0) {
             return;
           }
