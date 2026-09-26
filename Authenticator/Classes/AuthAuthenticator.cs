@@ -249,20 +249,24 @@ namespace Authenticator {
       clipboardCode = code;
       if (clipboardClearTimer == null) {
         clipboardClearTimer = new Timer { Interval = ClipboardClearDelay };
-        clipboardClearTimer.Tick += (_, _) => {
-          clipboardClearTimer.Stop();
-          try {
-            if (Clipboard.ContainsText() && Clipboard.GetText() == clipboardCode)
-              Clipboard.Clear();
-          }
-          catch (ExternalException) {
-            // clipboard is locked by another process, leave it as is
-          }
-          clipboardCode = null;
-        };
+        clipboardClearTimer.Tick += (_, _) => ClearCopiedCode();
       }
       clipboardClearTimer.Stop();
       clipboardClearTimer.Start();
+    }
+
+    public static void ClearCopiedCode() {
+      clipboardClearTimer?.Stop();
+      if (clipboardCode == null)
+        return;
+      try {
+        if (Clipboard.ContainsText() && Clipboard.GetText() == clipboardCode)
+          Clipboard.Clear();
+      }
+      catch (ExternalException) {
+        // clipboard is locked by another process, leave it as is
+      }
+      clipboardCode = null;
     }
 
     public bool ReadXml(XmlReader reader, string password) {

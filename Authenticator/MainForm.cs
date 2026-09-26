@@ -718,6 +718,9 @@ namespace Authenticator {
       // ensure the notify icon is closed
       notifyIcon.Visible = false;
 
+      // a copied code would otherwise stay on the clipboard after exit
+      AuthAuthenticator.ClearCopiedCode();
+
       // save size if we are not auto-resize
       if (Config != null) {
         if (!AuthConfig.AutoSize && (AuthConfig.Width != Width || AuthConfig.Height != Height)) {
