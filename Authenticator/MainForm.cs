@@ -546,7 +546,7 @@ namespace Authenticator {
     }
 
     protected override bool ProcessCmdKey(ref Message msg, Keys keyData) {
-      if (keyData.HasFlag(Keys.Alt) && AuthConfig.HideMenu) {
+      if (AuthConfig.HideMenu && (keyData & Keys.KeyCode) == Keys.Menu && (keyData & Keys.Modifiers) == Keys.Alt) {
         mainMenu.Visible = !mainMenu.Visible;
         mainMenu.Focus();
         return true;
