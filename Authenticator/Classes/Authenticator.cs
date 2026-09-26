@@ -107,7 +107,10 @@ namespace Authenticator {
     }
 
     protected virtual string CalculateCode(bool resync = false, long interval = -1) {
+      return CalculateCode(CodeInterval);
+    }
 
+    protected string CalculateCode(long counter) {
       HMac hmac;
       switch (HmacType) {
         case HmacTypes.SHA1:
@@ -125,7 +128,7 @@ namespace Authenticator {
 
       hmac.Init(new KeyParameter(SecretKey));
 
-      var codeIntervalArray = BitConverter.GetBytes(CodeInterval);
+      var codeIntervalArray = BitConverter.GetBytes(counter);
       if (BitConverter.IsLittleEndian) {
         Array.Reverse(codeIntervalArray);
       }

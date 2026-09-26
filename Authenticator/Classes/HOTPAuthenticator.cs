@@ -1,7 +1,4 @@
-﻿using System;
-using Org.BouncyCastle.Crypto.Digests;
-using Org.BouncyCastle.Crypto.Macs;
-using Org.BouncyCastle.Crypto.Parameters;
+using System;
 
 namespace Authenticator {
 
@@ -48,40 +45,8 @@ namespace Authenticator {
         Counter = counter - 1;
       }
 
-      var hmac = new HMac(new Sha1Digest());
-      hmac.Init(new KeyParameter(SecretKey));
-
-      // increment counter
       Counter++;
-
-      var codeIntervalArray = BitConverter.GetBytes(Counter);
-      if (BitConverter.IsLittleEndian) {
-        Array.Reverse(codeIntervalArray);
-      }
-
-      hmac.BlockUpdate(codeIntervalArray, 0, codeIntervalArray.Length);
-
-      var mac = new byte[hmac.GetMacSize()];
-      hmac.DoFinal(mac, 0);
-
-      // the last 4 bits of the mac say where the code starts (e.g. if last 4 bit are 1100, we start at byte 12)
-      var start = mac[19] & 0x0f;
-
-      // extract those 4 bytes
-      var bytes = new byte[4];
-      Array.Copy(mac, start, bytes, 0, 4);
-      if (BitConverter.IsLittleEndian) {
-        Array.Reverse(bytes);
-      }
-
-      var fullcode = BitConverter.ToUInt32(bytes, 0) & 0x7fffffff;
-
-      // we use the last 8 digits of this code in radix 10
-      var codemask = (uint) Math.Pow(10, CodeDigits);
-      var format = new string('0', CodeDigits);
-      var code = (fullcode % codemask).ToString(format);
-
-      return code;
+      return CalculateCode(Counter);
     }
   }
 }
