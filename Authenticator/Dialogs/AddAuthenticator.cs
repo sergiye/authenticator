@@ -225,10 +225,10 @@ namespace Authenticator {
           Payload.Types.Algorithm.Sha512 => "SHA512",
           _ => "SHA1"
         };
-        var migrationLabel = otp.HasIssuer && !string.IsNullOrEmpty(otp.Name) ? $"{otp.Issuer} ({otp.Name})" : otp.Name;
-        if (string.IsNullOrEmpty(migrationLabel))
-          migrationLabel = string.IsNullOrEmpty(issuer) ? "Imported" : issuer;
+        var migrationLabel = string.IsNullOrEmpty(otp.Name) ? (string.IsNullOrEmpty(issuer) ? "Imported" : issuer) : otp.Name;
         var migrationUri = $"otpauth://{authType}/{Uri.EscapeDataString(migrationLabel)}?secret={serial}&digits={migrationDigits}&algorithm={migrationAlgorithm}";
+        if (!string.IsNullOrEmpty(issuer))
+          migrationUri += $"&issuer={Uri.EscapeDataString(issuer)}";
         if (authType == HOTP)
           migrationUri += $"&counter={otp.Counter}";
         secretCodeField.Text = privateKey = migrationUri;
@@ -239,7 +239,8 @@ namespace Authenticator {
       match = Regex.Match(privateKey, @"otpauth://([^/]+)/([^?]+)\?(.*)", RegexOptions.IgnoreCase);
       if (match.Success) {
         authType = match.Groups[1].Value.ToLower();
-        var label = match.Groups[2].Value;
+        // decoded once before splitting, so that an encoded ':' also separates the issuer; '+' stays a plus sign
+        var label = Uri.UnescapeDataString(match.Groups[2].Value);
         var p = label.IndexOf(":", StringComparison.Ordinal);
         if (p != -1) {
           // issuer = label.Substring(0, p);
@@ -272,7 +273,7 @@ namespace Authenticator {
           label = issuer + (string.IsNullOrEmpty(label) == false ? " (" + label + ")" : string.Empty);
         }
         if (!string.IsNullOrEmpty(label) && updateNameField) {
-          Authenticator.Name = nameField.Text = HttpUtility.UrlDecode(label);
+          Authenticator.Name = nameField.Text = label;
         }
 
         serial = qs["serial"];
