@@ -292,11 +292,11 @@ namespace Authenticator {
         Config.Add(authenticator);
       }
 
-      SaveConfig(true);
       LoadAuthenticatorList();
 
       // reset UI
       SetAutoSize();
+      TrySaveConfig();
    }
 
     private void ImportAuthenticatorFromV2(string authenticatorFile) {
@@ -345,10 +345,9 @@ namespace Authenticator {
             LoadAuthenticatorList(auth);
           }
 
-          SaveConfig(true);
-
           // reset UI
           SetAutoSize();
+          TrySaveConfig();
 
           needPassword = false;
           retry = false;
@@ -517,6 +516,16 @@ namespace Authenticator {
       else {
         // save it in a few seconds so we can batch up saves
         saveConfigTime = DateTime.Now.AddSeconds(1);
+      }
+    }
+
+    private void TrySaveConfig() {
+      try {
+        SaveConfig(true);
+      }
+      catch (Exception ex) {
+        // SaveConfig keeps the changes pending, they are written by the next save or on close
+        ErrorDialog(this, "Unable to save your authenticators now. The changes are kept and will be saved later.", ex);
       }
     }
 
@@ -827,11 +836,11 @@ namespace Authenticator {
         }
 
         Config.Add(authenticator);
-        SaveConfig(true);
         LoadAuthenticatorList(authenticator);
 
         // reset UI
         SetAutoSize();
+        TrySaveConfig();
       }
     }
     
