@@ -815,7 +815,8 @@ namespace Authenticator {
 
       var passwordBytes = Encoding.UTF8.GetBytes(password);
       var passwordHash = HashPassword(passwordBytes);
-      var key = FindAesKey(passwordHash, saltBytes)?.Key ?? DeriveAesKey(passwordBytes, saltBytes);      var cipher = new GcmBlockCipher(new AesEngine());
+      var key = FindAesKey(passwordHash, saltBytes)?.Key ?? DeriveAesKey(passwordBytes, saltBytes);
+      var cipher = new GcmBlockCipher(new AesEngine());
       cipher.Init(false, new AeadParameters(new KeyParameter(key), AES_TAG_LENGTH * 8, nonce));
       var outBytes = new byte[cipher.GetOutputSize(inBytes.Length)];
       try {
