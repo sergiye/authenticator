@@ -134,13 +134,12 @@ namespace Authenticator {
           return false;
         }
 
-        // the label is "issuer:account" and URL-encoded, as in AddAuthenticator
-        var label = match.Groups[2].Value;
+        // the label is "issuer:account" and URL-encoded; decoded once before splitting, as in AddAuthenticator
+        var label = Uri.UnescapeDataString(match.Groups[2].Value);
         var p = label.IndexOf(':');
         if (p != -1) {
           label = label.Substring(p + 1);
         }
-        label = HttpUtility.UrlDecode(label);
         if (string.IsNullOrEmpty(label) == false) {
           Authenticator.Name = nameField.Text = label;
         }
