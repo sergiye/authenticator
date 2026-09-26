@@ -491,31 +491,35 @@ namespace Authenticator {
     }
 
     private void SaveConfig(bool immediate = false) {
-      if (immediate || (saveConfigTime != null && saveConfigTime <= DateTime.Now)) {
-        try {
-          lock (Config) {
-            AuthHelper.SaveConfig(Config);
-          }
-          saveConfigTime = null;
-          saveRetries = 0;
-          unsavedChanges = false;
-        }
-        catch (IOException) when (!immediate && saveRetries < MaxSaveRetries) {
-          // the file may be locked for a moment (antivirus, sync clients), so keep the save pending and retry
-          saveRetries++;
-          saveConfigTime = DateTime.Now.AddSeconds(5);
-        }
-        catch {
-          // stop the timer from retrying, the changes are written with the next save or on close
-          saveConfigTime = null;
-          saveRetries = 0;
-          unsavedChanges = true;
-          throw;
-        }
+      if (immediate) {
+        WriteConfig(false);
       }
       else {
-        // save it in a few seconds so we can batch up saves
-        saveConfigTime = DateTime.Now.AddSeconds(1);
+        // save in a moment so changes can be batched; the main timer writes it, never the caller
+        saveConfigTime ??= DateTime.Now.AddSeconds(1);
+      }
+    }
+
+    private void WriteConfig(bool retryOnLock) {
+      try {
+        lock (Config) {
+          AuthHelper.SaveConfig(Config);
+        }
+        saveConfigTime = null;
+        saveRetries = 0;
+        unsavedChanges = false;
+      }
+      catch (IOException) when (retryOnLock && saveRetries < MaxSaveRetries) {
+        // the file may be locked for a moment (antivirus, sync clients), so keep the save pending and retry
+        saveRetries++;
+        saveConfigTime = DateTime.Now.AddSeconds(5);
+      }
+      catch {
+        // stop the timer from retrying, the changes are written with the next save or on close
+        saveConfigTime = null;
+        saveRetries = 0;
+        unsavedChanges = true;
+        throw;
       }
     }
 
@@ -870,7 +874,12 @@ namespace Authenticator {
 
       // if a save is due
       if (saveConfigTime != null && saveConfigTime.Value <= DateTime.Now) {
-        SaveConfig();
+        try {
+          WriteConfig(true);
+        }
+        catch (Exception ex) {
+          ErrorDialog(this, "Unable to save your authenticators. The changes are kept and will be saved later.", ex);
+        }
       }
     }
 
