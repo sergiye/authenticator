@@ -29,8 +29,8 @@ namespace Authenticator {
     }
 
     private void okButton_Click(object sender, EventArgs e) {
-      var password = passwordField.Text.Trim();
-      var verify = verifyField.Text.Trim();
+      var password = passwordField.Text;
+      var verify = verifyField.Text;
       if (password != verify) {
         errorLabel.Visible = true;
         errorTimer.Enabled = true;
@@ -38,7 +38,7 @@ namespace Authenticator {
         return;
       }
 
-      Password = password;
+      Password = password.Trim().Length == 0 ? string.Empty : password;
     }
 
     private void errorTimer_Tick(object sender, EventArgs e) {

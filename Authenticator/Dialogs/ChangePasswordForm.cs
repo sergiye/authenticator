@@ -71,7 +71,7 @@ namespace Authenticator {
         return;
       }
 
-      if (passwordCheckbox.Checked && !passwordField.Text.Trim().Equals(verifyField.Text.Trim())) {
+      if (passwordCheckbox.Checked && !passwordField.Text.Equals(verifyField.Text)) {
         MainForm.ErrorDialog(this, "Passwords do not match");
         DialogResult = DialogResult.None;
         return;
@@ -90,7 +90,7 @@ namespace Authenticator {
       if (passwordCheckbox.Checked) {
         PasswordType |= Authenticator.PasswordTypes.Explicit;
         if (passwordField.Text != EXISTING_PASSWORD) {
-          Password = passwordField.Text.Trim();
+          Password = passwordField.Text;
         }
       }
     }
