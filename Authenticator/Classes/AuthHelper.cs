@@ -216,12 +216,36 @@ namespace Authenticator {
           var data = ms.ToArray();
           if (data.Length == 0 || data[0] == 0)
             throw new ApplicationException("Zero data when saving config");
-          File.WriteAllBytes(config.Filename, data);
+          WriteFileAtomic(config.Filename, data);
         }
         catch (UnauthorizedAccessException) {
           if (!fi.IsReadOnly) throw;
           config.IsReadOnly = true;
         }
+      }
+    }
+
+    private static void WriteFileAtomic(string fileName, byte[] data) {
+      var tempFileName = fileName + ".tmp";
+      try {
+        using (var fs = new FileStream(tempFileName, FileMode.Create, FileAccess.Write, FileShare.None, 4096, FileOptions.WriteThrough)) {
+          fs.Write(data, 0, data.Length);
+          fs.Flush(true);
+        }
+
+        if (File.Exists(fileName))
+          File.Replace(tempFileName, fileName, null);
+        else
+          File.Move(tempFileName, fileName);
+      }
+      catch {
+        try {
+          File.Delete(tempFileName);
+        }
+        catch {
+          // ignored
+        }
+        throw;
       }
     }
 
