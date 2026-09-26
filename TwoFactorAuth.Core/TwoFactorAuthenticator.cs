@@ -32,7 +32,7 @@ namespace TwoFactorAuth {
 
     public string ManualSecretKey {
       get {
-        var key = secretKey.ToLower().Trim('=');
+        var key = secretKey.ToLowerInvariant().Trim('=');
         string result = string.Empty;
         var idx = 0;
         while (idx < key.Length) {
