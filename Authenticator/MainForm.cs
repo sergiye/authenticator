@@ -1098,6 +1098,7 @@ namespace Authenticator {
 
     private void changePasswordOptionsMenuItem_Click(object sender, EventArgs e) {
       // confirm current password
+      string currentPassword = null;
       if ((Config.PasswordType & Authenticator.PasswordTypes.Explicit) != 0) {
         var invalidPassword = false;
         while (true) {
@@ -1110,6 +1111,7 @@ namespace Authenticator {
           }
 
           if (Config.IsPassword(passwordForm.Password)) {
+            currentPassword = passwordForm.Password;
             break;
           }
 
@@ -1122,30 +1124,25 @@ namespace Authenticator {
         HasPassword = (Config.PasswordType & Authenticator.PasswordTypes.Explicit) != 0
       };
       if (form.ShowDialog(this) == DialogResult.OK) {
-        bool retry;
-        var retryPasswordType = Config.PasswordType;
-        do {
-          retry = false;
+        var previousPasswordType = Config.PasswordType;
 
-          Config.PasswordType = form.PasswordType;
-          if ((Config.PasswordType & Authenticator.PasswordTypes.Explicit) != 0 &&
-              string.IsNullOrEmpty(form.Password) == false) {
-            Config.Password = form.Password;
-          }
+        Config.PasswordType = form.PasswordType;
+        if ((Config.PasswordType & Authenticator.PasswordTypes.Explicit) != 0 &&
+            string.IsNullOrEmpty(form.Password) == false) {
+          Config.Password = form.Password;
+        }
 
-          try {
-            SaveConfig(true);
+        try {
+          SaveConfig(true);
+        }
+        catch (InvalidEncryptionException ex) {
+          // the config file is written only after a successful encryption, so it still has the previous protection
+          Config.PasswordType = previousPasswordType;
+          if ((previousPasswordType & Authenticator.PasswordTypes.Explicit) != 0) {
+            Config.Password = currentPassword;
           }
-          catch (InvalidEncryptionException) {
-            var result = ConfirmDialog(this, "Decryption test failed. Retry?");
-            if (result == DialogResult.Yes) {
-              retry = true;
-              continue;
-            }
-
-            Config.PasswordType = retryPasswordType;
-          }
-        } while (retry);
+          ErrorDialog(this, "Unable to change the protection because the encryption test failed. The previous protection is kept.", ex);
+        }
       }
     }
 
