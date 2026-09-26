@@ -176,9 +176,17 @@ namespace Authenticator {
       }
 
       bool changed;
-      using (var fs = new FileStream(configFile, FileMode.Open, FileAccess.Read)) {
-        using (var reader = XmlReader.Create(fs)) {
-          changed = config.ReadXml(reader, password);
+      try {
+        using (var fs = new FileStream(configFile, FileMode.Open, FileAccess.Read)) {
+          using (var reader = XmlReader.Create(fs)) {
+            changed = config.ReadXml(reader, password);
+          }
+        }
+      }
+      finally {
+        // imported entries stay locked in the main config, so the key of the import password must not stay cached
+        if (import && !string.IsNullOrEmpty(password)) {
+          Authenticator.ForgetAesKeys(password);
         }
       }
 
