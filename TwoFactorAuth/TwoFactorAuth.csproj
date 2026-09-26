@@ -65,7 +65,7 @@
     <PackageReference Include="System.Drawing.Common" Version="9.0.6" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="TwoFactorAuth.Core" Version="1.0.9672" />
+    <PackageReference Include="TwoFactorAuth.Core" Version="1.0.*" />
     <PackageReference Include="QRCoder" Version="1.6.0" />
   </ItemGroup>
 </Project>
