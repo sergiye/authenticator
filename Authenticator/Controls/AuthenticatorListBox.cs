@@ -234,6 +234,11 @@ namespace Authenticator {
               return;
             }
 
+            // reduce unprotect count if already displayed
+            if (item.DisplayUntil != DateTime.MinValue && item.UnprotectCount > 1) {
+              ProtectAuthenticator(item);
+            }
+
             item.LastCode = item.Authenticator.CurrentCode;
             item.LastUpdate = DateTime.Now;
             item.DisplayUntil = DateTime.Now.AddSeconds(10);
