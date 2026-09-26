@@ -728,7 +728,20 @@ namespace Authenticator {
 
       // perform save if we have one pending
       if (saveConfigTime != null || unsavedChanges) {
-        SaveConfig(true);
+        try {
+          SaveConfig(true);
+        }
+        catch (Exception ex) when (e.CloseReason != CloseReason.WindowsShutDown) {
+          if (ErrorDialog(this, "Unable to save your authenticators. Close anyway and lose the unsaved changes?", ex,
+                MessageBoxButtons.YesNo) != DialogResult.Yes) {
+            e.Cancel = true;
+            mExplicitClose = false;
+            notifyIcon.Visible = AuthConfig.UseTrayIcon;
+            if (!Visible) {
+              Show();
+            }
+          }
+        }
       }
     }
     
