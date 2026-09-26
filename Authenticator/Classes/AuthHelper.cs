@@ -303,7 +303,7 @@ namespace Authenticator {
                 }
 
                 // need password
-                var form = new GetPasswordForm();
+                using var form = new GetPasswordForm();
                 if (form.ShowDialog(parent) == DialogResult.Cancel) {
                   return null;
                 }
@@ -327,7 +327,7 @@ namespace Authenticator {
           var encoded = File.ReadAllText(file);
           if (string.IsNullOrEmpty(pgpKey)) {
             // need password
-            var form = new GetPgpKeyForm();
+            using var form = new GetPgpKeyForm();
             if (form.ShowDialog(parent) == DialogResult.Cancel) {
               return null;
             }
@@ -506,7 +506,7 @@ namespace Authenticator {
               // unprotect if necessary
               if (auth.AuthenticatorData.RequiresPassword) {
                 // request the password
-                var getPassForm = new UnprotectPasswordForm();
+                using var getPassForm = new UnprotectPasswordForm();
                 getPassForm.Authenticator = auth;
                 var result = getPassForm.ShowDialog(form);
                 if (result == DialogResult.OK) {

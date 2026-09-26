@@ -285,7 +285,7 @@ namespace Authenticator {
 
         // first time we prompt for protection and set out main settings from imported config
         if (Config.Count == 0) {
-          var form = new ChangePasswordForm {
+          using var form = new ChangePasswordForm {
             PasswordType = Authenticator.PasswordTypes.Explicit
           };
           if (form.ShowDialog(this) == DialogResult.OK) {
@@ -338,7 +338,7 @@ namespace Authenticator {
 
           // first time we prompt for protection and set out main settings from imported config
           if (Config.Count == 0) {
-            var form = new ChangePasswordForm {
+            using var form = new ChangePasswordForm {
               PasswordType = Authenticator.PasswordTypes.Explicit
             };
             if (form.ShowDialog(this) == DialogResult.OK) {
@@ -384,7 +384,7 @@ namespace Authenticator {
         }
 
         if (needPassword) {
-          var form = new GetPasswordForm {
+          using var form = new GetPasswordForm {
             InvalidPassword = invalidPassword
           };
           var result = form.ShowDialog(this);
@@ -805,7 +805,7 @@ namespace Authenticator {
         authenticator.Name = name;
         authenticator.AutoRefresh = false;
 
-        var form = new AddMicrosoftAuthenticator {
+        using var form = new AddMicrosoftAuthenticator {
           Authenticator = authenticator
         };
         added = (form.ShowDialog(this) == DialogResult.OK);
@@ -822,7 +822,9 @@ namespace Authenticator {
         authenticator.Name = name;
         authenticator.AutoRefresh = false;
         authenticator.Skin = "AppIcon.png";
-        added = new AddAuthenticator(authenticator).ShowDialog(this) == DialogResult.OK;
+        using (var form = new AddAuthenticator(authenticator)) {
+          added = form.ShowDialog(this) == DialogResult.OK;
+        }
       }
       else if (registeredAuth.AuthenticatorType == RegisteredAuthenticator.AuthenticatorTypes.OktaVerify) {
         // create the Okta Verify authenticator
@@ -836,7 +838,7 @@ namespace Authenticator {
         authenticator.Name = name;
         authenticator.AutoRefresh = false;
 
-        var form = new AddOktaVerifyAuthenticator {
+        using var form = new AddOktaVerifyAuthenticator {
           Authenticator = authenticator
         };
         added = (form.ShowDialog(this) == DialogResult.OK);
@@ -848,7 +850,7 @@ namespace Authenticator {
       if (added) {
         // first time we prompt for protection
         if (Config.Count == 0) {
-          var form = new ChangePasswordForm {
+          using var form = new ChangePasswordForm {
             PasswordType = Authenticator.PasswordTypes.Explicit
           };
           if (form.ShowDialog(this) == DialogResult.OK) {
@@ -1191,7 +1193,7 @@ namespace Authenticator {
       if ((Config.PasswordType & Authenticator.PasswordTypes.Explicit) != 0) {
         var invalidPassword = false;
         while (true) {
-          var passwordForm = new GetPasswordForm {
+          using var passwordForm = new GetPasswordForm {
             InvalidPassword = invalidPassword
           };
           var result = passwordForm.ShowDialog(this);
@@ -1208,7 +1210,7 @@ namespace Authenticator {
         }
       }
 
-      var form = new ChangePasswordForm {
+      using var form = new ChangePasswordForm {
         PasswordType = Config.PasswordType,
         HasPassword = (Config.PasswordType & Authenticator.PasswordTypes.Explicit) != 0
       };

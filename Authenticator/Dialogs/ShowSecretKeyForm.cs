@@ -36,5 +36,13 @@ namespace Authenticator {
       };
       qrImage.Image = writer.Write(url);
     }
+
+    protected override void OnFormClosed(FormClosedEventArgs e) {
+      // the QR bitmap holds the secret and is not owned by the PictureBox
+      var image = qrImage.Image;
+      qrImage.Image = null;
+      image?.Dispose();
+      base.OnFormClosed(e);
+    }
   }
 }

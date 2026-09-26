@@ -620,7 +620,7 @@ namespace Authenticator {
       }
 
       // request the password
-      var getPassForm = new UnprotectPasswordForm {
+      using var getPassForm = new UnprotectPasswordForm {
         Authenticator = auth
       };
       if (screen != null) {
@@ -793,13 +793,15 @@ namespace Authenticator {
               }
 
               // show the new password form
-              var form = new SetPasswordForm();
-              if (form.ShowDialog(Parent as Form) != DialogResult.OK) {
-                return;
+              string password;
+              using (var form = new SetPasswordForm()) {
+                if (form.ShowDialog(Parent as Form) != DialogResult.OK) {
+                  return;
+                }
+                password = form.Password;
               }
 
               // set the encryption
-              var password = form.Password;
               if (!string.IsNullOrEmpty(password)) {
                 auth.AuthenticatorData.SetEncryption(Authenticator.PasswordTypes.Explicit, password);
                 // can't have auto refresh on
@@ -902,9 +904,9 @@ namespace Authenticator {
               }
 
               // show the secret key for Google authenticator
-              var form = new ShowSecretKeyForm();
-              form.CurrentAuthenticator = auth;
-              form.ShowDialog(Parent as Form);
+              using (var form = new ShowSecretKeyForm { CurrentAuthenticator = auth }) {
+                form.ShowDialog(Parent as Form);
+              }
             }
             finally {
               if (wasProtected == DialogResult.OK) {
