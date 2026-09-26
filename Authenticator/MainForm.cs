@@ -165,11 +165,16 @@ namespace Authenticator {
 
         passwordErrorLabel.Text = "Invalid password";
         passwordErrorLabel.Tag = DateTime.Now.AddSeconds(3);
-        // oddity with MetroFrame controls in have to set focus away and back to field to make it stick
-        Invoke((MethodInvoker)delegate {
-          passwordButton.Focus();
-          passwordField.Focus();
-        });
+        if (Created) {
+          // oddity with MetroFrame controls in have to set focus away and back to field to make it stick
+          BeginInvoke((MethodInvoker)delegate {
+            passwordButton.Focus();
+            passwordField.Focus();
+          });
+        }
+        else {
+          ActiveControl = passwordField;
+        }
         passwordTimer.Enabled = true;
         return;
       }
@@ -178,13 +183,22 @@ namespace Authenticator {
           loadingPanel.Visible = false;
           passwordPanel.Visible = true;
           mainMenu.Visible = false;
-          passwordButton.Focus();
-          passwordField.Focus();
+          if (Created) {
+            passwordButton.Focus();
+            passwordField.Focus();
+          }
+          else {
+            ActiveControl = passwordField;
+          }
           return;
         }
 
         ErrorDialog(this, "An unknown error occurred: " + ex.Message, ex);
-        Close();
+        // closing the form before it is shown disposes it, and Application.Run then fails on the disposed form
+        if (Created)
+          Close();
+        else
+          Load += (_, _) => Close();
         return;
       }
 
