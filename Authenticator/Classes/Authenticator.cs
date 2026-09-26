@@ -313,22 +313,43 @@ namespace Authenticator {
       }
     }
 
+    private void RefreshEncryptedData() {
+      if (PasswordType == PasswordTypes.None || SecretKey == null)
+        return;
+      if ((PasswordType & PasswordTypes.Explicit) != 0 && string.IsNullOrEmpty(Password))
+        return;
+
+      byte[] secretHash;
+      using (var sha1 = SHA1.Create()) {
+        secretHash = sha1.ComputeHash(Encoding.UTF8.GetBytes(SecretData));
+      }
+      if (SecretHash != null && secretHash.SequenceEqual(SecretHash))
+        return;
+
+      using (var ms = new MemoryStream()) {
+        var settings = new XmlWriterSettings {
+          Indent = true,
+          Encoding = Encoding.UTF8
+        };
+        var passwordType = PasswordType;
+        try {
+          PasswordType = PasswordTypes.None;
+          using (var writer = XmlWriter.Create(ms, settings)) {
+            WriteToWriter(writer);
+          }
+        }
+        finally {
+          PasswordType = passwordType;
+        }
+
+        EncryptedData = EncryptSequence(ByteArrayToString(ms.ToArray()), passwordType, Password);
+        SecretHash = secretHash;
+      }
+    }
+
     public void Protect() {
       if (PasswordType != PasswordTypes.None) {
-        // check if the data has changed
-        //if (this.SecretData != null)
-        //{
-        //	using (SHA1 sha1 = SHA1.Create())
-        //	{
-        //		byte[] secretHash = sha1.ComputeHash(Encoding.UTF8.GetBytes(this.SecretData));
-        //		if (this.SecretHash == null || secretHash.SequenceEqual(this.SecretHash) == false)
-        //		{
-        //			// we need to encrypt changed secret data
-        //			SetEncryption(this.PasswordType, this.Password);
-        //		}
-        //	}
-        //}
-
+        RefreshEncryptedData();
         SecretData = null;
         RequiresPassword = true;
         Password = null;
@@ -468,6 +489,7 @@ namespace Authenticator {
       }
 
       if (PasswordType != PasswordTypes.None) {
+        RefreshEncryptedData();
         writer.WriteRaw(EncryptedData);
       }
       else {
