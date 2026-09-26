@@ -424,6 +424,19 @@ namespace Authenticator {
       }
     }
 
+    public bool VerifyPassword(string password) {
+      if ((PasswordType & PasswordTypes.Explicit) == 0 || EncryptedData == null || string.IsNullOrEmpty(password)) {
+        return false;
+      }
+      try {
+        DecryptSequence(EncryptedData, PasswordType, password);
+        return true;
+      }
+      catch (BadPasswordException) {
+        return false;
+      }
+    }
+
     public bool Unprotect(string password) {
       var passwordType = PasswordType;
       if (passwordType == PasswordTypes.None) {

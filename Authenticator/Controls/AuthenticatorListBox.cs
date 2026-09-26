@@ -857,9 +857,18 @@ namespace Authenticator {
             }
 
             try {
+              // the secret key is shown only after a password is entered now: the authenticator's own, otherwise the main one
               if (wasProtected != DialogResult.OK) {
-                // confirm current main password
-                if (Parent is MainForm mainForm && (mainForm.Config.PasswordType & Authenticator.PasswordTypes.Explicit) != 0) {
+                Func<string, bool> checkPassword = null;
+                if (auth.AuthenticatorData.PasswordType == Authenticator.PasswordTypes.Explicit) {
+                  // unlocked earlier while its code is displayed, so no password has been asked yet
+                  checkPassword = auth.AuthenticatorData.VerifyPassword;
+                }
+                else if (Parent is MainForm mainForm && (mainForm.Config.PasswordType & Authenticator.PasswordTypes.Explicit) != 0) {
+                  checkPassword = mainForm.Config.IsPassword;
+                }
+
+                if (checkPassword != null) {
                   var invalidPassword = false;
                   while (true) {
                     var checkForm = new GetPasswordForm();
@@ -869,7 +878,7 @@ namespace Authenticator {
                       return;
                     }
 
-                    if (mainForm.Config.IsPassword(checkForm.Password)) {
+                    if (checkPassword(checkForm.Password)) {
                       break;
                     }
 
