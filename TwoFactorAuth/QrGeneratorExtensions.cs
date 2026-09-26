@@ -20,23 +20,17 @@ namespace TwoFactorAuth {
           qrCodeUrl = $"data:image/png;base64,{Convert.ToBase64String(ms.ToArray())}";
         }
       }
-      catch (TypeInitializationException e) {
-        if (e.InnerException != null
-            && e.InnerException.GetType() == typeof(DllNotFoundException)
-            && e.InnerException.Message.Contains("libgdiplus")) {
-          throw new Exception(
-            "It looks like libgdiplus has not been installed - see" +
-            " https://github.com/codebude/QRCoder/issues/227",
-            e);
-        }
+      catch (TypeInitializationException e) when (e.InnerException is DllNotFoundException && e.InnerException.Message.Contains("libgdiplus")) {
+        throw new Exception(
+          "It looks like libgdiplus has not been installed - see" +
+          " https://github.com/codebude/QRCoder/issues/227",
+          e);
       }
-      catch (System.Runtime.InteropServices.ExternalException e) {
-        if (e.Message.Contains("GDI+") && qrPixelsPerModule > 10) {
-          throw new Exception(
-            $"There was a problem generating a QR code. The value of {nameof(qrPixelsPerModule)}" +
-            " should be set to a value of 10 or less for optimal results.",
-            e);
-        }
+      catch (System.Runtime.InteropServices.ExternalException e) when (e.Message.Contains("GDI+") && qrPixelsPerModule > 10) {
+        throw new Exception(
+          $"There was a problem generating a QR code. The value of {nameof(qrPixelsPerModule)}" +
+          " should be set to a value of 10 or less for optimal results.",
+          e);
       }
       return qrCodeUrl;
     }
