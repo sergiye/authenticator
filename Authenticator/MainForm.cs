@@ -589,16 +589,35 @@ namespace Authenticator {
     }
 
     protected override bool ProcessCmdKey(ref Message msg, Keys keyData) {
-      if (AuthConfig.HideMenu && (keyData & Keys.KeyCode) == Keys.Menu && (keyData & Keys.Modifiers) == Keys.Alt) {
-        // bit 30 of lParam is set for auto-repeated key presses while Alt is held down
-        if (((long) msg.LParam & 0x40000000) == 0) {
-          mainMenu.Visible = !mainMenu.Visible;
-          mainMenu.Focus();
-          SetAutoSize();
+      if (AuthConfig.HideMenu) {
+        if ((keyData & Keys.KeyCode) == Keys.Menu && (keyData & Keys.Modifiers) == Keys.Alt) {
+          // bit 30 of lParam is set for auto-repeated key presses while Alt is held down
+          if (((long) msg.LParam & 0x40000000) == 0)
+            altPressedAlone = true;
+          return true;
         }
-        return true;
+        altPressedAlone = false;
       }
       return base.ProcessCmdKey(ref msg, keyData);
+    }
+
+    private bool altPressedAlone;
+
+    protected override void OnKeyUp(KeyEventArgs e) {
+      base.OnKeyUp(e);
+      if (!altPressedAlone || e.KeyCode != Keys.Menu)
+        return;
+      altPressedAlone = false;
+      if (!AuthConfig.HideMenu)
+        return;
+      mainMenu.Visible = !mainMenu.Visible;
+      mainMenu.Focus();
+      SetAutoSize();
+    }
+
+    protected override void OnDeactivate(EventArgs e) {
+      altPressedAlone = false;
+      base.OnDeactivate(e);
     }
 
     private void RunAction(AuthAuthenticator auth, AuthConfig.NotifyActions action) {
