@@ -1160,7 +1160,7 @@ namespace Authenticator {
         // @todo change to MRU
         var index = 1;
         foreach (var auth in Config.Take(30)) {
-          AuthHelper.AddMenuItem(menuItems, index + ". " + auth.Name, onClick: authenticatorOptionsMenuItem_Click, tag: auth);
+          AuthHelper.AddMenuItem(menuItems, index + ". " + auth.Name, onClick: authenticatorOptionsMenuItem_Click, tag: auth, icon: auth.Icon);
           index++;
         }
       }
