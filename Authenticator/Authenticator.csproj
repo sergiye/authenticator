@@ -71,7 +71,6 @@
   <ItemGroup Condition="'$(UseLocalCommon)' == 'true'">
     <EmbeddedResource Include="$(CommonSourcesDir)themes\*.json" Link="themes\%(Filename)%(Extension)" />
     <Compile Include="$(CommonSourcesDir)sergiye.Common.UI\Themes\CustomTheme.cs" Link="Common\Themes\CustomTheme.cs" />
-    <Compile Include="$(CommonSourcesDir)sergiye.Common.UI\Themes\DisabledTheme.cs" Link="Common\Themes\DisabledTheme.cs" />
     <Compile Include="$(CommonSourcesDir)sergiye.Common.UI\Themes\DarkTheme.cs" Link="Common\Themes\DarkTheme.cs" />
     <Compile Include="$(CommonSourcesDir)sergiye.Common.UI\Themes\LightTheme.cs" Link="Common\Themes\LightTheme.cs" />
     <Compile Include="$(CommonSourcesDir)sergiye.Common.UI\Themes\Theme.cs" Link="Common\Themes\Theme.cs" />
