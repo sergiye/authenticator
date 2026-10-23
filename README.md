@@ -23,6 +23,19 @@ Here's a preview of the app's UI running on Windows 10:
 
 [<img src="https://github.com/sergiye/authenticator/raw/master/preview.png" alt="preview"/>](https://github.com/sergiye/authenticator/raw/master/preview.png)
 
+### System tray
+
+With the `Use System Tray Icon` option enabled, the app can be hidden to the system tray and used from there:
+
+[<img src="https://github.com/sergiye/authenticator/raw/master/preview2.png" alt="tray menu preview"/>](https://github.com/sergiye/authenticator/raw/master/preview2.png)
+
+ - Double-click the tray icon to show or hide the main window
+ - Right-click the tray icon to open the menu:
+   - `Show/Hide` toggles the main window
+   - `Click Action` selects what happens when an authenticator is chosen: `Show Notification` or `Copy To Clipboard`
+   - The first 30 authenticators are listed with their icons, choosing one performs the selected click action for its current code
+   - `Exit` closes the app
+
 Also there are:
  - `Auto`/`Light`/`Dark` themes integrated into executable.
  - Custom `themes` supported from external files
